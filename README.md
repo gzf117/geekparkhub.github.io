@@ -2,22 +2,23 @@
 <div align="center">
   <img src="https://geekparkhub.github.io/technical_guide/programing_language/shell/nopic.jpg" alt="修仙之路" title="修仙之路">
 <br><br>
-<img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" 宽度=“192 px” alt=“GeekParkHub” >
+<img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" width="192px" alt="GeekParkHub">
 </div><br>
 
 - **极客实验室是极客国际公园旗下为未来而构建的极客社区；**
 - **我们正在构建一个活跃的小众社区,汇聚众多优秀开发者与设计师；**
 - **关注极具创新精神的前沿技术&分享交流&项目合作机会等互联网行业服务；**
 - **Future Vision : Establishment of the Geek Foundation**
-- **Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见！**
+- **Open开放 `·` Creation创想 `|` OpenSource开放成就梦想 GeekParkHub共建前所未见!**
 - **GeekParkHub GithubHome：**<https://github.com/geekparkhub>
 - **GeekParkHub GiteeHome：**<https://gitee.com/geekparkhub>
 
 ### 大数据生态系统 修仙之路
 
 * [Linux](https://geekparkhub.github.io/technical_guide/programing_language/linux/linux.html)
+* [Linux-Markdown](https://geekparkhub.github.io/technical_guide/programing_language/linux/大数据生态系统 修仙之路 Linux Blog.md)
 * [Shell](https://geekparkhub.github.io/technical_guide/programing_language/shell/shell.html)
-
+* [Shell-Markdown](https://geekparkhub.github.io/technical_guide/programing_language/shell/大数据生态系统 修仙之路 Shell Blog.md)
 ***
 
 ### 如何对该开源文档进行贡献
