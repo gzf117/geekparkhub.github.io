@@ -13,33 +13,37 @@
 - **关注极具创新精神的前沿技术&分享交流&项目合作机会等互联网行业服务;**
 - **Open开放 `·` Creation创想 `|` OpenSource开放成就梦想 GeekParkHub共建前所未见!**
 - **Future Vision : Establishment of the Geek Foundation;**
-- **GeekParkHub GithubHome:**<https://github.com/geekparkhub>
-- **GeekParkHub GiteeHome:**<https://gitee.com/geekparkhub>
+- **GeekParkHub GithubHome: **<https://github.com/geekparkhub>
+- **GeekParkHub GiteeHome: **<https://gitee.com/geekparkhub>
 - **欢迎贡献`各领域开源野生Blog`&`笔记`&`文章`&`片段`&`分享`&`创想`&`OpenSource Project`&`Code`&`Code Review`**
 - 🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈 issues: [geekparkhub.github.io/issues](https://github.com/geekparkhub/geekparkhub.github.io/issues) 🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈
 
 ### 大数据生态系统 修仙之道
 
-* [Linux-Html](https://geekparkhub.github.io/technical_guide/programing_language/linux/linux.html) | [Linux-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/linux/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F%20%E4%BF%AE%E4%BB%99%E4%B9%8B%E8%B7%AF%20Linux%20Blog.md)
-* [Shell-Html](https://geekparkhub.github.io/technical_guide/programing_language/shell/shell.html) | [Shell-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/shell/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F%20%E4%BF%AE%E4%BB%99%E4%B9%8B%E8%B7%AF%20Shell%20Blog.md)
+* [Linux-Html](https://geekparkhub.github.io/technical_guide/programing_language/linux/linux.html) | [Linux-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/linux/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Linux%20_Blog.md)
+* [Shell-Html](https://geekparkhub.github.io/technical_guide/programing_language/shell/shell.html) | [Shell-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/shell/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Shell_Blog.md)
 
 ***
 
-### 如何对该开源文档进行贡献
+## 💡如何对该开源文档进行贡献💡
 
 1. Blog内容大多是手敲,所以难免会有笔误,你可以帮我找错别字。
 2. 很多知识点我可能没有涉及到,所以你可以对其他知识点进行补充。
 3. 现有的知识点难免存在不完善或者错误,所以你可以对已有知识点的修改/补充。
-4. 亮点:欢迎贡献`各领域开源野生Blog`&`笔记`&`文章`&`片段`&`分享`&`创想`&`OpenSource Project`&`Code`&`Code Review`
-5. 🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈 issues: [geekparkhub.github.io/issues](https://github.com/geekparkhub/geekparkhub.github.io/issues) 🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈
+4. 💡欢迎贡献`各领域开源野生Blog`&`笔记`&`文章`&`片段`&`分享`&`创想`&`OpenSource Project`&`Code`&`Code Review`
+5. 🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈 issues: [geekparkhub.github.io/issues](https://github.com/geekparkhub/geekparkhub.github.io/issues) 🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈
 
-#### 希望每一篇文章都能够对读者们提供帮助与提升,这乃是每一位笔者的初衷                          
+### 希望每一篇文章都能够对读者们提供帮助与提升,这乃是每一位笔者的初衷                          
 
-## 感谢您的阅读 欢迎您的留言与建议
+
+-----
+
+
+## 💌感谢您的阅读 欢迎您的留言与建议💌
 
 - FaceBook：[JEEP SevenEleven](https://www.facebook.com/profile.php?id=100018099483403)
 - Twitter：[@JEEP7ll](https://twitter.com/JEEP7ll)
-- Sina Weibo: [@JEEP-711](http://weibo.com/5990854742/profile)
+- Sina Weibo: [@JEEP-711](https://weibo.com/JEEP511)
 - GeekParkHub GithubHome：<https://github.com/geekparkhub>
 - GeekParkHub GiteeHome：<https://gitee.com/geekparkhub>
 - Blog GardenHome：<http://www.cnblogs.com/JEEP711/>
@@ -47,6 +51,23 @@
 - CSDN/BlogHome：<http://blog.csdn.net/jeep911>
 - 51CTO/BlogHome：<http://jeep711.blog.51cto.com/>
 - Email：<jeep711.home.@gmail.com>—— <jeep-711@outlook.com> —— <geekparkhub@outlook.com>
+
+
+
+### 捐助 项目的发展离不开你的支持,请开发者喝杯☕Coffee☕吧!
+![enter image description here](https://www.geekparkhub.com/docs/images/pay.jpg)
+
+#### `致谢`：
+**捐助时请备注 UserName**
+| ID| UserName | Donation | Money | Consume |
+|:-| :-------- | --------:| :--: |:--: |
+|1 | Object | WeChatPay |  5RMB | 一杯可乐 | 
+|2| 泰迪熊看月亮  | AliPay |  20RMB  | 一杯咖啡 | 
+|3| 修仙道长  | WeChatPay |  10RMB | 两杯可乐 | 
+
+
+## License 开源协议
+[Apache License Version 2.0](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/LICENSE)
 
 ---------
 
