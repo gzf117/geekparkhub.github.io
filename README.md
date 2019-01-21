@@ -1,6 +1,6 @@
 
 <div align="center">
-  <img src="https://jeep711.github.io/geekparkhub.github.io/technical_guide/programing_language/shell/nopic.jpg" alt="修仙之路" title="修仙之路">
+  <img src="https://geekparkhub.github.io/technical_guide/programing_language/shell/nopic.jpg" alt="修仙之路" title="修仙之路">
 <br><br>
 <img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" 宽度=“192 px” alt=“GeekParkHub” >
 </div><br>
@@ -15,8 +15,8 @@
 
 ### 大数据生态系统 修仙之路
 
-* [Linux](https://jeep711.github.io/geekparkhub.github.io/technical_guide/programing_language/linux/linux.html)
-* [Shell](https://jeep711.github.io/geekparkhub.github.io/technical_guide/programing_language/shell/shell.html)
+* [Linux](https://geekparkhub.github.io/technical_guide/programing_language/linux/linux.html)
+* [Shell](https://geekparkhub.github.io/technical_guide/programing_language/shell/shell.html)
 
 ***
 
