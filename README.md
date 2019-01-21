@@ -59,8 +59,8 @@
 
 #### `致谢`：
 **捐助时请备注 UserName**
-| ID| UserName | Donation | Money | Consume |
-|:- | :-------- | --------:| :--: |:--: |
+ ID| UserName | Donation | Money | Consume |
+----|------|----|----|----|
 |1 | Object | WeChatPay |  5RMB | 一杯可乐 | 
 |2| 泰迪熊看月亮  | AliPay |  20RMB  | 一杯咖啡 |
 |3| 修仙道长  | WeChatPay |  10RMB | 两杯可乐 |
