@@ -15,8 +15,8 @@
 
 ### 大数据生态系统 修仙之路
 
-* [Linux](https://geekparkhub.github.io/technical_guide/programing_language/linux/linux.html) | [Linux-Markdown](https://geekparkhub.github.io/technical_guide/programing_language/linux/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F%20%E4%BF%AE%E4%BB%99%E4%B9%8B%E8%B7%AF%20Linux%20Blog.md)
-* [Shell](https://geekparkhub.github.io/technical_guide/programing_language/shell/shell.html) | [Shell-Markdown](https://geekparkhub.github.io/technical_guide/programing_language/shell/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F%20%E4%BF%AE%E4%BB%99%E4%B9%8B%E8%B7%AF%20Shell%20Blog.md)
+* [Linux](https://geekparkhub.github.io/technical_guide/programing_language/linux/linux.html) | [Linux-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/linux/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F%20%E4%BF%AE%E4%BB%99%E4%B9%8B%E8%B7%AF%20Linux%20Blog.md)
+* [Shell](https://geekparkhub.github.io/technical_guide/programing_language/shell/shell.html) | [Shell-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/shell/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F%20%E4%BF%AE%E4%BB%99%E4%B9%8B%E8%B7%AF%20Shell%20Blog.md)
 ***
 
 ### 如何对该开源文档进行贡献
