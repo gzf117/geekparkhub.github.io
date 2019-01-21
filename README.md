@@ -1,37 +1,45 @@
-## Welcome to GitHub Pages
 
-You can use the [editor on GitHub](https://github.com/geekparkhub/geekparkhub.github.io/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+<div align="center">
+  <img src="https://jeep711.github.io/geekparkhub.github.io/technical_guide/programing_language/shell/nopic.jpg" alt="修仙之路" title="修仙之路">
+<br><br>
+<img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" 宽度=“192 px” alt=“GeekParkHub” >
+</div><br>
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+- **极客实验室是极客国际公园旗下为未来而构建的极客社区；**
+- **我们正在构建一个活跃的小众社区,汇聚众多优秀开发者与设计师；**
+- **关注极具创新精神的前沿技术&分享交流&项目合作机会等互联网行业服务；**
+- **Future Vision : Establishment of the Geek Foundation**
+- **Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见！**
+- **GeekParkHub GithubHome：**<https://github.com/geekparkhub>
+- **GeekParkHub GiteeHome：**<https://gitee.com/geekparkhub>
 
-### Markdown
+### 大数据生态系统 修仙之路
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+* [Linux](https://jeep711.github.io/geekparkhub.github.io/technical_guide/programing_language/linux/linux.html)
+* [Shell](https://jeep711.github.io/geekparkhub.github.io/technical_guide/programing_language/shell/shell.html)
 
-```markdown
-Syntax highlighted code block
+***
 
-# Header 1
-## Header 2
-### Header 3
+### 如何对该开源文档进行贡献
 
-- Bulleted
-- List
+1. 笔记内容大多是手敲，所以难免会有笔误，你可以帮我找错别字。
+2. 很多知识点我可能没有涉及到，所以你可以对其他知识点进行补充。
+3. 现有的知识点难免存在不完善或者错误，所以你可以对已有知识点的修改/补充。
 
-1. Numbered
-2. List
+#### 希望每一篇文章都能够对读者们提供帮助与提升,这乃是每一位笔者的初衷                          
 
-**Bold** and _Italic_ and `Code` text
+## 感谢您的阅读 欢迎您的留言与建议
 
-[Link](url) and ![Image](src)
-```
+- FaceBook：[JEEP SevenEleven](https://www.facebook.com/Jeep-711-433673250337229/)
+- Twitter：[@JEEP7ll](https://twitter.com/JEEP7ll)
+- Sina Weibo: [@JEEP-711](http://weibo.com/5990854742/profile)
+- GeekParkHub GithubHome：<https://github.com/geekparkhub>
+- GeekParkHub GiteeHome：<https://gitee.com/geekparkhub>
+- Blog GardenHome：<http://www.cnblogs.com/JEEP711/>
+- W3C/BlogHome：<https://www.w3cschool.cn/jeep711blog/>
+- CSDN/BlogHome：<http://blog.csdn.net/jeep911>
+- 51CTO/BlogHome：<http://jeep711.blog.51cto.com/>
+- Email：<jeep711.home.@gmail.com>—— <jeep-711@outlook.com> —— <geekparkhub@outlook.com>
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+---------
 
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/geekparkhub/geekparkhub.github.io/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
