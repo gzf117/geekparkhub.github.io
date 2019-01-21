@@ -1,3 +1,6 @@
+# 修仙之道
+
+@(Update Time:2019-01-21)[Docs Language:简体中文 & English|Programing Language:XXXX|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg)|GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub)]
 
 <div align="center">
   <img src="https://geekparkhub.github.io/technical_guide/programing_language/shell/nopic.jpg" alt="修仙之路" title="修仙之路">
@@ -5,15 +8,17 @@
 <img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" width="192px" alt="GeekParkHub">
 </div><br>
 
-- **极客实验室是极客国际公园旗下为未来而构建的极客社区；**
-- **我们正在构建一个活跃的小众社区,汇聚众多优秀开发者与设计师；**
-- **关注极具创新精神的前沿技术&分享交流&项目合作机会等互联网行业服务；**
-- **Future Vision : Establishment of the Geek Foundation**
+- **极客实验室是极客国际公园旗下为未来而构建的极客社区;**
+- **我们正在构建一个活跃的小众社区,汇聚众多优秀开发者与设计师;**
+- **关注极具创新精神的前沿技术&分享交流&项目合作机会等互联网行业服务;**
 - **Open开放 `·` Creation创想 `|` OpenSource开放成就梦想 GeekParkHub共建前所未见!**
-- **GeekParkHub GithubHome：**<https://github.com/geekparkhub>
-- **GeekParkHub GiteeHome：**<https://gitee.com/geekparkhub>
+- **Future Vision : Establishment of the Geek Foundation;**
+- **GeekParkHub GithubHome : **<https://github.com/geekparkhub>
+- **GeekParkHub GiteeHome : **<https://gitee.com/geekparkhub>
+- **欢迎贡献`各领域开源野生Blog`&`笔记`&`文章`&`片段`&`分享`&`创想`&`OpenSource Project`&`Code`&`Code Review`**
+- 🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈 issues: [geekparkhub.github.io/issues](https://github.com/geekparkhub/geekparkhub.github.io/issues) 🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈
 
-### 大数据生态系统 修仙之路
+### 大数据生态系统 修仙之道
 
 * [Linux-Html](https://geekparkhub.github.io/technical_guide/programing_language/linux/linux.html) | [Linux-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/linux/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F%20%E4%BF%AE%E4%BB%99%E4%B9%8B%E8%B7%AF%20Linux%20Blog.md)
 * [Shell-Html](https://geekparkhub.github.io/technical_guide/programing_language/shell/shell.html) | [Shell-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/shell/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F%20%E4%BF%AE%E4%BB%99%E4%B9%8B%E8%B7%AF%20Shell%20Blog.md)
