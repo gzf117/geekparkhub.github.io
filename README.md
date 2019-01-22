@@ -1,6 +1,6 @@
 # 🙈 修仙之道 🙈
 
-@(Update Time:2019-01-21)[Docs Language:简体中文 & English | Programing Language:Technology Architecture | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub)]
+@(Update Time:2019-01-22)[Docs Language:简体中文 & English | Programing Language:Technology Architecture | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub)]
 
 <div align="center">
   <img src="https://geekparkhub.github.io/technical_guide/programing_language/shell/nopic.jpg" alt="修仙之路" title="修仙之路">
