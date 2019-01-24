@@ -3,7 +3,7 @@
 @(2019-01-17)[Docs Language:简体中文 & English|Programing Language:Zookeeper|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg)|GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub)]
 
 
-![Alt text](./nopic.jpg)
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/zookeeper/zookeeper.jpg)
 
 - **极客实验室是极客国际公园旗下为未来而构建的极客社区;**
 - **我们正在构建一个活跃的小众社区,汇聚众多优秀开发者与设计师;**
@@ -22,16 +22,16 @@
 
 
 
-## zookeeper 简介
+## 1. zookeeper 简介
 
 > Apache ZooKeeper是Apache软件基金会的一个软件项目,他为大型分布式计算提供开源的分布式配置服务、同步服务和命名注册,ZooKeeper曾经是Hadoop的一个子项目,但现在是一个独立的顶级项目。
 > 
 > ZooKeeper的架构通过冗余服务实现高可用性,因此,如果第一次无应答,客户端就可以询问另一台ZooKeeper主机,ZooKeeper节点将它们的数据存储于一个分层的命名空间,非常类似于一个文件系统或一个前缀树结构,客户端可以在节点读写,从而以这种方式拥有一个共享的配置服务,更新是全序的.   —— [维基百科](https://zh.wikipedia.org/zh-hans/Apache_ZooKeeper)
 
-## zookeeper 工作机制
+## 2. zookeeper 工作机制
 > zookeeper从设计模式角度来理解,是一个基于观察者模式设计的分布式服务管理框架,它负责存储和管理数据,然后接受观察者注册,一旦这些数据状态发送变化,zookeeper就将负责通知已经在zookeeper上注册的那些观察者做出相应反应
 
-## zookeeper 特点
+## 3. zookeeper 特点
 > 1.zookeeper一个**`领导者 leader`**,多个**`跟随者 follower`**组成集群
 > 2.集群中只要有半数以上节点存活,zookeeper集群就能正常服务
 > 3.全局数据一致,每个server保存一份相同的数据备份,Client无论连接哪一个服务,数据都是一致的
@@ -39,10 +39,10 @@
 > 5.数据更新原子性,一次数据更新要么成功要么失败
 > 6.实时性,在一定时间范围内,客户端能读到最新数据
 
-## zookeeper 数据结构
+## 4. zookeeper 数据结构
 > zookeeper数据模型与Unix文件系统很相似,整体上可以看作是一棵树,每个节点称作一个znode,每个zonde默认能够储存1MB数据,每个znode都可以通过其路径唯一标识
 
-## zookeeper 应用场景
+## 5. zookeeper 应用场景
 > 提供服务包括:**`统一命名服务`**,**`统一配置管理`**,**`统一集群管理`**,**`服务节点动态上下线`**,**`软负载均衡`**
 > 
 > 统一命名服务:在分布式环境下,经常需要对应用/服务进行统一命名,便于识别.
@@ -53,7 +53,7 @@
 > 
 > 软负载均衡:在zookeeper中记录每台服务器的访问数,让王文数量少的服务器去处理最新客户端请求.
 
-## zookeeper 快速安装
+## 6. zookeeper 快速安装
 > Zookeeper Download Address: [archive.apache.org/dist/zookeeper](https://archive.apache.org/dist/zookeeper/)
 ### 本地模式安装部署
 #### 1.将zookeeper.tar.gz存放到linux系统/opt/自定义目录中
@@ -63,7 +63,7 @@ total 408816
 -rw-r--r--.  1 root root  35042811 Jan 17 00:00 zookeeper-3.4.10.tar.gz
 ```
 #### 2.解压zookeeper.tar.gz文件并重命名
-```
+``` bash
 #解压zookeeper.tar.gz
 tar -zxvf zookeeper-3.4.10.tar.gz
 ```
@@ -72,7 +72,7 @@ tar -zxvf zookeeper-3.4.10.tar.gz
 mv zookeeper-3.4.10 zookeeper
 ```
 #### 3.在zookeeper目录下创建用于存放数据的文件夹
-```
+``` 
 #cd指令进入到/opt/zookeeper/目录下
 [geek-developer@servicehub opt]$ cd /opt/zookeeper/
 # 列表查看当前目录下文件
@@ -204,7 +204,7 @@ quit
 5.clientProt 客户端 端口号 监听客户端连接端口
 ```
 
-## zookeeper 内部原理
+## 7. zookeeper 内部原理
 ### 选举机制(面试重点)
 > 半数机制,集群中半数以上机器存活,集群可用,所以zookeeper适合安装奇数台服务器,zookeeper虽然在配置文件中并没有指定,但是zookeeper工作时,是有一个节点为leader,其他则为follower,leader是通过内部选举机制临时产生
 ### 节点类型
@@ -247,10 +247,10 @@ quit
 
 
 ### 写数据流程
-![Alt text](./data.jpg)
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/zookeeper/data.jpg)
 
 
-## zookeeper 实战(开发重点)
+## 8. zookeeper 实战(开发重点)
 ### zookeeper分布式安装部署
 #### 1.集群规划:至少配置三台以上linux服务器集群
 #### 2.配置zookeeper服务器编号id
@@ -339,7 +339,7 @@ server.3=corehub-003:2888:3888
 [root@corehub-003 zookeeper]# bin/zkServer.sh status
 ```
 
-## zookeeper客户端命令操作
+## 9. zookeeper客户端命令操作
 > **`help`**指令 显示所有操作命令
 > **`ls / `**查看当前znode中所包含的内容指令
 > **`ls2 / `**查看当前节点详细数据指令
@@ -348,12 +348,12 @@ server.3=corehub-003:2888:3888
 > **`create -e / `** 创建短暂节点指令
 
 
-##  API 应用
+## 10. API 应用
 ### IntelliJ IDEA环境搭建
 #### 创建zookeeper客户端
 > 💻 IntelliJ IDEA 全宇宙神器 构建maven project 💻
 ##### 1.修改pom配置文件
-```
+``` xml
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -388,7 +388,7 @@ server.3=corehub-003:2888:3888
 </project>
 ```
 ##### 2.创建log4j.properties并添加日志参数
-```
+``` prolog
 log4j.rootLogger=INFO, stdout
 log4j.appender.stdout=org.apache.log4j.ConsoleAppender
 log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
@@ -401,7 +401,7 @@ log4j.appender.logfile.layout.ConversionPattern=%d %p [%c] - %m%n
 
 ##### 3.分别启动三台zookeeper linux服务端
 ###### **`Start corehub-001号 zookeeper服务端 并查看本机IP地址`**
-> ![Alt text](./start_001.jpg)
+> ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/zookeeper/start_001.jpg)
 
 Code Snippet | (corehub-001号 服务端)代码片段
 ```
@@ -436,7 +436,7 @@ eth0      Link encap:Ethernet  HWaddr 00:0C:29:15:A8:CC
 ```
 
 ######  **`Start corehub-002号 zookeeper服务端 并查看本机IP地址`**
-> ![Alt text](./start_002.jpg)
+> ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/zookeeper/start_002.jpg)
 
 Code Snippet | (corehub-002号 服务端)代码片段
 ```
@@ -470,7 +470,7 @@ eth1      Link encap:Ethernet  HWaddr 00:0C:29:98:7B:7D
 [root@corehub-002 zookeeper]# 
 ```
 ###### **`Start corehub-003号 zookeeper服务端 并查看本机IP地址`**
->![Alt text](./start_003.jpg)
+>![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/zookeeper/start_003.jpg)
 
 Code Snippet | (corehub-003号 服务端)代码片段
 ```
@@ -504,7 +504,7 @@ eth1      Link encap:Ethernet  HWaddr 00:0C:29:12:C5:F0
 [root@corehub-003 zookeeper]#
 ```
 ######  ⚠️⚠️**`为了大家在第四步避免入坑,以当前三台虚拟机为例,需在windows系统中映射对应IP地址与主机名`**⚠️⚠️
-![Alt text](./start_004.jpg)
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/zookeeper/start_004.jpg)
 
 ```
 #### Copy Addr ####
@@ -517,7 +517,7 @@ C:\Windows\System32\drivers\etc
 ```
 
 ##### 4.创建zookeeper客户端并RunTest,回调返回结果集
-```
+``` java
 package com.geekparkhub.zookeeper;
 
 import org.apache.log4j.Logger;
@@ -573,7 +573,7 @@ public class ZookeeperTest {
 }
 ```
 ###### ✅✅如图所示:证明客户端与zookeeper服务端连接成功,并回调参数打印对应结果集✅✅
-![Alt text](./start_005.jpg)
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/zookeeper/start_005.jpg)
 
 
 ### 创建子节点
@@ -667,7 +667,7 @@ Mode: follower
 [root@corehub-003 zookeeper]#
 ```
 #### 创建子节点方法并RunTest,返回结果集
-```
+``` java
 package com.geekparkhub.zookeeper;
 
 import org.apache.log4j.Logger;
@@ -744,7 +744,7 @@ public class ZookeeperTest {
 }
 ```
 ##### ✅✅如图所示:证明子节点方法与zookeeper服务端连接成功,并创建子节点,将数据写入节点中,打印结果集✅✅
-![Alt text](./start_006.jpg)
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/zookeeper/start_006.jpg)
 
 ##### 在linux中开启 zookeeper客户端 
 ```
@@ -777,11 +777,11 @@ numChildren = 0
 
 ### 获取子节点并监听节点变化
 #### 🤣🤣 有趣好玩的地方开始了 实时监听节点变化🤣🤣
-![Alt text](./start_007.jpg)
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/zookeeper/start_007.jpg)
 
 
 #### 1.创建getChildren方法,RunTest,实时监听节点变化
-```
+``` java
 package com.geekparkhub.zookeeper;
 
 import org.apache.log4j.Logger;
@@ -915,10 +915,10 @@ Created /geekparks
 
 ### 判断Zonde是否存在
 #### 效果如图所示
-![Alt text](./start_008.jpg)
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/zookeeper/start_008.jpg)
 
 ##### 创建exists方法,RunTest,查询/geek节点与数据是否存在
-```
+``` java
 package com.geekparkhub.zookeeper;
 
 import org.apache.log4j.Logger;
@@ -1053,11 +1053,11 @@ public class ZookeeperTest {
 }
 ```
 
-##  监听服务器节点动态
+## 11. 监听服务器节点动态
 ### 1.监听服务器节点动态 需求分析
 > 在分布式系统中,主节点可以有多台,可以动态上下线,任意一台客户端都有可以实时感知到主节点服务器上下线
 > 
-> ![Alt text](./start_009.jpg)
+> ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/zookeeper/start_009.jpg)
 
 ### 2.Create Zookeeper 客户端节点
 ```
@@ -1069,9 +1069,9 @@ Created /servers
 ```
 
 ### 3.Create 监听节点服务端 Class
-![Alt text](./start_010.jpg)
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/zookeeper/start_010.jpg)
 
-```
+``` java
 package com.geekparkhub.zookeeper;
 
 import org.apache.log4j.Logger;
@@ -1171,8 +1171,9 @@ public class DistributeServer {
 ```
 
 ### 4.Create 监听节点客户端 Class
-![Alt text](./start_011.jpg)
-```
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/zookeeper/start_011.jpg)
+
+``` java
 package com.geekparkhub.zookeeper;
 
 import org.apache.log4j.Logger;
@@ -1297,8 +1298,8 @@ public class DistributeClient {
 ```
 
 
-## 修仙之道 登峰造极 技术架构迭代扩展图 
-![Alt text](./Technical_Framework_v0.0.5.png)
+## 12. 修仙之道 技术架构迭代 登峰造极之势
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
 
 -----
