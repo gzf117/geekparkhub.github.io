@@ -4,7 +4,7 @@
 @(2019-01-14)[Docs Language:简体中文 & English|Programing Language:Shell|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg)|GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub)]
 
 
-![Alt text](./nopic.jpg)
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/shell/shell.jpg)
 
 - **极客实验室是极客国际公园旗下为未来而构建的极客社区;**
 - **我们正在构建一个活跃的小众社区,汇聚众多优秀开发者与设计师;**
@@ -21,24 +21,24 @@
 [TOC]
 
 
-## shell 简介
+## 1. shell 简介
 
 > Shell脚本(英语：Shell script),又称Shell命令稿、程序化脚本,是一种计算机程序使用的文本文件,内容由一连串的shell命令组成,经由Unix Shell直译其内容后运作,被当成是一种脚本语言来设计,其运作方式与解释型语言相当,由Unix shell扮演命令行解释器的角色,在读取shell脚本之后,依序运行其中的shell命令,之后输出结果,利用shell脚本可以进行系统管理,文件操作等.在Unix及所有的类Unix系统中,如Linux、FreeBSD等操作系统,都存在shell脚本,依照Unix shell的各种不同类型,shell脚本也有各种不同方言,在DOS、OS/2、Microsoft Windows中的批处理文件,跟shell脚本有类似的功能 .   —— [维基百科](https://zh.wikipedia.org/wiki/Shell%E8%84%9A%E6%9C%AC)
 
-## shell 编程概述
+## 2. shell 编程概述
 > linux运维工程师在进行服务器集群管理时,需要编写shell程序来进行服务器管理
 > 对java和python开发者来说,工作的需要,可能会编写shell脚本进行程序或者服务器维护
 > 比如编写一个定时备份数据库的脚本,对于大数据开发者来说,需要编写shell程序来管理集群
 
-## shell 工作原理 
+## 3. shell 工作原理 
 > 外层应用程序调用shell,shell调用linux内核,linux内核调用驱动硬件
 
-## shell 既是命令解释器
+## 4. shell 既是命令解释器
 > 它为用户提供一个向linux内核发送请求以便运行程序的界面系统程序,用户可以使用
 > Shell是一个命令行解释器,它接收应用从程序/用户命令,然后调用操作系统内核
 > shell启动/挂起/停止/甚是编写一些程序
 
-## shell 快速入门
+## 5. shell 快速入门
 ### shell 脚本执行方式 & 脚本格式要求
 脚本以**`#!/bin/bash`** 开头
 脚本需要有(x)可执行权限
@@ -73,7 +73,7 @@ sh ./ .sh
 不用赋予脚本权限,直接执行即可
 ```
 
-## shell 变量
+## 6. shell 变量
 ### linux shell变量分为 系统变量和用户自定义变量
 系统变量 **`$HOME`** **`$PWD`** **`$SHELL`** **`$USER`**等等
 比如**`echo $HOME`**等等
@@ -181,7 +181,7 @@ echo "最后的进程号=$!"
 echo "执行值 0为正确 非0不正确 =$?"
 ```
 
-## shell 运算符
+## 7. shell 运算符
 > 学习如何在shell中进行各种运算操作
 ### 基本语法
 1.**`$((运算式)) 或 $[运算式]`**
@@ -209,7 +209,7 @@ NUMBERTOW=20
 SUM=$[$1+$2]
 echo "sum=$SUM"
 ```
-## shell 条件判断
+## 8. shell 条件判断
 ### 判断语句
 **`[ condition ] (注意condition前后要有空格)`**
 非空返回true,可使用**`$?`**验证 (0为true,1>为false)
@@ -256,7 +256,7 @@ then
 fi
 ```
 
-## shell 流程控制
+## 9. shell 流程控制
 ### 流程控制 基本语法
 ```
 if 判断
@@ -313,7 +313,7 @@ Congratulations on your passing grades!
 I'm sorry, but I failed.
 ```
 
-## case语句
+## 10. case语句
 ### 基本语法
 ```
 case $变量名 in
@@ -342,7 +342,7 @@ echo "Other"
 esac
 ```
 
-## for循环
+## 11. for循环
 ### 基本语法1
 ```
 for 变量  in 值1 值2 值3...
@@ -386,7 +386,7 @@ done
     echo "sum=$SUM"
 ```
 
-## while循环
+## 12. while循环
 ### 基本语法
 ```
 while [ 条件判断式 ]
@@ -408,7 +408,7 @@ done
 echo "sum=$SUM"
 ```
 
-## read读取控制台输入
+## 13. read读取控制台输入
 ### 基本语句
 ```
 read 选择 参数
@@ -427,7 +427,7 @@ echo "当前输入的Num=$NUMBER"
 read -p "请在10秒内输入一个NUM：" -t 10 NUMBER
 echo "当前输入的Num=$NUMBER"
 ```
-## shell 函数
+## 14. shell 函数
 ### 函数介绍
 > shell编程和其他编程语言一样,有系统函数,也可以自定义函数
 ### 系统函数
@@ -476,7 +476,7 @@ read -p "请输入第二个数N2：" n2
 getSum $n1 $n2
 ```
 
-## shell 综合案例
+## 15. shell 综合案例
 ### 案例要求
 > 1.每天凌晨两点十分备份数据库
 > 2.备份开始和备份结束能够给出相应提示信息
@@ -516,8 +516,8 @@ echo "+++++ Data Backup Successful !!! +++++"
 
 
 
-## 修仙之道 登峰造极 技术架构迭代扩展图 
-![Alt text](./Technical_Framework_v0.0.5.png)
+## 16. 修仙之道 技术架构迭代 登峰造极之势
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
 
 -----
