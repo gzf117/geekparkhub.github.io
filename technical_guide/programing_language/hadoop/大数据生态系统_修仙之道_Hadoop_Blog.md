@@ -1237,9 +1237,252 @@ starting historyserver, logging to /opt/module/hadoop/logs/mapred-root-historyse
 > 日志聚集功能优势:可以方便查看程序运行详情,方便开发调试.
 > 注意:开启日志聚集功能,需要**`重新启动NodeManager,ResourceManager,HistoryManager此三项服务`**.
 
+##### 分别停止HistoryManager服务,NodeManager服务,ResourceManager服务
+
+###### 停止HistoryManager服务
+```
+[root@corehub-001 hadoop]# sbin/mr-jobhistory-daemon.sh stop historyserver
+stopping historyserver
+[root@corehub-001 hadoop]# jps
+40769 NodeManager
+39653 ResourceManager
+94488 Jps
+9353 DataNode
+9066 NameNode
+[root@corehub-001 hadoop]# 
+```
+###### 停止NodeManager服务
+```
+[root@corehub-001 hadoop]# sbin/yarn-daemon.sh stop nodemanager
+stopping nodemanager
+[root@corehub-001 hadoop]# jps
+39653 ResourceManager
+9353 DataNode
+9066 NameNode
+96078 Jps
+[root@corehub-001 hadoop]# 
+```
+###### 停止ResourceManager服务
+```
+[root@corehub-001 hadoop]# sbin/yarn-daemon.sh stop resourcemanager
+stopping resourcemanager
+[root@corehub-001 hadoop]# jps
+98388 Jps
+9353 DataNode
+9066 NameNode
+[root@corehub-001 hadoop]# 
+```
+##### 配置yarn-site.xml
+```
+[root@corehub-001 hadoop]# vim etc/hadoop/yarn-site.xml
+```
+```
+<?xml version="1.0"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+<configuration>
+<!-- Site specific YARN configuration properties -->
+<!-- Reducer获取数据方式 -->
+    <property>
+      <name>yarn.nodemanager.aux-services</name>
+      <value>mapreduce_shuffle</value>
+    </property>
+<!-- 指定Yarn的ResourceManager地址-->
+    <property>
+      <name>yarn.resourcemanager.hostname</name>
+      <value>corehub-001</value>
+    </property>
+<!-- 日志聚集功能使用 -->
+    <property>
+      <name>yarn.log-aggregation-enable</name>
+      <value>true</value>
+    </property>
+<!-- 日志保留时间设置为7天 根据开发情况,时间可自定义-->
+<!-- 一天=3600秒 3600*24*7=604800 -->
+    <property>
+      <name>yarn.log-aggregation.retain-seconds</name>
+      <value>604800</value>
+    </property>
+</configuration>
+```
+##### 分别开启HistoryManager服务,NodeManager服务,ResourceManager服务
+###### 开启ResourceManager服务
+```
+[root@corehub-001 hadoop]# sbin/yarn-daemon.sh start resourcemanager
+starting resourcemanager, logging to /opt/module/hadoop/logs/yarn-root-resourcemanager-corehub-001.out
+[root@corehub-001 hadoop]# jps
+113380 ResourceManager
+113463 Jps
+9353 DataNode
+9066 NameNode
+[root@corehub-001 hadoop]#
+```
+###### 开启NodeManager服务
+```
+[root@corehub-001 hadoop]# sbin/yarn-daemon.sh start nodemanager
+starting nodemanager, logging to /opt/module/hadoop/logs/yarn-root-nodemanager-corehub-001.out
+[root@corehub-001 hadoop]# jps
+114081 NodeManager
+113380 ResourceManager
+9353 DataNode
+9066 NameNode
+114159 Jps
+[root@corehub-001 hadoop]# 
+```
+###### 开启HistoryManager服务
+```
+[root@corehub-001 hadoop]# sbin/mr-jobhistory-daemon.sh start historyserver
+starting historyserver, logging to /opt/module/hadoop/logs/mapred-root-historyserver-corehub-001.out
+[root@corehub-001 hadoop]# jps
+114081 NodeManager
+115184 JobHistoryServer
+113380 ResourceManager
+9353 DataNode
+9066 NameNode
+115263 Jps
+[root@corehub-001 hadoop]# 
+```
+##### 删除HDFS上已经存在的输出目录
+```
+[root@corehub-001 hadoop]# bin/hdfs dfs -rm -r /user/geekparkhub/output
+19/01/27 22:26:57 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+19/01/27 22:26:58 INFO fs.TrashPolicyDefault: Namenode trash configuration: Deletion interval = 0 minutes, Emptier interval = 0 minutes.
+Deleted /user/geekparkhub/output
+[root@corehub-001 hadoop]# 
+```
+##### 执行WordCount程序
+```
+[root@corehub-001 hadoop]# hadoop jar share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.2.jar wordcount /user/geekparkhub/input /user/geekparkhub/output
+19/01/27 22:32:29 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+19/01/27 22:32:30 INFO client.RMProxy: Connecting to ResourceManager at corehub-001/192.168.177.130:8032
+19/01/27 22:32:33 INFO input.FileInputFormat: Total input paths to process : 1
+19/01/27 22:32:33 INFO mapreduce.JobSubmitter: number of splits:1
+19/01/27 22:32:34 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1548598949012_0001
+19/01/27 22:32:35 INFO impl.YarnClientImpl: Submitted application application_1548598949012_0001
+19/01/27 22:32:35 INFO mapreduce.Job: The url to track the job: http://corehub-001:8088/proxy/application_1548598949012_0001/
+19/01/27 22:32:35 INFO mapreduce.Job: Running job: job_1548598949012_0001
+19/01/27 22:33:14 INFO mapreduce.Job: Job job_1548598949012_0001 running in uber mode : false
+19/01/27 22:33:14 INFO mapreduce.Job:  map 0% reduce 0%
+19/01/27 22:33:23 INFO mapreduce.Job:  map 100% reduce 0%
+19/01/27 22:33:32 INFO mapreduce.Job:  map 100% reduce 100%
+19/01/27 22:33:33 INFO mapreduce.Job: Job job_1548598949012_0001 completed successfully
+19/01/27 22:33:34 INFO mapreduce.Job: Counters: 49
+        File System Counters
+                FILE: Number of bytes read=262
+                FILE: Number of bytes written=235459
+                FILE: Number of read operations=0
+                FILE: Number of large read operations=0
+                FILE: Number of write operations=0
+                HDFS: Number of bytes read=316
+                HDFS: Number of bytes written=184
+                HDFS: Number of read operations=6
+                HDFS: Number of large read operations=0
+                HDFS: Number of write operations=2
+        Job Counters 
+                Map-Reduce Framework
+                Map input records=24
+                Map output records=23
+                Map output bytes=285
+                Map output materialized bytes=262
+                Input split bytes=120
+                Combine input records=23
+                Combine output records=18
+                Reduce input groups=18
+                Reduce shuffle bytes=262
+                Reduce input records=18
+                Reduce output records=18
+                Spilled Records=36
+                Shuffled Maps =1
+                Failed Shuffles=0
+                Merged Map outputs=1
+                GC time elapsed (ms)=220
+                CPU time spent (ms)=2130
+                Physical memory (bytes) snapshot=399134720
+                Virtual memory (bytes) snapshot=4166119424
+                Total committed heap usage (bytes)=276824064
+        Shuffle Errors
+                BAD_ID=0
+                CONNECTION=0
+                IO_ERROR=0
+                WRONG_LENGTH=0
+                WRONG_MAP=0
+                WRONG_REDUCE=0
+        File Input Format Counters 
+                Bytes Read=196
+        File Output Format Counters 
+                Bytes Written=184
+```
+##### 查看日志
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_013.jpg)
+
+查看日志方式 也可以通过进入log文件夹进行查看
+```
+[root@corehub-001 hadoop]# ll
+total 76
+drwxr-xr-x. 2 10011 10011  4096 Jan 26  2016 bin
+drwxr-xr-x. 3 root  root   4096 Jan 27 18:47 data
+drwxr-xr-x. 3 10011 10011  4096 Jan 26  2016 etc
+drwxr-xr-x. 2 10011 10011  4096 Jan 26  2016 include
+drwxr-xr-x. 2 root  root   4096 Jan 24 22:28 input
+drwxr-xr-x. 3 10011 10011  4096 Jan 26  2016 lib
+drwxr-xr-x. 2 10011 10011  4096 Jan 26  2016 libexec
+-rw-r--r--. 1 10011 10011 15429 Jan 26  2016 LICENSE.txt
+drwxr-xr-x. 3 root  root   4096 Jan 27 22:23 logs
+-rw-r--r--. 1 10011 10011   101 Jan 26  2016 NOTICE.txt
+drwxr-xr-x. 2 root  root   4096 Jan 24 22:43 output
+-rw-r--r--. 1 10011 10011  1366 Jan 26  2016 README.txt
+drwxr-xr-x. 2 10011 10011  4096 Jan 26  2016 sbin
+drwxr-xr-x. 4 10011 10011  4096 Jan 26  2016 share
+drwxr-xr-x. 2 root  root   4096 Jan 24 23:48 wcinput
+drwxr-xr-x. 2 root  root   4096 Jan 24 23:34 wcoutput
+[root@corehub-001 hadoop]# ll logs/
+total 472
+-rw-r--r--. 1 root root  51669 Jan 27 22:36 hadoop-root-datanode-corehub-001.log
+-rw-r--r--. 1 root root    715 Jan 27 18:48 hadoop-root-datanode-corehub-001.out
+-rw-r--r--. 1 root root  59522 Jan 27 22:36 hadoop-root-namenode-corehub-001.log
+-rw-r--r--. 1 root root   4960 Jan 27 18:55 hadoop-root-namenode-corehub-001.out
+-rw-r--r--. 1 root root  53574 Jan 27 22:42 mapred-root-historyserver-corehub-001.log
+-rw-r--r--. 1 root root   1484 Jan 27 22:24 mapred-root-historyserver-corehub-001.out
+-rw-r--r--. 1 root root   1477 Jan 27 20:53 mapred-root-historyserver-corehub-001.out.1
+-rw-r--r--. 1 root root      0 Jan 27 18:47 SecurityAuth-root.audit
+drwxr-xr-x. 3 root root   4096 Jan 27 22:42 userlogs
+-rw-r--r--. 1 root root 126215 Jan 27 22:33 yarn-root-nodemanager-corehub-001.log
+-rw-r--r--. 1 root root   1515 Jan 27 22:23 yarn-root-nodemanager-corehub-001.out
+-rw-r--r--. 1 root root   1508 Jan 27 19:24 yarn-root-nodemanager-corehub-001.out.1
+-rw-r--r--. 1 root root 125846 Jan 27 22:38 yarn-root-resourcemanager-corehub-001.log
+-rw-r--r--. 1 root root   1531 Jan 27 22:22 yarn-root-resourcemanager-corehub-001.out
+-rw-r--r--. 1 root root   1524 Jan 27 19:23 yarn-root-resourcemanager-corehub-001.out.1
+[root@corehub-001 hadoop]# 
+```
+
 #### 配置文件说明
+> Hadoop 配置文件分为两类:默认配置文件和自定义配置文件,只有开发者想修改某一默认配置时,才需要修改自定义配置文件,更改相应属性值.
+##### 1.默认配置文件
+  
 
+| 要获取的默认文件 | 文件存放在Hadoop的jar包中的位置 | 常用配置信息
+| :-------- | --------:| --------:|
+| [core-default.xml]    | hadoop-common-2.7.2.jar/core-default.xml | NameNode属性和端口号,数据存储路径 |
+| [hdfs-default.xml]    | hadoop-hdfs-2.7.2.jar/hdfs-default.xml | 副本数 |
+| [yarn-default.xml]    | hadoop-yarn-common-2.7.2.jar/yarn-default.xml | ResourceManager&NodeManager属性 |
+| [mapred-default.xml]    | hadoop-mapred-client-core-2.7.2.jar/mapred-default.xml | 在Yarn运行程序,默认是在本机运行 |
 
+##### 2.自定义配置文
+> 四个配置文件存放在**`$HADOOP_HOME/etc/hadoop`**路径中,开发者可以根据项目需求重新进行修改配置
+> 
+> **`core-site.xml`** | **`hdfs-site.xml`**
+> **`yarn-site.xml`** | **`mapred-site.xml`**
 
 
 
