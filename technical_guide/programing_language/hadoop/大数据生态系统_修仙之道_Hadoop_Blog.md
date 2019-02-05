@@ -1485,22 +1485,1026 @@ drwxr-xr-x. 3 root root   4096 Jan 27 22:42 userlogs
 > **`yarn-site.xml`** | **`mapred-site.xml`**
 
 
-
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
 ###  🎉🎉 完全分布式 运行模式 (开发重点) 🎉🎉
-#### 虚拟机准备
-#### 编写集群分发脚本xsync
-#### 集群配置
-#### 集群单点启动
-#### SSH无密码配置
-#### 群起集群
-#### 集群启动/关闭方式总结
-#### 集群时间同步
+> 分析:准备三台服务器 (关闭防火墙,设置静态IP地址,主机名称)
+> 安装JavaJDK | 配置Java环境变量
+> 安装Hadoop | 配置hadoop环境变量
+> 配置集群 | 单点启动
+> 配置SSH | 群起并测试集群
 
+#### 虚拟机准备
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_005.jpg)
+
+##### scp(secure copy)安全拷贝
+> 1.scp定义
+> scp可以实现服务器与服务器之间的数据拷贝,(from server1 to server2)
+> 
+> 2.scp基本语法
+> **`scp     -r      $pdir/$fname`**            **`$user@corehub$host:$pdir/$fname`**
+> 指令    递归    源数据文件路径/名称                   目的用户名@主机名称:目的路径/名称
+> 
+> 3.scp实操案例
+> 在corehub-001上,将corehub-001中的/opt/module目录下的软件拷贝到corehub-002上
+```
+[root@corehub-001 ~]# cd /opt/
+[root@corehub-001 opt]# ll
+total 408824
+-rwxrw-rw-.  1 root root   9621331 Jan 13 17:36 apache-tomcat-8.5.33.tar.gz
+drwxr-xr-x.  8 uucp  143      4096 Dec 19  2017 jdk1.8.0_162
+-rwxrw-rw-.  1 root root 189815615 Jan 13 18:22 jdk-8u162-linux-x64.tar.gz
+drwxr-xr-x.  3 root root      4096 Jan 25 09:23 module
+drwxr-xr-x. 13 root root      4096 Jan 13 23:07 mysql
+-rwxrw-rw-.  1 root root 184122460 Jan 13 18:21 mysql-5.5.35-linux2.6-x86_64.tar.gz
+drwxr-xr-x.  2 root root      4096 Nov 22  2013 rh
+drwxr-xr-x.  2 root root      4096 Jan 25 09:20 software
+drwxr-xr-x.  9 root root      4096 Jan 13 23:06 tomcat
+drwxr-xr-x. 11 1001 1001      4096 Jan 17 22:48 zookeeper
+-rw-r--r--.  1 root root  35042811 Jan 17 17:11 zookeeper-3.4.10.tar.gz
+[root@corehub-001 opt]# scp -r module/ root@corehub-002:/opt/module/
+The authenticity of host 'corehub-002 (192.168.152.135)' can't be established.
+RSA key fingerprint is 63:9d:81:a7:3d:83:7f:04:19:32:8f:c8:97:9d:07:d8.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'corehub-002,192.168.152.135' (RSA) to the list of known hosts.
+root@corehub-002's password:
+hdfs-config.sh                                                                      100% 1427     1.4KB/s   00:00    
+mapred-config.sh                                                                    100% 2223     2.2KB/s   00:00    
+httpfs-config.sh                                                                    100% 5749     5.6KB/s   00:00    
+mapred-config.cmd                                                                   100% 1640     1.6KB/s   00:00    
+yarn-config.cmd                                                                     100% 2131     2.1KB/s   00:00    
+kms-config.sh                                                                       100% 5431     5.3KB/s   00:00    
+yarn-config.sh                                                                      100% 2134     2.1KB/s   00:00    
+hadoop-config.cmd                                                                   100% 8270     8.1KB/s   00:00    
+[root@corehub-001 opt]#
+```
+> 数据已从corehub-001服务器同步推送到corehub-002服务器
+```
+[root@corehub-002 ~]# cd /opt/
+[root@corehub-002 opt]# ll
+total 408824
+-rwxrw-rw-.  1 root root   9621331 Jan 13 17:36 apache-tomcat-8.5.33.tar.gz
+drwxr-xr-x.  8 uucp  143      4096 Dec 19  2017 jdk1.8.0_162
+-rwxrw-rw-.  1 root root 189815615 Jan 13 18:22 jdk-8u162-linux-x64.tar.gz
+drwxr-xr-x.  4 root root      4096 Jan 29 06:08 module
+drwxr-xr-x. 13 root root      4096 Jan 13 23:07 mysql
+-rwxrw-rw-.  1 root root 184122460 Jan 13 18:21 mysql-5.5.35-linux2.6-x86_64.tar.gz
+drwxr-xr-x.  2 root root      4096 Nov 22  2013 rh
+drwxr-xr-x.  2 root root      4096 Jan 25 10:20 software
+drwxr-xr-x.  9 root root      4096 Jan 13 23:06 tomcat
+drwxr-xr-x. 11 1001 1001      4096 Jan 19 18:51 zookeeper
+-rw-r--r--.  1 root root  35042811 Jan 17 17:11 zookeeper-3.4.10.tar.gz
+[root@corehub-002 opt]# cd module/
+[root@corehub-002 module]# ll
+total 4
+drwxr-xr-x. 15 root root 4096 Jan 29 06:09 hadoop
+[root@corehub-002 module]# 
+```
+
+> 在corehub-003服务器上,拉取corehub-001服务器上数据
+```
+[root@corehub-003 ~]# scp -r root@corehub-001:/opt/module /opt
+root@corehub-001's password: 
+hadoop-policy.xml                                                                   100% 9683     9.5KB/s   00:00    
+yarn-site.xml                                                                       100%  690     0.7KB/s   00:00    
+hdfs-site.xml                                                                       100%  775     0.8KB/s   00:00    
+core-site.xml                                                                       100%  774     0.8KB/s   00:00    
+httpfs-site.xml                                                                     100%  620     0.6KB/s   00:00    
+capacity-scheduler.xml
+mapred-config.cmd                                                                   100% 1640     1.6KB/s   00:00    
+yarn-config.cmd                                                                     100% 2131     2.1KB/s   00:00    
+kms-config.sh                                                                       100% 5431     5.3KB/s   00:00    
+yarn-config.sh                                                                      100% 2134     2.1KB/s   00:00    
+hadoop-config.cmd                                                                   100% 8270     8.1KB/s   00:00    
+[root@corehub-003 ~]# 
+```
+> 4. 将corehub-001配置文件分发推送到corehub-002,corehub-003服务器上,推送完毕后更新配置即可生效
+```
+[root@corehub-001 ~]# scp -r /etc/profile root@corehub-002:/etc/profile
+root@corehub-002's password: 
+profile                                                                             100% 2073     2.0KB/s   00:00    
+[root@corehub-001 ~]# 
+```
+```
+[root@corehub-001 ~]# scp -r /etc/profile root@corehub-003:/etc/profile
+The authenticity of host 'corehub-003 (192.168.152.136)' can't be established.
+RSA key fingerprint is 63:9d:81:a7:3d:83:7f:04:19:32:8f:c8:97:9d:07:d8.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'corehub-003,192.168.152.136' (RSA) to the list of known hosts.
+root@corehub-003's password: 
+profile                                                                             100% 2073     2.0KB/s   00:00    
+[root@corehub-001 ~]# 
+```
+```
+source /etc/profile
+```
+
+##### rsync 远程同步工具
+> rsync主要用于备份和镜像,具有速度快,避免复制相同内容和支持符号链接的优点.
+> rsync与scp区别:用rsync做文件的复制要比scp速度快,rsync只对差异文件做更新,scp是把所有文件复制的过程.
+> 
+
+
+基本语法
+**`rsync -rVl $pdir$fname $user@corehub$host:$pdir/$fname`**
+指令    选项参数 源文件路径/名称  目的用户名@主机名称:目的路径/名称
+
+| 选项      |     功能 |
+| :-------- | --------:|
+| -r    |   递归 |
+| -v    |   显示复制过程 |
+| -l    |   拷贝符号连接 |
+
+rsync实操案例
+> 将corehub-001服务器上的/opt/software目录同步到corehub-002服务器的root用户目录下
+```
+[root@corehub-001 ~]# rsync -rvl /opt/software/ root@corehub-002:/opt/software/
+root@corehub-002's password: 
+sending incremental file list
+created directory /opt/software
+./
+hadoop-2.7.2.tar.gz
+sent 212072761 bytes  received 34 bytes  12852896.67 bytes/sec
+total size is 212046774  speedup is 1.00
+[root@corehub-001 ~]# 
+```
+
+#### 编写集群分发脚本xsync
+> 需求:循环复制文件到所有节点的相同目录下
+
+需求分析:
+rsync指令 原始拷贝
+rsync -rvl /opt/module root@corehub-002:/opt/
+期望脚本:将sxync要要同步的文件名称
+说明:在/home/geek-developer/bin/此目录下存放脚本,geek-developer用户可以在系统任何地方直接执行
+
+脚本实现
+> 创建bin目录 mkdir bin
+> ```
+> [root@corehub-001 ~]# mkdir bin
+> [root@corehub-001 ~]# ll
+> total 100
+> -rw-------. 1 root root  3362 Jan 18 04:54 anaconda-ks.cfg
+> drwxr-xr-x. 2 root root  4096 Jan 30 18:00 bin
+> drwxr-xr-x. 2 root root  4096 Jan 24 19:40 Desktop
+> drwxr-xr-x. 2 root root  4096 Jan 18 05:51 Documents
+> drwxr-xr-x. 2 root root  4096 Jan 18 05:51 Downloads
+> -rw-r--r--. 1 root root 41364 Jan 18 04:54 install.log
+> -rw-r--r--. 1 root root  9154 Jan 18 04:52 install.log.syslog
+> drwxr-xr-x. 2 root root  4096 Jan 18 05:51 Music
+> drwxr-xr-x. 2 root root  4096 Jan 18 05:51 Pictures
+> drwxr-xr-x. 2 root root  4096 Jan 18 05:51 Public
+> drwxr-xr-x. 2 root root  4096 Jan 18 05:51 Templates
+> drwxr-xr-x. 2 root root  4096 Jan 18 05:51 Videos
+> [root@corehub-001 ~]#
+> ```
+
+> 进入bin目录 cd bin/
+> ```
+> [root@corehub-001 ~]# cd bin/
+> [root@corehub-001 bin]# ll
+> total 0
+> [root@corehub-001 bin]# 
+> ```
+
+> 创建xsync文件 touch xsync
+> ```
+> [root@corehub-001 bin]# touch xsync
+> [root@corehub-001 bin]# ll
+> total 0
+> -rw-r--r--. 1 root root 0 Jan 30 18:05 xsync
+> [root@corehub-001 bin]# 
+> ```
+
+> 编辑xsync vim xsync
+> ```
+> #!/bin/bash
+> # 1.获取输入参数个数,如果没有参数,直接退出
+> pcount=$#
+> if((pcount==0)); then
+> echo no args;
+> exit
+> fi
+> 
+> # 2.获取文件名称
+> p1=$1
+> fname=`basename $p1`
+> echo fname=$fname
+> 
+> # 3.获取上级目录到据对路径
+> pdri=`cd -P $(dirname $p1); pwd`
+> echo pdir=$pdri
+> 
+> # 4.获取当前用户名称
+> user=`whoami`
+> 
+> # 5.循环遍历
+> for((host=103;host<105;host++)); do
+> echo -------corehub$host-------
+> rsync -rvl $pdir/$fname $user@corehub$host:$pdri
+> done
+> ```
+
+
+
+
+
+#### 集群配置
+1.集群部署规划
+
+| linux服务器 | corehub-001 | corehub-002 | corehub-003 |
+| :-------- | --------:| :------: | :------: |
+| HDFS    | NameNode,DataNode | DataNode | SecondaryNameNode,DataNode |
+| YARN    | NodeManager |  ResourceManager,NodeManager  | NodeManager |
+
+
+2.配置集群
+配置core-site.xml
+```
+[root@corehub-001 hadoop]# vim etc/hadoop/core-site.xml
+```
+在该文件中编写如下配置
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+<!-- Put site-specific property overrides in this file. -->
+<configuration>
+<!-- 指定HDFS中的NameNode地址 -->
+  <property>
+    <name>fs.defaultFS</name>
+    <value>hdfs://corehub-001:9000</value>
+  </property>
+<!-- 指定Hadoop运行时产生文件的存储目录 -->
+   <property>
+     <name>hadoop.tmp.dir</name>
+     <value>/opt/module/hadoop/data/tmp</value>
+   </property>
+</configuration>
+```
+HDFS配置文件
+配置hadoop-env.sh
+```
+[root@corehub-001 hadoop]# vim etc/hadoop/hadoop-env.sh
+```
+``` bash
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Set Hadoop-specific environment variables here.
+
+# The only required environment variable is JAVA_HOME.  All others are
+# optional.  When running a distributed configuration it is best to
+# set JAVA_HOME in this file, so that it is correctly defined on
+# remote nodes.
+# The java implementation to use.
+export JAVA_HOME=/opt/devtool/jdk1.8.0_162
+```
+配置hdfs-site.xml
+```
+[root@corehub-001 hadoop]# vim etc/hadoop/hdfs-site.xml
+```
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+<!-- Put site-specific property overrides in this file. -->
+<configuration>
+<!-- 指定HDFS副本数量 -->
+  <property>
+   <name>dfs.replication</name>
+     <value>3</value>
+  </property>
+  <!-- 指定Hadoop辅助名称节点主机配置 -->
+  <property>
+   <name>dfs.namenode.secondary.http-address</name>
+     <value>corehub-003:50090</value>
+  </property>
+</configuration>
+```
+YARN配置文件
+配置yarn-env.sh
+```
+[root@corehub-001 hadoop]# vim etc/hadoop/yarn-env.sh
+```
+```
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# User for YARN daemons
+export HADOOP_YARN_USER=${HADOOP_YARN_USER:-yarn}
+
+# resolve links - $0 may be a softlink
+export YARN_CONF_DIR="${YARN_CONF_DIR:-$HADOOP_YARN_HOME/conf}"
+
+# some Java parameters
+export JAVA_HOME=/opt/devtool/jdk1.8.0_162
+```
+配置yarn-site.xml
+在该文件中编写如下配置
+``` xml
+<?xml version="1.0"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+<configuration>
+<!-- Site specific YARN configuration properties -->
+<!-- Reducer获取数据方式 -->
+    <property>
+      <name>yarn.nodemanager.aux-services</name>
+      <value>mapreduce_shuffle</value>
+    </property>
+<!-- 指定Yarn的ResourceManager地址-->
+    <property>
+      <name>yarn.resourcemanager.hostname</name>
+      <value>corehub-002</value>
+    </property>
+</configuration>
+```
+
+MapReduce配置文件
+配置mapred-env.sh
+```
+[root@corehub-001 hadoop]# vim etc/hadoop/mapred-env.sh
+```
+
+```
+[root@corehub-001 hadoop]# vim etc/hadoop/yarn-site.xml
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+export JAVA_HOME=/opt/devtool/jdk1.8.0_16
+```
+配置mapred-site.xml
+在该文件中编写如下配置
+```
+[root@corehub-001 hadoop]# vim etc/hadoop/mapred-site.xml
+```
+``` xml
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. See accompanying LICENSE file.
+-->
+<!-- Put site-specific property overrides in this file. -->
+<configuration>
+<!-- 指定MR运行在Yarn上 -->
+    <property>
+      <name>mapreduce.framework.name</name>
+      <value>yarn</value>
+    </property>
+</configuration>
+```
+分别删除001,002,003号服务器上的 log,data文件
+删除前提,先保证没有jps在运行中,否则会导致悲剧发生
+删除001号服务器
+```
+[root@corehub-001 hadoop]# rm -rf data/ logs/
+[root@corehub-001 hadoop]# ll
+total 68
+drwxr-xr-x. 2 10011 10011  4096 Jan 26  2016 bin
+drwxr-xr-x. 3 10011 10011  4096 Jan 26  2016 etc
+drwxr-xr-x. 2 10011 10011  4096 Jan 26  2016 include
+drwxr-xr-x. 2 root  root   4096 Jan 24 22:28 input
+drwxr-xr-x. 3 10011 10011  4096 Jan 26  2016 lib
+drwxr-xr-x. 2 10011 10011  4096 Jan 26  2016 libexec
+-rw-r--r--. 1 10011 10011 15429 Jan 26  2016 LICENSE.txt
+-rw-r--r--. 1 10011 10011   101 Jan 26  2016 NOTICE.txt
+drwxr-xr-x. 2 root  root   4096 Jan 24 22:43 output
+-rw-r--r--. 1 10011 10011  1366 Jan 26  2016 README.txt
+drwxr-xr-x. 2 10011 10011  4096 Jan 26  2016 sbin
+drwxr-xr-x. 4 10011 10011  4096 Jan 26  2016 share
+drwxr-xr-x. 2 root  root   4096 Jan 24 23:48 wcinput
+drwxr-xr-x. 2 root  root   4096 Jan 24 23:34 wcoutput
+[root@corehub-001 hadoop]#
+```
+删除002号服务器
+```
+[root@corehub-002 hadoop]# rm -rf data/ logs/
+[root@corehub-002 hadoop]# ll
+total 68
+drwxr-xr-x. 2 root root  4096 Jan 31 13:34 bin
+drwxr-xr-x. 3 root root  4096 Jan 31 13:33 etc
+drwxr-xr-x. 2 root root  4096 Jan 31 13:34 include
+drwxr-xr-x. 2 root root  4096 Jan 31 13:34 input
+drwxr-xr-x. 3 root root  4096 Jan 31 13:34 lib
+drwxr-xr-x. 2 root root  4096 Jan 31 13:33 libexec
+-rw-r--r--. 1 root root 15429 Jan 31 13:33 LICENSE.txt
+-rw-r--r--. 1 root root   101 Jan 31 13:34 NOTICE.txt
+drwxr-xr-x. 2 root root  4096 Jan 31 13:34 output
+-rw-r--r--. 1 root root  1366 Jan 31 13:33 README.txt
+drwxr-xr-x. 2 root root  4096 Jan 31 13:33 sbin
+drwxr-xr-x. 4 root root  4096 Jan 31 13:34 share
+drwxr-xr-x. 2 root root  4096 Jan 31 13:34 wcinput
+drwxr-xr-x. 2 root root  4096 Jan 31 13:34 wcoutput
+[root@corehub-002 hadoop]# 
+
+```
+删除003号服务器
+```
+[root@corehub-003 hadoop]# rm -rf data/ logs/
+[root@corehub-003 hadoop]# ll
+total 68
+drwxr-xr-x. 2 root root  4096 Jan 31 13:37 bin
+drwxr-xr-x. 3 root root  4096 Jan 31 13:37 etc
+drwxr-xr-x. 2 root root  4096 Jan 31 13:37 include
+drwxr-xr-x. 2 root root  4096 Jan 31 13:37 input
+drwxr-xr-x. 3 root root  4096 Jan 31 13:37 lib
+drwxr-xr-x. 2 root root  4096 Jan 31 13:37 libexec
+-rw-r--r--. 1 root root 15429 Jan 31 13:37 LICENSE.txt
+-rw-r--r--. 1 root root   101 Jan 31 13:37 NOTICE.txt
+drwxr-xr-x. 2 root root  4096 Jan 31 13:37 output
+-rw-r--r--. 1 root root  1366 Jan 31 13:37 README.txt
+drwxr-xr-x. 2 root root  4096 Jan 31 13:37 sbin
+drwxr-xr-x. 4 root root  4096 Jan 31 13:37 share
+drwxr-xr-x. 2 root root  4096 Jan 31 13:37 wcinput
+drwxr-xr-x. 2 root root  4096 Jan 31 13:37 wcoutput
+[root@corehub-003 hadoop]# 
+```
+最后 格式化 001服务器数据
+```
+[root@corehub-001 hadoop]# bin/hdfs namenode -format
+/************************************************************
+STARTUP_MSG: Starting NameNode
+STARTUP_MSG:   host = corehub-001/192.168.177.130
+STARTUP_MSG:   args = [-format]
+STARTUP_MSG:   version = 2.7.2
+STARTUP_MSG:   classpath = /opt/module/hadoop/etc/hadoop:/opt/module/hadoop/share/hadoop/common/lib/jersey-server-1.9.jar:/opt/module/hadoop/share/hadoop/common/lib/servlet-api-2.5.jar:/opt/module/hadoop/share/hadoop/common/lib/commons-lang-2.6.jar:/opt/module/hadoop/share/hadoop/common/lib/commons-math3-3.1.1.jar:/opt/module/hadoop/share/hadoop/common/lib/java-xmlbuilder-0.4.jar:/opt/module/hadoop/share/hadoop/common/lib/xmlenc-0.52.jar:/opt/module/hadoop/share/hadoop/common/lib/commons-compress-1.4.1.jar:/opt/module/hadoop/share/hadoop/common/lib/jackson-mapper-asl-1.9.13.jar
+19/01/31 13:49:10 INFO common.Storage: Storage directory /opt/module/hadoop/data/tmp/dfs/name has been successfully formatted.
+19/01/31 13:49:10 INFO namenode.NNStorageRetentionManager: Going to retain 1 images with txid >= 0
+19/01/31 13:49:10 INFO util.ExitUtil: Exiting with status 0
+19/01/31 13:49:10 INFO namenode.NameNode: SHUTDOWN_MSG: 
+/************************************************************
+SHUTDOWN_MSG: Shutting down NameNode at corehub-001/192.168.177.130
+************************************************************/
+```
+
+
+
+#### 集群单点启动
+启动001号服务
+```
+[root@corehub-001 hadoop]# sbin/hadoop-daemon.sh start namenode
+starting namenode, logging to /opt/module/hadoop/logs/hadoop-root-namenode-corehub-001.out
+[root@corehub-001 hadoop]# jps
+94401 NameNode
+94539 Jps
+[root@corehub-001 hadoop]# sbin/hadoop-daemon.sh start datanode
+starting datanode, logging to /opt/module/hadoop/logs/hadoop-root-datanode-corehub-001.out
+[root@corehub-001 hadoop]# jps
+94401 NameNode
+94789 DataNode
+95017 Jps
+[root@corehub-001 hadoop]# 
+```
+启动002号服务
+```
+[root@corehub-002 hadoop]# sbin/hadoop-daemon.sh start datanode
+starting datanode, logging to /opt/module/hadoop/logs/hadoop-root-datanode-corehub-002.out
+[root@corehub-002 hadoop]# jps
+63289 DataNode
+63405 Jps
+[root@corehub-002 hadoop]# 
+```
+启动003号服务
+```
+[root@corehub-003 hadoop]# sbin/hadoop-daemon.sh start datanode
+starting datanode, logging to /opt/module/hadoop/logs/hadoop-root-datanode-corehub-003.out
+[root@corehub-003 hadoop]# jps
+67184 DataNode
+67332 Jps
+[root@corehub-003 hadoop]# 
+```
+
+#### SSH无密码配置
+SSH有密码演示
+```
+[root@corehub-001 ~]# ssh corehub-002
+root@corehub-002's password: 
+Last login: Thu Jan 31 14:22:32 2019 from 192.168.177.2
+[root@corehub-002 ~]# hostname
+corehub-002
+[root@corehub-002 ~]# exit
+logout
+Connection to corehub-002 closed.
+[root@corehub-001 ~]# 
+```
+免登录原理
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_014.jpg)
+
+ls -al指令 grep指令查找到.ssh文件
+```
+[root@corehub-001 ~]# ls -al | grep .ssh
+drwx------.  2 root root  4096 Jan 31 13:24 .ssh
+[root@corehub-001 ~]# 
+```
+cd进入.ssh目录,创建公钥私钥,输入指令后连续输入三次回车即可完成创建
+``` bash
+[root@corehub-001 .ssh]# ssh-keygen -t rsa
+Generating public/private rsa key pair.
+Enter file in which to save the key (/root/.ssh/id_rsa): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /root/.ssh/id_rsa.
+Your public key has been saved in /root/.ssh/id_rsa.pub.
+The key fingerprint is:
+42:52:6e:8d:a2:3b:55:fb:d8:bf:dd:d1:de:d4:c3:21 root@corehub-001
+The key's randomart image is:
++--[ RSA 2048]----+
+|      .          |
+|     o o         |
+|    o * .        |
+|   . * .         |
+|  . . o S    E . |
+|   o   =      o.o|
+|  o   . o     .o+|
+|   .     . . . +o|
+|          o.. . o|
++-----------------+
+[root@corehub-001 .ssh]# ll
+total 12
+-rw-------. 1 root root 1675 Jan 31 14:42 id_rsa
+-rw-r--r--. 1 root root  398 Jan 31 14:42 id_rsa.pub
+-rw-r--r--. 1 root root  409 Jan 31 13:24 known_hosts
+[root@corehub-001 .ssh]# 
+```
+将001号服务器公钥拷贝到自身服务器
+```
+[root@corehub-001 ~]# ssh corehub-001
+The authenticity of host 'corehub-001 (192.168.177.130)' can't be established.
+RSA key fingerprint is 99:b3:c1:16:af:d9:de:79:5f:cf:53:25:63:f1:30:1d.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'corehub-001,192.168.177.130' (RSA) to the list of known hosts.
+root@corehub-001's password: 
+Last login: Thu Jan 31 14:22:12 2019 from 192.168.177.2
+[root@corehub-001 ~]# 
+```
+将001号服务器公钥拷贝到002服务器
+```
+[root@corehub-001 .ssh]# ssh-copy-id corehub-002
+root@corehub-002's password: 
+Now try logging into the machine, with "ssh 'corehub-002'", and check in:
+  .ssh/authorized_keys
+to make sure we haven't added extra keys that you weren't expecting.
+[root@corehub-001 .ssh]# 
+```
+将001号服务器公钥拷贝到003服务器
+```
+[root@corehub-001 .ssh]# ssh-copy-id corehub-003
+The authenticity of host 'corehub-003 (192.168.177.132)' can't be established.
+RSA key fingerprint is 99:b3:c1:16:af:d9:de:79:5f:cf:53:25:63:f1:30:1d.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added 'corehub-003,192.168.177.132' (RSA) to the list of known hosts.
+root@corehub-003's password: 
+Now try logging into the machine, with "ssh 'corehub-003'", and check in:
+  .ssh/authorized_keys
+to make sure we haven't added extra keys that you weren't expecting.
+[root@corehub-001 .ssh]# 
+```
+拷贝完毕,测试是否可以免登录
+免登录002服务器
+```
+[root@corehub-001 ~]# ssh corehub-002
+Last login: Thu Jan 31 14:22:33 2019 from corehub-001
+[root@corehub-002 ~]# exit
+logout
+Connection to corehub-002 closed.
+[root@corehub-001 ~]# 
+```
+免登录003服务器
+```
+[root@corehub-001 ~]# ssh corehub-003
+Last login: Thu Jan 31 14:22:32 2019 from 192.168.177.2
+[root@corehub-003 ~]# exit
+logout
+Connection to corehub-003 closed.
+[root@corehub-001 ~]# 
+```
+ssh文件功能说明
+**`Known hosts`**:记录ssh访问过计算机公钥(public key)
+**`id rsa`**:生成的私钥
+**`id_rsa.pub`**:生成的公钥
+**`authorized_keys`**:存放授权过得无密码登录服务器公钥
+
+#### 群起集群
+1.配置slaves
+```
+[root@corehub-001 hadoop]# vim etc/hadoop/slaves
+```
+在该文件中添加一下内容
+注意:该文件添加的内容结尾不允许有空格,文件中部允许有空格
+```
+corehub-001
+corehub-002
+corehub-003
+```
+测试群起
+```
+[root@corehub-001 hadoop]# sbin/start-dfs.sh
+Starting namenodes on [corehub-001]
+root@corehub-001's password: 
+corehub-001: namenode running as process 39894. Stop it first.
+root@corehub-001's password: corehub-002: datanode running as process 9007. Stop it first.
+corehub-003: datanode running as process 12654. Stop it first.
+root@corehub-001's password: corehub-001: Permission denied, please try again.
+corehub-001: Permission denied, please try again.
+root@corehub-001's password: 
+corehub-001: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+Starting secondary namenodes [corehub-003]
+corehub-003: secondarynamenode running as process 18212. Stop it first.
+```
+对照 集群部署规划 查看001号进程 是否正常启动
+```
+[root@corehub-001 hadoop]# jps
+39894 NameNode
+47978 Jps
+46235 DataNode
+[root@corehub-001 hadoop]#
+```
+对照 集群部署规划 查看002号进程 是否正常启动
+```
+[root@corehub-002 hadoop]# jps
+19375 Jps
+9007 DataNode
+[root@corehub-002 hadoop]# 
+```
+对照 集群部署规划 查看003号进程 是否正常启动
+```
+[root@corehub-003 hadoop]# jps
+18212 SecondaryNameNode
+23335 Jps
+12654 DataNode
+[root@corehub-003 hadoop]# 
+```
+在002服务器启动YARN ResourceManager
+```
+[root@corehub-002 hadoop]# sbin/start-yarn.sh
+starting yarn daemons
+starting resourcemanager, logging to /opt/module/hadoop/logs/yarn-root-resourcemanager-corehub-002.out
+corehub-001: starting nodemanager, logging to /opt/module/hadoop/logs/yarn-root-nodemanager-corehub-001.out
+corehub-003: starting nodemanager, logging to /opt/module/hadoop/logs/yarn-root-nodemanager-corehub-003.out
+corehub-002: starting nodemanager, logging to /opt/module/hadoop/logs/yarn-root-nodemanager-corehub-002.out
+[root@corehub-002 hadoop]# jps
+22144 Jps
+22052 NodeManager
+9007 DataNode
+21935 ResourceManager
+[root@corehub-002 hadoop]# 
+```
+3.集群基本测试
+a.上传文件到集群
+上传小文件
+```
+[root@corehub-001 hadoop]# bin/hdfs dfs -mkdir -p /user/geekparkhub/input
+```
+```
+[root@corehub-001 hadoop]# bin/hdfs dfs -put wcinput/wc.input /user/geekparkhub/input
+```
+上传大文件
+```
+[root@corehub-001 hadoop]# bin/hdfs dfs -put /opt/software/hadoop-2.7.2.tar.gz /user/geekparkhub/input
+```
+
+b.上传文件查看文件存放位置
+查看HDFS文件存储路径
+```
+[root@corehub-001 subdir0]# pwd
+/opt/module/hadoop/data/tmp/dfs/data/current/BP-1162876294-192.168.177.130-1548913750188/current/finalized/subdir0/subdir0
+[root@corehub-001 subdir0]# ll
+total 405008
+-rw-r--r--. 1 root root       196 Jan 31 16:16 blk_1073741827
+-rw-r--r--. 1 root root        11 Jan 31 16:16 blk_1073741827_1003.meta
+-rw-r--r--. 1 root root 134217728 Jan 31 16:21 blk_1073741830
+-rw-r--r--. 1 root root   1048583 Jan 31 16:21 blk_1073741830_1006.meta
+-rw-r--r--. 1 root root  77829046 Jan 31 16:22 blk_1073741831
+-rw-r--r--. 1 root root    608047 Jan 31 16:22 blk_1073741831_1007.meta
+-rw-r--r--. 1 root root   9621331 Jan 31 16:31 blk_1073741832
+-rw-r--r--. 1 root root     75175 Jan 31 16:31 blk_1073741832_1008.meta
+-rw-r--r--. 1 root root 134217728 Jan 31 16:32 blk_1073741833
+-rw-r--r--. 1 root root   1048583 Jan 31 16:32 blk_1073741833_1009.meta
+-rw-r--r--. 1 root root  55597887 Jan 31 16:32 blk_1073741834
+-rw-r--r--. 1 root root    434367 Jan 31 16:32 blk_1073741834_1010.meta
+[root@corehub-001 subdir0]# 
+```
+
+#### 集群启动/关闭方式总结
+1.各个服务组件逐一启动和关闭
+分别启动/关闭 HDFS组件
+`hadoop-daemon.sh start/stop namenode/datanode/secondarynamenode`
+启动/关闭 YARN
+`yarn-daemon.sh start/stop resourcemanager/nodemanager`
+
+2.各个模块分开启动和关闭(前提是配置好ssh免登录)常用
+1.整体启动关闭YARN
+`start-dfs.sh / stop-dfs.sh`
+2.整体启动关闭YARN
+`start-yarn.sh / stop-yarn.sh`
+
+
+#### 集群时间同步
+> 时间同步方式:找一台机器作为时间服务器,所有机器与这台集群时间进行定时的同步,比如每隔十分钟,同步一次时间
+
+配置时间同步实现步骤
+1.时间服务配置(必须是root用户)
+检查ntp是否安装
+```
+[root@corehub-002 ~]# rpm -qa|grep ntp
+fontpackages-filesystem-1.41-1.1.el6.noarch
+ntpdate-4.2.6p5-15.el6.centos.x86_64
+ntp-4.2.6p5-15.el6.centos.x86_64
+[root@corehub-002 ~]# 
+```
+修改ntp配置文件
+`vim /etc/ntp.conf`
+修改内容如下:
+修改 (授权`192.168.177.2`-`192.168.177.255`网段上所有的机器可以从这台机器上查询和同步时间)
+``` bash
+[root@corehub-002 ~]# vim /etc/ntp.conf
+# For more information about this file, see the man pages
+# ntp.conf(5), ntp_acc(5), ntp_auth(5), ntp_clock(5), ntp_misc(5), ntp_mon(5).
+
+driftfile /var/lib/ntp/drift
+
+# Permit time synchronization with our time source, but do not
+# permit the source to query or modify the service on this system.
+restrict default kod nomodify notrap nopeer noquery
+restrict -6 default kod nomodify notrap nopeer noquery
+
+# Permit all access over the loopback interface.  This could
+# be tightened as well, but to do so would effect some of
+# the administrative functions.
+restrict 127.0.0.1
+restrict -6 ::1
+
+# Hosts on local network are less restricted.
+restrict 192.168.1.0 mask 255.255.255.0 nomodify notrap
+```
+
+修改(集群在局域网中,不使用其他互联网上的时间)
+```
+# Use public servers from the pool.ntp.org project.
+# Please consider joining the pool (http://www.pool.ntp.org/join.html).
+# server 0.centos.pool.ntp.org iburst
+# server 1.centos.pool.ntp.org iburst
+# server 2.centos.pool.ntp.org iburst
+# server 3.centos.pool.ntp.org iburst
+```
+添加(当该节点丢失网络连接,依然可以采用本地时间作为时间服务器为集群中的其他节点提供时间同步)
+```
+# 当该节点丢失网络连接,依然可以采用本地时间作为时间服务器为集群中的其他节点提供时间同步
+server 127.127.1.0
+fudge 127.127.1.0 stratum 10
+```
+修改/etc/sysconfig/ntpd文件
+让硬件与系统时间同步
+`vim /etc/sysconfig/ntpd`
+```
+SYNC_HWCLOCK=yes
+```
+重新启动ntpd服务
+```
+[root@corehub-002 geek-developer]# service ntpd start
+Starting ntpd:                                             [  OK  ]
+[root@corehub-002 geek-developer]# service ntpd status
+ntpd (pid  2871) is running...
+[root@corehub-002 geek-developer]# 
+```
+设置ntpd服务开机自启
+```
+[root@corehub-002 geek-developer]# chkconfig ntpd on
+[root@corehub-002 geek-developer]# 
+```
+其他机器配置(必须root用户)
+在其他机器配置10分钟与时间服务器同步一次
+初步测试
+```
+[root@corehub-001 ~]# date -s "2018-11-11 11:11:11"
+Sun Nov 11 11:11:11 CST 2018
+[root@corehub-001 ~]# date
+Sun Nov 11 11:11:12 CST 2018
+[root@corehub-001 ~]# /usr/sbin/ntpdate corehub-002
+ 3 Feb 12:58:56 ntpdate[6473]: step time server 192.168.177.131 offset 7264060.505383 sec
+[root@corehub-001 ~]# date
+Sun Feb  3 12:59:43 CST 2019
+[root@corehub-001 ~]# 
+```
+
+编写定时任务如下:
+```
+[root@corehub-003 hadoop]# crontab -e
+```
+```
+*/1 * * * * /usr/sbin/ntpdate corehub-002
+~                                                                               
+~                                                                      
+~                                                                               
+"/tmp/crontab.phnH6Y" 1L, 42C
+```
+
+修改任意机器时间
+date -s "2019-7-12 41:55:23"
+一分钟后查看机器是否与时间度服务器同步
+```
+[root@corehub-003 ~]# date -s "2018-11-11 11:11:11"
+[root@corehub-003 ~]# date
+Sun Nov 11 11:11:12 CST 2018
+[root@corehub-003 ~]# date
+Sun Feb  3 13:04:23 CST 2019
+```
 
 ## 6. Hadoop 编译源码
 ### 前期准备工作
+#### 1.centos联网
+配置centos能够连接外网,linux虚拟机 测试 `ping www.baidu.com` 是否畅通
+注意:采用root角色编译,减少文件权限出现的问题
+#### 2.jar包准备
+`hadoop-2.7.2-src.tar.gz` | [快速下载通道](https://archive.apache.org/dist/hadoop/common/hadoop-2.7.2/)
+`jdk-8u144-linux-x64.tar.gz`  | [快速下载通道](https://www.oracle.com/technetwork/java/javase/documentation/8u-relnotes-2225394.html)
+`apache-ant-1.9.10-bin.tar.gz` (build tool 打包工具)  | [快速下载通道](https://archive.apache.org/dist/ant/binaries/apache-ant-1.9.10-bin.tar.gz)
+`apache-maven-3.0.5-bin.tar.gz`  | [快速下载通道](http://archive.apache.org/dist/maven/maven-3/3.0.5/binaries/)
+`protobuf-2.5.0.tar.gz` (序列化框架)  | [快速下载通道](https://files.pythonhosted.org/packages/3f/ad/c8221a0778cc04197047f0f6ddee683ef1a0851976a4bd4ad17af19d22ec/protobuf-2.5.0.tar.gz)
+
 ### jar包安装
+#### maven安装
+解压tar包到指定目录
+```
+[root@corehub-001 software]# tar -zvxf apache-maven-3.0.5-bin.tar.gz -C /opt/module/
+```
+重命名
+```
+[root@corehub-001 module]# mv apache-maven-3.0.5 maven
+[root@corehub-001 module]# ll
+total 16
+drwxr-xr-x.  6 root   root  4096 Feb  4  2018 ant
+drwxr-xr-x. 15  10011 10011 4096 Jan 31 13:52 hadoop
+drwxr-xr-x.  6 root   root  4096 Feb  3 14:54 maven
+[root@corehub-001 module]# 
+```
+配置环境变量
+```
+[root@corehub-001 ~]# cd /opt/module/maven/
+[root@corehub-001 maven]# pwd
+/opt/module/maven
+[root@corehub-001 maven]# vim /etc/profile
+```
+```
+##MAVEN_HOME
+export MAVEN_HOME=/opt/module/maven
+export PATH=$PATH:$MAVEN_HOME/bin
+```
+```
+[root@corehub-001 maven]# source /etc/profile
+[root@corehub-001 maven]# mvn -version
+Apache Maven 3.0.5 (r01de14724cdef164cd33c7c8c2fe155faf9602da; 2013-02-19 21:51:28+0800)
+Maven home: /opt/module/maven
+Java version: 1.8.0_162, vendor: Oracle Corporation
+Java home: /opt/devtool/jdk1.8.0_162/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "2.6.32-754.10.1.el6.x86_64", arch: "amd64", family: "unix"
+[root@corehub-001 maven]# 
+```
+
+
+#### ant安装
+解压tar包到指定目录
+```
+[root@corehub-001 software]# tar -zvxf apache-ant-1.9.10-bin.tar.gz -C /opt/module/
+```
+重命名
+```
+[root@corehub-001 module]# mv apache-ant-1.9.10 ant
+[root@corehub-001 module]# ll
+total 8
+drwxr-xr-x.  6 root  root  4096 Feb  4  2018 ant
+drwxr-xr-x. 15 10011 10011 4096 Jan 31 13:52 hadoop
+[root@corehub-001 module]# 
+```
+配置环境变量
+```
+[root@corehub-001 ~]# cd /opt/module/ant/
+[root@corehub-001 ant]# pwd
+/opt/module/ant
+[root@corehub-001 ant]# vim /etc/profile
+```
+```
+##ANT_HOME
+export ANT_HOME=/opt/module/ant
+export PATH=$PATH:$ANT_HOME/bin
+```
+```
+[root@corehub-001 ant]# source /etc/profile
+[root@corehub-001 ant]# ant -version
+Apache Ant(TM) version 1.9.10 compiled on February 3 2018
+[root@corehub-001 ant]# 
+```
+#### 安装glibc-headers 与 g++
+```
+yum install glibc-headers
+```
+```
+yum install gcc-c++
+```
+#### protobuf安装
+解压tar包到指定目录
+```
+[root@corehub-001 software]# tar -zvxf protobuf-2.5.0.tar.gz -C /opt/module/
+```
+重命名
+```
+[root@corehub-001 module]# mv protobuf-2.5.0 protobuf
+[root@corehub-001 module]# ll
+total 16
+drwxr-xr-x.  6 root   root  4096 Feb  4  2018 ant
+drwxr-xr-x. 15  10011 10011 4096 Jan 31 13:52 hadoop
+drwxr-xr-x.  6 root   root  4096 Feb  3 14:54 maven
+drwxr-x---.  4 109965  5000 4096 Feb 28  2013 protobuf
+[root@corehub-001 module]# 
+```
+配置环境变量
+```
+[root@corehub-001 ~]# cd /opt/module/protobuf/
+[root@corehub-001 protobuf]# pwd
+/opt/module/protobuf
+[root@corehub-001 protobuf]# vim /etc/profile
+```
+```
+##PROTOBUF_HOME
+export PROTOBUF_HOME=/opt/module/protobuf
+export PATH=$PATH:$PROTOBUF/bin
+```
+```
+[root@corehub-001 protobuf]# source /etc/profile
+```
+
+## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+
 ### 编译源码
 
 
