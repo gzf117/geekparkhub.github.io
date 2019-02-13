@@ -2608,13 +2608,14 @@ export PATH=$PATH:$PROTOBUF_HOME/bin
 ### 编译源码
 
 ## 7. HDFS 概述
-### HDFS产出背景以及定义
+### HDFS产生背景以及定义
 #### HDFS产生背景
 > 随着数据量越来越大,在一个操作系统存不下所有的数据,那么就分配到更多的操作系统管理的磁盘中,但是不方便管理和维护,迫切需要一种系统来管理多台机器上的文件,这就是分布式文件管理系统,HDFS只是分布式文件管理系统中的一种.
 
 #### HDFS定义
 > HDFS(Hadoop Distributed File System) 它是一个文件系统,用于存储文件,通过目录树来定位文件,其次,它是分布式的,由很多服务器联合起来实现其功能,集群中的服务器有各自的角色.
-HDFS使用场景: 适合一次写入,多次读取的场景,且不支持文件的修改,适合用来做数据分析,并不适合用来做网盘应用.
+> 
+> HDFS使用场景: 适合一次写入,多次读取的场景,且不支持文件的修改,适合用来做数据分析,并不适合用来做网盘应用.
 
 #### HDFS优点缺点 | 技术选型知识点
 > **`优点`**
@@ -2646,7 +2647,7 @@ HDFS使用场景: 适合一次写入,多次读取的场景,且不支持文件的
 > 与NameNode交互,获取文件的位置信息.
 > 与DataNode交互,读取或写入数据.
 > Client提供一些命令来管理HDFS,比如NameNode格式化.
-> Client可以提供一些命令来访问HDFS,比如对HDFS增删改查操作.
+> Client可以提供一些命令来访问HDFS,比如对HDFS增删改查(CURD)操作.
 
 ##### 4.SecondaryNameNode:
 > 并非NameNode的热备,当NameNode挂掉时,它并不能马上替换NameNode并提供服务.
@@ -2932,4 +2933,4 @@ bin/hadoop command [genericOptions] [commandOptions]
 ## License 开源协议
 [Apache License Version 2.0](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/LICENSE)
 
----------
+------
