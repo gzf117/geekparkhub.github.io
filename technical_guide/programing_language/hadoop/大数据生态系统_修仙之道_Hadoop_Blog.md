@@ -2469,8 +2469,110 @@ Apache Ant(TM) version 1.9.10 compiled on February 3 2018
 yum install glibc-headers
 ```
 ```
-yum install gcc-c++
+[root@corehub-001 geek-developer]# yum install gcc-c++
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Setting up Install Process
+Loading mirror speeds from cached hostfile
+ * base: ftp.sjtu.edu.cn
+ * extras: centos.ustc.edu.cn
+ * updates: mirror.bit.edu.cn
+Resolving Dependencies
+--> Running transaction check
+---> Package gcc-c++.x86_64 0:4.4.7-23.el6 will be installed
+--> Processing Dependency: libstdc++-devel = 4.4.7-23.el6 for package: gcc-c++-4.4.7-23.el6.x86_64
+--> Running transaction check
+---> Package libstdc++-devel.x86_64 0:4.4.7-23.el6 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package                 Arch           Version              Repository    Size
+================================================================================
+Installing:
+ gcc-c++                 x86_64         4.4.7-23.el6         base         4.7 M
+Installing for dependencies:
+ libstdc++-devel         x86_64         4.4.7-23.el6         base         1.6 M
+
+Transaction Summary
+================================================================================
+Install       2 Package(s)
+
+Total size: 6.3 M
+Total download size: 4.7 M
+Installed size: 20 M
+Is this ok [y/N]: y
+Downloading Packages:
+gcc-c++-4.4.7-23.el6.x86_64.rpm                          | 4.7 MB     00:03     
+Running rpm_check_debug
+Running Transaction Test
+Transaction Test Succeeded
+Running Transaction
+  Installing : libstdc++-devel-4.4.7-23.el6.x86_64                          1/2 
+  Installing : gcc-c++-4.4.7-23.el6.x86_64                                  2/2 
+  Verifying  : libstdc++-devel-4.4.7-23.el6.x86_64                          1/2 
+  Verifying  : gcc-c++-4.4.7-23.el6.x86_64                                  2/2 
+
+Installed:
+  gcc-c++.x86_64 0:4.4.7-23.el6                                                 
+
+Dependency Installed:
+  libstdc++-devel.x86_64 0:4.4.7-23.el6                                         
+
+Complete!
+[root@corehub-001 geek-developer]#
 ```
+
+#### 安装make与cmake
+```
+yum install make
+```
+
+```
+[root@corehub-001 geek-developer]# yum install cmake
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Setting up Install Process
+Loading mirror speeds from cached hostfile
+ * base: ftp.sjtu.edu.cn
+ * extras: centos.ustc.edu.cn
+ * updates: mirror.bit.edu.cn
+Resolving Dependencies
+--> Running transaction check
+---> Package cmake.x86_64 0:2.8.12.2-4.el6 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package         Arch             Version                  Repository      Size
+================================================================================
+Installing:
+ cmake           x86_64           2.8.12.2-4.el6           base           8.0 M
+
+Transaction Summary
+================================================================================
+Install       1 Package(s)
+
+Total download size: 8.0 M
+Installed size: 28 M
+Is this ok [y/N]: y
+Downloading Packages:
+cmake-2.8.12.2-4.el6.x86_64.rpm                          | 8.0 MB     00:05     
+Running rpm_check_debug
+Running Transaction Test
+Transaction Test Succeeded
+Running Transaction
+  Installing : cmake-2.8.12.2-4.el6.x86_64                                  1/1 
+  Verifying  : cmake-2.8.12.2-4.el6.x86_64                                  1/1 
+
+Installed:
+  cmake.x86_64 0:2.8.12.2-4.el6                                                 
+
+Complete!
+[root@corehub-001 geek-developer]# 
+```
+
+
 #### protobuf安装
 解压tar包到指定目录
 ```
@@ -2497,15 +2599,284 @@ drwxr-x---.  4 109965  5000 4096 Feb 28  2013 protobuf
 ```
 ##PROTOBUF_HOME
 export PROTOBUF_HOME=/opt/module/protobuf
-export PATH=$PATH:$PROTOBUF/bin
+export PATH=$PATH:$PROTOBUF_HOME/bin
 ```
 ```
 [root@corehub-001 protobuf]# source /etc/profile
 ```
 
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
-
 ### 编译源码
+
+## 7. HDFS 概述
+### HDFS产出背景以及定义
+#### HDFS产生背景
+> 随着数据量越来越大,在一个操作系统存不下所有的数据,那么就分配到更多的操作系统管理的磁盘中,但是不方便管理和维护,迫切需要一种系统来管理多台机器上的文件,这就是分布式文件管理系统,HDFS只是分布式文件管理系统中的一种.
+
+#### HDFS定义
+> HDFS(Hadoop Distributed File System) 它是一个文件系统,用于存储文件,通过目录树来定位文件,其次,它是分布式的,由很多服务器联合起来实现其功能,集群中的服务器有各自的角色.
+HDFS使用场景: 适合一次写入,多次读取的场景,且不支持文件的修改,适合用来做数据分析,并不适合用来做网盘应用.
+
+#### HDFS优点缺点 | 技术选型知识点
+> **`优点`**
+1.`高容错性`:数据自动保存多个副本,它通过增加副本的形式,提供容错性.某一个副本丢失以后,它可以自动恢复.
+2.`适合处理大数据`:
+`数据规模`:能够处理数据规模达到GB,TB,甚至PB级别数据.
+`文件规模`:能够处理百万规模以上的文件数量,数量相当之大.
+3.`可构建到廉价机器上`,通过多个副本机制,提高可靠性.
+
+> **`缺点`**
+1.`不适合低延时数据访问`,比如毫秒级的存储数据,是做不到的.
+2.`无法高效的对大量的小文件进行存储`:存储大量小文件的话,它会占用NameNode大量的内存来存储文件目录和块信息,这样是不可取的,因为NameNode的内存总是有限的.小文件存储的寻址时间会超过读取时间,它违反了HDFS设计目标
+3.`不支持并发写入`,文件随机修改.
+4.`仅支持数据的追加`,不支持文件的随机修改.
+
+#### HDFS架构组成
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_015.jpg)
+
+##### 1.NameNode(nn):
+> Masert,它是一个主管,管理者.
+> 管理HDFS名称空间,配置副本策略,管理数据块(Block)映射信息,处理客户端读写请求.
+
+##### 2.DataNode(dn):
+> Slave,NameNode下达命令,DataNode执行实际操作.
+> 存储实际数据块,执行数据块的读写操作.
+
+##### 3.Client客户端:
+> 文件切分,文件上传HDFS时,Client将文件切分成一个一个的Block,然后在进行上传.
+> 与NameNode交互,获取文件的位置信息.
+> 与DataNode交互,读取或写入数据.
+> Client提供一些命令来管理HDFS,比如NameNode格式化.
+> Client可以提供一些命令来访问HDFS,比如对HDFS增删改查操作.
+
+##### 4.SecondaryNameNode:
+> 并非NameNode的热备,当NameNode挂掉时,它并不能马上替换NameNode并提供服务.
+> 辅助NameNode,分担其工作量,比如定期合并Fsimage和Edis,并推送给NameNode.
+> 在紧急情况下,可辅助恢复NameNode.
+
+
+#### HDFS文件块大小(面试重点)
+> HDFS中的文件在物理上是分块存储(Block),块的大小可以通过配置(dfs.blocksize)参数来规定,默认大小在Hadoop2.x版本中是128M,老版本1.x中是64M.
+> 
+> Q&A
+> 为什么块的大小不能设置太小?也不能设置太大?
+> 
+> HDFS的块设置太小,会增加寻址时间,程序一直在找块的开始位置.
+> 
+>如果块设置的太大,从磁盘传输数据的时间会明显大于定位这个块开始位置所需的时间,导致程序在处理块数据时会非常慢.
+> 
+> **`HDFS块的大小设置主要取决于磁盘传输速率.`**
+
+### 7.1 HDFS Shell操作(开发重点)
+
+#### 1.基本语法
+> **`bin/hadoop fs 具有指令`** OR **`bin/hdfs dfs 具体指令`**
+> dfs是fs的实现类,dfs相当于子类
+
+#### 2.启动集群
+> 启动001号服务器(启动dfs服务)并查看进程
+``` powershell
+[root@corehub-001 hadoop]# sbin/start-dfs.sh
+19/02/13 22:58:33 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Starting namenodes on [corehub-001]
+root@corehub-001's password: 
+corehub-001: namenode running as process 84816. Stop it first.
+root@corehub-001's password: corehub-003: datanode running as process 85244. Stop it first.
+corehub-002: datanode running as process 86146. Stop it first
+corehub-003: secondarynamenode running as process 101469. Stop it first.
+19/02/13 22:58:47 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+[root@corehub-001 hadoop]# jps
+84816 NameNode
+102134 Jps
+101695 DataNode
+[root@corehub-001 hadoop]# 
+```
+> 启动002号服务器(启动yarn服务)并查看进程
+``` powershell
+[root@corehub-002 hadoop]# sbin/start-yarn.sh
+starting yarn daemons
+starting resourcemanager, logging to /opt/module/hadoop/logs/yarn-root-resourcemanager-corehub-002.out
+corehub-001: starting nodemanager, logging to /opt/module/hadoop/logs/yarn-root-nodemanager-corehub-001.out
+corehub-003: starting nodemanager, logging to /opt/module/hadoop/logs/yarn-root-nodemanager-corehub-003.out
+corehub-002: starting nodemanager, logging to /opt/module/hadoop/logs/yarn-root-nodemanager-corehub-002.out
+[root@corehub-002 hadoop]# jps
+105555 Jps
+86146 DataNode
+105307 ResourceManager
+105421 NodeManager
+[root@corehub-002 hadoop]# 
+```
+> 查看003号服务器进程
+``` powershell
+[root@corehub-003 hadoop]# jps
+104626 NodeManager
+107159 Jps
+101469 SecondaryNameNode
+85244 DataNode
+You have new mail in /var/spool/mail/root
+[root@corehub-003 hadoop]# 
+```
+
+#### 3.hadoop fs命令大全
+```
+[root@corehub-001 hadoop]# hadoop fs
+Usage: hadoop fs [generic options]
+        [-appendToFile <localsrc> ... <dst>]
+        [-cat [-ignoreCrc] <src> ...]
+        [-checksum <src> ...]
+        [-chgrp [-R] GROUP PATH...]
+        [-chmod [-R] <MODE[,MODE]... | OCTALMODE> PATH...]
+        [-chown [-R] [OWNER][:[GROUP]] PATH...]
+        [-copyFromLocal [-f] [-p] [-l] <localsrc> ... <dst>]
+        [-copyToLocal [-p] [-ignoreCrc] [-crc] <src> ... <localdst>]
+        [-count [-q] [-h] <path> ...]
+        [-cp [-f] [-p | -p[topax]] <src> ... <dst>]
+        [-createSnapshot <snapshotDir> [<snapshotName>]]
+        [-deleteSnapshot <snapshotDir> <snapshotName>]
+        [-df [-h] [<path> ...]]
+        [-du [-s] [-h] <path> ...]
+        [-expunge]
+        [-find <path> ... <expression> ...]
+        [-get [-p] [-ignoreCrc] [-crc] <src> ... <localdst>]
+        [-getfacl [-R] <path>]
+        [-getfattr [-R] {-n name | -d} [-e en] <path>]
+        [-getmerge [-nl] <src> <localdst>]
+        [-help [cmd ...]]
+        [-ls [-d] [-h] [-R] [<path> ...]]
+        [-mkdir [-p] <path> ...]
+        [-moveFromLocal <localsrc> ... <dst>]
+        [-moveToLocal <src> <localdst>]
+        [-mv <src> ... <dst>]
+        [-put [-f] [-p] [-l] <localsrc> ... <dst>]
+        [-renameSnapshot <snapshotDir> <oldName> <newName>]
+        [-rm [-f] [-r|-R] [-skipTrash] <src> ...]
+        [-rmdir [--ignore-fail-on-non-empty] <dir> ...]
+        [-setfacl [-R] [{-b|-k} {-m|-x <acl_spec>} <path>]|[--set <acl_spec> <path>]]
+        [-setfattr {-n name [-v value] | -x name} <path>]
+        [-setrep [-R] [-w] <rep> <path> ...]
+        [-stat [format] <path> ...]
+        [-tail [-f] <file>]
+        [-test -[defsz] <path>]
+        [-text [-ignoreCrc] <src> ...]
+        [-touchz <path> ...]
+        [-truncate [-w] <length> <path> ...]
+        [-usage [cmd ...]]
+
+Generic options supported are
+-conf <configuration file>     specify an application configuration file
+-D <property=value>            use value for given property
+-fs <local|namenode:port>      specify a namenode
+-jt <local|resourcemanager:port>    specify a ResourceManager
+-files <comma separated list of files>    specify comma separated files to be copied to the map reduce cluster
+-libjars <comma separated list of jars>    specify comma separated jar files to include in the classpath.
+-archives <comma separated list of archives>    specify comma separated archives to be unarchived on the compute machines.
+
+The general command line syntax is
+bin/hadoop command [genericOptions] [commandOptions]
+
+[root@corehub-001 hadoop]# 
+```
+#### 4.常用命令实操
+> 1. 启动Hadoop集群
+> **`sbin/start-dfs.sh`**
+> **`sbin/start-yarn.sh`**
+> 
+> 2. -help 帮助信息
+> **`hadoop fs -help rm`**
+> 
+> 3. -ls 显示目录信息
+> **`hadoop fs -ls /`**
+> 
+> 4. -mkdir 在HDFS上创建目录
+> **`hadoop fs -mkdir -p /group/geekparkhub`**
+> 
+> 5. -moveFromLocal 从本地剪切粘贴到HDFS
+> touch test.txt
+> **`hadoop fs -moveFromLocal ./test.txt /group/geekparkhub`**
+> 
+> 6. -appendToFile 追加一个文件到已存在的文件末尾
+> touch test001.txt
+> vim test001.txt
+> 输入 123
+> **`hadoop fs -appendToFile ./test001.txt /group/geekparkhub/test.txt`**
+> 
+> 7. -cat 显示文件内容
+> **`hadoop fs -cat /group/geekparkhub/test.txt`**
+> 
+> 8. -chgrp,-chmod,-chown,linux文件系统中用法一致,修改文件所属权限
+> 
+> 9. -copyFromLocal 从本地文件系统中拷贝到HDFS中
+> **`hadoop fs -copyFromLocal test001.txt /group/geekparkhub/`**
+> 
+> 10. -copyToLocal 从HDFS上拷贝到本地
+> **`hadoop fs -copyToLocal /group/geekparkhub/test.txt ./`**
+> 
+> 11. -cp 从HDFS路径拷贝到HDFS另一个路径
+> **`hadoop fs -cp /group/geekparkhub/test.txt /user/geekparkhub/`**
+> 
+> 12. -mv 在HDFS目录中移动文件
+> **`hadoop fs -mv /group/geekparkhub/test001.txt /user/geekparkhub/`**
+> 
+> 13. -get 等同于copyToLocal 从HDFS下载文件到本地
+> **`hadoop fs -get /group/geekparkhub/test001.txt ./`**
+> 
+> 14. -getmerge 合并下载多个文件,比如HDFS目录 /log/下有多个文件日志文件,log1,log3,log3
+> **`hadoop fs -getmerge /user/geekparkhub/* ./list.txt`**
+> 
+> 15. -put 等同于copyFromLocal
+> **`hadoop fs -put ./list.txt /user/geekparkhub`**
+> 
+> 16. -tail 显示一个文件的末尾
+> **`hadoop fs -tail /group/geekparkhub/test.txt`**
+> 
+> 17. -rm 删除文件或文件夹
+> **`hadoop fs -rm /user/geekparkhub/list.txt`**
+> 
+> 18. -rmdir 删除空目录
+> **`hadoop fs -rmdir /user/testfile/`**
+> 
+> 19. -du 统计文件夹的大小信息
+> **`hadoop fs -du -s -h /`**
+> 
+> 20. -setrep 设置HDFS中文件的副本数量
+> **`hadoop fs -setrep 10 /group/geekparkhub/test.txt`**
+
+
+## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+### 7.2 HDFS客户端操作(开发重点)
+#### HDFS客户端环境准备
+#### HDFS API操作
+##### HDFS文件上传(测试)
+##### HDFS文件下载
+##### HDFS文件夹删除
+##### HDFS文件名更改
+##### HDFS文件详情查看
+##### HDFS文件和文件夹判断
+#### HDFS I/O流操作
+##### HDFS文件上传
+##### HDFS文件下载
+##### 定位文件读取
+            
+### 7.3 HDFS数据流(面试重点)
+#### HDFS写数据流程
+##### 剖析文件写入
+##### 网络拓展-节点距离计算
+##### 机架感知(副本储存节点)
+
+### 7.4 NameNode和SecondayNameNode工作机制(面试重点)
+
+### 7..5 DataNode(面试开发重点)
+
+### 7.6 HDFS 2.X新特性
+#### 集群间数据拷贝
+#### Hadoop存档
+#### 快照管理
+#### 回收站
+
+### 7.7 HDFS HA高可用
+
+
+
+
 
 
 ## 7. 常见错误(各种坑)及解决方案
