@@ -15,6 +15,11 @@
 - **GeekParkHub GiteeHome:**<https://gitee.com/geekparkhub>
 - **欢迎贡献`各领域开源野生Blog`&`笔记`&`文章`&`片段`&`分享`&`创想`&`OpenSource Project`&`Code`&`Code Review`**
 - 🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈 issues: [geekparkhub.github.io/issues](https://github.com/geekparkhub/geekparkhub.github.io/issues) 🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈
+- **`Official Public Email`**
+- Group Email：<geekparkhub@outlook.com> —— <hackerparkhub@outlook.com> —— <hackerpark@hotmail.com>
+- User Email：<jeep711.home.@gmail.com> —— <jeep-711@outlook.com>
+- System Email：<systemhub-711@outlook.com>
+- Service Email：<servicehub-711@outlook.com>
 
 
 -------------------
@@ -182,7 +187,7 @@
 
 ### Hadoop 优势 (4高)
 #### 1.高可靠性
-> Hadoop底层维护多个数据副本,所以即使Haoop某个计算元素或存储出现故障,也不会导致数据的丢失.
+> Hadoop底层维护多个数据副本,所以即使Hadoop某个计算元素或存储出现故障,也不会导致数据的丢失.
 #### 2.高扩展性
 > 在集群间分配任务数据,可方便的扩展数以千计的节点.
 #### 3.高效性
@@ -338,7 +343,7 @@ drwxr-xr-x. 2 geek-developer geek-developer 4096 Jan 24 20:11 software
 > 
 > Apache Hadoop官方地址 : https://archive.apache.org/dist/hadoop/common/hadoop-2.7.2/
 > 
-> 通过远程工具,将hadoop-2.7.2.tar.gz传输到/op/tsoftware/目录下
+> 通过远程工具,将hadoop-2.7.2.tar.gz传输到/opt/software/目录下
 > 
 
 将hadoop-2.7.2.tar.gz解压/opt/module/目录下
@@ -2842,48 +2847,2015 @@ bin/hadoop command [genericOptions] [commandOptions]
 > **`hadoop fs -setrep 10 /group/geekparkhub/test.txt`**
 
 
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
 ### 7.2 HDFS客户端操作(开发重点)
-#### HDFS客户端环境准备
+#### HDFS客户端环境准备 以Win版本 为例
+##### 1.根据自身电脑操作系统拷贝对应编译后的hadoop jar包到英文路径
+##### 2.Win版本 配置HADOOP_HOME环境变量
+```
+HADOOP_HOME = D:\J2EE\Hadoop\hadoop
+```
+##### 3.Win版本 配置Path环境变量
+```
+Path = %HADOOP_HOME%\bin
+```
+##### 4.JetBrains IntelliJ IDEA New Maven Project | 此过程省略
+
+##### 5.创建HDFS客户端
+``` java
+package com.geekparkhub.hdfs;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.log4j.Logger;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * GeekDeveloper : JEEP-711
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * <p>
+ * HDFS 客户端
+ */
+public class HdfsClient {
+
+    /**
+     * Statement Logger
+     */
+    private static org.apache.log4j.Logger log = Logger.getLogger(HdfsClient.class);
+
+    public static void main(String[] args) throws IOException, URISyntaxException, InterruptedException {
+        /**
+         * 1.获取HDFS客户端实例
+         *  Obtain an HDFS client instance
+         */
+        Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(new URI("hdfs://corehub-001:9000"), conf, "root");
+
+        /**
+         * 2.在HDFS中创建路径
+         * Create a path in HDFS
+         */
+        fs.mkdirs(new Path("/hdfstest/files"));
+
+        /**
+         * 3.关闭HDFS资源
+         * Turn off HDFS resources
+         */
+        fs.close();
+
+        /**
+         * 4.日志打印
+         * Log printing
+         */
+        log.info("测试程序-执行结束!");
+    }
+}
+```
+##### 6.查看测试结果
+
 #### HDFS API操作
+> 参数优先级
+> 参数优先级排序:
+> 1.客户端代码中设置的值
+> 2.ClassPath下用户自定义配置文件
+> 3.服务器默认配置文件
+
 ##### HDFS文件上传(测试)
+``` java
+package com.geekparkhub.hdfs;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * GeekDeveloper : JEEP-711
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * <p>
+ * HDFS 客户端
+ */
+public class HdfsClient {
+
+    /**
+     * Statement Logger
+     */
+    private static org.apache.log4j.Logger log = Logger.getLogger(HdfsClient.class);
+
+    public static void main(String[] args) {
+    }
+    
+	/**
+    * 文件上传
+    * File Upload
+    * @throws URISyntaxException
+    * @throws IOException
+    * @throws InterruptedException
+    */
+    @Test
+    public void testCopyFromLocalFile() throws URISyntaxException, IOException, InterruptedException {
+
+        /**
+         * 1.获取HDFS客户端实例
+         *  Obtain an HDFS client instance
+         */
+        Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(new URI("hdfs://corehub-001:9000"), conf, "root");
+
+        /**
+         * 2.执行上传API
+         * Execute the upload API
+         */
+        fs.copyFromLocalFile(new Path("D:/J2EE/md5/rfc1321.txt"), new Path("/hdfs/client/files/rfc1321.txt"));
+
+        /**
+         * 3.关闭数据资源
+         * Close data resources
+         */
+        fs.close();
+
+        /**
+         * 4.日志打印
+         * Log printing
+         */
+        log.info("测试程序-文件拷贝执行结束!");
+    }
+}
+```
 ##### HDFS文件下载
+``` java
+package com.geekparkhub.hdfs;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * GeekDeveloper : JEEP-711
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * <p>
+ * HDFS 客户端
+ */
+public class HdfsClient {
+
+    /**
+     * Statement Logger
+     */
+    private static org.apache.log4j.Logger log = Logger.getLogger(HdfsClient.class);
+
+    public static void main(String[] args) {
+    }
+
+    /**
+     * 文件下载
+     * file download
+     *
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Test
+    public void testCopyToLocalFile() throws URISyntaxException, IOException, InterruptedException {
+
+        /**
+         * 1.获取HDFS客户端实例
+         *  Obtain an HDFS client instance
+         */
+        Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(new URI("hdfs://corehub-001:9000"), conf, "root");
+
+        /**
+         * 2.执行下载API
+         * Execute the download API
+         */
+        fs.copyToLocalFile(new Path("/group/geekparkhub/input/hadoop-2.7.2.tar.gz"), new Path("F:/Demo/hadoop-2.7.2.tar.gz"));
+
+        /**
+         * 3.关闭数据资源
+         * Close data resources
+         */
+        fs.close();
+
+        /**
+         * 4.日志打印
+         * Log printing
+         */
+        log.info("测试程序-文件下载成功-执行结束!");
+    }
+}
+```
 ##### HDFS文件夹删除
+``` java
+package com.geekparkhub.hdfs;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * GeekDeveloper : JEEP-711
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * <p>
+ * HDFS 客户端
+ */
+public class HdfsClient {
+
+    /**
+     * Statement Logger
+     */
+    private static org.apache.log4j.Logger log = Logger.getLogger(HdfsClient.class);
+
+    public static void main(String[] args) {
+    }
+
+    @Test
+    public void testDelete() throws URISyntaxException, IOException, InterruptedException {
+
+        /**
+         * 1.获取HDFS客户端实例
+         *  Obtain an HDFS client instance
+         */
+        Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(new URI("hdfs://corehub-001:9000"),conf,"root");
+
+        /**
+         * 2.执行删除API
+         * Execute the download API
+         */
+        fs.delete(new Path("/hdfs/client/files/001"),true);
+
+        /**
+         * 3.关闭数据资源
+         * Close data resources
+         */
+        fs.close();
+
+        /**
+         * 4.日志打印
+         * Log printing
+         */
+        log.info("测试程序-删除成功-执行结束!");
+    }
+}
+```
 ##### HDFS文件名更改
+``` java
+package com.geekparkhub.hdfs;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.*;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * GeekDeveloper : JEEP-711
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * <p>
+ * HDFS 客户端
+ */
+public class HdfsClient {
+
+    /**
+     * Statement Logger
+     */
+    private static org.apache.log4j.Logger log = Logger.getLogger(HdfsClient.class);
+
+    public static void main(String[] args) {
+    }
+
+    /**
+     * 文件更名
+     * File rename
+     *
+     * @throws IOException
+     * @throws URISyntaxException
+     * @throws InterruptedException
+     */
+    @Test
+    public void testReName() throws IOException, URISyntaxException, InterruptedException {
+
+        /**
+         * 1.获取HDFS客户端实例
+         *  Obtain an HDFS client instance
+         */
+        Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(new URI("hdfs://corehub-001:9000"), conf, "root");
+
+        /**
+         * 2.执行修改API
+         * Execute the modification API
+         */
+        fs.rename(new Path("/hdfs/client/files/001/test/bootmgr.exe.mui"), new Path("/hdfs/client/files/001/test/hub.exe.mui"));
+
+        /**
+         * 3.关闭数据资源
+         * Close data resources
+         */
+        fs.close();
+
+        /**
+         * 4.日志打印
+         * Log printing
+         */
+        log.info("测试程序-修改成功-执行结束!");
+    }
+}
+```
 ##### HDFS文件详情查看
+> 查看文件名称,权限,长度,块信息
+``` java
+package com.geekparkhub.hdfs;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.*;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * GeekDeveloper : JEEP-711
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * <p>
+ * HDFS 客户端
+ */
+public class HdfsClient {
+
+    /**
+     * Statement Logger
+     */
+    private static org.apache.log4j.Logger log = Logger.getLogger(HdfsClient.class);
+
+    public static void main(String[] args) {
+    }
+
+    /**
+     * 查看文件详情
+     * View file details
+     *
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Test
+    public void testListFile() throws URISyntaxException, IOException, InterruptedException {
+
+        /**
+         * 1.获取HDFS客户端实例
+         *  Obtain an HDFS client instance
+         */
+        Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(new URI("hdfs://corehub-001:9000"), conf, "root");
+
+        /**
+         * 2.执行查看API
+         * Execute view API
+         */
+        RemoteIterator<LocatedFileStatus> iterator = fs.listFiles(new Path("/"), true);
+
+        while (iterator.hasNext()) {
+            LocatedFileStatus fileStatus = iterator.next();
+            /**
+             * 查看文件名称,权限,长度,块信息
+             */
+            // 文件名称
+            log.info("文件名称：" + fileStatus.getPath().getName());
+            // 文件权限
+            log.info("文件权限：" + fileStatus.getPermission());
+            // 文件长度
+            log.info("文件长度：" + fileStatus.getLen());
+            // 文件块信息
+            BlockLocation[] blockLocation = fileStatus.getBlockLocations();
+            for (BlockLocation blockLocations : blockLocation) {
+                String[] hosts = blockLocations.getHosts();
+                for (String host : hosts) {
+                    log.info("块信息：" + host);
+                }
+                log.info("-------------------------------");
+            }
+        }
+
+        /**
+         * 3.关闭数据资源
+         * Close data resources
+         */
+        fs.close();
+
+        /**
+         * 4.日志打印
+         * Log printing
+         */
+        log.info("测试程序-文件查看成功-执行结束!");
+    }
+}
+```
 ##### HDFS文件和文件夹判断
+``` java
+package com.geekparkhub.hdfs;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.*;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * GeekDeveloper : JEEP-711
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * <p>
+ * HDFS 客户端
+ */
+public class HdfsClient {
+
+    /**
+     * Statement Logger
+     */
+    private static org.apache.log4j.Logger log = Logger.getLogger(HdfsClient.class);
+
+    public static void main(String[] args) {
+    }
+
+    /**
+     * 判断文件或文件夹
+     *
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Test
+    public void testListStatus() throws URISyntaxException, IOException, InterruptedException {
+
+        /**
+         * 1.获取HDFS客户端实例
+         *  Obtain an HDFS client instance
+         */
+        Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(new URI("hdfs://corehub-001:9000"), conf, "root");
+
+        /**
+         * 2.执行判断API
+         * Execution judgment API
+         */
+        FileStatus[] statuses = fs.listStatus(new Path("/"));
+        for (FileStatus status : statuses) {
+            if (status.isFile()) {
+                // 文件
+                log.info("File：" + status.getPath().getName());
+            } else {
+                // 文件夹
+                log.info("File Directory：" + status.getPath().getName());
+            }
+        }
+
+        /**
+         * 3.关闭数据资源
+         * Close data resources
+         */
+        fs.close();
+
+        /**
+         * 4.日志打印
+         * Log printing
+         */
+        log.info("测试程序-文件判断成功-执行结束!");
+    }
+}
+```
 #### HDFS I/O流操作
+> 如自行实现上述API操作,可以采用I/O流方式实现数据上传下载
 ##### HDFS文件上传
+> 需求: 将C:\Windows\Web\4K\Wallpaper\Windows\img0_3840x2160.jpg文件上传到HDFS目录中
+``` java
+package com.geekparkhub.hdfs;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * GeekDeveloper : JEEP-711
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * <p>
+ * HDFS IO
+ */
+public class HDFSIO {
+
+    /**
+     * Statement Logger
+     */
+    private static org.apache.log4j.Logger log = Logger.getLogger(HDFSIO.class);
+
+    /**
+     * 将C:\Windows\Web\4K\Wallpaper\Windows\img0_3840x2160.jpg文件上传到HDFS目录中
+     * Upload the C:\Windows\Web\4 K\Wallpaper\Windows\img 0_3840 x 2160.jpg file to the HDFS directory
+     *
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Test
+    public void putFileToHDFS() throws URISyntaxException, IOException, InterruptedException {
+
+        /**
+         * 1.获取HDFS客户端实例
+         *  Obtain an HDFS client instance
+         */
+        Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(new URI("hdfs://corehub-001:9000"), conf, "root");
+
+        /**
+         * 2.获取输入流
+         * Get the input stream
+         */
+        FileInputStream fileInputStream = new FileInputStream(new File("C:/Windows/Web/4K/Wallpaper/Windows/img0_3840x2160.jpg"));
+
+        /**
+         * 3.获取输出流
+         * Get the output stream
+         */
+        FSDataOutputStream fsDataOutputStream = fs.create(new Path("/hdfs/client/files/img0_3840x2160.jpg"));
+
+        /**
+         * 4.流数据对拷
+         * Stream data copy
+         */
+        IOUtils.copyBytes(fileInputStream, fsDataOutputStream, conf);
+
+        /**
+         * 5.关闭数据资源
+         * Close data resources
+         */
+        IOUtils.closeStream(fsDataOutputStream);
+        IOUtils.closeStream(fileInputStream);
+        fs.close();
+
+        /**
+         * 5.日志打印
+         * Log printing
+         */
+        log.info("文件上传成功-程序执行结束!");
+    }
+}
+```
 ##### HDFS文件下载
+> 需求: 从HDFS上下载文件到本地盘符下
+``` java
+package com.geekparkhub.hdfs;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * GeekDeveloper : JEEP-711
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * <p>
+ * HDFS IO
+ */
+public class HDFSIO {
+
+    /**
+     * Statement Logger
+     */
+    private static org.apache.log4j.Logger log = Logger.getLogger(HDFSIO.class);
+
+    /**
+     * 从HDFS上下载文件到本地盘符下
+     * Download files from HDFS to local drive letter
+     *
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Test
+    public void getFileFromHDFS() throws URISyntaxException, IOException, InterruptedException {
+
+        /**
+         * 1.获取HDFS客户端实例
+         *  Obtain an HDFS client instance
+         */
+        Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(new URI("hdfs://corehub-001:9000"), conf, "root");
+
+        /**
+         * 2.获取输入流
+         * Get the input stream
+         */
+        FSDataInputStream fsDataInputStream = fs.open(new Path("/hdfs/client/files/img0_3840x2160.jpg"));
+
+        /**
+         * 3.获取输出流
+         * Get the output stream
+         */
+        FileOutputStream fileInputStream = new FileOutputStream(new File("d:/Downloads/img0_3840x2160.jpg"));
+
+        /**
+         * 4.流数据对拷
+         * Stream data copy
+         */
+        IOUtils.copyBytes(fsDataInputStream, fileInputStream, conf);
+
+        /**
+         * 5.关闭数据资源
+         * Close data resources
+         */
+        IOUtils.closeStream(fsDataInputStream);
+        IOUtils.closeStream(fileInputStream);
+        fs.close();
+
+        /**
+         * 5.日志打印
+         * Log printing
+         */
+        log.info("文件下载成功-程序执行结束!");
+    }
+}
+```
 ##### 定位文件读取
+> 需求: 分块读取HDFS上的大文件,比如HDFS目录下的hadoop-2.7.2.tar.gz
+``` java
+package com.geekparkhub.hdfs;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
+import org.apache.log4j.Logger;
+import org.junit.Test;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * GeekDeveloper : JEEP-711
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * <p>
+ * HDFS IO
+ */
+public class HDFSIO {
+
+    /**
+     * Statement Logger
+     */
+    private static org.apache.log4j.Logger log = Logger.getLogger(HDFSIO.class);
+
+    /**
+     * 第一块文件 下载
+     * First file download
+     *
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Test
+    public void readFileSeek1() throws URISyntaxException, IOException, InterruptedException {
+
+        /**
+         * 1.获取HDFS客户端实例
+         *  Obtain an HDFS client instance
+         */
+        Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(new URI("hdfs://corehub-001:9000"), conf, "root");
+
+        /**
+         * 2.获取输入流
+         * Get the input stream
+         */
+        FSDataInputStream fsDataInputStream = fs.open(new Path("/user/geekparkhub/input/hadoop-2.7.2.tar.gz"));
+
+        /**
+         * 3.获取输出流
+         * Get the output stream
+         */
+        FileOutputStream fileInputStream = new FileOutputStream(new File("d:/Downloads/hadoop-2.7.2.tar.gz.part1"));
+
+        /**
+         * 4.流数据对拷 只拷贝单块128M
+         * Stream data copy Copy only a single block of 128 M
+         */
+        byte[] bytes = new byte[1024];
+        for (int i = 0; i < 1024 * 128; i++) {
+            fsDataInputStream.read(bytes);
+            fileInputStream.write(bytes);
+        }
+
+        /**
+         * 5.关闭数据资源
+         * Close data resources
+         */
+        IOUtils.closeStream(fsDataInputStream);
+        IOUtils.closeStream(fileInputStream);
+        fs.close();
+
+        /**
+         * 5.日志打印
+         * Log printing
+         */
+        log.info("第一块文件下载成功-程序执行结束!");
+    }
+
+    /**
+     * 第二块文件 下载
+     * Second file download
+     * @throws URISyntaxException
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Test
+    public void readFileSeek2() throws URISyntaxException, IOException, InterruptedException {
+
+        /**
+         * 1.获取HDFS客户端实例
+         *  Obtain an HDFS client instance
+         */
+        Configuration conf = new Configuration();
+        FileSystem fs = FileSystem.get(new URI("hdfs://corehub-001:9000"), conf, "root");
+
+        /**
+         * 2.获取输入流
+         * Get the input stream
+         */
+        FSDataInputStream fsDataInputStream = fs.open(new Path("/user/geekparkhub/input/hadoop-2.7.2.tar.gz"));
+
+        /**
+         * 3.设置指定读取起点
+         * Set the specified reading start point
+         */
+        fsDataInputStream.seek(1024 * 1024 * 128);
+
+        /**
+         * 4.获取输出流
+         * Get the output stream
+         */
+        FileOutputStream fileInputStream = new FileOutputStream(new File("d:/Downloads/hadoop-2.7.2.tar.gz.part2"));
+
+        /**
+         * 5.流数据对拷
+         * Stream data copy
+         */
+        IOUtils.copyBytes(fsDataInputStream, fileInputStream, conf);
+
+        /**
+         * 6.关闭数据资源
+         * Close data resources
+         */
+        IOUtils.closeStream(fsDataInputStream);
+        IOUtils.closeStream(fileInputStream);
+        fs.close();
+
+        /**
+         * 7.日志打印
+         * Log printing
+         */
+        log.info("第二块文件下载成功-程序执行结束!");
+    }
+}
+```
+使用win指令,将part1+part2 数据拼接
+``` powershell
+D:\Downloads>type hadoop-2.7.2.tar.gz.part2 >> hadoop-2.7.2.tar.gz.part1
+```
             
 ### 7.3 HDFS数据流(面试重点)
 #### HDFS写数据流程
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_016.jpg)
 ##### 剖析文件写入
+> 1.客户端通过Distributed File System模块向NameNode请求上传文件,NameNode检查目标文件是否存在,父目录是否存在.
+> 2.NameNode返回是否可以上传.
+> 3.客户端请求第一个block上传到哪个Datanode服务器.
+> 4.NameNode返回3个DataNode节点,分别问dn1,dn2,dn3.
+> 5.客户端通过FSDataOutputStream模块请求dh1上传数据,dn1收到请求会继续调用dn2,然后dn2调用dn3,将这个通信管道建立完成.
+> 6.dn1,dn2,dn3逐级应答客户端.
+> 7.客户端开始想dn1上传第一个block(先从磁盘读取数据放到一个本地内存缓存),以packet为单位,dn1收到一个packet就会传给dn2,dn2传给dn3,dn1每传一个packet会放入一个应答队列等待应答.
+> 8.当一个block传输完成之后,客户端再次请求NameNode上传第二个block的服务器(重复执行3-7步骤).
+
+#### HDFS读数据流程
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_018.jpg)
+> 1.客户端通过Distributed File System向NameNode请求下载文件,NameNode通过查询元数据,找到文件块所在的DataNode地址.
+> 2.挑选一台DataNode(就近原则,然后随机)服务器,请求读取数据.
+> 3.DataNode开始传输数据给客户端(从磁盘里面读取数据输入流,以packet为单位来做校验).
+> 4.客户端以packet为单位接收,先在本地缓存,然后写入目标文件.
+
 ##### 网络拓展-节点距离计算
-##### 机架感知(副本储存节点)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_017.jpg)
+> 在HDFS写数据的过程中,NameNode会选择距离待上传数据最近距离的DataNode接收数据,那么这个最近距离怎么计算?
+> 节点距离:两个节点到达最近的共同祖先的距离总和.
 
 ### 7.4 NameNode和SecondayNameNode工作机制(面试重点)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_019.jpg)
 
-### 7..5 DataNode(面试开发重点)
+> 第一阶段：NameNode启动
+> (1) 第一次启动 NameNode格式化后,创建 fsimage 和 edits 文件,如果不是第一次启动,直接加载编辑日志和镜像文件到内存.
+> (2) 客户端对元数据进行增删改的请求.
+> (3) NameNode 记录操作日志，更新滚动日志.
+> (4) NameNode 在内存中对数据进行增删改查.
+> 
+> 第二阶段：Secondary NameNode工作
+> (1) Secondary NameNode询问NameNode 是否需要 checkpoint,直接带回 NameNode是否检查结果.
+> (2) Secondary NameNode 请求执行 checkpoint.
+> (3) NameNode 滚动正在写的 edits 日志.
+> (4) 将滚动前的编辑日志和镜像文件拷贝到 Secondary NameNode.
+> (5) Secondary NameNode 加载编辑日志和镜像文件到内存，并合并.
+> (6) 生成新的镜像文件 fsimage.chkpoint.
+> (7) 拷贝 fsimage.chkpoint 到 NameNode.
+> (8) NameNode 将 fsimage.chkpoint 重新命名成 fsimage.
+
+#### Fsimage和Edits解析
+> 1. 概念
+> namenode被格式化之后,将在/opt/module/hadoop/data/tmp/dfs/name/current目录中产生如下文件
+``` powershell
+[root@corehub-001 hadoop]# cd data/tmp/dfs/name/current/
+[root@corehub-001 current]# ll
+total 3120
+-rw-r--r--. 1 root root 1048576 Feb 17 02:14 edits_0000000000000000001-0000000000000000040
+-rw-r--r--. 1 root root    1335 Feb 17 19:40 edits_0000000000000000041-0000000000000000061
+-rw-r--r--. 1 root root      42 Feb 17 20:40 edits_0000000000000000062-0000000000000000063
+-rw-r--r--. 1 root root     280 Feb 17 21:40 edits_0000000000000000064-0000000000000000068
+-rw-r--r--. 1 root root      42 Feb 17 22:40 edits_0000000000000000069-0000000000000000070
+-rw-r--r--. 1 root root      42 Feb 17 23:40 edits_0000000000000000071-0000000000000000072
+-rw-r--r--. 1 root root 1048576 Feb 17 23:40 edits_0000000000000000073-0000000000000000073
+-rw-r--r--. 1 root root      42 Feb 19 19:19 edits_0000000000000000074-0000000000000000075
+-rw-r--r--. 1 root root 1048576 Feb 19 19:19 edits_inprogress_0000000000000000076
+-rw-r--r--. 1 root root    1361 Feb 19 19:18 fsimage_0000000000000000073
+-rw-r--r--. 1 root root      62 Feb 19 19:18 fsimage_0000000000000000073.md5
+-rw-r--r--. 1 root root    1361 Feb 19 19:19 fsimage_0000000000000000075
+-rw-r--r--. 1 root root      62 Feb 19 19:19 fsimage_0000000000000000075.md5
+-rw-r--r--. 1 root root       3 Feb 19 19:19 seen_txid
+-rw-r--r--. 1 root root     207 Feb 19 19:18 VERSION
+```
+> 1.Fsimage 文件：HDFS文件系统元数据的一个永久性的检查点,其中包含HDFS文件系统的所有目录和文件idnode的序列化信息.
+> 2.Edits 文件：存放HDFS文件系统的所有更新操作的路径,文件系统客户端执行的所有写操作首先会被记录到edits文件中.
+> 3.seen_txid文件保存的是一个数字,就是最后一个 edits_的数字.
+> 4.每次 NameNode启动的时候都会将 fsimage 文件读入内存,并从 00001 开始到seen_txid 中记录的数字依次执行每个 edits 里面的更新操作,保证内存中的元数据信息是最新的、同步的,可以看成 NameNode 启动的时候就将 fsimage 和 edits 文件进行了合并.
+> 
+> 2 oiv指令 查看 fsimage 文件
+> 
+> 1.查看 oiv 和 oev 命令
+```
+[root@corehub-001 current]$ hdfs
+oiv apply the offline fsimage viewer to an fsimage
+oev apply the offline edits viewer to an edits file
+```
+> 2.基本语法
+> hdfs oiv -p 文件类型 -i 镜像文件 -o 转换后文件输出路径
+> 
+> 3.案例实操
+``` powershell
+[root@corehub-001 current]# ll
+total 3120
+-rw-r--r--. 1 root root 1048576 Feb 17 02:14 edits_0000000000000000001-0000000000000000040
+-rw-r--r--. 1 root root    1335 Feb 17 19:40 edits_0000000000000000041-0000000000000000061
+-rw-r--r--. 1 root root      42 Feb 17 20:40 edits_0000000000000000062-0000000000000000063
+-rw-r--r--. 1 root root     280 Feb 17 21:40 edits_0000000000000000064-0000000000000000068
+-rw-r--r--. 1 root root      42 Feb 17 22:40 edits_0000000000000000069-0000000000000000070
+-rw-r--r--. 1 root root      42 Feb 17 23:40 edits_0000000000000000071-0000000000000000072
+-rw-r--r--. 1 root root 1048576 Feb 17 23:40 edits_0000000000000000073-0000000000000000073
+-rw-r--r--. 1 root root      42 Feb 19 19:19 edits_0000000000000000074-0000000000000000075
+-rw-r--r--. 1 root root 1048576 Feb 19 19:19 edits_inprogress_0000000000000000076
+-rw-r--r--. 1 root root    1361 Feb 19 19:18 fsimage_0000000000000000073
+-rw-r--r--. 1 root root      62 Feb 19 19:18 fsimage_0000000000000000073.md5
+-rw-r--r--. 1 root root    1361 Feb 19 19:19 fsimage_0000000000000000075
+-rw-r--r--. 1 root root      62 Feb 19 19:19 fsimage_0000000000000000075.md5
+-rw-r--r--. 1 root root       3 Feb 19 19:19 seen_txid
+-rw-r--r--. 1 root root     207 Feb 19 19:18 VERSION
+[root@corehub-001 current]# hdfs oiv -p XML -i fsimage_0000000000000000073 -o fs-073.xml
+```
+> 将显示的 xml 文件内容拷贝到 eclipse 中创建的 xml 文件中,并格式化。部分显示结果如下.
+``` xml
+<?xml version="1.0"?>
+<fsimage>
+    <NameSection>
+        <genstampV1>1000</genstampV1>
+        <genstampV2>1010</genstampV2>
+        <genstampV1Limit>0</genstampV1Limit>
+        <lastAllocatedBlockId>1073741834</lastAllocatedBlockId>
+        <txid>73</txid>
+    </NameSection>
+    <INodeSection>
+        <lastInodeId>16401</lastInodeId>
+        <inode>
+            <id>16385</id>
+            <type>DIRECTORY</type>
+            <name></name>
+            <mtime>1550340875095</mtime>
+            <permission>root:supergroup:rwxr-xr-x</permission>
+            <nsquota>9223372036854775807</nsquota>
+            <dsquota>-1</dsquota>
+        </inode>
+        <inode>
+            <id>16386</id>
+            <type>DIRECTORY</type>
+            <name>user</name>
+            <mtime>1550339935918</mtime>
+            <permission>root:supergroup:rwxr-xr-x</permission>
+            <nsquota>-1</nsquota>
+            <dsquota>-1</dsquota>
+        </inode>
+        <inode>
+            <id>16393</id>
+            <type>FILE</type>
+            <name>wc.input</name>
+            <replication>3</replication>
+            <mtime>1550340172723</mtime>
+            <atime>1550340172398</atime>
+            <perferredBlockSize>134217728</perferredBlockSize>
+            <permission>root:supergroup:rw-r--r--</permission>
+            <blocks>
+                <block>
+                    <id>1073741826</id>
+                    <genstamp>1002</genstamp>
+                    <numBytes>196</numBytes>
+                </block>
+            </blocks>
+        </inode>
+        <inode>
+            <id>16396</id>
+            <type>DIRECTORY</type>
+            <name>hdfs</name>
+            <mtime>1550340875095</mtime>
+            <permission>root:supergroup:rwxr-xr-x</permission>
+            <nsquota>-1</nsquota>
+            <dsquota>-1</dsquota>
+        </inode>
+    </INodeSection>
+    <INodeReferenceSection></INodeReferenceSection>
+    <SnapshotSection>
+        <snapshotCounter>0</snapshotCounter>
+    </SnapshotSection>
+    <INodeDirectorySection>
+        <directory>
+            <parent>16396</parent>
+            <inode>16397</inode>
+        </directory>
+        <directory>
+            <parent>16397</parent>
+            <inode>16398</inode>
+        </directory>
+        <directory>
+            <parent>16398</parent>
+            <inode>16400</inode>
+        </directory>
+    </INodeDirectorySection>
+    <FileUnderConstructionSection></FileUnderConstructionSection>
+    <SnapshotDiffSection>
+        <diff>
+            <inodeid>16385</inodeid>
+        </diff>
+    </SnapshotDiffSection>
+    <SecretManagerSection>
+        <currentId>0</currentId>
+        <tokenSequenceNumber>0</tokenSequenceNumber>
+    </SecretManagerSection>
+</fsimage>
+```
+> 3 oev 查看 edits 文件
+> 
+> 1.基本语法
+> hdfs oev -p 文件类型 -i 编辑日志 -o 转换后文件输出路径
+> 
+> 2.案例实操
+``` powershell
+[root@corehub-001 current]# hdfs oev -p XML -i edits_0000000000000000073-0000000000000000073 -o edits-073.xml
+```
+> 将显示的 xml 文件内容拷贝到 eclipse 中创建的 xml 文件中,并格式化,显示结果如下.
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<EDITS>
+  <EDITS_VERSION>-63</EDITS_VERSION>
+  <RECORD>
+    <OPCODE>OP_START_LOG_SEGMENT</OPCODE>
+    <DATA>
+      <TXID>73</TXID>
+    </DATA>
+  </RECORD>
+</EDITS>
+```
+#### checkpoint 时间设置
+> 1.通常情况下,SecondaryNameNode每隔一小时执行
+> hdfs-default.xml
+> ``` xml
+> <property>
+>  <name>dfs.namenode.checkpoint.period</name>
+>  <value>3600</value>
+> </property>
+> ```
+> 2.一分钟检查一次操作次数,当操作次数达到1百万时,SecondaryNameNode执行一次
+> ``` xml
+> <property>
+>  <name>dfs.namenode.checkpoint.txns</name>
+>  <value>1000000</value>
+> <description>操作动作次数</description>
+> </property>
+> <property>
+>  <name>dfs.namenode.checkpoint.check.period</name>
+>  <value>60</value>
+> <description> 1 分钟检查一次操作次数</description>
+> </property>
+> ```
+#### NameNode 故障处理
+> NameNode 故障后，可以采用如下两种方法恢复数据
+> 
+> 方法一：将 SecondaryNameNode中数据拷贝到NameNode存储数据的目录.
+> 1.kill -9 namenode进程
+> 
+> 2.删除NameNode存储的数据(/opt/module/hadoop/data/tmp/dfs/name)
+``` powershell
+[root@corehub-001 hadoop]$ rm -rf 
+/opt/module/hadoop-2.7.2/data/tmp/dfs/name/*
+```
+> 3.拷贝SecondaryNameNode中数据到原NameNode存储数据目录
+``` powershell
+[root@corehub-001 name]$ scp -r root@corehub-003:/opt/module/hadoop/data/tmp/dfs/namesecondary/* ./
+```
+> 4.重新启动namenode
+``` powershell
+[root@corehub-001 hadoop]$ sbin/hadoop-daemon.sh start namenode
+```
+
+> 方 法 二 ： 使 用 -importCheckpoint选项启动NameNode守护进程,从而将SecondaryNameNode中数据拷贝到 NameNode目录中
+> 1.修改 hdfs-site.xml 中的配置信息
+``` xml
+<property>
+ <name>dfs.namenode.checkpoint.period</name>
+ <value>120</value>
+</property>
+<property>
+ <name>dfs.namenode.name.dir</name>
+ <value>/opt/module/hadoop-2.7.2/data/tmp/dfs/name</value>
+</property>
+```
+> 2.kill -9 namenode 进程
+> 3.删除 NameNode存储的数据(/opt/module/hadoop/data/tmp/dfs/name)
+```
+[root@corehub-001 hadoop]$ rm -rf /opt/module/hadoop/data/tmp/dfs/name/*
+```
+> 4.如果 SecondaryNameNode不和 NameNode在一个主机节点上,需要将SecondaryNameNode存储数据的目录拷贝到 NameNode存储数据的平级目录并删除in_use.lock 文件.
+``` powershell
+[root@corehub-001 dfs]$ scp -r root@corehub-003:/opt/module/hadoop/data/tmp/dfs/namesecondary ./
+[root@corehub-001 namesecondary]$ rm -rf in_use.lock
+[root@corehub-001 dfs]$ pwd
+/opt/module/hadoop-2.7.2/data/tmp/dfs
+[root@corehub-001 dfs]$ ls
+data name namesecondary
+```
+> 5.导入检查点数据(等待一会 ctrl+c 结束)
+```
+ [root@corehub-001 hadoop]$ bin/hdfs namenode -importCheckpoint
+```
+> 6.启动 namenode
+```
+[root@corehub-001 hadoop]$ sbin/haddaemon.sh start namenode
+```
+
+#### 集群安全模式
+> 1.概述
+> 
+> 1.NameNode启动时
+> NameNode 启动时,首先将映像文件(fsimage)入内存,并执行编辑日志(edits)的各项操作,一旦在内存中成功建立文件系统元数据的映像,则创建一个新的(fsimage)文件和一个空的编辑日志,此时,NameNode开始监听DataNode请求,但是此刻,NameNode运行在安全模式,即NameNode的文件系统对于客户端来说是只读的.
+> 
+> 2.DataNode启动时
+> 系统中的数据块的位置并不是由NameNode维护的,而是以块列表的形式存储在DataNode中,在系统的正常操作期间,NameNode会在内存中保留所有块位置的映射信息,在安全模式下,各个DataNode会向NameNode发送最新的块列表信息,NameNode了解到足够多的块位置信息之后,即可高效运行文件系统。
+> 
+> 3.安全模式退出判断
+> 如果满足"最小副本条件",NameNode会在30秒钟之后就退出安全模式,所谓的最小副本条件指的是在整个文件系统中 99.9%的块满足最小副本级别(默认值 ：dfs.replication.min=1),在启动一个刚刚格式化的 HDFS集群时,因为系统中还没有任何块,所以NameNode不会进入安全模式.
+
+> 2.基本语法
+> 集群处于安全模式,不能执行重要操作(写操作),群启动完成后,自动退出安全模式。
+> 查看安全模式状态
+> ```
+> [root@corehub-001 hadoop]# bin/hdfs dfsadmin -safemode get
+> Safe mode is OFF
+> [root@corehub-001 hadoop]# 
+> ```
+> 进入安全模式状态
+> ```
+> [root@corehub-001 hadoop]# bin/hdfs dfsadmin -safemode enter
+> Safe mode is ON
+> [root@corehub-001 hadoop]# 
+> ```
+> 离开安全模式状态
+> ```
+> [root@corehub-001 hadoop]# bin/hdfs dfsadmin -safemode  leave
+> Safe mode is OFF
+> [root@corehub-001 hadoop]# 
+> ```
+> 等待安全模式状态
+> ```
+> [root@corehub-001 hadoop]# bin/hdfs dfsadmin -safemode wait
+> ```
+
+#### NameNode 多目录配置
+> 1.NameNode的本地目录可以配置成多个,且每个目录存放内容相同,增加了可靠性.
+> 2.具体配置如下:
+> 在hdfs-site.xml文件中增加如下内容
+``` xml
+<property>
+ <name>dfs.namenode.name.dir</name>
+ <value>file:///${hadoop.tmp.dir}/dfs/name1,file:///${hadoop.tmp.dir}/dfs/name2</v
+alue>
+</property>
+```
+> 3.停止集群,删除 data 和 logs 中所有数据
+``` powershell
+[root@corehub-001 hadoop]$ rm -rf data/ logs/
+[root@corehub-002 hadoop]$ rm -rf data/ logs/
+[root@corehub-003 hadoop]$ rm -rf data/ logs/
+```
+> 4.格式化集群并启动.
+``` powershell
+[root@corehub-001 hadoop]$ bin/hdfs namenode –format
+[root@corehub-001 hadoop]$ sbin/start-dfs.sh
+```
+> 5.查看结果
+``` powershell
+[root@corehub-001 dfs]$ ll
+总用量 12
+drwx------. 3 root root 4096 02 月 11 08:03 data
+drwxrwxr-x. 3 root root 4096 02 月 11 08:03 name1
+drwxrwxr-x. 3 root root 4096 02 月 11 08:03 nam
+```
+
+
+### 7.5 DataNode(面试开发重点)
+#### DataNode工作机制
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_020.jpg)
+> 1.一个数据块在DataNode上以文件形式存储在磁盘上,包括两个文件,一个是数据本身,一个是元数据包括数据块的长度,块数据的校验和,以及时间戳.
+> 
+> 2.DataNode启动后向NameNode注册,通过后,周期性(1 小时)向NameNode上报所有的块信息.
+> 
+> 3.心跳是每3秒一次,心跳返回结果带有NameNode给该DataNode的命令如复制块数据到另一台机器,或删除某个数据块。如果超过10分钟没有收到某个DataNode 的心跳,则认为该节点不可用.
+> 
+> 4.集群运行中可以安全加入和退出一些机器.
+
+#### 服役新数据节点
+> 随着公司业务的增长,数据量越来越大,原有的数据节点的容量已经不能满足存储数据的需求,需要在原有集群基础上动态添加新的数据节点.
+> 
+> 1.环境准备
+> (1) 克隆一台虚拟机
+> (2) 修改ip地址和主机名称
+> (3) 修改xsync文件,增加新增节点的ssh无密登录配置
+> (4) 删除原来 HDFS 文件系统留存的文件/opt/module/hadoop/data
+> 
+> 2.服役新节点具体步骤
+> (1) 在namenode的/opt/module/hadoop/etc/hadoop目录下创建 dfs.hosts 文件
+```
+[root@corehub-004 hadoop]$ pwd
+/opt/module/hadoop/etc/hadoop
+[root@corehub-004 hadoop]$ touch dfs.hosts
+[root@corehub-004 hadoop]$ vi dfs.hosts
+```
+> 添加如下主机名称（包含新服役的节点）
+corehub-001
+corehub-002
+corehub-003
+corehub-004
+
+> (2) 在namenode的hdfs-site.xml配置文件中增加dfs.hosts属性
+``` xml
+<property>
+<name>dfs.hosts</name>
+ <value>/opt/module/hadoop/etc/hadoop/dfs.hosts</value>
+</property>
+```
+
+> (3) 刷新 namenode
+```
+[root@corehub-001 hadoop]$ hdfs dfsadmin -refreshNodes Refresh nodes successful
+```
+
+> (4) 更新 resourcemanager 节点
+```
+[root@corehub-001 hadoop$ yarn rmadmin -refreshNodes
+19/02/19 14:17:11 INFO client.RMProxy: Connecting to ResourceManager at corehub-003/192.168.1.103:8033
+```
+
+> (5) 在 NameNode 的 slaves 文件中增加新主机名称
+增加 004
+corehub-001
+corehub-002
+corehub-003
+corehub-004
+
+> (6) 单独命令启动新的数据节点和节点管理器
+```
+[root@corehub-004 hadoop]$ sbin/hadoop-daemon.sh start datanode
+starting datanode, logging to 
+/opt/module/hadoop/logs/hadoop-atguigu-datanode-corehub-004.out
+[root@corehub-004 hadoop]$ sbin/yarn-daemon.sh start nodemanager
+starting nodemanager, logging to 
+/opt/module/hadoop/logs/yarn-atguigu-nodemanager-corehub-004.out
+```
+> (7) 在 web 浏览器上检查是否 ok
+> 如果数据不均衡,可以用命令实现集群的再平衡
+```
+[root@corehub-001 sbin]$ ./start-balancer.sh
+starting balancer, logging to 
+/opt/module/hadoop/logs/hadoop-atguigu-balancer-corehub-001.out
+Time Stamp Iteration# Bytes Already Moved Bytes Left To Move 
+Bytes Being Moved
+```
+
+
+#### 退役旧数据节点
+> 1.在 namenode 的/opt/module/hadoop/etc/hadoop 目录下创建 dfs.hosts.ex
+```
+[root@corehub-001 hadoop]$ pwd
+/opt/module/hadoop/etc/hadoop
+[root@corehub-001 hadoop]$ touch dfs.hosts.exclude
+[root@corehub-001 hadoop]$ vi dfs.hosts.exclude
+```
+> 添加如下主机名称 (要退役的节点)
+> corehub-004
+> 2.在namenode的hdfs-site.xml 配置文件中增加 dfs.hosts.exclude 属性
+``` xml
+<property>
+<name>dfs.hosts.exclude</name>
+ <value>/opt/module/hadoop/etc/hadoop/dfs.hosts.exclude</value>
+</property>
+```
+> 3.刷新namenode、刷新 resourcemanager
+```
+[root@corehub-001 hadoop]$ hdfs dfsadmin -refreshNodes Refresh nodes successful
+[root@corehub-001 hadoop]$ yarn rmadmin -refreshNodes
+19/02/19 14:55:56 INFO client.RMProxy: Connecting to ResourceManager at 
+corehub-001/192.168.1.103:8033
+```
+
+> 4.检查 web 浏览器,退役节点的状态为 decommission in progress(退役中)说明数据节点正在复制块到其他节点.
+> 
+> 5.等待退役节点状态为 decommissioned(所有块已经复制完成)停止该节点及节点资源管理器。注意：如果副本数是3,服役的节点小于等于3,是不能退役成功的,需要修改副本数后才能退役
+```
+[root@corehub-004 hadoop]$ sbin/hadoop-daemon.sh stop datanode
+stopping datanode
+[root@corehub-004 hadoop]$ sbin/yarn-daemon.sh stop nodemanager
+stopping nodemanager
+```
+> 6.从include文件中删除退役节点,再运行刷新节点的命令
+> (1) 从namenode的dfs.hosts文件中删除退役节点corehub-004
+corehub-001
+corehub-002
+corehub-003
+> (2) 刷新 namenode,刷新 resourcemanager
+```
+[root@corehub-001 hadoop]$ hdfs dfsadmin -refreshNodes
+Refresh nodes successful
+[root@corehub-001 hadoop]$ yarn rmadmin -refreshNodes
+19/02/19 14:55:56 INFO client.RMProxy: Connecting to ResourceManager at 
+corehub-002/192.168.1.103:8033
+```
+> 7.从 namenode的slave文件中删除退役节点corehub-004
+corehub-001
+corehub-002
+corehub-003
+> 8.如果数据不均衡，可以用命令实现集群的再平衡
+```
+[root@corehub-001 hadoop]$ sbin/start-balancer.sh 
+starting balancer, logging to 
+/opt/module/hadoop/logs/hadoop-atguigu-balancer-corehub-001.out
+Time Stamp Iteration# Bytes Already Moved Bytes Left To Move 
+Bytes Being Moved
+```
+
+#### DataNode多目录配置
+> 1.datanode也可以配置成多个目录,每个目录存储的数据不一样, 即:数据不是副本.
+> 
+> 2.具体配置如下：
+> hdfs-site.xml
+> ``` xml
+> <property>
+>  <name>dfs.datanode.data.dir</name>
+> <value>file:///${hadoop.tmp.dir}/dfs/data1,file:///${hadoop.tmp.dir}/dfs/data2</value>
+> </property>
+> ```
+
 
 ### 7.6 HDFS 2.X新特性
 #### 集群间数据拷贝
+> 1.scp实现两个远程主机之间文件复制
+> ```
+> 推 push
+> scp -r hello.txt root@corehub-002:/user/geekparkhub/hello.txt
+> ```
+> ```
+> 拉取 pull
+> scp -r root@corehub-002:/user/geekparkhub/hello.txt /hello.txt
+> ```
+> 2.采用distcp指令 实现两个hadoop集群之间递归数据复制
+> ```
+> bin/hadoop distcp hdfs://corehub-001:9000/user/geekparkhub/hello.txt hdfs://corehub-002:9000/user/geekparkhub/hello.txt
+> ```
 #### Hadoop存档
-#### 快照管理
+> 小文件存档
+> 
+> 1.HDFS存储小文件弊端
+> 每个文件均按块储存,每个块的元数据在NameNode的内存中,因此HDFS存储小文件会非常低效,因为大量的小文件会耗尽NameNode中的大部分内存,但注意,储存小文件所需要的磁盘容量和数据块的大小无关,例如,一个1MB的文件设置为128MB的块存储,实际使用的是1MB的磁盘空间,而不是128MB.
+> 
+> 2.解决存储小文件办法之一
+> HDFS存档文件或HAR文件,是一个更高效的文件存档工具,它将文件存入HDFS块,在减少NameNode内存使用的同时,允许对文件进行透明访问,具体说来,HDFS存档文件对内还是一个一个独立文件,对NameNode而言却是一个整体,减少了NameNode的内存.
+> 
+> 3.案例实操
+> 归档文件
+> 将/user/geekparkhub/input目录里面的所有文件归档成一个叫 myhar.har 的归档文件,并把归档后文件存储到/user/geekparkhub/output路径下
+``` powershell
+[root@corehub-001 hadoop]# hadoop archive -archiveName input.har -p /user/geekparkhub/input /user/geekparkhub/output
+19/02/20 00:21:28 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+19/02/20 00:21:30 INFO client.RMProxy: Connecting to ResourceManager at corehub-002/192.168.152.135:8032
+19/02/20 00:21:33 INFO client.RMProxy: Connecting to ResourceManager at corehub-002/192.168.152.135:8032
+19/02/20 00:21:33 INFO client.RMProxy: Connecting to ResourceManager at corehub-002/192.168.152.135:8032
+19/02/20 00:21:33 INFO mapreduce.JobSubmitter: number of splits:1
+19/02/20 00:21:34 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1550666045505_0001
+19/02/20 00:21:35 INFO impl.YarnClientImpl: Submitted application application_1550666045505_0001
+19/02/20 00:21:35 INFO mapreduce.Job: The url to track the job: http://corehub-002:8088/proxy/application_1550666045505_0001/
+19/02/20 00:21:35 INFO mapreduce.Job: Running job: job_1550666045505_0001
+19/02/20 00:21:53 INFO mapreduce.Job: Job job_1550666045505_0001 running in uber mode : false
+19/02/20 00:21:53 INFO mapreduce.Job:  map 0% reduce 0%
+19/02/20 00:22:07 INFO mapreduce.Job:  map 32% reduce 0%
+19/02/20 00:22:28 INFO mapreduce.Job:  map 43% reduce 0%
+19/02/20 00:22:57 INFO mapreduce.Job:  map 55% reduce 0%
+19/02/20 00:23:30 INFO mapreduce.Job:  map 100% reduce 0%
+19/02/20 00:23:41 INFO mapreduce.Job:  map 100% reduce 100%
+19/02/20 00:23:41 INFO mapreduce.Job: Job job_1550666045505_0001 completed successfully
+19/02/20 00:23:41 INFO mapreduce.Job: Counters: 49
+        File System Counters
+                FILE: Number of bytes read=535
+                FILE: Number of bytes written=238807
+                FILE: Number of read operations=0
+                FILE: Number of large read operations=0
+                FILE: Number of write operations=0
+                HDFS: Number of bytes read=585985943
+                HDFS: Number of bytes written=585985840
+                HDFS: Number of read operations=21
+                HDFS: Number of large read operations=0
+                HDFS: Number of write operations=7
+        Job Counters 
+                Launched map tasks=1
+                Launched reduce tasks=1
+                Other local map tasks=1
+                Total time spent by all maps in occupied slots (ms)=94659
+                Total time spent by all reduces in occupied slots (ms)=7959
+                Total time spent by all map tasks (ms)=94659
+                Total time spent by all reduce tasks (ms)=7959
+                Total vcore-milliseconds taken by all map tasks=94659
+                Total vcore-milliseconds taken by all reduce tasks=7959
+                Total megabyte-milliseconds taken by all map tasks=96930816
+                Total megabyte-milliseconds taken by all reduce tasks=8150016
+        Map-Reduce Framework
+                Map input records=5
+                Map output records=5
+                Map output bytes=518
+                Map output materialized bytes=535
+                Input split bytes=116
+                Combine input records=0
+                Combine output records=0
+                Reduce input groups=5
+                Reduce shuffle bytes=535
+                Reduce input records=5
+                Reduce output records=0
+                Spilled Records=10
+                Shuffled Maps =1
+                Failed Shuffles=0
+                Merged Map outputs=1
+                GC time elapsed (ms)=1297
+                CPU time spent (ms)=15680
+                Physical memory (bytes) snapshot=414289920
+                Virtual memory (bytes) snapshot=4127817728
+                Total committed heap usage (bytes)=251527168
+        Shuffle Errors
+                BAD_ID=0
+                CONNECTION=0
+                IO_ERROR=0
+                WRONG_LENGTH=0
+                WRONG_MAP=0
+                WRONG_REDUCE=0
+        File Input Format Counters 
+                Bytes Read=507
+        File Output Format Counters 
+                Bytes Written=0
+[root@corehub-001 hadoop]# 
+```
+> 解析查看归档
+```
+[root@corehub-001 hadoop]# hadoop fs -ls -R har:///user/geekparkhub/output/input.har
+19/02/20 00:28:03 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+-rw-r--r--   3 root supergroup  212046774 2019-02-14 17:33 har:///user/geekparkhub/output/input.har/hadoop-2.7.2.tar.gz
+-rw-r--r--   3 root supergroup  189815615 2019-02-14 17:34 har:///user/geekparkhub/output/input.har/jdk-8u162-linux-x64.tar.gz
+-rw-r--r--   3 root supergroup  184122460 2019-02-14 17:35 har:///user/geekparkhub/output/input.har/mysql-5.5.35-linux2.6-x86_64.tar.gz
+-rw-r--r--   3 root supergroup        471 2019-02-14 17:32 har:///user/geekparkhub/output/input.har/wc.input
+[root@corehub-001 hadoop]# 
+```
 #### 回收站
+> 开启回收站功能,可以将删除的文件在不超时的情况下,恢复元数据,起到防止误删除,备份等作用.
+> 
+> 1.回收站参数设置及工作机制
+> 开启回收站功能参数说明
+> 1.默认值 fs.trash.interval=0    0 表示禁用回收站,可以设置删除文件的存活时间.
+> 2.默认值 fs.trash.checkpoint.interval=0,检查回收站的间隔时间
+> 如果该值为 0,则该值设置和 fs.trash.interval 的参数值相等,要求 fs.trash.checkpoint.interval<=fs.trash.interval
+> 2.启用回收站
+> 修改core-site.xml 配置垃圾回收时间为1分钟
+``` xml
+<property>
+	<name>fs.trash.interval</name>
+	<value>1</value>
+</property>
+```
+> 3.查看回收站
+> 回收站在集群中路径: /user/geekparkhub/.Trash/ .....
+> 
+> 4.修改访问垃圾回收站用户名称
+> 进入垃圾回收站用户名称,默认是dr.who 修改为root用户
+> 修改core-site.xml
+``` xml
+<property>
+	<name>hadoop.http.staticuser.user</name>
+	<value>root</value>
+</property>
+```
+> 5.通过程序删除的文件不会经过回收站,需要调用moveToTrash()才进入回收站
+```
+Trash trash = New Trash(conf);
+trash.moveToTrash(path);
+```
+> 6.恢复回收站数据
+```
+hadoop fs -mv /user/geekparkhub/.Trash/Current/user/geekparkhub/input /user/geekparkhub/input
+```
+> 7.清空回收站
+```
+hadoop fs -expunge
+```
 
-### 7.7 HDFS HA高可用
+#### 快照管理
+> 快照相当于对目录做一个备份,并不会立即复制所有文件,而是指向同一个文件,当写入发生时,才会产生新文件.
+> 
+> 1.基本语法
+> (1) `hdfs dfsadmin -allowSnapshot 路径` (功能描述：开启指定目录的快照功能)
+> (2) `hdfs dfsadmin -disallowSnapshot 路径` (功能描述：禁用指定目录的快照功能,默认是禁用)
+> (3) `hdfs dfs -createSnapshot 路径` (功能描述：对目录创建快照)
+> (4) `hdfs dfs -createSnapshot 路径 名称` (功能描述：指定名称创建快照)
+> (5) `hdfs dfs -renameSnapshot 路径 旧名称 新名称` (功能描述：重命名快照)
+> (6) `hdfs lsSnapshottableDir` (功能描述：列出当前用户所有可快照目录)
+> (7) `hdfs snapshotDiff 路径 1 路径 2` (功能描述：比较两个快照目录的不同之处)
+> (8) `hdfs dfs -deleteSnapshot <path> <snapshotName>` (功能描述：删除快照)
+
+### 7.7 MapReduce 概述
+#### MapReduce 定义
+> MapReduce是一个分布式运算程序的编程框架,是用户开发''基于Hadoop的数据分析应用''的核心框架.
+> 
+> MapReduce核心功能是将用户编写的业务逻辑代码和自带默认组件整合成一个完整的分布式运算程序,并发运行在一个Hadoop集群上.
+> 
+#### MapReduce 优缺点
+> `优点`
+> 
+> MapReduce 易于编程
+> 它简单的实现一些接口,就可以完成一个分布式程序,这个分布式程序可以以分布到大量廉价的PC机器上运行,也就是说一个分布式程序,跟写一个简单的串行程序是一模一样的,就是因为这个特点使得MapReduce编程变得非常流行.
+> 
+> 良好的扩展性
+> 当计算资源不能得到满足的时候,可以通过简单的增加机器来扩展它的计算能力.
+> 
+> 高容错性
+> MapReduce设计的初衷就是使用程序能够部署在廉价的PC机器上,这就要求它具有很高的容错性,比如其中一台机器宕机了,它可以把上面的计算任务转移到另一个节点上运行,不至于这个任务运行失败,而且这个程序不需要人工参与,而完全是由Hadoop内部完成.
+> 
+> 适合PB级别以上海量数据的离线处理
+> 可是实现上千台服务器集群并发工作,提升数据处理能力.
+> 
+>  `缺点`
+>  
+>  不擅长 实时计算
+>  MapReduce无法向MYSQL一样,在毫秒或秒级别内返回结果.
+>  
+>  不擅长 流式计算
+>  流式计算的输入数据是动态的,而MapReduce的输入数据集是静态的,不能动态变化,这是因为MapReduce自身的设计特点决定了数据源必须是静态的.
+>  
+>  不擅长 DAG (有向图计算)
+>  多个应用程序存在依赖关系,后一个应用程序的输入为前一个的输出,在这种情况下,MapReduce并不是不能做,而是使用后,每个MaoReduce作业的输出结果都会写入到磁盘,会造成大量的磁盘I/O,导致性能非常的低.
+
+#### MapReduce 核心编程思想
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_021.jpg)
+
+> 1.分布式的运算程序往往需要分成至少2个阶段.
+> 
+> 2.第一个阶段的Maptask并发实例,完全并行运行,互不相干.
+> 
+> 3.第二个阶段的Reduce task并发实例互不相干,但是他们的数据依赖于上一个阶段的所有MapTask并发实例的输出.
+> 
+> 4.MapReduce编程模型只能包含一个Map阶段和一个Reduce阶段,如果用户的业务逻辑非常复杂,那就只能多个MapReduce程序,串行运行.
+
+#### MapReduce 进程
+> 一个完整的MapReduce程序在分布式运行时有三大实例进程
+> MrAppMaster 负责整个程序的过程调度及状态协调.
+> MapTask 负责Map阶段的整个数据处理流程.
+> ReduceTask 负责Reduce阶段的整个数据处理流程.
+
+#### WordCount 官方源码
+> 采用反编译工具编译源码,发现WordCount案例有Map类,Reduce类和驱动类,且数据的类型是Hadoop自身封装的序列化类型.
+
+#### 常用数据库 序列化类型
+> 常用数据类型对应 Hadoop数据序列化类型
+| Java数据类型 |Hadoop Writable |
+| :-------- | --------:| 
+| boolean    |   BooleanWritable |
+| byte    |   ByteWritable | 
+| int    |   IntWritable | 
+| float    |   FloatWritable | 
+| long    |   LongWritable | 
+| double    |   DoubleWritable | 
+| **`String`**    |   **`Text`** | 
+| map    |   MapWritable | 
+| array    |   ArrayWritable | 
+
+#### MapReduce 编程范式
+> 开发者编写程序分成三个部分 : **`Mapper`** / **`Reduce`** / **`Driver`**
+> 
+> **`Mapper阶段`**
+> 1.开发者自定义的Mapper要继承自己的父类.
+> 2.Mapper的输入数据是K/V(键值对)的形式,(K/V的类型可以自定义).
+> 3.Mapper中的业务逻辑写在map()方法中.
+> 4.Mapper的输出数据是K/V(键值对)的形式,(K/V的类型可以自定义).
+> 5.map()方法(MapTask进程)对每一个<K,V>调用一次.
+> 
+> **`Reduce阶段`**
+> 1.开发者自定义的Reducer要继承自己的父类.
+> 2.Reducer的输入数据类型对应Mapper的输出数据类型,也就是K/V.
+> 3.Reducer的业务逻辑写在reduce()方法中.
+> 4.ReduceTask进程对每一组相同的K的<K,V>组调用一次reduce()方法.
+> 
+> **`Driver阶段`**
+> 相当于Yarn集群的客户端,用于提交开发者整个程序到Yarn集群,提交的是封装了MapReduce程序相关运行参数的job对象.
+
+#### WordCount 案例实操
+##### 1. 案例需求 : 在给定的文本文件中统计输出每一个单词出现的次数.
+> 
+##### 2. 创建demo.txt 输入数据源文件
+> 
+##### 3. 编写 期望输出数据,例如
+> geek geek
+> geekparkhub
+> hackerparkhub hackerparkhub hackerparkhub hackerparkhub hackerparkhub
+> hadoop hadoop hadoop
+> test
+> helloworld helloworld
+> 
+##### 4. 需求分析
+> 按照MapReduce编程规范,分别编写Mapper,Reducer,Driver,如图所示
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_022.jpg)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_023.jpg)
+
+##### 5. JetBrains IntelliJ IDEA New Maven Project | 此过程省略
+##### 6. 配置 maven pom.xml文件
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.geekparkhub.mapreduce</groupId>
+    <artifactId>mapreduce</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <version>2.8.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-common</artifactId>
+            <version>2.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-client</artifactId>
+            <version>2.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hadoop</groupId>
+            <artifactId>hadoop-hdfs</artifactId>
+            <version>2.7.2</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+##### 7. 配置 log4j.properties文件
+``` prolog
+log4j.rootLogger=INFO, stdout
+log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+log4j.appender.stdout.layout.ConversionPattern=%d %p [%c] - %m%n
+log4j.appender.logfile=org.apache.log4j.FileAppender
+log4j.appender.logfile.File=target/corehub.log
+log4j.appender.logfile.layout=org.apache.log4j.PatternLayout
+log4j.appender.logfile.layout.ConversionPattern=%d %p [%c] - %m%n
+```
+##### 8. 创建 Map阶段WordcountMapper.class
+``` java
+package com.geekparkhub.hadoop.mapreduce;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * GeekDeveloper : JEEP-711
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * <p>
+ * Map 阶段
+ * <p>
+ * KEYIN 输入数据的key
+ * VALUEIN 输入数据的value
+ * KEYOUT 输出数据的key
+ * VALUEOUT 输出数据的value
+ * @author system
+ */
+
+public class WordcountMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+
+    Text k = new Text();
+    IntWritable v = new IntWritable(1);
+
+    /**
+     * Rewrite the map() method
+     * 重写map()方法
+     *
+     * @param key
+     * @param value
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+        /**
+         * 1. Get the first row of data, assuming the data is: geek geek
+         * 1. 获取第一行数据,假设数据是:geek geek
+         */
+        String line = value.toString();
+
+        /**
+         * 2. Cutting data
+         * 2. 切割空格数据
+         */
+        String[] words = line.split(" ");
+
+        /**
+         * 3. Loop through the data
+         * 3. 循环遍历数据
+         */
+        for (String word : words) {
+            k.set(word);
+            context.write(k, v);
+        }
+    }
+}
+```
+##### 9. 创建 Reduce阶段WordcountReducer.class
+``` java
+package com.geekparkhub.hadoop.mapreduce;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * GeekDeveloper : JEEP-711
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * <p>
+ * Reducer 阶段
+ * <p>
+ * KEYIN 既是map阶段输出的key
+ * VALUEIN 既是map阶段输出的value
+ * @author system
+ */
+
+public class WordcountReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+
+    /**
+     * Rewrite the reduce() method
+     * 重写reduce()方法
+     *
+     * @param key
+     * @param values
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+        IntWritable v = new IntWritable();
+        /**
+         * 1. Accumulate summation
+         * 1. 累加求和
+         */
+        int sum = 0;
+        for (IntWritable value : values) {
+            sum += value.get();
+        }
+        v.set(sum);
+
+        /**
+         * 2. Output data
+         * 2. 输出数据
+         */
+        context.write(key, v);
+    }
+}
+```
+##### 10. 创建 Driver阶段WordcountDriver.class
+``` java
+package com.geekparkhub.hadoop.mapreduce;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.log4j.Logger;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * GeekDeveloper : JEEP-711
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * <p>
+ * Driver 阶段
+ *
+ * @author system
+ */
+
+public class WordcountDriver {
+
+    /**
+     * Statement Logger
+     */
+    private static org.apache.log4j.Logger log = Logger.getLogger(WordcountDriver.class);
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(WordcountDriver.class);
+
+        /**
+         * 3. Associate Map and Reduce classes
+         * 3. 关联Map和Reduce类
+         */
+        job.setMapperClass(WordcountMapper.class);
+        job.setReducerClass(WordcountReducer.class);
+
+        /**
+         * 4. Set the key and value types of the output data in the Mapper stage.
+         * 4. 设置Mapper阶段输出数据的key与value类型
+         */
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(IntWritable.class);
+
+        /**
+         * 5. Set the key and value types for the final data output
+         * 5. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+        /**
+         * 6. Set the input path and output path
+         * 6. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+
+##### 11. 运行结果
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_024.jpg)
+
+``` powershell
+bogon:resources system$ ls -ll
+total 48
+drwxrwxrwx  1 system  staff  8192  3  2 17:00 input
+-rwxrwxrwx  1 system  staff   436  1 21 22:15 log4j.properties
+drwxrwxrwx  1 system  staff  8192  3  2 17:21 output
+bogon:resources system$ cd output/
+._SUCCESS.crc      _SUCCESS           
+.part-r-00000.crc  part-r-00000       
+bogon:resources system$ cat output/part-r-00000
+geek	2
+geekparkhub	1
+hackerparkhub	5
+hadoop	3
+helloworld	2
+test	1
+bogon:resources system$ 
+```
+
+## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+### 7.7.1 Hadoop 序列化
+#### 序列化 概述
+#### 自定义bean对象 实现序列化接口
+#### 序列化 案例实操
+
+### 7.7.2 MapReduce 框架原理
+
+### 7.7.3.1 InputFormat 数据输入
+#### Job提交流程源码 和 切片源码详解
+#### FileInputFormat 切片
+#### CombineTexInputFormat 切片机制
+#### CombineTexInputFormat 案例实操
+#### FileInputFormat 实现类
+#### KeyValueTexInputFormat 使用案例
+#### NLiveInputFormat 使用案例
+#### 自定义InputFormat
+#### 自定义InputFormat 案例实操
+#### 37.7.3.2 MapReduce 工作流程
+
+#### 7.7.3.3 Shuffle 机制
+##### Shuffle 机制
+##### Partition 分区
+##### Partition分区 实操案例
+##### WrittableComparable 排序
+##### WrittableComparable 排序 实操案例(全排序)
+##### WrittableComparable 排序 实操案例(区内排序)
+##### Combine 合并
+##### Combine 合并案例实操
+
+#### 7.7.3.4 Map Task 工作机制
+#### 7.7.3.5 Reduce Task 工作机制
+#### 7.7.3.6 OutputFromat 数据输出
+#### 7.7.3.7 Join 多种应用
+#### 7.7.3.8 计数器应用
+#### 7.7.3.9 数据清洗(ETL)
+#### 7.7.3.10 MapReduce 开发总结
+
+### 7.7.4 Hadoop 数据压缩
+#### 数据压缩 概述
+#### MR支持压缩编码
+
+#### 压缩方式选择
+##### Gzip压缩
+##### Bzip压缩
+##### Lzo压缩
+##### Snappy 压缩
+
+#### 压缩位置选择
+#### 压缩参数配置
+
+#### 压缩实操案例
+##### 数据流的压缩和解压缩
+##### Map输出端采用压缩
+##### Reduce输出端采用压缩
+
+### 7.7.5 Yarn资源调度器 (面试重点)
+#### Yarn 基本架构
+#### Yarn 工作机制
+#### 作业提交全过程
+#### 资源调度器
+
+### 7.7.6 Hadoop 企业优化
+#### MapReduce 运行缓慢的原因
+#### MapReduce 优化方案
+##### 数据输入
+##### Map阶段
+##### Reduce阶段
+##### I/O传输
+##### 数据倾斜问题
+##### 常用调优参数
+
+#### HDFS小文件优化方法
+##### HDFS小文件弊端
+##### HDFS小文件解决方案
+
+### 7.7.7 MapReduce 扩展案例
+#### 倒排索引案例(多job串联)
+#### TopN案例
+#### 找博客共同好友案例
 
 
+### 8. HDFS HA高可用
 
 
+## 9. 常见错误(各种坑)及解决方案
 
 
-## 7. 常见错误(各种坑)及解决方案
-
-
-## 8. 修仙之道 技术架构迭代 登峰造极之势
+## 10. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
 
@@ -2914,7 +4886,11 @@ bin/hadoop command [genericOptions] [commandOptions]
 - W3C/BlogHome：<https://www.w3cschool.cn/jeep711blog/>
 - CSDN/BlogHome：<http://blog.csdn.net/jeep911>
 - 51CTO/BlogHome：<http://jeep711.blog.51cto.com/>
-- Email：<jeep711.home.@gmail.com>—— <jeep-711@outlook.com> —— <geekparkhub@outlook.com>
+- **`Official Public Email`**
+- Group Email：<geekparkhub@outlook.com> —— <hackerparkhub@outlook.com> —— <hackerpark@hotmail.com>
+- User Email：<jeep711.home.@gmail.com> —— <jeep-711@outlook.com>
+- System Email：<systemhub-711@outlook.com>
+- Service Email：<servicehub-711@outlook.com>
 
 
 
@@ -2933,4 +4909,4 @@ bin/hadoop command [genericOptions] [commandOptions]
 ## License 开源协议
 [Apache License Version 2.0](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/LICENSE)
 
-------
+---------

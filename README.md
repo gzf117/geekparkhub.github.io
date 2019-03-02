@@ -1,6 +1,6 @@
 # 🙈 修仙之道 🙈
 
-@(Update Time:2019-02-05)[Docs Language:简体中文 & English | Programing Language:Technology Architecture | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub)]
+@(Update Time:2019-03-02)[Docs Language:简体中文 & English | Programing Language:Technology Architecture | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub)]
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/hello_world.jpg" alt="修仙之路" title="修仙之路">
@@ -17,6 +17,11 @@
 - **GeekParkHub GiteeHome:**<https://gitee.com/geekparkhub>
 - **欢迎贡献`各领域开源野生Blog`&`笔记`&`文章`&`片段`&`分享`&`创想`&`OpenSource Project`&`Code`&`Code Review`**
 - 🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈 issues: [geekparkhub.github.io/issues](https://github.com/geekparkhub/geekparkhub.github.io/issues) 🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈🙈
+- **`Official Public Email`**
+- Group Email：<geekparkhub@outlook.com> —— <hackerparkhub@outlook.com> —— <hackerpark@hotmail.com>
+- User Email：<jeep711.home.@gmail.com> —— <jeep-711@outlook.com>
+- System Email：<systemhub-711@outlook.com>
+- Service Email：<servicehub-711@outlook.com>
 
 ### 大数据生态系统 修仙之道
 
