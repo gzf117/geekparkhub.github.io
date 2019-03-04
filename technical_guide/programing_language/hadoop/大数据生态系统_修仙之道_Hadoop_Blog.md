@@ -1,3 +1,4 @@
+
 # 大数据生态系统 修仙之道 Hadoop Blog
 
 @(2019-01-22)[Docs Language:简体中文 & English|Programing Language:Hadoop|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg)|GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub)]
@@ -4767,10 +4768,220 @@ test	1
 bogon:resources system$ 
 ```
 
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+##### 12.集群测试 WordCount
+###### 在中pom.xml添加依赖,使用maven install 将WordCount程序打包成jar包
+``` xml
+<build> 
+  <plugins> 
+    <plugin> 
+      <artifactId>maven-compiler-plugin</artifactId>  
+      <version>2.3.2</version>  
+      <configuration> 
+        <source>1.8</source>  
+        <target>1.8</target> 
+      </configuration> 
+    </plugin>  
+    <plugin> 
+      <artifactId>maven-assembly-plugin</artifactId>  
+      <configuration> 
+        <descriptorRefs> 
+          <descriptorRef>jar-with-dependencies</descriptorRef> 
+        </descriptorRefs>  
+        <archive> 
+          <manifest> 
+          <mainClass>com.geekparkhub.hadoop.mapreduce.WordcountDriver</mainClass> 
+          </manifest> 
+        </archive> 
+      </configuration>  
+      <executions> 
+        <execution> 
+          <id>make-assembly</id>  
+          <phase>package</phase>  
+          <goals> 
+            <goal>single</goal> 
+          </goals> 
+        </execution> 
+      </executions> 
+    </plugin> 
+  </plugins> 
+</build>
+```
+
+###### 运行WordCount jar包程序
+``` powershell
+[root@systemhub511 hadoop]# hadoop jar mapreduce.jar com.geekparkhub.hadoop.mapreduce.WordcountDriver /user/geekparkhub/input /user/geekparkhub/output
+19/03/04 21:12:56 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+19/03/04 21:12:57 INFO client.RMProxy: Connecting to ResourceManager at systemhub611/172.16.168.131:8032
+19/03/04 21:12:57 WARN mapreduce.JobResourceUploader: Hadoop command-line option parsing not performed. Implement the Tool interface and execute your application with ToolRunner to remedy this.
+19/03/04 21:12:58 INFO input.FileInputFormat: Total input paths to process : 1
+19/03/04 21:12:58 INFO mapreduce.JobSubmitter: number of splits:1
+19/03/04 21:12:58 INFO mapreduce.JobSubmitter: Submitting tokens for job: job_1551704437826_0003
+19/03/04 21:12:58 INFO impl.YarnClientImpl: Submitted application application_1551704437826_0003
+19/03/04 21:12:58 INFO mapreduce.Job: The url to track the job: http://systemhub611:8088/proxy/application_1551704437826_0003/
+19/03/04 21:12:58 INFO mapreduce.Job: Running job: job_1551704437826_0003
+19/03/04 21:13:08 INFO mapreduce.Job: Job job_1551704437826_0003 running in uber mode : false
+19/03/04 21:13:08 INFO mapreduce.Job:  map 0% reduce 0%
+19/03/04 21:13:14 INFO mapreduce.Job:  map 100% reduce 0%
+19/03/04 21:13:22 INFO mapreduce.Job:  map 100% reduce 100%
+19/03/04 21:13:22 INFO mapreduce.Job: Job job_1551704437826_0003 completed successfully
+19/03/04 21:13:22 INFO mapreduce.Job: Counters: 49
+        File System Counters
+                FILE: Number of bytes read=230
+                FILE: Number of bytes written=235407
+                FILE: Number of read operations=0
+                FILE: Number of large read operations=0
+                FILE: Number of write operations=0
+                HDFS: Number of bytes read=261
+                HDFS: Number of bytes written=66
+                HDFS: Number of read operations=6
+                HDFS: Number of large read operations=0
+                HDFS: Number of write operations=2
+        Job Counters 
+                Launched map tasks=1
+                Launched reduce tasks=1
+                Data-local map tasks=1
+                Total time spent by all maps in occupied slots (ms)=3817
+                Total time spent by all reduces in occupied slots (ms)=4512
+                Total time spent by all map tasks (ms)=3817
+                Total time spent by all reduce tasks (ms)=4512
+                Total vcore-milliseconds taken by all map tasks=3817
+                Total vcore-milliseconds taken by all reduce tasks=4512
+                Total megabyte-milliseconds taken by all map tasks=3908608
+                Total megabyte-milliseconds taken by all reduce tasks=4620288
+        Map-Reduce Framework
+                Map input records=6
+                Map output records=14
+                Map output bytes=196
+                Map output materialized bytes=230
+                Input split bytes=121
+                Combine input records=0
+                Combine output records=0
+                Reduce input groups=6
+                Reduce shuffle bytes=230
+                Reduce input records=14
+                Reduce output records=6
+                Spilled Records=28
+                Shuffled Maps =1
+                Failed Shuffles=0
+                Merged Map outputs=1
+                GC time elapsed (ms)=161
+                CPU time spent (ms)=1130
+                Physical memory (bytes) snapshot=289771520
+                Virtual memory (bytes) snapshot=4118065152
+                Total committed heap usage (bytes)=139399168
+        Shuffle Errors
+                BAD_ID=0
+                CONNECTION=0
+                IO_ERROR=0
+                WRONG_LENGTH=0
+                WRONG_MAP=0
+                WRONG_REDUCE=0
+        File Input Format Counters 
+                Bytes Read=140
+        File Output Format Counters 
+                Bytes Written=66
+[root@systemhub511 hadoop]# 
+```
+###### 使用hadoop fs -cat 指令查看 WordCount统计结果
+```powershell
+[root@systemhub511 hadoop]# hadoop fs -cat /user/geekparkhub/output/part-r-00000
+19/03/04 21:24:23 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+geek    2
+geekparkhub     1
+hackerparkhub   5
+hadoop  3
+helloworld      2
+test    1
+[root@systemhub511 hadoop]# 
+```
+
+
+
 ### 7.7.1 Hadoop 序列化
 #### 序列化 概述
+##### 什么是序列化
+> 序列化：就是把内存中的对象,转换成字节序列,(或其他数据传输协议)以便于存储到磁盘(持久化)和网络传输.
+> 
+> 反序列化：就是将收到字节序列,(或其他数据传输协议)或者是磁盘的持久化数据,转换成内存中的对象.
+> 
+##### 为什么要序列化
+> 一般来讲,''存活''对象只能生存在内存里,关机断电就没有了,而且''存活''对象只能由本地的进程使用,不能被发送到网络上的另一台计算机,然而序列化可以存储''存活''对象,可以将''存活''对象发送到远程计算机.
+> 
+##### 为什么不使用java序列化
+> java序列化是一个重量级序列化框架(Serializable),一个对象被序列化后,会附带很多额外的信息(各种校验信息,Header,继承体系等),不便于在网络上高效传输,所以Hadoop自己开发了一套序列化机制(Writable).
+> 
+##### Hadoop序列化特点
+> 紧凑：高效使用存储空间.
+> 快速：读写数据的额外开销小.
+> 可扩展性：随着通讯协议的升级而升级.
+> 互操作性：支持多语言交互.
+
 #### 自定义bean对象 实现序列化接口
+> 在企业开发中往往常用的基本序列化类型不能满足所有需求,比如在Hadoop框架内部传递一个bean对象,那么该对象就需要实现序列化接口.
+> 
+> 具体实现bean对象序列化 七步走
+> 
+> 1.必须实现Writable接口.
+> 2.反序列化时,需要反射机制调用空构造函数,所以必须要有空构造函数.
+``` java
+    /**
+     * When deserializing, you need to reflect the call to the null parameter constructor.
+     * 反序列化时,需要反射调用空参构造函数
+     */
+    public FlowBean() {
+        super();
+    }
+```
+> 3.重写序列化方法.
+``` java
+    /**
+     * Serialization method
+     * 序列化方法
+     *
+     * @param out
+     * @throws IOException
+     */
+    @Override
+    public void write(DataOutput out) throws IOException {
+        out.writeLong(upFlow);
+        out.writeLong(downFlow);
+        out.writeLong(sumFlow);
+    }
+```
+> 4.重写反序列化方法
+> 5.注意反序列化的顺序和序列化的顺序完全一致
+``` java
+    /**
+     * Deserialization method, the deserialization method read order must be consistent with the write order of the write serialization method
+     * 反序列化方法,反序列化方法读顺序必须和写序列化方法的写顺序必须一致
+     *
+     * @param in
+     * @throws IOException
+     */
+    @Override
+    public void readFields(DataInput in) throws IOException {
+        this.upFlow = in.readLong();
+        this.downFlow = in.readLong();
+        this.sumFlow = in.readLong();
+    }
+```
+> 6.要想把结果显示在文件中，需要重写toString()，可用”\t”分开，方便后续用.
+``` java
+    /**
+     * Write a to String method to facilitate subsequent printing to text
+     * 编写toString方法,方便后续打印到文本
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        return upFlow + "\t" + downFlow + "\t" + sumFlow;
+    }
+```
+> 7.如果需要将自定义的bean放在key中传输，则还需要实现comparable接口，因为mapreduce框中的shuffle过程一定会对key进行排序
+
+
+## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
 #### 序列化 案例实操
 
 ### 7.7.2 MapReduce 框架原理
@@ -4791,9 +5002,9 @@ bogon:resources system$
 ##### Shuffle 机制
 ##### Partition 分区
 ##### Partition分区 实操案例
-##### WrittableComparable 排序
-##### WrittableComparable 排序 实操案例(全排序)
-##### WrittableComparable 排序 实操案例(区内排序)
+##### WritableComparable 排序
+##### WritableComparable 排序 实操案例(全排序)
+##### WritableComparable 排序 实操案例(区内排序)
 ##### Combine 合并
 ##### Combine 合并案例实操
 
