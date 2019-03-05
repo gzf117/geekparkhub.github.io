@@ -4980,10 +4980,444 @@ test    1
 ```
 > 7.如果需要将自定义的bean放在key中传输，则还需要实现comparable接口，因为mapreduce框中的shuffle过程一定会对key进行排序
 
+#### 序列化 案例实操
+##### 1.需求
+> 统计每一个手机号耗费的总上行流量、下行流量、总流量.
+##### 2.获取数据源:来自网络资源
+##### 3.输入数据格式:
+```
+1   130001099990 111.186.104.167 www.baidu.com 28219 21031 200
+2   15026889999 180.166.156.78 www.google.com 264 0 200
+3   13601029999 212.64.111.89 www.github.com 132 1512 200
+4   14512449999 117.135.178.67 www.qq.com 1929 180 200
+5   15210039999 211.136.129.80 www.shouhu.com 132 15152 200
+6   15510759999 112.65.214.26 www.qingha.com 2008 2779 200
+7   15810579999 140.206.76.67 www.alibaba.com 9087 3673 200
+8   13900999999 27.115.112.25 www.info.xcar.com.cn 46 177 200
+9   13341098674 39.129.1.90 www.yq.aliyun.com 976 7661 200
+10  14701159999 218.206.61.16 www.flaticon.com 5432 12 200
+11  15116949999 219.159.60.26 www.translate.google.com 3 398 200
+12  13261999999 36.111.136.126 www.blog.csdn.net 745 21 200 
+13  15910419999 222.74.169.128 www.zhangshengrong.com 3890 496 200
+14  18618689999 61.138.127.67 www.cn.bing.com 63 1498 200
+15  18810599999 101.124.10.67 www.gitee.com 196 3360 200
+16  18901009997 106.39.56.671 www.pai.com 16 289 200
+17  13341099905 114.67.225.123 www.importnew.com 203 46 200
+18  18221609878 116.196.121.45 www.booking.com 1732 698 200
+19  01058484076 192.144.135.12 www.zhipin.com 80 1469 200
+20  01082895409 221.176.7.23 www.bing.com 7596 264 200 
+21  18674215555 139.219.14.124 www.facebook.com 92 738 200
+22  15527194444 211.150.90.01 www.refinery29.com 5493 189 200 
+23  31125344449 113.61.165.26 www.thenextweb.com 1892 25 200
+24  15542102444 180.218.164.34 www.cinemablend.com 394 29 200
+25  18674215555 60.245.45.34 www.oschina.net 4782 968 200
+26  18476943333 61.139.47.27 www.tool.cn 3215 14 200
+```
+##### 4.输出数据格式:
+```
+    13560436666  1116  954  2070
+
+    手机号码 上行流量 下行流量 总流量
+```
+##### 5.分析基本思路:
+> Map阶段:
+> 1.读取一行数据,切分字段
+> 2.抽取手机号、上行流量、下行流量
+> 3.以手机号为key,bean对象为value输出,即context.write(手机号,bean);
+> 
+> Reduce阶段:
+> 1.累加上行流量和下行流量得到总流量.
+> 2.实现自定义的bean来封装流量信息,并将bean作为map输出的key来传输
+> 3.MR程序在处理数据的过程中会对数据排序(map输出的kv对传输到reduce之前,会排序),排序的依据是map输出的key,所以我们如果要实现自己需要的排序规则,则可以考虑将排序因素放到key中,让key实现接口:WritableComparable,然后重写key的compareTo方法
+##### 6.编写MapReduce程序
+> 编写流量统计 FlowBean
+``` java
+package com.geekparkhub.hadoop.flowsum;
+
+import org.apache.hadoop.io.Writable;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ * @author system
+ * <p>
+ * FlowBean 序列化
+ * <p>
+ */
+
+public class FlowBean implements Writable {
+
+    /**
+     * Upstream traffic
+     * 上行流量
+     */
+    private long upFlow;
+
+    /**
+     * Downstream traffic
+     * 下行流量
+     */
+    private long downFlow;
+
+    /**
+     * Total flow
+     * 总流量
+     */
+    private long sumFlow;
+
+    /**
+     * When deserializing, you need to reflect the call to the null parameter constructor.
+     * 反序列化时,需要反射调用空参构造器
+     */
+    public FlowBean() {
+        super();
+    }
+
+    /**
+     * Parametric constructor
+     * 有参构造器
+     *
+     * @param upFlow
+     * @param downFlow
+     */
+    public FlowBean(long upFlow, long downFlow) {
+        super();
+        upFlow = upFlow;
+        downFlow = downFlow;
+        sumFlow = upFlow + downFlow;
+    }
+
+    /**
+     * Serialization method
+     * 序列化方法
+     *
+     * @param out
+     * @throws IOException
+     */
+    @Override
+    public void write(DataOutput out) throws IOException {
+        out.writeLong(upFlow);
+        out.writeLong(downFlow);
+        out.writeLong(sumFlow);
+    }
+
+    /**
+     * Deserialization method, the deserialization method read order must be consistent with the write order of the write serialization method
+     * 反序列化方法,反序列化方法读顺序必须和写序列化方法的写顺序必须一致
+     *
+     * @param in
+     * @throws IOException
+     */
+    @Override
+    public void readFields(DataInput in) throws IOException {
+        upFlow = in.readLong();
+        downFlow = in.readLong();
+        sumFlow = in.readLong();
+    }
+
+    /**
+     * Write a to String method to facilitate subsequent printing to text
+     * 编写toString方法,方便后续打印到文本
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        return upFlow + "\t" + downFlow + "\t" + sumFlow;
+    }
+
+    /**
+     * Get&Set method
+     * Get&Set方法
+     *
+     * @return
+     */
+    public long getUpFlow() {
+        return upFlow;
+    }
+
+    public void setUpFlow(long upFlow) {
+        this.upFlow = upFlow;
+    }
+
+    public long getDownFlow() {
+        return downFlow;
+    }
+
+    public void setDownFlow(long downFlow) {
+        this.downFlow = downFlow;
+    }
+
+    public long getSumFlow() {
+        return sumFlow;
+    }
+
+    public void setSumFlow(long sumFlow) {
+        this.sumFlow = sumFlow;
+    }
+
+    public void set(long upFlow2,long downFlow2){
+        upFlow = upFlow2;
+        downFlow = downFlow2;
+        sumFlow = upFlow2 + downFlow2;
+    }
+
+}
+```
+> 编写流量统计 FlowCountMapper
+``` java
+package com.geekparkhub.hadoop.flowsum;
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * FlowCountMapper 序列化
+ * <p>
+ */
+
+public class FlowCountMapper extends Mapper<LongWritable, Text, Text, FlowBean> {
+
+    /**
+     * Extract k, v
+     * 提取k,v
+     */
+    Text k = new Text();
+    FlowBean v = new FlowBean();
+
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Get the first row of data
+         * 获取第一行数据
+         */
+        String line = value.toString();
+
+        /**
+         * Cutting data
+         * 切割数据
+         */
+        String[] fields = line.split(" ");
+
+        /**
+         * Package object
+         * 封装对象
+         */
+
+        // 封装手机号 | Package phone number
+        k.set(fields[1]);
+
+        long upFlow = Long.parseLong(fields[fields.length - 3]);
+        long downFlow = Long.parseLong(fields[fields.length - 2]);
+
+        v.setUpFlow(upFlow);
+        v.setDownFlow(downFlow);
+
+        /**
+         * data input
+         * 写入数据
+         */
+        context.write(k, v);
+    }
+}
+```
+> 编写流量统计 FlowCountReducer
+``` java
+package com.geekparkhub.hadoop.flowsum;
+
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.io.Text;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * FlowCountReducer 序列化
+ * <p>
+ */
+
+public class FlowCountReducer extends Reducer<Text,FlowBean,Text,FlowBean> {
+
+    FlowBean v = new FlowBean();
+
+    @Override
+    protected void reduce(Text key, Iterable<FlowBean> values, Context context) throws IOException, InterruptedException {
+
+        long sum_upFlow = 0;
+        long sum_downFlow = 0;
+
+        /**
+         * Cumulative summation
+         * 累加求和
+         */
+        for (FlowBean flowBean : values){
+            sum_upFlow += flowBean.getUpFlow();
+            sum_downFlow += flowBean.getDownFlow();
+        }
+        v.set(sum_upFlow,sum_downFlow);
+
+        /**
+         * data input
+         * 写入数据
+         */
+        context.write(key,v);
+    }
+}
+```
+> 编写流量统计 FlowsumDriver
+``` java
+package com.geekparkhub.hadoop.flowsum;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.fs.Path;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * FlowsumDriver 序列化
+ * <p>
+ */
+
+public class FlowsumDriver {
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        /**
+         * Preset data input and output path
+         * 预设数据输入输出路径
+         */
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_flow",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_flow"};
+
+        /**
+         * Get configuration information, or job object instance
+         * 获取配置信息,或者job对象实例
+         */
+        Configuration configuration = new Configuration();
+        Job job = Job.getInstance(configuration);
+
+        /**
+         * Specify the local path where the jar package of the program is located.
+         * 指定本程序的jar包所在的本地路径
+         */
+        job.setJarByClass(FlowsumDriver.class);
+
+        /**
+         * Specify the mapper/Reducer business class to be used by this business job
+         * 指定本业务job要使用的mapper/Reducer业务类
+         */
+        job.setMapperClass(FlowCountMapper.class);
+        job.setReducerClass(FlowCountReducer.class);
+
+        /**
+         * Specify the kv type of the mapper output data
+         * 指定mapper输出数据的kv类型
+         */
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(FlowBean.class);
+
+        /**
+         * Specify the kv type of the final output data
+         * 指定最终输出的数据的kv类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(FlowBean.class);
+
+        /**
+         * Specify the directory where the input input file of the job is located.
+         * 指定job的输入原始文件所在目录
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * Submit the relevant parameters configured in the job, and the jar package where the java class used by the job is located, and submit it to the yarn to run.
+         * 将job中配置的相关参数,以及job所用的java类所在的jar包,提交给yarn去运行
+         */
+        boolean results = job.waitForCompletion(true);
+        System.exit(results ? 0 : 1);
+    }
+}
+```
+
+##### 输入运行结果
+```
+01058484076	890	1469	2359
+01082895409	7596	264	7860
+130001099990	28219	21031	49250
+13261999999	745	231	976
+13341098674	976	7661	8637
+13341099905	203	466	669
+13601029999	132	1512	1644
+13900999999	456	177	633
+14512449999	1929	180	2109
+14701159999	5432	122	5554
+15026889999	264	980	1244
+15116949999	743	398	1141
+15210039999	132	15152	15284
+15510759999	2008	2779	4787
+15527194444	5493	189	5682
+15542102444	3394	329	3723
+15810579999	9087	3673	12760
+15910419999	3890	496	4386
+18221609878	1732	698	2430
+18344215555	3992	738	4730
+18476943333	3215	164	3379
+18618689999	663	1498	2161
+18674215555	4782	968	5750
+18810599999	196	3360	3556
+18901009997	816	289	1105
+31125344449	1892	255	2147
+```
+
 
 ## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
-#### 序列化 案例实操
-
 ### 7.7.2 MapReduce 框架原理
 
 ### 7.7.3.1 InputFormat 数据输入
