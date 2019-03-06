@@ -97,7 +97,7 @@
 | 数据挖掘组  | 算法工程师 推荐系统工程师 用户画像工程师 |
 | 数据报表开发组  | JAVAEE工程师 |
 
-## 3. 探讨Hadoop框架 大数据生态
+## 3. 探索Hadoop框架 大数据生态
 
 ### Hadoop 简介
 
@@ -5416,15 +5416,222 @@ public class FlowsumDriver {
 31125344449	1892	255	2147
 ```
 
-
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
 ### 7.7.2 MapReduce 框架原理
+### MapReduce 框架原理流程图(一)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_026.jpg)
+
+### MapReduce 框架原理流程图(二)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_027.jpg)
+
+>  流程详解上面的流程是整个mapreduce最全工作流程,但是shuffle过程只是从第7步开始 到第16步结束,具体shuffle过程详解,如下:
+>  
+> 1.maptask收集我们的map()方法输出的kv对,放到内存缓冲区中.
+> 
+> 2.从内存缓冲区不断溢出本地磁盘文件,可能会溢出多个文件.
+> 
+> 3.多个溢出文件会被合并成大的溢出文件.
+> 4.在溢出过程中,及合并的过程中,都要调用partitioner进行分区和针对key进行排序.
+> 
+> 5.reducetask根据自己的分区号,去各个maptask机器上取相应的结果分区数据.
+> 6.reducetask会取到同一个分区的来自不同maptask的结果文件,reducetask会将这些文件再进行合并(归并排序).
+> 
+> 7.合并成大文件后,shuffle的过程也就结束了,后面进入reducetask的逻辑运算过程,(从文件中取出一个一个的键值对group,调用用户自定义的reduce()方法).
+> 
+> 8.注意Shuffle中的缓冲区大小会影响到mapreduce程序的执行效率,原则上说,缓冲区越大,磁盘io的次数越少,执行速度就越快,缓冲区的大小可以通过参数调整,参数:io.sort.mb,默认100M.
 
 ### 7.7.3.1 InputFormat 数据输入
+#### 切片与MapTask并行度决定机制
+##### 1.问题引出
+>  MapTask的并行度决定Map阶段的任务处理并发度,进而影响到整个Job的处理速度.
+> Q&A 1G的数据,启动8个MapTask,可以提高集群的并发处理能力,那么1K的数据,也启动8个MapTask,也会提高集群性能吗?
+> MapTask并行任务是否越多越好? 哪些因素影响到MapTask并行度?
+##### 2.MapTask并行度决定机制
+> 数据块:Block是HDFS物理上把数据分成一块一块.
+> 数据切片:数据切片是指在逻辑上对输入进行分片,并不会在磁盘上将其切分片进行存储.
+##### 数据切片与MapTask并行度决定机制
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_025.jpg)
+
 #### Job提交流程源码 和 切片源码详解
+
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_028.jpg)
+
+##### 提取 job提交流程 核心源码
+``` java
+waitForCompletion();
+    submit();
+        // 建立连接
+        connect();
+        // 创建提交job的代理
+        new Cluster(getConfiguration());
+            // 判断是本地yarn还是远程
+            initialize(jobTrackAddr, conf); 
+// 提交
+sjobsubmitter.submitJobInternal(Job.this, cluster);
+    // 创建给集群提交数据的Stag路径
+    Path jobStagingArea = JobSubmissionFiles.getStagingDir(cluster, conf); 
+    // 获取jobid,并创建job路径
+    JobID jobId = submitClient.getNewJobID();
+    // 拷贝jar包到集群
+    copyAndConfigureFiles(job, submitJobDir);
+        rUploader.uploadFiles(job, jobSubmitDir);
+    // 计算切片,生成切片规划文件
+    writeSplits(job, submitJobDir); 
+        maps = writeNewSplits(job, jobSubmitDir); 
+            input.getSplits(job); 
+    // 向Stag路径写xml配置文件
+    writeConf(conf, submitJobFile);
+        conf.writeXml(out);
+    // 提交job,返回提交状态
+    status = submitClient.submitJob(jobId,submitJobDir.toString(),job.getCredentials());
+```
+
 #### FileInputFormat 切片
+> FileInputFormat源码解析(input.getSplits(job))
+> 找到数据存储的目录.
+> 开始遍历处理(规划切片)下的每一个文件遍历第一个文件ss.txt.
+> a）获取文件大小fs.sizeOf(ss.txt).
+> b）计算切片大小computeSliteSize(Math.max(minSize,Math.min(maxSize,blocksize)))=blocksize=128M.
+> c）默认情况下,切片大小=blocksized.
+> 开始切,形成第1个切片:ss.txt—0:128M,第2个切片ss.txt—128:256M,第3个切片ss.txt—256M:300M,(每次切片时,都要判断切完剩下的部分是否大于块的1.1倍,不大于1.1倍就划分一块切片).
+> e）将切片信息写到一个切片规划文件中.
+> f）整个切片的核心过程在getSplit()方法中完成.
+> g）数据切片只是在逻辑上对输入数据进行分片,并不会再磁盘上将其切分成分片进行存储,InputSplit只记录了分片的元数据信息,比如起始位置、长度以及所在的节点列表等.
+> h）注意:block是HDFS物理上存储的数据,切片是对数据逻辑上的划分.
+> 提交切片规划文件到yarn上,yarn上的MrAppMaster就可以根据切片规划文件计算开启maptask个数.
+
+#### FileInputFormat 切片机制
+##### 切片机制
+> FileInputFormat中默认的切片机制:
+> 1.简单地按照文件的内容长度进行切片.
+> 2.切片大小,默认等于block大小.
+> 3.切片时不考虑数据集整体,而是逐个针对每一个文件单独切片.
+##### 案例分析
+> 比如待处理数据有两个文件:
+> 
+> file1.txt 320M
+> file2.txt 10M
+> 
+> 经过FileInputFormat的切片机制运算后，形成的切片信息如下:
+> file1.txt.split1  --  0~128
+> file1.txt.split2  --  128~256
+> file1.txt.split3  --  256~320
+> file2.txt.split1  --  0~10M
+> 
+> FileInputFormat切片大小的参数配置
+> 
+> 通过分析源码,在FileInputFormat中,计算切片大小的逻辑:
+> 
+> 切片主要由这几个值来运算决定.
+```
+Math.max(minSize,Math.min(maxSize,blockSize));
+```
+
+```
+// 默认值为1
+mapreduce.input.fileinputformat.split.minsize=1
+```
+
+```
+// 默认值Long.MAXValue / Long类型的最大值
+mapreduce.input.fileinputformat.split.maxsize= Long.MAXValue
+```
+
+> 因此,默认情况下,切片大小=blocksize
+> 
+> maxsize(切片最大值):参数如果调得比blocksize小,则会让切片变小,而且就等于配置的这个参数的值.
+> 
+> minsize(切片最小值):参数调的比blockSize大,则可以让切片变得比blocksize还大.
+> 
+> 获取切片信息API
+```
+// 根据文件类型获取切片信息
+FileSplit inputSplit = (FileSplit) context.getInputSplit();
+// 获取切片的文件名称
+String name = inputSplit.getPath().getName();
+```
 #### CombineTexInputFormat 切片机制
+> 框架默认的TexInputFormat切片机制是对任务按文件规划切片,不管文件多小,都会是一个单独的切片,都会交给一个MapTask,这样如果有大量的小文件,就会产生大量的MapTask,处理效率非常低.
+##### 1.应用场景
+> CombineTexInputFormat用于小文件过多的场景,它可以将多个小文件从逻辑上规划到一个切片中,这样多个小文件就可以交给一个MapTsak处理.
+##### 2.虚拟存储切片最大值设置
+```
+ // 设置为4MB
+ CombineTexInputFormat.setMaxInputSplitSize(job,4194304);
+```
+> 注意:虚拟存储切片最大设置最好要根据实际的小文件大小情况来设置具体参数.
+##### 3.切片机制
+> 生成切片过程为两部分:虚拟存储过程和切片过程.
+> 
+###### 虚拟存储过程:
+> 将输入目录下所有文件大小,依次和设置的setMaxInputSplitSize值比较,如果不大于设置的最大值,逻辑上划分一个块,如果输入文件大小设置的最大值且大于两倍,那么以最大值切割一块,当剩余数据大小超过设置的最大值且不大于最大值2倍,此时将文件均分为2个虚拟存储块(防止出现太小切片).
+> 
+> 例如setMaxInputSplitSize值为4M,输入文件大小为8.02M,则逻辑上分成一个4M,剩余的大小为4.02M,如果按照4M逻辑划分,就会出现0.02M的小虚拟存储文件,所以将剩余的4.02M文件切分成(2.01M和2.01M)两个文件.
+> 
+###### 切片过程:
+> 1.判断虚拟存储打文件大小是否大于setMaxInputSplitSize值,大于等于则单独形成一个切片.
+> 
+> 2.如果不大于则跟下一个虚拟存储文件进行合并,并同形成一个切片.
+> 
+> 3.测试例子:有4个小文件大小分别为,1.7M / 5.1M / 3.4M / 6.8M,这四个小文件,则虚拟存储之后形成6个文件块,大小分别为如图所示.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_029.jpg)
+
 #### CombineTexInputFormat 案例实操
+##### 1.需求
+> 将输入的大量小文件合并形成一个切片统一处理.
+##### 输入数据:准备四个小文件.
+##### 期望:一个切片处理4个文件.
+##### 2.实现过程
+> 不做任何处理,运行WordCount程序,观察切片个数为4.
+
+Log printing
+``` prolog
+2019-03-07 00:25:34,640 INFO [org.apache.hadoop.mapreduce.JobSubmitter] - number of splits:4
+```
+> 在WordcountDriver中增加如下代码,运行程序,并观察运行的切片个数为3.
+```
+ /**
+ * If you do not set the Input Format, it defaults to Text Input Format.class
+ * 如果不设置InputFormat，它默认用的是TextInputFormat.class
+ */
+ job.setInputFormatClass(CombineTextInputFormat.class);
+        
+ /**
+ * Set the virtual storage slice maximum to 4M
+ * 设置虚拟存储切片最大值为 4M
+ */
+ CombineTextInputFormat.setMaxInputSplitSize(job, 4194304);
+         
+ /**
+ * Set the virtual storage slice minimum to 2M
+ * 设置虚拟存储切片最小值为 2M
+ */
+ CombineTextInputFormat.setMinInputSplitSize(job, 2097152);
+```
+Log printing
+``` prolog
+2019-03-07 00:40:29,199 INFO [org.apache.hadoop.mapreduce.JobSubmitter] - number of splits:3
+```
+> 在WordcountDriver中增加如下代码,运行程序,并观察运行的切片个数为1.
+```
+	/**
+	* If you do not set the Input Format, it defaults to Text Input Format.class
+	* 如果不设置InputFormat，它默认用的是TextInputFormat.class
+	*/
+	job.setInputFormatClass(CombineTextInputFormat.class);
+
+	/**
+	* Set the virtual storage slice maximum to 20M
+	* 设置虚拟存储切片最大值为 20M
+	*/
+	CombineTextInputFormat.setMaxInputSplitSize(job, 20971520);
+```
+Log printing
+``` prolog
+2019-03-07 00:52:11,201 INFO [org.apache.hadoop.mapreduce.JobSubmitter] - number of splits:1
+```
+
+## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+
 #### FileInputFormat 实现类
 #### KeyValueTexInputFormat 使用案例
 #### NLiveInputFormat 使用案例
