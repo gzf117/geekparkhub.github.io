@@ -5503,8 +5503,9 @@ sjobsubmitter.submitJobInternal(Job.this, cluster);
 ##### 切片机制
 > FileInputFormat中默认的切片机制:
 > 1.简单地按照文件的内容长度进行切片.
-> 2.切片大小,默认等于block大小.
+> 2.切片大小,默认等于Block大小.
 > 3.切片时不考虑数据集整体,而是逐个针对每一个文件单独切片.
+> 4.在本地运行模式下Block块大小为32M,在集群运行模式下Block块大小为128M.
 ##### 案例分析
 > 比如待处理数据有两个文件:
 > 
@@ -5630,13 +5631,604 @@ Log printing
 2019-03-07 00:52:11,201 INFO [org.apache.hadoop.mapreduce.JobSubmitter] - number of splits:1
 ```
 
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
-
 #### FileInputFormat 实现类
+> Q&A:MapReduce任务的输入文件一般是存储在HDFS里面,输入的文件格式包括:基于行的日志文件/二进制格式文件等,这些文件一般会很大,达到数十GB,至更大,那么MapReduce是如何读取这些数据的呢?
+> 
+> InputFormat常见的 接口实现类包括：TextInputFormat / KeyValueTextInputFormat / NLineInputFormat / CombineTextInputFormat和自定义InputFormat等.
+#### 1.TextInputFormat
+> TextInputFormat是默认的FileInputFormat实现类,按行读取每条记录,键是存储该行在整个文件中的起始字节偏移量,LongWritable类型,值是这行的内容,不包括任何行终止符(换行符,回车符),Text类型.
+> 
+> 以下是一个示例,比如一个分片包含了如下4条文本记录:
+```
+ Rich learning form
+ Intelligent learning engine
+ Learning more convenient
+ From the real demand for more close to the enterprise
+```
+> 每条记录表示为以下 键/值对 & K既是偏移量 V整行内容:
+```
+ (0,Rich learning form)
+ (19,Intelligent learning engine)
+ (47,Learning more convenient)
+ (72,From the real demand for more close to the enterprise)
+```
+#### 2.KeyValueTexInputFormat
+> 每一行均为一条记录,被分隔符分割为Key,Value,可以通过在驱动类中设置```conf.set(KeyValueLineRecordReader.KEY_VALUE_SEPERATOR,"\t");```来设定分隔符,默认分隔符是tab.
+> 以下是一个示例,输入是一个包含4条记录的分片,其中——>表示一个(水平方向的)制表符:
+```
+ line1 ——>Rich learning form
+ line2 ——>Intelligent learning engine
+ line3 ——>Learning more convenient
+ line4 ——>From the real demand for more close to the enterprise
+```
+> 每条记录表示为以下键/值对:
+```
+ (line1,Rich learning form)
+ (line2,Intelligent learning engine)
+ (line3,Learning more convenient)
+ (line4,From the real demand for more close to the enterprise)
+```
+> 此时的键是每行排在制表符之前的Text序列.
+
 #### KeyValueTexInputFormat 使用案例
+##### 1.需求
+> 统计输入文件中第一行的第一个单词相同的行数.
+##### 2.输入数据
+```
+GeekParkHub
+Geek International Park
+HackerParkHub
+Geek International Park
+HackerParkHub
+```
+##### 3.期望结果数据
+```
+GeekParkHub 1
+Geek International Park 2
+HackerParkHub 2
+```
+##### 4.代码实现
+###### Create KVTextMapper.class
+``` java
+package com.geekparkhub.hadoop.kv;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * KVTextMapper
+ * <p>
+ */
+
+public class KVTextMapper extends Mapper<Text, Text, Text, IntWritable> {
+
+    /**
+     * Instantiated object
+     * 实例化对象
+     */
+    IntWritable v = new IntWritable(1);
+
+    @Override
+    protected void map(Text key, Text value, Context context) throws IOException, InterruptedException {
+        /**
+         * Write data
+         * 写出数据
+         */
+        context.write(key, v);
+    }
+}
+```
+###### Create KVTextReducer.class
+``` java
+package com.geekparkhub.hadoop.kv;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * KVTextReducer
+ * <p>
+ */
+
+public class KVTextReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+
+    IntWritable v = new IntWritable();
+
+    @Override
+    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Cumulative summation
+         * 累计求和
+         */
+        int sum = 0;
+        for (IntWritable value : values) {
+            sum += value.get();
+        }
+
+        v.set(sum);
+
+        /**
+         * Write data
+         * 写出数据
+         */
+        context.write(key, v);
+    }
+}
+```
+###### Create KVTextDriver.class
+``` java
+package com.geekparkhub.hadoop.kv;
+
+import com.geekparkhub.hadoop.mapreduce.WordcountDriver;
+import com.geekparkhub.hadoop.mapreduce.WordcountMapper;
+import com.geekparkhub.hadoop.mapreduce.WordcountReducer;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.CombineTextInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.KeyValueLineRecordReader;
+import org.apache.hadoop.mapreduce.lib.input.KeyValueTextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * KVTextDriver
+ * <p>
+ */
+
+public class KVTextDriver {
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_kv",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_kv_001"};
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * Set the cutting method to KeyValueLineRecordReader
+         * 设置切割方式为 KeyValueLineRecordReader
+         */
+        conf.set(KeyValueLineRecordReader.KEY_VALUE_SEPERATOR, " ");
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(KVTextDriver.class);
+
+        /**
+         * 3. Associate Map and Reduce classes
+         * 3. 关联Map和Reduce类
+         */
+        job.setMapperClass(KVTextMapper.class);
+        job.setReducerClass(KVTextReducer.class);
+
+        /**
+         * 4. Set the key and value types of the output data in the Mapper stage.
+         * 4. 设置Mapper阶段输出数据的key与value类型
+         */
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(IntWritable.class);
+
+        /**
+         * 5. Set the key and value types for the final data output
+         * 5. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+        /**
+         * Set the Format mode to KeyValueTextInputFormat
+         * 设置Format模式为KeyValueTextInputFormat
+         * If you do not set the Input Format, it defaults to Text Input Format.class
+         * 如果不设置InputFormat，它默认用的是TextInputFormat.class
+         */
+        job.setInputFormatClass(KeyValueTextInputFormat.class);
+
+        /**
+         * 6. Set the input path and output path
+         * 6. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+##### 5.运行程序 查看part-r-00000结果
+``` prolog
+Geek International Park	2
+GeekParkHub	1
+HackerParkHub	2
+```
+
+#### 3.NLiveInputFormat
+> 如果使用NLiveInputFormat,代表每个map进程处理的InputSplit不再按Block块去划分,而是按NLiveInputFormat指定的行数N来划分,既输入文件的总行数/N=切片数,如果不整除,切片数=商+1
+> 以下是一个示例,仍然以下面的4行输入为例:
+```
+ Rich learning form
+ Intelligent learning engine
+ Learning more convenient
+ From the real demand for more close to the enterprise
+```
+> 例如,如果N是2,则每个输入分片包括两行,开启2个MapTask.
+```
+ (0,Rich learning form)
+ (19,Intelligent learning engine)
+```
+> 另一个mapper则收到后两行:
+```
+ (47,Learning more convenient)
+ (72,From the real demand for more close to the enterprise)
+```
+> 这里的键和值与TextInputFormat生成的一样.
+
 #### NLiveInputFormat 使用案例
+##### 1.需求:
+> 对每个单词进行统计,根据每个输入文件的行数来规定输出多少个切片,要求每三行放入一个切片中.
+##### 2.输入数据:
+```
+GeekParkHub
+Geek International Park
+GeekParkHub
+Geek International Park
+GeekParkHub
+Geek International Park
+GeekParkHub
+Geek International Park
+GeekParkHub
+Geek International Park Geek International Park
+Geek International Park
+```
+##### 3.输出结果:
+```
+INFO [org.apache.hadoop.mapreduce.JobSubmitter] - number of splits:4
+```
+##### 4.代码实现:
+###### Create NLineMapper.class
+``` java
+package com.geekparkhub.hadoop.nline;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * NLineMapper
+ * <p>
+ */
+
+public class NLineMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+
+    Text k = new Text();
+    IntWritable v = new IntWritable(1);
+
+    /**
+     * Rewrite the map() method
+     * 重写map()方法
+     *
+     * @param key
+     * @param value
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+        /**
+         * 1. Get the first row of data
+         * 1. 获取第一行数据
+         */
+        String line = value.toString();
+
+        /**
+         * 2. Cutting data
+         * 2. 切割空格数据
+         */
+        String[] words = line.split(" ");
+
+        /**
+         * 3. Loop through the data
+         * 3. 循环遍历数据
+         */
+        for (String word : words) {
+            K.set(Long.parseLong(word));
+            context.write(k, v);
+        }
+    }
+}
+```
+###### Create NLineReducer.class
+``` java
+package com.geekparkhub.hadoop.nline;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * NLineReducer
+ * <p>
+ */
+
+public class NLineReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+
+    IntWritable v = new IntWritable();
+    
+    /**
+     * Rewrite the reduce() method
+     * 重写reduce()方法
+     *
+     * @param key
+     * @param values
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+
+        /**
+         * 1. Accumulate summation
+         * 1. 累加求和
+         */
+        int sum = 0;
+        for (IntWritable value : values) {
+            sum += value.get();
+        }
+        v.set(sum);
+
+        /**
+         * 2. Output data
+         * 2. 输出数据
+         */
+        context.write(key, v);
+
+    }
+}
+```
+###### Create NLineDriver.class
+``` java
+package com.geekparkhub.hadoop.nline;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.NLineInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * NLineDriver
+ * <p>
+ */
+
+public class NLineDriver {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_nl",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_nl_001"};
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * Set Input Split to perform a slice every three times
+         * 设置InputSplit每三行为一个切片.
+         */
+        NLineInputFormat.setNumLinesPerSplit(job,3);
+
+        /**
+         * Processing the number of records using the NLine Input Format
+         * 使用NLineInputFormat处理记录数.
+         */
+        job.setInputFormatClass(NLineInputFormat.class);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(NLineDriver.class);
+
+        /**
+         * 3. Associate Map and Reduce classes
+         * 3. 关联Map和Reduce类
+         */
+        job.setMapperClass(NLineMapper.class);
+        job.setReducerClass(NLineReducer.class);
+
+        /**
+         * 4. Set the key and value types of the output data in the Mapper stage.
+         * 4. 设置Mapper阶段输出数据的key与value类型
+         */
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(IntWritable.class);
+
+        /**
+         * 5. Set the key and value types for the final data output
+         * 5. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+        /**
+         * 6. Set the input path and output path
+         * 6. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+##### 5.结果查看:
+part-r-00000
+```
+Geek	12
+Hub	5
+International	7
+Park	12
+```
+ Log printing
+``` prolog
+2019-03-07 22:27:28,044 INFO [org.apache.hadoop.mapreduce.JobSubmitter] - number of splits:4
+```
+
 #### 自定义InputFormat
+> 在企业开发中,Hadoop框架自带的InputFormat类型不能满足于所有应用场景,需要自定义InputFormat来解决实际问题.
+#### 自定义InputFormat步骤如下:
+> 1.自定义一个类继承FileInputFormat.
+> 2.改写RecordReader,实现一次读取一个完整文件封装为KV.
+> 3.在输出时使用SequenceFileOutPutFormat输出合并文件.
+> 
 #### 自定义InputFormat 案例实操
+##### 1.需求
+> 无论hdfs还是mapreduce,对于小文件都有损效率,实践中,又难免面临处理大量小文件的场景,此时就需要有相应解决方案.
+> 
+> 将多个小文件合并成一个文件SequenceFile,SequenceFile里面存储着多个文件,存储的形式为文件路径+名称为key,文件内容为value.
+##### 2.输入数据
+> Create 1.txt / Create 2.txt / Create 3.txt
+> 
+> 最终预期文件格式：part-r-00000
+
+##### 3.分析
+> 小文件的优化无非以下几种方式:
+> 在数据采集的时候,就将小文件或小批数据合成大文件再上传HDFS.
+> 在业务处理之前,在HDFS上使用mapreduce程序对小文件进行合并.
+> 在mapreduce处理时,可采用CombineTextInputFormat提高效率.
+
+##### 4.具体实现
+> 1.自定义一个类继承FileInputFormat
+> 重写isSplitable()方法,返回fales不可切割.
+> 重写createRecordReader(),创建自定义RecordReader对象,并初始化
+> 2.改写RecordReader,实现一次读取一个完整文件封装为KV
+> 采用IO流一次读取一个文件输出到value中,因为设置了不可切片,最终把所有文件都封装到了value中.
+> 获取文件路径信息+名称,并设置key
+> 3.设置Driver
+```
+ // 设置输出的inputFormat
+ job.setInputFormatClass(WholeFileInputformat.class);
+ // 设置输出的outputFormat
+ job.setOutputFormatClass(SequenceFileOutputFormat.class);
+```
+
+##### 5.程序实现
+
+
+## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
 #### 37.7.3.2 MapReduce 工作流程
 
 #### 7.7.3.3 Shuffle 机制
