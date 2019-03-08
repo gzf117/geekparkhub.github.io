@@ -5417,27 +5417,6 @@ public class FlowsumDriver {
 ```
 
 ### 7.7.2 MapReduce 框架原理
-### MapReduce 框架原理流程图(一)
-![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_026.jpg)
-
-### MapReduce 框架原理流程图(二)
-![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_027.jpg)
-
->  流程详解上面的流程是整个mapreduce最全工作流程,但是shuffle过程只是从第7步开始 到第16步结束,具体shuffle过程详解,如下:
->  
-> 1.maptask收集我们的map()方法输出的kv对,放到内存缓冲区中.
-> 
-> 2.从内存缓冲区不断溢出本地磁盘文件,可能会溢出多个文件.
-> 
-> 3.多个溢出文件会被合并成大的溢出文件.
-> 4.在溢出过程中,及合并的过程中,都要调用partitioner进行分区和针对key进行排序.
-> 
-> 5.reducetask根据自己的分区号,去各个maptask机器上取相应的结果分区数据.
-> 6.reducetask会取到同一个分区的来自不同maptask的结果文件,reducetask会将这些文件再进行合并(归并排序).
-> 
-> 7.合并成大文件后,shuffle的过程也就结束了,后面进入reducetask的逻辑运算过程,(从文件中取出一个一个的键值对group,调用用户自定义的reduce()方法).
-> 
-> 8.注意Shuffle中的缓冲区大小会影响到mapreduce程序的执行效率,原则上说,缓冲区越大,磁盘io的次数越少,执行速度就越快,缓冲区的大小可以通过参数调整,参数:io.sort.mb,默认100M.
 
 ### 7.7.3.1 InputFormat 数据输入
 #### 切片与MapTask并行度决定机制
@@ -6226,14 +6205,441 @@ Park	12
 ```
 
 ##### 5.程序实现
+###### Create WholeFileInputformat.class
+``` java
+package com.geekparkhub.hadoop.inputformat;
+
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * WholeFileInputformat
+ * <p>
+ */
+
+public class WholeFileInputformat extends FileInputFormat<Text, BytesWritable> {
+
+    /**
+     * Rewrite the Record Reader() method
+     * 重写RecordReader()方法
+     *
+     * @param split
+     * @param context
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    public RecordReader<Text, BytesWritable> createRecordReader(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
+
+        WholeRecordReader recordReader = new WholeRecordReader();
+
+        /**
+         * Call initialization method
+         * 调用初始化方法
+         */
+        recordReader.initialize(split, context);
+        return recordReader;
+    }
+}
+```
+###### Create WholeRecordReader.class
+``` java
+package com.geekparkhub.hadoop.inputformat;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * WholeRecordReader
+ * <p>
+ */
+
+public class WholeRecordReader extends RecordReader<Text, BytesWritable> {
+
+    /**
+     * Declaration file slice
+     * 声明文件切片
+     */
+    FileSplit split;
+    Configuration conf;
+    Text k = new Text();
+    BytesWritable v = new BytesWritable();
+
+    /**
+     * Marker bit
+     * 标记位
+     */
+    boolean isProgress = true;
+
+    @Override
+    public void initialize(InputSplit split, TaskAttemptContext context) throws IOException, InterruptedException {
+        /**
+         * Initialization operation
+         * 初始化操作
+         */
+        this.split = (FileSplit) split;
+
+        /**
+         * Get configuration information
+         * 获取配置信息
+         */
+        conf = context.getConfiguration();
+    }
+
+    @Override
+    public boolean nextKeyValue() throws IOException, InterruptedException {
+
+        if (isProgress) {
+
+            /**
+             * Handling core business logic
+             * 处理核心业务逻辑
+             */
+            byte[] buf = new byte[(int) split.getLength()];
+
+            /**
+             * Get fs object
+             * 1.获取fs对象
+             */
+            Path path = split.getPath();
+            FileSystem fs = path.getFileSystem(conf);
+
+            /**
+             * Get the input stream
+             * 2.获取输入流
+             */
+            FSDataInputStream fis = fs.open(path);
+
+            /**
+             * File copy buffer
+             * 3.将文件拷贝缓冲区
+             */
+            IOUtils.readFully(fis, buf, 0, buf.length);
+
+            /**
+             * Package V
+             * 4.封装 V
+             */
+            v.set(buf, 0, buf.length);
+
+            /**
+             * Package K
+             * 5.封装 K
+             */
+            k.set(path.toString());
+
+            /**
+             * Close resource
+             * 6.关闭资源
+             */
+            IOUtils.closeStream(fis);
+
+            /**
+             * Clear flag
+             * 清空标记位
+             */
+            isProgress = false;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public Text getCurrentKey() throws IOException, InterruptedException {
+
+        return k;
+    }
+
+    @Override
+    public BytesWritable getCurrentValue() throws IOException, InterruptedException {
+
+        return v;
+    }
+
+    @Override
+    public float getProgress() throws IOException, InterruptedException {
+        return 0;
+    }
+
+    @Override
+    public void close() throws IOException {
+
+    }
+}
+```
+###### Create SequenceFileMapper.class
+``` java
+package com.geekparkhub.hadoop.inputformat;
+
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * SequenceFileMapper
+ * <p>
+ */
+
+public class SequenceFileMapper extends Mapper<Text, BytesWritable, Text, BytesWritable> {
+
+    @Override
+    protected void map(Text key, BytesWritable value, Context context) throws IOException, InterruptedException {
+        context.write(key, value);
+    }
+}
+```
+###### Create SequenceFileReducer.class
+``` java
+package com.geekparkhub.hadoop.inputformat;
+
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * SequenceFileReducer
+ * <p>
+ */
+
+public class SequenceFileReducer extends Reducer<Text, BytesWritable, Text, BytesWritable> {
+    @Override
+    protected void reduce(Text key, Iterable<BytesWritable> values, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Loop out data
+         * 循环写出数据
+         */
+        for (BytesWritable value : values) {
+            context.write(key, value);
+        }
+    }
+}
+```
+###### Create SequenceFileDriver.class
+``` java
+package com.geekparkhub.hadoop.inputformat;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * SequenceFileDriver
+ * <p>
+ */
+
+public class SequenceFileDriver {
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_format",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_format_001"};
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(SequenceFileDriver.class);
+
+        /**
+         * Set the input inputformat
+         * 设置输入的 inputformat
+         */
+        job.setInputFormatClass(WholeFileInputformat.class);
+
+        /**
+         * Set the output format of the output
+         * 设置输出的 outputformat
+         */
+        job.setOutputFormatClass(SequenceFileOutputFormat.class);
+
+        /**
+         * 3. Associate Map and Reduce classes
+         * 3. 关联Map和Reduce类
+         */
+        job.setMapperClass(SequenceFileMapper.class);
+        job.setReducerClass(SequenceFileReducer.class);
+
+        /**
+         * 4. Set the key and value types of the output data in the Mapper stage.
+         * 4. 设置Mapper阶段输出数据的key与value类型
+         */
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(BytesWritable.class);
+
+        /**
+         * 5. Set the key and value types for the final data output
+         * 5. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(BytesWritable.class);
+
+        /**
+         * 6. Set the input path and output path
+         * 6. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+##### 6.运行查看 part-r-00000二进制结果
+``` prolog
+SEQorg.apache.hadoop.io.Text"org.apache.hadoop.io.BytesWritablepˮ��y5�3�Ζ���!nmfile:/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_format/1.txt� GeekParkHub | 极客实验室
+ Website | https://www.geekparkhub.com/
+ Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见nmfile:/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_format/2.txt�HackerParkHub | 黑客公园枢纽
+Website | https://www.hackerparkhub.com/
+Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜�nmfile:/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_format/3.txtEGeek International Park | 极客国际公园
+GeekDeveloper : JEEP-711
+```
 
 
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
 #### 37.7.3.2 MapReduce 工作流程
+##### Map 框架原理流程图(一)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_026.jpg)
+
+##### Reduce 框架原理流程图(二)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_027.jpg)
+
+>  流程详解上面的流程是整个mapreduce最全工作流程,但是shuffle过程只是从第7步开始 到第16步结束,具体shuffle过程详解,如下:
+>  
+> 1.maptask收集我们的map()方法输出的kv对,放到内存缓冲区中.
+> 
+> 2.从内存缓冲区不断溢出本地磁盘文件,可能会溢出多个文件.
+> 
+> 3.多个溢出文件会被合并成大的溢出文件.
+> 
+> 4.在溢出过程中,及合并的过程中,都要调用partitioner进行分区和针对key进行排序.
+> 
+> 5.reducetask根据自己的分区号,去各个maptask机器上取相应的结果分区数据.
+> 
+> 6.reducetask会取到同一个分区的来自不同maptask的结果文件,reducetask会将这些文件再进行合并(归并排序).
+> 
+> 7.合并成大文件后,shuffle的过程也就结束了,后面进入reducetask的逻辑运算过程,(从文件中取出一个一个的键值对group,调用用户自定义的reduce()方法).
+> 
+> 8.注意Shuffle中的缓冲区大小会影响到mapreduce程序的执行效率,原则上说,缓冲区越大,磁盘io的次数越少,执行速度就越快,缓冲区的大小可以通过参数调整,参数:io.sort.mb,默认100M.
+
 
 #### 7.7.3.3 Shuffle 机制
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_031.jpg)
 ##### Shuffle 机制
+> MapReduce确保每个Reducer的输入都是按键排序的,系统执行排序的过程(即将map输出作为输入传给reducer)称为shuffle.
+> 
+> 通俗易懂的讲,Map方法之后,Reduce方法之前的数据处理过程称之为Shuffle.
 ##### Partition 分区
+###### 1.问题引出
+> 要去将统计结果按照条件输出到不同文件中(分区),比如:将统计结果按照手机号归属地不同省份输出到不同文件中(分区).
+###### 2.默认Partition分区
+> 默认分区是根据key的hashCode对reduceTasks个数取模得到的.
+> 开发者没法控制哪个key存储到哪个分区.
+``` java
+public class HashPartitioner<K, V> extends Partitioner<K, V> {
+    public int getPartition(K key, V value, int numReduceTasks) {
+        return (key.hashCode() & Integer.MAX_VALUE) % numReduceTasks;
+    }
+}
+```
+
+## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+
 ##### Partition分区 实操案例
 ##### WritableComparable 排序
 ##### WritableComparable 排序 实操案例(全排序)
@@ -6242,6 +6648,31 @@ Park	12
 ##### Combine 合并案例实操
 
 #### 7.7.3.4 Map Task 工作机制
+##### MapTask 工作机制
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_030.jpg)
+> 1.Read阶段:MapTask通过用户编写的RecordReader,从输入InputSplit中解析出一个个key/value.
+> 
+> 2.Map阶段:该节点主要是将解析出的key/value交给用户编写map()函数处理,并产生一系列新的key/value.
+> 
+> 3.Collect收集阶段:在用户编写map()函数中,当数据处理完成后,一般会调用OutputCollector.collect()输出结果,在该函数内部,它会将生成的key/value分区(调用Partitioner)并写入一个环形内存缓冲区中.
+> 
+> 4.Spill阶段：即""当环形缓冲区满后,MapReduce会将数据写到本地磁盘上,生成一个临时文件,需要注意的是,将数据写入本地磁盘之前,先要对数据进行一次本地排序,并在必要时对数据进行合并、压缩等操作.
+> 
+> 溢写阶段详情: 
+> 步骤1: 利用快速排序算法对缓存区内的数据进行排序,排序方式是,先按照分区编号partition进行排序,然后按照key进行排序,这样,经过排序后,数据以分区为单位聚集在一起,同一分区内所有数据按照key有序.
+> 
+> 步骤2: 按照分区编号由小到大依次将每个分区中的数据写入任务工作目录下的临时文件output/spillN.out(N表示当前溢写次数),如果用户设置了Combiner,则写入文件之前,对每个分区中的数据进行一次聚集操作.
+> 
+> 步骤3: 将分区数据的元信息写到内存索引数据结构SpillRecord中,其中每个分区的元信息包括在临时文件中的偏移量、压缩前数据大小和压缩后数据大小,如果当前内存索引大小超过1MB，则将内存索引写到文件output/spillN.out.index中.
+> 
+> 5.Combine阶段: 当所有数据处理完成后,MapTask对所有临时文件进行一次合并,以确保最终只会生成一个数据文件.
+> 
+> 当所有数据处理完后,MapTask会将所有临时文件合并成一个大文件,并保存到文件output/file.out中,同时生成相应的索引文件output/file.out.index
+> 
+> 在进行文件合并过程中,MapTask以分区为单位进行合并,对于某个分区,它将采用多轮递归合并的方式,每轮合并io.sort.factor(默认100)文件,并将产生的文件重新加入待合并列表中,对文件排序后,重复以上过程,直到最终得到一个大文件.
+> 
+> 让每个MapTask最终只生成一个数据文件,可避免同时打开大量文件和同时读取大量小文件产生的随机读取带来的开销.
+
 #### 7.7.3.5 Reduce Task 工作机制
 #### 7.7.3.6 OutputFromat 数据输出
 #### 7.7.3.7 Join 多种应用
