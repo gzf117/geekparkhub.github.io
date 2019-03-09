@@ -6637,10 +6637,278 @@ public class HashPartitioner<K, V> extends Partitioner<K, V> {
     }
 }
 ```
+###### 3.自定义Partition分区 步骤
+> 自定义类继承Partitioner,重写getPartition()方法.
+``` java
+public class ProvincePartitioner extends Partitioner<Text, FlowBean> {
+
+    /**
+     * Override the getPartition() method
+     * 重写getPartition()方法
+     */
+    @Override
+    publicint getPartition(Text key, FlowBean value, int numPartitions) {
+        // 处理控制分区代码
+        return partition;
+    }
+}
+```
+###### 4.在Job驱动中,设置自定义Partitioner.
+``` java
+job.setPartitionerClass(CustomPartitioner.class);
+```
+###### 5.自定义Partitio后,要根据自定义Partitioner的逻辑设置相应数量的ReduceTask.
+``` java
+job.setNumReduceTasks(5);
+```
+
+##### Partition分区 实操案例
+###### 1.需求
+> 将统计结果按手机归属地不同省份输出到不同文件中(分区).
+> 
+> 输出输入源 phone_datas.txt
+``` prolog
+1 13901129979 111.186.104.167 www.baidu.com 28219 21031 200
+2 15026889999 180.166.156.78 www.google.com 264 980 200
+3 13601029999 212.64.111.89 www.github.com 132 1512 400
+4 13901129949 117.135.178.67 1929 180 200
+5 13621399979 211.136.129.80 132 15152 200
+6 15510759999 112.65.214.26 2008 2779 400
+7 13716179966 140.206.76.67 www.alibaba.com 9087 3673 200
+8 13900999999 27.115.112.25 www.info.xcar.com.cn 456 177 200
+9 13621399732 39.129.1.90 www.yq.aliyun.com 976 7661 500
+10 14701159999 218.206.61.16 www.flaticon.com 5432 122 200
+11 15116949999 219.159.60.26 www.translate.google.com 743 398 200
+12 13261999999 36.111.136.126 www.blog.csdn.net 745 231 200
+13 15910419999 222.74.169.128 3890 496 200
+14 13901129937 61.138.127.67 www.cn.bing.com 663 1498 200
+15 13621399649 101.124.10.67 www.gitee.com 196 3360 500
+16 18901009997 106.39.56.671 www.pai.com 816 289 200
+17 13341099905 114.67.225.123 www.importnew.com 203 466 200
+18 13800049725 116.196.121.45 www.booking.com 1732 698 200
+19 01058484076 192.144.135.12 www.zhipin.com 890 1469 404
+20 13716179787 221.176.7.23 www.bing.com 7596 264 200
+21 13716179612 139.219.14.124 www.facebook.com 3992 738 200
+22 15527194444 211.150.90.01 www.refinery29.com 5493 189 301
+23 13800049962 113.61.165.26 www.thenextweb.com 1892 255 200
+24 13800049915 180.218.164.34 www.cinemablend.com 3394 329 200
+25 18674215555 60.245.45.34 4782 968 302
+26 18476943333 61.139.47.27 www.tool.cn 3215 164 200
+```
+> 期望输出数据
+> 手机号136/137/138/139位开头都分别存储到一个独立的4个文件中,其他首号开头存储到一个文件中.
+
+###### 结合上一期(序列化 之 flowsum实操案例) 实现Partition分区
+> flowsum 案例 快速阅读通道 [回顾案例](https://geekparkhub.github.io/technical_guide/programing_language/hadoop/hadoop.html#%E5%BA%8F%E5%88%97%E5%8C%96-%E6%A1%88%E4%BE%8B%E5%AE%9E%E6%93%8D) | [回顾案例项目](https://github.com/geekparkhub/geekparkhub.github.io/tree/master/technical_guide/programing_language/hadoop/hadoop_projects/mapreduce/src/main/java/com/geekparkhub/hadoop/flowsum)
+###### 2.代码实现
+###### Create ProvincePartitioner.class
+``` java
+package com.geekparkhub.hadoop.flowsum;
+
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Partitioner;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * ProvincePartitioner
+ * <p>
+ */
+
+public class ProvincePartitioner extends Partitioner<Text, FlowBean> {
+
+    /**
+     * Override the getPartition() method
+     * 重写getPartition()方法
+     * <p>
+     * Key is the phone number, value is the traffic information
+     * key是手机号,value是流量信息
+     */
+
+    @Override
+    public int getPartition(Text key, FlowBean value, int numPartitions) {
+
+        /**
+         * Get the top three mobile phone numbers
+         * 获取手机号前三位
+         */
+        String prePhoneNum = key.toString().substring(0, 3);
+
+        /**
+         * Partition status
+         * 分区状态
+         */
+        int partition = 4;
+
+        if ("136".equals(prePhoneNum)) {
+            /**
+             * If the first number is 136, the first data of 136 is written to the 0th partition.
+             * 如果获得到首号为136,将136首号数据写入到第0分区.
+             */
+            partition = 0;
+        } else if ("137".equals(prePhoneNum)) {
+            /**
+             * If the first number is 137, the first data of 137 is written to the first partition.
+             * 如果获得到首号为137,将137首号数据写入到第1分区.
+             */
+            partition = 1;
+        } else if ("138".equals(prePhoneNum)) {
+            /**
+             * If the first number is 138, the first data of 138 is written to the second partition.
+             * 如果获得到首号为138,将138首号数据写入到第2分区.
+             */
+            partition = 2;
+        } else if ("139".equals(prePhoneNum)) {
+            /**
+             * If the first number is 138, the first data of 138 is written to the third partition.
+             * 如果获得到首号为138,将138首号数据写入到第3分区.
+             */
+            partition = 3;
+        }
+        /**
+         * If the first number is obtained, write the other first data to the default 4th partition.
+         * 如果获得到首号为其他,将其他首号数据写入到默认第4分区.
+         */
+        return partition;
+    }
+}
+```
+###### Update FlowsumDriver.class
+``` java
+package com.geekparkhub.hadoop.flowsum;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.fs.Path;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * FlowsumDriver 序列化
+ * <p>
+ */
+
+public class FlowsumDriver {
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        /**
+         * Preset data input and output path
+         * 预设数据输入输出路径
+         */
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_flow",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_flow_002"};
+
+        /**
+         * Get configuration information, or job object instance
+         * 获取配置信息,或者job对象实例
+         */
+        Configuration configuration = new Configuration();
+        Job job = Job.getInstance(configuration);
+
+        /**
+         * Specify the local path where the jar package of the program is located.
+         * 指定本程序的jar包所在的本地路径
+         */
+        job.setJarByClass(FlowsumDriver.class);
+
+        /**
+         * Set up a custom Partitioner
+         * 设置自定义Partitioner
+         */
+        job.setPartitionerClass(ProvincePartitioner.class);
+
+        /**
+         * Set up Num Reduce Tasks
+         * 设置NumReduceTasks
+         */
+        job.setNumReduceTasks(5);
+
+        /**
+         * Specify the mapper/Reducer business class to be used by this business job
+         * 指定本业务job要使用的mapper/Reducer业务类
+         */
+        job.setMapperClass(FlowCountMapper.class);
+        job.setReducerClass(FlowCountReducer.class);
+
+        /**
+         * Specify the kv type of the mapper output data
+         * 指定mapper输出数据的kv类型
+         */
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(FlowBean.class);
+
+        /**
+         * Specify the kv type of the final output data
+         * 指定最终输出的数据的kv类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(FlowBean.class);
+
+        /**
+         * Specify the directory where the input input file of the job is located.
+         * 指定job的输入原始文件所在目录
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * Submit the relevant parameters configured in the job, and the jar package where the java class used by the job is located, and submit it to the yarn to run.
+         * 将job中配置的相关参数,以及job所用的java类所在的jar包,提交给yarn去运行
+         */
+        boolean results = job.waitForCompletion(true);
+        System.exit(results ? 0 : 1);
+    }
+}
+```
+###### 3.运行查看结果
+> 哇 结果 如此神奇 😄😄😄😄
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_032.jpg)
+###### 4.分区案例小总结
+> 1.如果ReduceTask的数量大于getPartition的结果数,则会多生产几个空的输出文件part-r-000xx;
+> 
+> 2.如果1小于ReduceTask的数量并且小于getPartition的结果数,则有一部分分区数据无处安放,导致抛出Exception异常.
+> 
+> 3.如果ReduceTask的数量等于1,则不管MapTask端输出多少个分区文件,最终结果都交给这一个ReduceTask,最终也就会只产生一个结果文件part-r-00000.
+> 
+> 4.分区号必须从零开始,逐一递增.
+> Q&A 假设:自定义分区数为5,则
+```
+ // 1.会正常运行,只不过会产生一个输出文件.
+ job.setNumReduceTask(1);
+ 
+ // 2. 会抛出Exception异常
+ job.setNumReduceTask(2);
+ 
+ // 3. 大于5,程序会正常运行,会产生多余空文件.
+  job.setNumReduceTask(6); 
+```
+
 
 ## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
 
-##### Partition分区 实操案例
 ##### WritableComparable 排序
 ##### WritableComparable 排序 实操案例(全排序)
 ##### WritableComparable 排序 实操案例(区内排序)
