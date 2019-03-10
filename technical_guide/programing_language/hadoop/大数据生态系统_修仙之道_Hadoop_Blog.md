@@ -6906,14 +6906,1283 @@ public class FlowsumDriver {
   job.setNumReduceTask(6); 
 ```
 
-
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
-
 ##### WritableComparable 排序
+###### 排序概述
+> 排序是MapReduce框架中最重要的操作之一.
+> 
+> MapTask和ReduceTask均会对数据(按照key)进行排序,该操作属于Hadoop的默认行为,任何应用程序中的数据均会被排序,而不管逻辑上是否需要.
+> 
+> 默认排序是按照字典顺序排序,且实现该排序的方法是快速排序.
+> 
+> 对于MapTask,它会将处理的结果暂时放到一个缓冲区中,当缓冲区使用率达到一定阈值后,再对缓冲区中的数据进行一次排序,并将这些有序数据写到磁盘上,而当数据处理完毕后,它会对磁盘上所有文件进行一次归并排序.
+> 
+> 对于ReduceTask,它从每个MapTask上远程拷贝相应的数据文件,如果文件大小超过一定阈值,则放到磁盘上,否则放到内存中,如果磁盘上文件数目达到一定阈值,则进行一次合并以生成一个更大文件,如果内存中文件大小或者数目超过一定阈值,则进行一次合并后将数据写到磁盘上,当所有数据拷贝完毕后,ReduceTask统一对内存和磁盘上的所有数据进行归并排序.
+
+###### 排序分类
+> 部分排序:MapReduce根据输入记录的键对数据集排序,保证输出的每个文件内部排序.
+> 
+> 全排序:最终输出结果只有一个文件,且文件内部有序,实现方式是只设置一个ReduceTask,但该方法在处理大型文件是效率极低,因为一台机器处理所有文件,完全丧失了MapRecuce所提供的并行架构.
+> 
+> 辅助排序:(GroupingComparator分组) 在Reduce端对key进行分组,应用于:在接收的key为bean对象时,想让一个或几个字段相同(全部字段比较不相同)的key进入到同一个reduce方法时,可以采用分组排序.
+> 
+> 二次排序:在自定义排序过程中,如果compareTo中的判断条件为两个即为二次排序.
+
+###### 自定义排序WritableComparable
+> 1.原理分析
+> 
+> bean对象作为key传输,需要实现WritableComparable接口并重写compareTo方法,就可以实现排序.
+``` java
+ /**
+ * Override the compareTo() method
+ * 重写compareTo()方法
+ */
+ 
+ @Override
+ public int compareTo(FlowBean o) {
+	 int result;
+	 // 按照总流量大小,倒序排序
+	 if(sumFlow > bean.getSumFlow()){
+		 result = -1;
+	 }else if(sumFlow < bean.getSumFlow()){
+		 result = 1;
+	 }else{
+		 result = 0;
+	 }
+	 return result;
+ }
+```
+
 ##### WritableComparable 排序 实操案例(全排序)
+###### 1.需求
+> 根据flowsum案例结果再次对总流量数据进行倒序排序.
+###### 2.数据源
+``` prolog
+1 13901129979 111.186.104.167 www.baidu.com 28219 21031 200
+2 15026889999 180.166.156.78 www.google.com 264 980 200
+3 13601029999 212.64.111.89 www.github.com 132 1512 400
+4 13901129949 117.135.178.67 1929 180 200
+5 13621399979 211.136.129.80 132 15152 200
+6 15510759999 112.65.214.26 2008 2779 400
+7 13716179966 140.206.76.67 www.alibaba.com 9087 3673 200
+8 13900999999 27.115.112.25 www.info.xcar.com.cn 456 177 200
+9 13621399732 39.129.1.90 www.yq.aliyun.com 976 7661 500
+10 14701159999 218.206.61.16 www.flaticon.com 5432 122 200
+11 15116949999 219.159.60.26 www.translate.google.com 743 398 200
+12 13261999999 36.111.136.126 www.blog.csdn.net 745 231 200
+13 15910419999 222.74.169.128 3890 496 200
+14 13901129937 61.138.127.67 www.cn.bing.com 663 1498 200
+15 13621399649 101.124.10.67 www.gitee.com 196 3360 500
+16 18901009997 106.39.56.671 www.pai.com 816 289 200
+17 13341099905 114.67.225.123 www.importnew.com 203 466 200
+18 13800049725 116.196.121.45 www.booking.com 1732 698 200
+19 01058484076 192.144.135.12 www.zhipin.com 890 1469 404
+20 13716179787 221.176.7.23 www.bing.com 7596 264 200
+21 13716179612 139.219.14.124 www.facebook.com 3992 738 200
+22 15527194444 211.150.90.01 www.refinery29.com 5493 189 301
+23 13800049962 113.61.165.26 www.thenextweb.com 1892 255 200
+24 13800049915 180.218.164.34 www.cinemablend.com 3394 329 200
+25 18674215555 60.245.45.34 4782 968 302
+26 18476943333 61.139.47.27 www.tool.cn 3215 164 200
+```
+###### 3.第一次处理后的数据 part-r-00000
+``` prolog
+01058484076	890	1469	2359
+01082895409	7596	264	7860
+130001099990	28219	21031	49250
+13261999999	745	231	976
+13341098674	976	7661	8637
+13341099905	203	466	669
+13601029999	132	1512	1644
+13900999999	456	177	633
+14512449999	1929	180	2109
+14701159999	5432	122	5554
+15026889999	264	980	1244
+15116949999	743	398	1141
+15210039999	132	15152	15284
+15510759999	2008	2779	4787
+15527194444	5493	189	5682
+15542102444	3394	329	3723
+15810579999	9087	3673	12760
+15910419999	3890	496	4386
+18221609878	1732	698	2430
+18344215555	3992	738	4730
+18476943333	3215	164	3379
+18618689999	663	1498	2161
+18674215555	4782	968	5750
+18810599999	196	3360	3556
+18901009997	816	289	1105
+31125344449	1892	255	2147
+```
+###### 4.期望数据输出
+``` prolog
+15810579999		9087	3673	12760
+13341098674		976	7661	8637
+01082895409		7596	264	7860
+```
+###### 5.需求分析
+> FlowBean实现WritableComparable接口重写compareTo方法
+``` java
+ /**
+ * Override the compareTo() method
+ * 重写compareTo()方法
+ */
+ 
+ @Override
+ public int compareTo(FlowBean o) {
+ // 倒序排列，从大到小 
+ return (this.sumFlow > o.getSumFlow()) ? (-1) : 1;
+ }
+```
+> Mapper类,key为bean,value为手机号
+> Reduceer类 循环输出,避免总流量相同情况
+
+###### 6.代码实现
+###### Create FlowBean.class
+``` java
+package com.geekparkhub.hadoop.sort;
+
+import org.apache.hadoop.io.WritableComparable;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * FlowBean
+ * <p>
+ */
+
+public class FlowBean implements WritableComparable<FlowBean> {
+
+    /**
+     * Upstream traffic
+     * 上行流量
+     */
+    private long upFlow;
+
+    /**
+     * Downstream traffic
+     * 下行流量
+     */
+    private long downFlow;
+
+    /**
+     * Total flow
+     * 总流量
+     */
+    private long sumFlow;
+
+    /**
+     * When deserializing, you need to reflect the call to the null parameter constructor.
+     * 反序列化时,需要反射调用空参构造器
+     */
+    public FlowBean() {
+    }
+
+    /**
+     * Parametric constructor
+     * 有参构造器
+     *
+     * @param upFlow
+     * @param downFlow
+     */
+    public FlowBean(long upFlow, long downFlow) {
+        super();
+        this.upFlow = upFlow;
+        this.downFlow = downFlow;
+        sumFlow = upFlow + downFlow;
+    }
+
+    /**
+     * Rewrite the compare To() method
+     * 重写compareTo()方法
+     *
+     * @param bean
+     * @return
+     */
+    @Override
+    public int compareTo(FlowBean bean) {
+        /**
+         * 处理排序核心CODE
+         */
+        int result;
+        if (sumFlow > bean.getSumFlow()) {
+            result = -1;
+        } else if (sumFlow < bean.getSumFlow()) {
+            result = 1;
+        } else {
+            result = 0;
+        }
+        return result;
+    }
+
+    /**
+     * Rewrite serialization method
+     * 重写 序列化方法
+     *
+     * @param out
+     * @throws IOException
+     */
+    @Override
+    public void write(DataOutput out) throws IOException {
+        out.writeLong(upFlow);
+        out.writeLong(downFlow);
+        out.writeLong(sumFlow);
+    }
+
+    /**
+     * Overwrite deserialization method
+     * 重写 反序列化方法
+     *
+     * @param in
+     * @throws IOException
+     */
+    @Override
+    public void readFields(DataInput in) throws IOException {
+        upFlow = in.readLong();
+        downFlow = in.readLong();
+        sumFlow = in.readLong();
+    }
+
+    /**
+     * Get&Set method
+     * Get&Set方法
+     *
+     * @return
+     */
+    public long getUpFlow() {
+        return upFlow;
+    }
+
+    public void setUpFlow(long upFlow) {
+        this.upFlow = upFlow;
+    }
+
+    public long getDownFlow() {
+        return downFlow;
+    }
+
+    public void setDownFlow(long downFlow) {
+        this.downFlow = downFlow;
+    }
+
+    public long getSumFlow() {
+        return sumFlow;
+    }
+
+    public void setSumFlow(long sumFlow) {
+        this.sumFlow = sumFlow;
+    }
+
+    @Override
+    public String toString() {
+        return "\t" + upFlow + "\t" + downFlow + "\t" + sumFlow;
+    }
+}
+```
+###### Create FlowCountSortMapper.class
+``` java
+package com.geekparkhub.hadoop.sort;
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * FlowCountSortMapper
+ * <p>
+ */
+
+public class FlowCountSortMapper extends Mapper<LongWritable, Text, FlowBean, Text> {
+
+    /**
+     * Extract k, v
+     * 提取k,v
+     */
+    FlowBean k = new FlowBean();
+    Text v = new Text();
+
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Get the first row of data
+         * 获取第一行数据
+         */
+        String line = value.toString();
+
+        /**
+         * Cutting data
+         * 切割数据
+         */
+        String[] split = line.split("\t");
+
+        /**
+         * Package object
+         * 封装对象
+         */
+        String phoneNum = split[0];
+        long upFlow = Long.parseLong(split[1]);
+        long downFlow = Long.parseLong(split[2]);
+        long sumFlow = Long.parseLong(split[3]);
+
+        k.setUpFlow(upFlow);
+        k.setDownFlow(downFlow);
+        k.setSumFlow(sumFlow);
+        v.set(phoneNum);
+
+        /**
+         * data input
+         * 写入数据
+         */
+        context.write(k, v);
+    }
+}
+```
+###### Create FlowCountSortReducer.class
+``` java
+package com.geekparkhub.hadoop.sort;
+
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * FlowCountSortReducer
+ * <p>
+ */
+
+public class FlowCountSortReducer extends Reducer<FlowBean, Text, Text, FlowBean> {
+
+    @Override
+    protected void reduce(FlowBean key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Loop output, write data
+         * 循环输出,写出数据
+         */
+        for (Text value : values) {
+            context.write(value, key);
+        }
+    }
+}
+```
+###### Create FlowCountSortDriver.class
+``` java
+package com.geekparkhub.hadoop.sort;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * FlowCountSortDriver
+ * <p>
+ */
+
+public class FlowCountSortDriver {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        /**
+         * Preset data input and output path
+         * 预设数据输入输出路径
+         */
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_flow_count_sort",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_flow_count_sort_001"};
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(FlowCountSortDriver.class);
+
+        /**
+         * 3. Associate Map and Reduce classes
+         * 3. 关联Map和Reduce类
+         */
+        job.setMapperClass(FlowCountSortMapper.class);
+        job.setReducerClass(FlowCountSortReducer.class);
+
+        /**
+         * 4. Set the key and value types of the output data in the Mapper stage.
+         * 4. 设置Mapper阶段输出数据的key与value类型
+         */
+        job.setMapOutputKeyClass(FlowBean.class);
+        job.setMapOutputValueClass(Text.class);
+
+        /**
+         * 5. Set the key and value types for the final data output
+         * 5. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(FlowBean.class);
+
+        /**
+         * 6. Set the input path and output path
+         * 6. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+###### 7.运行查看 总流量倒序排序结果
+``` prolog
+130001099990		28219	21031	 49250
+15210039999		132	15152	 15284
+15810579999		9087	3673	12760
+13341098674		976	7661	8637
+01082895409		7596	264	7860
+18674215555		4782	968	5750
+15527194444		5493	189	5682
+14701159999		5432	122	5554
+15510759999		2008	2779	4787
+18344215555		3992	738	4730
+15910419999		3890	496	4386
+15542102444		3394	329	3723
+18810599999		196	3360	3556
+18476943333		3215	164	3379
+18221609878		1732	698	2430
+01058484076		890	1469	2359
+18618689999		663	1498	2161
+31125344449		1892	255	2147
+14512449999		1929	180	2109
+13601029999		132	1512	1644
+15026889999		264	980	1244
+15116949999		743	398	1141
+18901009997		816	289	1105
+13261999999		745	231	976
+13341099905		203	466	669
+13900999999		456	177	633
+```
+
 ##### WritableComparable 排序 实操案例(区内排序)
+###### 1.需求
+> 要求每个省份手机号输出的文件中按照总流量内部排序.
+> 分析:基于前一个需求,增加自定义分区类即可.
+###### 2.代码实现
+###### Create ProvincePartitioner.class
+``` java
+package com.geekparkhub.hadoop.sort;
+
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Partitioner;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * ProvincePartitioner
+ * <p>
+ */
+
+public class ProvincePartitioner extends Partitioner<FlowBean, Text> {
+
+    /**
+     * Override the getPartition() method
+     * 重写getPartition()方法
+     * <p>
+     * value is the phone number, key is the traffic information
+     * value是手机号,key是流量信息
+     */
+    @Override
+    public int getPartition(FlowBean key, Text value, int numPartitions) {
+
+        /**
+         * Get the top three mobile phone numbers
+         * 获取手机号前三位
+         */
+        String prePhoneNum = value.toString().substring(0, 3);
+
+        /**
+         * Partition status
+         * 分区状态
+         */
+        int partition = 4;
+        if ("136".equals(prePhoneNum)) {
+            /**
+             * If the first number is 136, the first data of 136 is written to the 0th partition.
+             * 如果获得到首号为136,将136首号数据写入到第0分区.
+             */
+            partition = 0;
+        } else if ("137".equals(prePhoneNum)) {
+            /**
+             * If the first number is 137, the first data of 137 is written to the first partition.
+             * 如果获得到首号为137,将137首号数据写入到第1分区.
+             */
+            partition = 1;
+        } else if ("138".equals(prePhoneNum)) {
+            /**
+             * If the first number is 138, the first data of 138 is written to the second partition.
+             * 如果获得到首号为138,将138首号数据写入到第2分区.
+             */
+            partition = 2;
+        } else if ("139".equals(prePhoneNum)) {
+            /**
+             * If the first number is 138, the first data of 138 is written to the third partition.
+             * 如果获得到首号为138,将138首号数据写入到第3分区.
+             */
+            partition = 3;
+        }
+        /**
+         * If the first number is obtained, write the other first data to the default 4th partition.
+         * 如果获得到首号为其他,将其他首号数据写入到默认第4分区.
+         */
+        return partition;
+    }
+}
+```
+###### Update FlowCountSortDriver.class
+```
+ /**
+ * Set up a custom Partitioner
+ * 设置自定义Partitioner
+ */
+ job.setPartitionerClass(ProvincePartitioner.class);
+
+ /**
+ * Set up Num Reduce Tasks
+ * 设置NumReduceTasks
+ */
+ job.setNumReduceTasks(5);
+```
+###### 3.运行查看分区后倒序排序结果
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_033.jpg)
+
+
 ##### Combine 合并
+> Combine是MR程序中Mapper和Reduce之外的一种组件.
+> 
+> Combine组件的父类就是Reducer.
+> 
+> Combine和Reducer的区别在于运行的位置:
+> Combine是在每一个MapTask所在的节点运行.
+> Reducer是接收全局所以的Mapper的输出结果.
+> 
+> Combine的意义就是对每一个MapTask的输出进行局部汇总,以减小网络传输量.
+> 
+> Combine能够应用的前提是不能影响最终的业务逻辑,而且Combiner的输出kv应该跟Reducer的输入kv类型要对应起来.
+
+###### 自定义Combiner实现步骤
+> 自定义一个combiner继承Reducer,,重写reduce方法
+``` java
+public class WordcountCombiner extends Reducer<Text, IntWritable, Text, IntWritable> {
+    @Override
+    protected void reduce(Text key, Iterable<IntWritable> values,
+        Context context) throws IOException, InterruptedException {
+        // 1 汇总操作
+        int count = 0;
+        for (IntWritable v : values) {
+            count = v.get();
+        }
+        // 2 写出
+        context.write(key, new IntWritable(count));
+    }
+}
+```
+> 在job驱动类中设置
+``` java
+job.setCombinerClass(WordcountCombiner.class);
+``` 
 ##### Combine 合并案例实操
+###### 1.需求:
+> 统计过程中对每一个maptask的输出进行局部汇总，以减小网络传输量即采用Combiner功能.
+###### 2.数据输入
+###### 3.期望输出数据
+> Combine输入数据多,输出时经过合并,输出数据降低.
+###### 4.代码实现
+> Create WordcountCombiner.class
+``` java
+package com.geekparkhub.hadoop.wordcount;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * WordcountCombiner
+ * <p>
+ */
+
+public class WordcountCombiner extends Reducer<Text, IntWritable, Text, IntWritable> {
+
+    IntWritable v = new IntWritable();
+
+    @Override
+    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+
+        /**
+         * 1. Accumulate summation
+         * 1. 累加求和
+         */
+        int sum = 0;
+
+        for (IntWritable value : values) {
+            sum += value.get();
+        }
+        v.set(sum);
+
+        /**
+         * 2. Output data
+         * 2. 输出数据
+         */
+        context.write(key, v);
+    }
+}
+```
+> Update WordcountDriver.class
+``` java
+ /**
+ * Set set Combiner Class
+ *设置setCombinerClass
+ */
+ job.setCombinerClass(WordcountCombiner.class);
+```
+###### 5.第二种实现方案
+> 只需要在WordcountDriver.class中添加以下配置即可.
+``` java
+ /**
+ * Set set Combiner Class
+ *设置setCombinerClass
+ */
+ job.setCombinerClass(WordcountReducer.class);
+```
+###### 6.运行并查看日志信息
+> 在Combine input没合并之前是1048848,在合并之后是9123,这样就减小网络传输量.
+``` prolog
+	Map-Reduce Framework
+		Map input records=177089
+		Map output records=1048848
+		Map output bytes=10947197
+		Map output materialized bytes=263385
+		Input split bytes=768
+		Combine input records=1048848
+		Combine output records=9123
+		Reduce input groups=4576
+		Reduce shuffle bytes=263385
+		Reduce input records=9123
+		Reduce output records=4576
+		Spilled Records=18246
+```
+
+##### GroupingComparator分组(辅助排序)
+> 对Reduce阶段的数据根据某一个或几个字段进行分组.
+> 
+> 分组排序步骤:
+> 1.自定义类继承WritableComparator.
+> 2.重写compare()方法.
+> 3.创建一个构造器将比较对象的类传给父类.
+
+##### GroupingComparator分组 案例实操
+###### 1.需求
+> 有如下订单数据,求每一个订单中最贵的商品.
+
+| 订单ID      | 商品ID |   商品金额   |
+| :-------- | --------:| :------: |
+| 0000001    |   Pdt_06 |  50.0   |
+|     		   |   Pdt_04 |  310.0  |
+| 0000002    |   Pdt_25 |  520.0  |
+|     		   |   Pdt_01 |  299.9  |
+|     		   |   Pdt_11 |  1086.3 |
+| 0000003    |   Pdt_34 |  124.6  |
+|		       |   Pdt_12 |  496.0  |
+
+###### 2.数据源
+``` prolog
+0000001 Pdt_06 50.0
+0000001 Pdt_04 310.0
+0000002 Pdt_25 520.0
+0000002 Pdt_01 299.9
+0000002 Pdt_11 1086.3
+0000003 Pdt_34 124.6
+0000003 Pdt_12 496.0
+```
+###### 3.期望输出数据
+``` prolog
+1	310.0
+2	1086.3
+3	496.0
+```
+###### 4.需求分析
+ > 利用订单ID和商品金额作为key,可以将Map阶段读取到的所有订单数据按照ID来升序排序,如果ID相同再按照金额降序排序,发送到Reduce.
+ > 
+> 在Reduce端利用GroupingComparator将订单ID相同的kv聚合成组,然后取得第一个既是该订单中最贵商品.
+
+###### 5.代码实现
+###### Create OrderBean.class
+``` java
+package com.geekparkhub.hadoop.order;
+
+import org.apache.hadoop.io.WritableComparable;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * OrderBean
+ * <p>
+ */
+
+public class OrderBean implements WritableComparable<OrderBean> {
+
+    /**
+     * OrderBean attribute Product ID
+     * OrderBean属性 商品ID
+     */
+    private int order_id;
+
+    /**
+     * OrderBean attribute
+     * OrderBean属性 商品金额
+     */
+    private double order_money;
+
+    /**
+     * OrderBean no-argument constructor
+     * OrderBean 无参构造器
+     */
+    public OrderBean() {
+        super();
+    }
+
+    /**
+     * OrderBean parameter constructor
+     * OrderBean 参数构造器
+     *
+     * @param order_id
+     * @param order_money
+     */
+    public OrderBean(int order_id, double order_money) {
+        super();
+        this.order_id = order_id;
+        this.order_money = order_money;
+    }
+
+    /**
+     * Rewrite the compare To() method
+     * 重写compareTo()方法
+     * <p>
+     * Handling core business logic
+     * 处理核心业务逻辑
+     *
+     * @param bean
+     * @return
+     */
+
+    @Override
+    public int compareTo(OrderBean bean) {
+
+        /**
+         * Sort by order ID in ascending order, if the same will be sorted by item amount in descending order
+         * 先按照订单ID升序排序,如果相同将按照商品金额降序排序.
+         */
+
+        /**
+         * Sort status
+         * 排序状态
+         *
+         * State 1 : Indicates positive order sort
+         * State -1 : Indicates descending sort
+         * State 0 : Indicates equal
+         *
+         * 状态 1  : 表示 正序排序
+         * 状态 -1 : 表示降序排序
+         * 状态 0 : 表示相等
+         */
+        int result;
+
+        if (order_id > bean.getOrder_id()) {
+            result = 1;
+        } else if (order_id < bean.getOrder_id()) {
+            result = -1;
+        } else {
+            if (order_money > bean.getOrder_money()) {
+                result = -1;
+            } else if (order_money < bean.getOrder_money()) {
+                result = 1;
+            } else {
+                result = 0;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Rewrite serialization method
+     * 重写 序列化方法
+     *
+     * @param out
+     * @throws IOException
+     */
+    @Override
+    public void write(DataOutput out) throws IOException {
+        out.writeInt(order_id);
+        out.writeDouble(order_money);
+    }
+
+    /**
+     * Overwrite deserialization method
+     * 重写 反序列化方法
+     *
+     * @param in
+     * @throws IOException
+     */
+    @Override
+    public void readFields(DataInput in) throws IOException {
+        order_id = in.readInt();
+        order_money = in.readDouble();
+    }
+
+    /**
+     * Get & Set method
+     * Get & Set方法
+     *
+     * @return
+     */
+    public int getOrder_id() {
+        return order_id;
+    }
+
+    public void setOrder_id(int order_id) {
+        this.order_id = order_id;
+    }
+
+    public double getOrder_money() {
+        return order_money;
+    }
+
+    public void setOrder_money(double order_money) {
+        this.order_money = order_money;
+    }
+
+    /**
+     * To String method
+     * toString方法
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        return order_id + "\t" + order_money;
+    }
+}
+```
+###### Create OrderSortMapper.class
+``` java
+package com.geekparkhub.hadoop.order;
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * OrderSortMapper
+ * <p>
+ */
+
+public class OrderSortMapper extends Mapper<LongWritable, Text, OrderBean, NullWritable> {
+
+    /**
+     * Instantiated object
+     * 实例化对象
+     */
+    OrderBean k = new OrderBean();
+
+    /**
+     * Rewrite the map() method
+     * 重写map()方法
+     *
+     * @param key
+     * @param value
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Get a row of data
+         * 获取一行数据
+         */
+        String line = value.toString();
+
+        /**
+         * Cutting data
+         * 切割数据
+         */
+        String[] fields = line.split(" ");
+
+        /**
+         * Package object
+         * 封装对象
+         */
+        k.setOrder_id(Integer.parseInt(fields[0]));
+        k.setOrder_money(Double.parseDouble(fields[2]));
+
+        /**
+         * Write data
+         * 写出数据
+         */
+        context.write(k, NullWritable.get());
+    }
+}
+```
+###### Create OrderSortReducer.class
+``` java
+package com.geekparkhub.hadoop.order;
+
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.mapreduce.Reducer;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * OrderSortReducer
+ * <p>
+ */
+
+public class OrderSortReducer extends Reducer<OrderBean, NullWritable, OrderBean, NullWritable> {
+
+    /**
+     * Rewrite the reduce() method
+     * 重写reduce()方法
+     *
+     * @param key
+     * @param values
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    protected void reduce(OrderBean key, Iterable<NullWritable> values, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Write data
+         * 写出数据
+         */
+        context.write(key, NullWritable.get());
+    }
+}
+```
+###### Create OrderSortDriver.class
+``` java
+package com.geekparkhub.hadoop.order;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * OrderSortDriver
+ * <p>
+ */
+
+public class OrderSortDriver {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        /**
+         * Preset data input and output path
+         * 预设数据输入输出路径
+         */
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_order",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_order_001"};
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(OrderSortDriver.class);
+
+        /**
+         * 3. Associate Map and Reduce classes
+         * 3. 关联Map和Reduce类
+         */
+        job.setMapperClass(OrderSortMapper.class);
+        job.setReducerClass(OrderSortReducer.class);
+
+        /**
+         * 4. Set the key and value types of the output data in the Mapper stage.
+         * 4. 设置Mapper阶段输出数据的key与value类型
+         */
+        job.setMapOutputKeyClass(OrderBean.class);
+        job.setMapOutputValueClass(NullWritable.class);
+
+        /**
+         * 5. Set the key and value types for the final data output
+         * 5. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(OrderBean.class);
+        job.setOutputValueClass(NullWritable.class);
+
+        /**
+         * 6. Set the input path and output path
+         * 6. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * Set partition
+         * 设置分区
+         */
+        job.setPartitionerClass(OrderSortPartitioner.class);
+
+        /**
+         * Set the number of Reduce
+         * 设置Reduce个数
+         */
+        job.setNumReduceTasks(3);
+
+        /**
+         * Set the Reduce side grouping
+         * 设置Reduce端分组
+         */
+        job.setGroupingComparatorClass(OrderSortGroupingComparator.class);
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+###### Create OrderSortGroupingComparator.class
+``` java
+package com.geekparkhub.hadoop.order;
+
+import org.apache.hadoop.io.WritableComparable;
+import org.apache.hadoop.io.WritableComparator;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * OrderSortGroupingComparator
+ * <p>
+ */
+
+public class OrderSortGroupingComparator extends WritableComparator {
+
+    protected OrderSortGroupingComparator() {
+        super(OrderBean.class, true);
+    }
+
+    @Override
+    public int compare(WritableComparable a, WritableComparable b) {
+        /**
+         * As long as the order ID is the same, it is considered to be the same key
+         * 只要订单ID相同,就认为是相同的key
+         */
+
+        OrderBean aBean = (OrderBean) a;
+        OrderBean bBean = (OrderBean) b;
+
+        int result;
+        if (aBean.getOrder_id() > bBean.getOrder_id()) {
+            result = 1;
+        } else if (aBean.getOrder_id() < bBean.getOrder_id()) {
+            result = -1;
+        } else {
+            result = 0;
+        }
+        return result;
+    }
+}
+```
+###### Create OrderSortPartitioner.class
+``` java
+package com.geekparkhub.hadoop.order;
+
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.mapreduce.Partitioner;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ * @author system
+ * <p>
+ * OrderSortPartitioner
+ * </p>
+ */
+
+public class OrderSortPartitioner extends Partitioner<OrderBean, NullWritable> {
+    @Override
+    public int getPartition(OrderBean key, NullWritable  value, int numReduceTasks) {
+        return (key.getOrder_id() & Integer.MAX_VALUE) % numReduceTasks;
+    }
+}
+```
+###### 6.运行 查看结果
+``` prolog
+1	310.0
+2	1086.3
+3	496.0
+```
 
 #### 7.7.3.4 Map Task 工作机制
 ##### MapTask 工作机制
@@ -6924,22 +8193,27 @@ public class FlowsumDriver {
 > 
 > 3.Collect收集阶段:在用户编写map()函数中,当数据处理完成后,一般会调用OutputCollector.collect()输出结果,在该函数内部,它会将生成的key/value分区(调用Partitioner)并写入一个环形内存缓冲区中.
 > 
-> 4.Spill阶段：即""当环形缓冲区满后,MapReduce会将数据写到本地磁盘上,生成一个临时文件,需要注意的是,将数据写入本地磁盘之前,先要对数据进行一次本地排序,并在必要时对数据进行合并、压缩等操作.
+> 4.Spill阶段：即"溢写"当环形缓冲区满后,MapReduce会将数据写到本地磁盘上,生成一个临时文件,需要注意的是,将数据写入本地磁盘之前,先要对数据进行一次本地排序,并在必要时对数据进行合并、压缩等操作.
 > 
-> 溢写阶段详情: 
+> 5.溢写阶段详情: 
 > 步骤1: 利用快速排序算法对缓存区内的数据进行排序,排序方式是,先按照分区编号partition进行排序,然后按照key进行排序,这样,经过排序后,数据以分区为单位聚集在一起,同一分区内所有数据按照key有序.
 > 
 > 步骤2: 按照分区编号由小到大依次将每个分区中的数据写入任务工作目录下的临时文件output/spillN.out(N表示当前溢写次数),如果用户设置了Combiner,则写入文件之前,对每个分区中的数据进行一次聚集操作.
 > 
-> 步骤3: 将分区数据的元信息写到内存索引数据结构SpillRecord中,其中每个分区的元信息包括在临时文件中的偏移量、压缩前数据大小和压缩后数据大小,如果当前内存索引大小超过1MB，则将内存索引写到文件output/spillN.out.index中.
+> 步骤3: 将分区数据的元信息写到内存索引数据结构SpillRecord中,其中每个分区的元信息包括在临时文件中的偏移量、压缩前数据大小和压缩后数据大小,如果当前内存索引大小超过1MB,则将内存索引写到文件output/spillN.out.index中.
 > 
-> 5.Combine阶段: 当所有数据处理完成后,MapTask对所有临时文件进行一次合并,以确保最终只会生成一个数据文件.
+> 5.Combine阶段:当所有数据处理完成后,MapTask对所有临时文件进行一次合并,以确保最终只会生成一个数据文件.
 > 
 > 当所有数据处理完后,MapTask会将所有临时文件合并成一个大文件,并保存到文件output/file.out中,同时生成相应的索引文件output/file.out.index
 > 
 > 在进行文件合并过程中,MapTask以分区为单位进行合并,对于某个分区,它将采用多轮递归合并的方式,每轮合并io.sort.factor(默认100)文件,并将产生的文件重新加入待合并列表中,对文件排序后,重复以上过程,直到最终得到一个大文件.
 > 
 > 让每个MapTask最终只生成一个数据文件,可避免同时打开大量文件和同时读取大量小文件产生的随机读取带来的开销.
+
+
+
+## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+
 
 #### 7.7.3.5 Reduce Task 工作机制
 #### 7.7.3.6 OutputFromat 数据输出

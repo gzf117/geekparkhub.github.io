@@ -14,13 +14,17 @@ import java.io.IOException;
 /**
  * Geek International Park | 极客国际公园
  * GeekParkHub | 极客实验室
- * GeekDeveloper : JEEP-711
  * Website | https://www.geekparkhub.com/
  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
- * <p>
- * Driver 阶段
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
  *
  * @author system
+ * <p>
+ * WordcountDriver
+ * <p>
  */
 
 public class WordcountDriver {
@@ -33,7 +37,7 @@ public class WordcountDriver {
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
 
         args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_combine_textInput_format",
-                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_combine_textInput_format_003"};
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_combine_textInput_format_004"};
 
         /**
          * 1. Get the Job object
@@ -47,6 +51,12 @@ public class WordcountDriver {
          * 2. 设置jar存储位置
          */
         job.setJarByClass(WordcountDriver.class);
+
+        /**
+         * Set set Combiner Class
+         *设置setCombinerClass
+         */
+        job.setCombinerClass(WordcountCombiner.class);
 
         /**
          * 3. Associate Map and Reduce classes
@@ -69,7 +79,7 @@ public class WordcountDriver {
         job.setOutputKeyClass(Text.class);
         job.setOutputValueClass(IntWritable.class);
 
-        job.setNumReduceTasks(2);
+//        job.setNumReduceTasks(2);
 
         /**
          * Set the Format mode to Combine Text Input Format

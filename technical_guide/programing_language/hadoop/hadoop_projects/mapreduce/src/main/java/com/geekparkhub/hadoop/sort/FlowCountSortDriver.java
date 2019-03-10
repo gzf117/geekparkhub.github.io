@@ -33,7 +33,7 @@ public class FlowCountSortDriver {
          * 预设数据输入输出路径
          */
         args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_flow_count_sort",
-                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_flow_count_sort_001"};
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_flow_count_sort_002"};
 
         /**
          * 1. Get the Job object
@@ -47,6 +47,18 @@ public class FlowCountSortDriver {
          * 2. 设置jar存储位置
          */
         job.setJarByClass(FlowCountSortDriver.class);
+
+        /**
+         * Set up a custom Partitioner
+         * 设置自定义Partitioner
+         */
+        job.setPartitionerClass(ProvincePartitioner.class);
+
+        /**
+         * Set up Num Reduce Tasks
+         * 设置NumReduceTasks
+         */
+        job.setNumReduceTasks(5);
 
         /**
          * 3. Associate Map and Reduce classes
