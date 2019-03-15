@@ -8211,38 +8211,2792 @@ public class OrderSortPartitioner extends Partitioner<OrderBean, NullWritable> {
 > 让每个MapTask最终只生成一个数据文件,可避免同时打开大量文件和同时读取大量小文件产生的随机读取带来的开销.
 
 
-
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
-
-
 #### 7.7.3.5 Reduce Task 工作机制
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_034.jpg)
+> 1.Copy阶段:ReduceTask从各个MapTask上远程拷贝一片数据,并针对某一片数据,如果其大小超过一定阈值,则写到磁盘上,否则直接放到内存中.
+> 
+> 2.Merge阶段:在远程拷贝数据的同时,ReduceTask启动了两个后台线程对内存和磁盘上的文件进行合并,以防止内存使用过多或磁盘上文件过多.
+> 
+> 3.Sort阶段:按照MapReduce语义,用户编写reduce()函数输入数据是按key进行聚集的一组数据,为了将key相同的数据聚在一起,Hadoop采用了基于排序的策略,由于各个MapTask已经实现对自己的处理结果进行了局部排序,因此ReduceTask只需对所有数据进行一次归并排序即可.
+> 
+> 4.Reduce阶段:reduce()函数将计算结果写到HDFS上.
+
+#### 设置ReduceTask并行度(个数)
+> reducetask的并行度同样影响整个job的执行并发度和执行效率,但与maptask的并发数由切片数决定不同,Reducetask数量的决定是可以直接手动设置:
+> 
+> 注意事项:
+> 
+> 1.ReduceTask=0,表示没有Reduce阶段,输出文件个数和Map个数一致.
+> 
+> 2.ReduceTask默认值就是1,所以输出文件个数为一个.
+> 
+> 3.如果数据分布不均匀,就有可能在Reduce阶段产生数据倾斜.
+> 
+> 4.ReduceTask数量并不是任意设置,还要考虑业务逻辑需求,有些情况下,需要计算全局汇总结果,就只能有1个Reducetask.
+> 
+> 5.具体多少个ReduceTask,需要根据集群性能而定.
+> 
+> 6.如果分区数不是1,但是ReduceTask为1,是否执行分区过程.
+> 
+> 答案是:不执行分区过程,因为在MapTask的源码中,执行分区的前提是先判断ReduceNum个数是否大于1,不大于1肯定不执行.
+
+
 #### 7.7.3.6 OutputFromat 数据输出
+##### OutputFormat接口实现类
+> OutputFormat是MapReduce输出的基类,所有实现MapReduce输出都实现了OutputFormat接口.
+##### 常见的OutputFormat实现类
+###### 文本输出 TextOutputFormat
+> 默认的输出格式是TextOutputFormat,它把每条记录写为文本行,它的键和值可以是任意类型,因为TextOutputFormat调用toString()方法把它们转换为字符串.
+###### SequenceFileOutputFormat
+> SequenceFileOutputFormat将它的输出写为一个顺序文件,如果输出需要作为后续MapReduce任务的输入,这便是一种好的输出格式,因为它的格式紧凑,很容易被压缩.
+###### 自定义OutputFormat
+> 根据开发者需求,自定义实现输出.
+
+##### 自定义OutputFormat
+> 为了实现控制最终文件的输出路径,可以自定义OutputFormat,要在一个MapReduce程序中根据数据的不同输出两类结果到不同目录,这类灵活的输出需求可以通过自定义OutputFormat来实现.
+
+##### 自定义OutputFormat步骤
+> 1.自定义一个类继承FileOutputFormat.
+> 2.改写recordwriter,具体改写输出数据的方法write().
+
+##### 自定义OutputFormat案例实操
+###### 1.需求
+> 过滤输入的log日志中是否包含geekparkhub
+> 
+> a.包含geekparkhub的网站输出到geekparkhub.log
+> 
+> b.不包含geekparkhub的网站输出到other.log
+###### 2.输入数据
+``` prolog
+https://www.google.com/
+https://github.com/
+https://www.youtube.com/
+https://twitter.com/
+https://www.facebook.com
+https://www.geekparkhub.com/
+https://www.flaticon.com
+https://baidu.com/
+https://gitee.com/
+http://info.xcar.com.cn/
+http://tool.oschina.net/
+https://www.instagram.com
+https://emojipedia.org/
+```
+###### 3.具体实现
+> 创建一个FilterRecordWriter类继承RecordWriter
+> 创建两个文件输出流:geekparkhubOut,otherOut
+> 如过输入数据包含geekparkhub则输出geekparkhubOut流,如不包含geekparkhub,则输出到otherOut流.
+
+###### Create FilterMapper.class
+``` java
+package com.geekparkhub.hadoop.outputformat;
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * FilterMapper
+ * <p>
+ */
+
+public class FilterMapper extends Mapper<LongWritable, Text, Text, NullWritable> {
+
+    /**
+     * Rewrite the map() method
+     * 重写map()方法
+     *
+     * @param key
+     * @param value
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Write data
+         * 写出数据
+         */
+        context.write(value, NullWritable.get());
+    }
+}
+```
+###### Create FilterReducer.class
+``` java
+package com.geekparkhub.hadoop.outputformat;
+
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * FilterReducer
+ * <p>
+ */
+
+public class FilterReducer extends Reducer<Text, NullWritable, Text, NullWritable> {
+
+    Text k = new Text();
+
+    /**
+     * Rewrite the reduce() method
+     * 重写reduce()方法
+     *
+     * @param key
+     * @param values
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+
+    @Override
+    protected void reduce(Text key, Iterable<NullWritable> values, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Manually format the data source
+         * 手动格式化数据源
+         */
+        String line = key.toString();
+        line = line + "\r\t";
+        k.set(line);
+
+        /**
+         * Loop out data
+         * 循环写出数据
+         */
+        for (NullWritable value : values) {
+            context.write(k, NullWritable.get());
+        }
+
+    }
+}
+```
+
+###### Create FilterOutputFormat.class
+``` java
+package com.geekparkhub.hadoop.outputformat;
+
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.*;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * FilterOutputFormat
+ * <p>
+ */
+
+public class FilterOutputFormat extends FileOutputFormat<Text, NullWritable> {
+
+    /**
+     * Rewrite the getRecordWriter() method
+     * 重写getRecordWriter()方法
+     * @param job
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    public RecordWriter<Text, NullWritable> getRecordWriter(TaskAttemptContext job) throws IOException, InterruptedException {
+        return new FRecordWriter(job);
+    }
+}
+```
+###### Create FRecordWriter.class
+``` java
+package com.geekparkhub.hadoop.outputformat;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataOutputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.RecordWriter;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * FRecordWriter
+ * <p>
+ */
+
+public class FRecordWriter extends RecordWriter<Text, NullWritable> {
+
+    /**
+     * Extract FS Data Output Stream
+     * 提取FSDataOutputStream
+     */
+    FSDataOutputStream geekparkhubOut;
+    FSDataOutputStream otherOut;
+
+    /**
+     * FRecordWriter 写数据核心构造器
+     *
+     * @param job
+     */
+
+    public FRecordWriter(TaskAttemptContext job) {
+
+        try {
+
+            /**
+             * Get the file system and pass the current job object to the file system
+             *获取文件系统,将当前job对象传递给文件系统
+             */
+            FileSystem fs = FileSystem.get(job.getConfiguration());
+
+            /**
+             * Create an output stream geekparkhub.log
+             * 创建输出流 geekparkhub.log
+             */
+            geekparkhubOut = fs.create(new Path("/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_format_001/geekparkhub.log"));
+
+            /**
+             * Create an output stream other.log
+             * 创建输出流 other.log
+             */
+            otherOut = fs.create(new Path("/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_format_001/other.log"));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Override write() method
+     * 复写 write()方法
+     *
+     * @param key
+     * @param value
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    public void write(Text key, NullWritable value) throws IOException, InterruptedException {
+
+        /**
+         * Determine if the key contains geekparkhub
+         * If yes, write to geekparkhub.log
+         * If not, write to other.log
+         *
+         * 判断key中是否含有geekparkhub
+         * 如果有则写入到geekparkhub.log
+         * 如法没有则写入到other.log
+         */
+
+        if (key.toString().contains("geekparkhub")) {
+            geekparkhubOut.write(key.toString().getBytes());
+        } else {
+            otherOut.write(key.toString().getBytes());
+        }
+
+    }
+
+    /**
+     * Override the close() method
+     * 复写 close()方法
+     *
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    public void close(TaskAttemptContext context) throws IOException, InterruptedException {
+        if (geekparkhubOut != null) {
+            geekparkhubOut.close();
+        }
+        if (otherOut != null) {
+            otherOut.close();
+        }
+    }
+}
+```
+###### Create FilterDriver.class
+``` java
+package com.geekparkhub.hadoop.outputformat;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * FilterDriver
+ * <p>
+ */
+
+public class FilterDriver {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        /**
+         * Preset data input and output path
+         * 预设数据输入输出路径
+         */
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_outputformat",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_format_001"};
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(FilterDriver.class);
+
+        /**
+         * 3. Associate Map and Reduce classes
+         * 3. 关联Map和Reduce类
+         */
+        job.setMapperClass(FilterMapper.class);
+        job.setReducerClass(FilterReducer.class);
+
+        /**
+         * 4. Set the key and value types of the output data in the Mapper stage.
+         * 4. 设置Mapper阶段输出数据的key与value类型
+         */
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(NullWritable.class);
+
+        /**
+         * 5. Set the key and value types for the final data output
+         * 5. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(NullWritable.class);
+
+        /**
+         * Set custom output format components to the job object
+         * 设置自定义输出格式组件到job对象中
+         */
+        job.setOutputFormatClass(FilterOutputFormat.class);
+
+        /**
+         * 6. Set the input path and output path
+         * 6. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+###### 4.运行并查看结果
+geekparkhub.log
+``` prolog
+https://www.geekparkhub.com/
+```
+other.log
+``` prolog
+	http://info.xcar.com.cn/
+	http://tool.oschina.net/
+	https://baidu.com/
+	https://emojipedia.org/
+	https://gitee.com/
+	https://github.com/
+	https://twitter.com/
+	https://www.facebook.com
+	https://www.flaticon.com
+	https://www.google.com/
+	https://www.instagram.com
+	https://www.youtube.com/
+```
+
 #### 7.7.3.7 Join 多种应用
+##### Reduce join    
+###### Reduce join工作原理
+> Map端的主要工作:为来自不同表(文件)的key/value对打标签以区别不同来源的记录,然后用连接字段作为key,其余部分和新加的标志作为value,最后进行输出.
+> 
+> Reduce端的主要工作:在reduce端以连接字段作为key的分组已经完成,我们只需要在每一个分组当中将那些来源于不同文件的记录(在map阶段已经打标志)分开,最后进行合并就ok了.
+##### Reduce join案例实操
+###### 1.需求
+> 订单数据表t_order = order
+| id      |     pid |   amount   |
+| :-------- | --------:| :------: |
+| 1001    |   01 |  1  |
+| 1002    |   02 |  2  |
+| 1003    |   03 |  3  |
+| 1004    |   04 |  4  |
+| 1005    |   05 |  5  |
+| 1006    |   06 |  6  |
+
+> 商品信息表t_product = pd
+| pid      |     pname | 
+| :-------- | --------:|
+| 01    |   小米 |
+| 02    |   华为 |
+| 03    |   锤子 |
+
+> 将商品信息表中数据根据商品pid合并到订单数据表中.
+| id      |     pname |   amount   |
+| :-------- | --------:| :------: |
+| 1001    |   小米 |  1  |
+| 1002    |   华为 |  2  |
+| 1003    |   锤子 |  3  |
+| 1004    |   小米 |  4  |
+| 1005    |   华为 |  5  |
+| 1006    |   锤子 |  6  |
+
+###### 2.需求分析
+> 通过将关联条件作为map输出的key,将两表满足join条件的数据并携带数据所来源的文件信息,发往同一个ReduceTask,在Reduce中进行数据的串联.
+> Map阶段处理
+> 获取输入文件类型,获取输入数据,对不同文件分别处理,封装Bean对象输出.
+> MapTask阶段处理,默认对产品ID排序.
+> ReduceTask阶段处理,Reduce方法缓存订单表和产品表数据集合,然后合并.
+
+
+###### 3.代码实现
+###### Create TableBean.class
+``` java
+package com.geekparkhub.hadoop.table;
+
+import org.apache.hadoop.io.Writable;
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TableBean
+ * <p>
+ */
+
+public class TableBean implements Writable {
+
+    /**
+     * Order ID
+     * 订单ID
+     */
+    private String order_id;
+
+    /**
+     * Product ID
+     * 产品ID
+     */
+    private String p_id;
+
+    /**
+     * Merchandise Quantity
+     * 产品数量
+     */
+    private int amount;
+
+    /**
+     * Product Name
+     * 产品名称
+     */
+    private String pname;
+
+    /**
+     * Table Mark
+     * 表标记
+     */
+    private String flag;
+
+    /**
+     * Empty reference constructor
+     * 空参构造器
+     */
+    public TableBean() {
+        super();
+    }
+
+    /**
+     * Parameter constructor
+     * 参数构造器
+     * @param order_id
+     * @param p_id
+     * @param amount
+     * @param pname
+     * @param flag
+     */
+    public TableBean(String order_id, String p_id, int amount, String pname, String flag) {
+        this.order_id = order_id;
+        this.p_id = p_id;
+        this.amount = amount;
+        this.pname = pname;
+        this.flag = flag;
+    }
+
+    /**
+     * Copy serialization method
+     * 复写 序列化方法
+     * @param out
+     * @throws IOException
+     */
+    @Override
+    public void write(DataOutput out) throws IOException {
+        out.writeUTF(order_id);
+        out.writeUTF(p_id);
+        out.writeInt(amount);
+        out.writeUTF(pname);
+        out.writeUTF(flag);
+    }
+
+    /**
+     * Overwrite deserialization method
+     * 复写 反序列化方法
+     * @param in
+     * @throws IOException
+     */
+    @Override
+    public void readFields(DataInput in) throws IOException {
+        this.order_id = in.readUTF();
+        this.p_id = in.readUTF();
+        this.amount = in.readInt();
+        this.pname = in.readUTF();
+        this.flag = in.readUTF();
+    }
+
+    /**
+     * Get&Set method
+     * Get&Set方法
+     */
+    public String getOrder_id() {
+        return order_id;
+    }
+
+    public void setOrder_id(String order_id) {
+        this.order_id = order_id;
+    }
+
+    public String getP_id() {
+        return p_id;
+    }
+
+    public void setP_id(String p_id) {
+        this.p_id = p_id;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public void setAmount(int amount) {
+        this.amount = amount;
+    }
+
+    public String getPname() {
+        return pname;
+    }
+
+    public void setPname(String pname) {
+        this.pname = pname;
+    }
+
+    public String getFlag() {
+        return flag;
+    }
+
+    public void setFlag(String flag) {
+        this.flag = flag;
+    }
+
+    /**
+     * Override toString() method
+     * 复写 toString()方法
+     * @return
+     */
+    @Override
+    public String toString() {
+        return order_id + "\t" + pname + "\t" + amount + "\t" ;
+    }
+}
+```
+###### Create TableMapper.class
+``` java
+package com.geekparkhub.hadoop.table;
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TableMapper
+ * <p>
+ */
+
+public class TableMapper extends Mapper<LongWritable, Text, Text, TableBean> {
+
+    /**
+     * file name
+     * 文件名称
+     */
+    String name;
+
+    TableBean tableBean = new TableBean();
+    Text k = new Text();
+
+    /**
+     * Override initialization method
+     * 复写 初始化方法
+     *
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    protected void setup(Mapper<LongWritable, Text, Text, TableBean>.Context context) throws IOException, InterruptedException {
+        /**
+         * Get the file name
+         * 获取文件名称
+         */
+        FileSplit inputSplit = (FileSplit) context.getInputSplit();
+        name = inputSplit.getPath().getName();
+    }
+
+    /**
+     * Rewrite the map() method
+     * 复写 map()方法
+     *
+     * @param key
+     * @param value
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Get the first row of data
+         * 获取第一行数据
+         */
+        String line = value.toString();
+
+        /**
+         * If it starts with order, it proves to be the order form, otherwise it is the product list.
+         * 如果以order开头,则证明是订单表,否则是产品表
+         */
+        if (name.startsWith("order")) {
+
+            /**
+             * Cutting data
+             * 切割数据
+             */
+            String[] flelds = line.split(" ");
+
+            /**
+             * Encapsulate key&value object
+             * 封装key&value对象
+             */
+            tableBean.setOrder_id(flelds[0]);
+            tableBean.setP_id(flelds[1]);
+            tableBean.setAmount(Integer.parseInt(flelds[2]));
+            tableBean.setPname("");
+            tableBean.setFlag("order");
+
+            /**
+             * Set OID
+             * 设置OID
+             */
+            k.set(flelds[1]);
+        } else {
+
+            /**
+             * Cutting data
+             * 切割数据
+             */
+            String[] flelds = line.split(" ");
+
+            /**
+             * Encapsulate key&value object
+             * 封装key&value对象
+             */
+            tableBean.setOrder_id("");
+            tableBean.setP_id(flelds[0]);
+            tableBean.setAmount(0);
+            tableBean.setPname(flelds[1]);
+            tableBean.setFlag("pd");
+
+            /**
+             * Set the PID
+             * 设置PID
+             */
+            k.set(flelds[0]);
+        }
+
+        /**
+         * Write data
+         * 写出数据
+         */
+        context.write(k, tableBean);
+    }
+}
+```
+
+###### Create TableReducer.class
+``` java
+package com.geekparkhub.hadoop.table;
+
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+
+import static org.apache.commons.beanutils.BeanUtils.*;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TableReducer
+ * <p>
+ */
+
+public class TableReducer extends Reducer<Text, TableBean, TableBean, NullWritable> {
+    /**
+     * @param key
+     * @param values
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    protected void reduce(Text key, Iterable<TableBean> values, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Store all order collections
+         * 存放所有订单集合
+         */
+        ArrayList<TableBean> orderBeans = new ArrayList<>();
+
+        /**
+         * Store all product collections
+         * 存放所有产品集合
+         */
+        TableBean pdBean = new TableBean();
+
+        /**
+         * Loop traversal
+         * 循环遍历
+         */
+        for (TableBean tableBean : values) {
+            if ("order".equals(tableBean.getFlag())) {
+                TableBean tmp = new TableBean();
+                try {
+                    copyProperties(tmp, tableBean);
+                    orderBeans.add(tableBean);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    copyProperties(pdBean, tableBean);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        /**
+         * Loop through the orderBeans
+         * 循环遍历 orderBeans
+         */
+        for (TableBean tableBean : orderBeans) {
+            tableBean.setPname(pdBean.getPname());
+            context.write(tableBean, NullWritable.get());
+        }
+
+    }
+}	
+```
+
+###### Create TableDriver.class
+``` java
+package com.geekparkhub.hadoop.table;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TableDriver
+ * <p>
+ */
+
+public class TableDriver {
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+        /**
+         * Preset data input and output path
+         * 预设数据输入输出路径
+         */
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_table",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_table_001"};
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(TableDriver.class);
+
+        /**
+         * 3. Associate Map and Reduce classes
+         * 3. 关联Map和Reduce类
+         */
+        job.setMapperClass(TableMapper.class);
+        job.setReducerClass(TableReducer.class);
+
+        /**
+         * 4. Set the key and value types of the output data in the Mapper stage.
+         * 4. 设置Mapper阶段输出数据的key与value类型
+         */
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(TableBean.class);
+
+        /**
+         * 5. Set the key and value types for the final data output
+         * 5. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(TableBean.class);
+        job.setOutputValueClass(NullWritable.class);
+
+        /**
+         * 6. Set the input path and output path
+         * 6. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+> 缺点：这种方式中,合并的操作是在reduce阶段完成,reduce端的处理压力太大,map节点的运算负载则很低,资源利用率不高,且在reduce阶段极易产生数据倾斜.
+> 
+> 解决方案: map端实现数据合并.
+> 解决方案: 在map端缓存多张表,提前处理业务逻辑,这样增加map端业务,减少reduce端数据的压力,尽可能的减少数据倾斜.
+
+##### Map join
+> 使用场景:一张表十分小、一张表很大.
+
+##### Map join案例实操
+> 分析:适用于关联表中有小表的情形
+> 可以将小表分发到所有的map节点,这样,map节点就可以在本地对自己所读到的大表数据进行合并并输出最终结果,可以大大提高合并操作的并发度,加快处理速度.
+##### 代码实现
+##### Create DistributedCacheDriver.class
+``` java
+package com.geekparkhub.hadoop.cache;
+
+import com.geekparkhub.hadoop.table.TableBean;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * DistributedCacheDriver
+ * <p>
+ */
+
+public class DistributedCacheDriver {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException, URISyntaxException {
+        /**
+         * Preset data input and output path
+         * 预设数据输入输出路径
+         */
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_table",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_table_001"};
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(DistributedCacheDriver.class);
+
+        /**
+         * 3. Associate Map classes
+         * 3. 关联Map类
+         */
+        job.setMapperClass(DistributedCacheMapper.class);
+
+        /**
+         * 4. Set the key and value types for the final data output
+         * 4. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(TableBean.class);
+        job.setOutputValueClass(NullWritable.class);
+
+        /**
+         * 5. Set the input path and output path
+         * 5. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 6.Loading cached data
+         * 6.加载缓存数据
+         */
+        job.addCacheFile(new URI("/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_table/pd.txt"));
+
+        /**
+         * 7.The logic of the Join on the Map does not require the Reduce phase. Set the number of Reduce Tasks to 0.
+         * 7.Map端Join的逻辑不需要Reduce阶段,设置ReduceTask数量为0
+         */
+        job.setNumReduceTasks(0);
+
+        /**
+         * 8. Submit the Job
+         * 8. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 9. Log printing
+         * 9. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+##### Create DistributedCacheMapper.class
+``` java
+package com.geekparkhub.hadoop.cache;
+
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.util.HashMap;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * DistributedCacheMapper
+ * <p>
+ */
+
+public class DistributedCacheMapper extends Mapper<LongWritable, Text,Text, NullWritable> {
+
+    HashMap<String, String> pdMap = new HashMap<>();
+    Text k = new Text();
+
+    /**
+     * Override initialization method
+     * 复写 初始化方法
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    protected void setup(Mapper<LongWritable,Text,Text,NullWritable>.Context context) throws IOException, InterruptedException {
+
+        /**
+         * Get the cache path of the file
+         * 获取文件缓存路径
+         */
+        URI[] cacheFiles = context.getCacheFiles();
+        String path = cacheFiles[0].getPath().toString();
+
+        /**
+         * Cache smaller data tables
+         * 缓存较小的数据表
+         */
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF-8"));
+
+        /**
+         * Loop traversal
+         * 循环遍历
+         */
+        String line;
+        while (StringUtils.isNotEmpty(line = reader.readLine())){
+            /**
+             * Cutting data
+             * 切割数据
+             */
+            String[] fileds = line.split(" ");
+            pdMap.put(fileds[0],fileds[1]);
+        }
+        /**
+         * Close resource
+         * 关闭资源
+         */
+        IOUtils.closeStream(reader);
+    }
+
+    /**
+     * Override map method
+     * 复写 map方法
+     * @param key
+     * @param value
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Get a row of data
+         * 获取一行数据
+         */
+        String line = value.toString();
+
+        /**
+         * Cutting data
+         * 切割数据
+         */
+        String[] fileds = line.split(" ");
+
+        /**
+         * Get pid field attribute
+         * 获取pid字段属性
+         */
+        String pid = fileds[1];
+
+        /**
+         * Get pname field attribute
+         * 获取pname字段属性
+         */
+        String pname = pdMap.get(pid);
+
+        /**
+         * Data stitching
+         * 数据拼接
+         */
+        line = line +"\t"+ pname;
+        k.set(line);
+
+        /**
+         * Write data
+         * 写出数据
+         */
+        context.write(k,NullWritable.get());
+    }
+}
+```
+
 #### 7.7.3.8 计数器应用
+> Hadoop为每个作业维护若干内置计数器,以描述多项指标.
+> 
+> 例如,某些计数器记录已处理的字节数和记录数,使用户可监控已处理的输入数据量和已产生的输出数据量.
+
+#### 计数器API
+##### 1.采用枚举的方式统计计数
+```
+enum MyCounter{MALFORORMED,NORMAL}
+// 对枚举定义的自定义计数器加1 context.getCounter(MyCounter.MALFORORMED).increment(1);
+```
+##### 2.采用计数器组/计数器名称的方式统计
+```
+context.getCounter("counterGroup", "countera").increment(1);
+```
+##### 3.计数结果在程序运行后的控制台上查看
+
 #### 7.7.3.9 数据清洗(ETL)
+> 在运行核心业务Mapreduce程序之前,往往要先对数据进行清洗,清理掉不符合用户要求的数据.
+> 
+> 清理的过程往往只需要运行mapper程序,不需要运行reduce程序.
+
+##### 数据清洗案例实操-快速清洗版
+###### 1.需求
+> 去除日志中长度小于等于11的日志.
+> web.log 元数据 - 数据行数为14619
+> 注意:为了方便演示,已省略一万行日志数据信息
+``` accesslog
+194.237.142.21 - - [18/Sep/2013:06:49:18 +0000] "GET /wp-content/uploads/2013/07/rstudio-git3.png HTTP/1.1" 304 0 "-" "Mozilla/4.0 (compatible;)"
+183.49.46.228 - - [18/Sep/2013:06:49:23 +0000] "-" 400 0 "-" "-"
+163.177.71.12 - - [18/Sep/2013:06:49:33 +0000] "HEAD / HTTP/1.1" 200 20 "-" "DNSPod-Monitor/1.0"
+163.177.71.12 - - [18/Sep/2013:06:49:36 +0000] "HEAD / HTTP/1.1" 200 20 "-" "DNSPod-Monitor/1.0"
+101.226.68.137 - - [18/Sep/2013:06:49:42 +0000] "HEAD / HTTP/1.1" 200 20 "-" "DNSPod-Monitor/1.0"
+101.226.68.137 - - [18/Sep/2013:06:49:45 +0000] "HEAD / HTTP/1.1" 200 20 "-" "DNSPod-Monitor/1.0"
+60.208.6.156 - - [18/Sep/2013:06:49:48 +0000] "GET /wp-content/uploads/2013/07/rcassandra.png HTTP/1.0" 200 185524 "http://cos.name/category/software/packages/" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36"
+222.68.172.190 - - [18/Sep/2013:06:49:57 +0000] "GET /images/my.jpg HTTP/1.1" 200 19939 "http://www.angularjs.cn/A00n" "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/29.0.1547.66 Safari/537.36"
+222.68.172.190 - - [18/Sep/2013:06:50:08 +0000] "-" 400 0 "-" "-"
+183.195.232.138 - - [18/Sep/2013:06:50:16 +0000] "HEAD / HTTP/1.1" 200 20 "-" "DNSPod-Monitor/1.0"
+183.195.232.138 - - [18/Sep/2013:06:50:16 +0000] "HEAD / HTTP/1.1" 200 20 "-" "DNSPod-Monitor/1.0"
+```
+``` prolog
+194.237.142.21 - - [18/Sep/2013:06:49:18 +0000] "GET /wp-content/uploads/2013/07/rstudio-git3.png HTTP/1.1" 304 0 "-" "Mozilla/4.0 (compatible;)"
+```
+``` prolog
+ 194.237.142.21 | (表示记录客户端的ip地址)
+ - - | (表示记录客户端用户名称,忽略属性)
+ [18/Sep/2013:06:49:18 +0000] | (表示记录访问时间与时区)
+ "GET /wp-content/uploads/2013/07/rstudio-git3.png HTTP/1.1" | (表示记录请求的url与http协议)
+ 304 | (表示记录请求状态,成功是200)
+ 0 | (表示记录发送给客户端文件主体内容大小)
+ "-" | (表示用来记录用户访问页面链接途径)
+ "Mozilla/4.0 (compatible;)" | (表示记录客户浏览器的相关信息)
+```
+> 期望输出数据 每行字段长度大于11
+###### 2.需求分析
+> 需要在Map阶段对输入的数据根据规则进行过滤清洗.
+###### 3.代码实现
+###### Create LogMapper.class
+``` java
+package com.geekparkhub.hadoop.weblog;
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * LogMapper
+ * <p>
+ */
+
+public class LogMapper extends Mapper<LongWritable, Text, Text, NullWritable> {
+
+    /**
+     * Rewrite the map() method
+     * 复写 map()方法
+     *
+     * @param key
+     * @param value
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Get a row of data
+         * 获取一行数据
+         */
+        String line = value.toString();
+
+        /**
+         * Analytical data
+         * 解析数据
+         */
+        boolean result = parseLog(line, context);
+
+        /**
+         * If the parsing fails, skip the return directly.
+         * 如果解析失败,则直接跳过返回
+         */
+        if (!result) {
+            return;
+        }
+        /**
+         * If the parsing is successful, write out the data.
+         * 如果解析成功,写出数据
+         */
+        context.write(value, NullWritable.get());
+    }
+
+    /**
+     * Parsing log method
+     * 解析日志方法
+     *
+     * @param line
+     * @param context
+     * @return
+     */
+    private boolean parseLog(String line, Context context) {
+
+        /**
+         * Cutting data
+         * 切割数据
+         */
+        String[] flelds = line.split(" ");
+
+        /**
+         * Return true if the log length is greater than 11.
+         * 如果日志长度大于11,则返回true
+         */
+        if (flelds.length > 11) {
+            /**
+             * Introduce a counter, in the Map phase, the number that is judged to be true.
+             * 引入计数器,在Map阶段,判断为true的个数
+             */
+            context.getCounter("map", "true").increment(1);
+            return true;
+        } else {
+            /**
+             * Introduce a counter, in the Map phase, the number that is judged to be false.
+             * 引入计数器,在Map阶段,判断为false的个数
+             */
+            context.getCounter("map", "false").increment(1);
+            return false;
+        }
+    }
+}
+```
+###### Create LogDriver.class
+``` java
+package com.geekparkhub.hadoop.weblog;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import java.io.IOException;
+
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * LogDriver
+ * <p>
+ */
+
+public class LogDriver {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        /**
+         * Preset data input and output path
+         * 预设数据输入输出路径
+         */
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_log",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_log_001"};
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(LogDriver.class);
+
+        /**
+         * 3. Associate Map classes
+         * 3. 关联Map类
+         */
+        job.setMapperClass(LogMapper.class);
+
+        /**
+         * 4. Set the key and value types for the final data output
+         * 4. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(NullWritable.class);
+
+        /**
+         * 6.Set the number of Reduce Tasks to 0.
+         * 6.设置ReduceTask数量为0
+         */
+        job.setNumReduceTasks(0);
+
+        /**
+         * 5. Set the input path and output path
+         * 5. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+###### 4.运行查看结果
+> 14619为总行数,在map阶段已通过13770,已过滤掉849行数据
+``` prolog
+Map-Reduce Framework
+		Map input records=14619
+		Map output records=13770
+		Input split bytes=173
+		Spilled Records=0
+		Failed Shuffles=0
+		Merged Map outputs=0
+		GC time elapsed (ms)=9
+		Total committed heap usage (bytes)=324534272
+	map
+		false=849
+		true=13770
+	File Input Format Counters 
+		Bytes Read=3040376
+	File Output Format Counters 
+		Bytes Written=2993323
+```
+
+##### 数据清洗案例实操-复杂清洗版
+###### 1.需求:
+> 对web访问日志中的各字段识别切分,去除日志中不合法的记录,根据统计需求生成各类访问请求过滤数据.
+###### 2.数据源同上
+``` prolog
+194.237.142.21 - - [18/Sep/2013:06:49:18 +0000] "GET /wp-content/uploads/2013/07/rstudio-git3.png HTTP/1.1" 304 0 "-" "Mozilla/4.0 (compatible;)"
+```
+``` prolog
+ 194.237.142.21 | (表示记录客户端的ip地址)
+ - - | (表示记录客户端用户名称,忽略属性)
+ [18/Sep/2013:06:49:18 +0000] | (表示记录访问时间与时区)
+ "GET /wp-content/uploads/2013/07/rstudio-git3.png HTTP/1.1" | (表示记录请求的url与http协议)
+ 304 | (表示记录请求状态,成功是200)
+ 0 | (表示记录发送给客户端文件主体内容大小)
+ "-" | (表示用来记录用户访问页面链接途径)
+ "Mozilla/4.0 (compatible;)" | (表示记录客户浏览器的相关信息)
+```
+###### 3.代码实现
+###### Create LogBean.class
+``` java
+package com.geekparkhub.hadoop.logclean;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * LogBean
+ * <p>
+ */
+
+public class LogBean {
+
+    /**
+     *
+     * 194.237.142.21 | (Indicating the ip address of the recording client.)
+     * - - | (Indicating the record client user name, ignoring attributes.)
+     * [18/Sep/2013:06:49:18 +0000] | (Indicating record access time With the time zone.)
+     * "GET /wp-content/uploads/2013/07/rstudio-git3.png HTTP/1.1" | (indicating the url of the request request and the http protocol.)
+     * 304 | (indicating the status of the record request, the success is 200.)
+     * 0 | (Indicating the size of the content of the file sent to the client file.)
+     * "-" | (indicating the path used to record the user's access to the page.)
+     * "Mozilla/4.0 (compatible;)" | (Indicates information about the client's browser.)
+     *
+     *  194.237.142.21 | (表示记录客户端的ip地址)
+     *  - - | (表示记录客户端用户名称,忽略属性)
+     *  [18/Sep/2013:06:49:18 +0000] | (表示记录访问时间与时区)
+     *  "GET /wp-content/uploads/2013/07/rstudio-git3.png HTTP/1.1" | (表示记录请求的url与http协议)
+     *  304 | (表示记录请求状态,成功是200)
+     *  0 | (表示记录发送给客户端文件主体内容大小)
+     *  "-" | (表示用来记录用户访问页面链接途径)
+     *  "Mozilla/4.0 (compatible;)" | (表示记录客户浏览器的相关信息)
+     *
+     */
+
+    /**
+     * Indicates the ip address of the recording client.
+     * 表示记录客户端的ip地址.
+     */
+    private String remote_addr;
+
+    /**
+     * Indicates the record client user name, ignoring attributes.
+     * 表示记录客户端用户名称,忽略属性.
+     */
+    private String remote_user;
+
+    /**
+     * Indicates the record access time and time zone.
+     * 表示记录访问时间与时区.
+     */
+    private String time_local;
+
+    /**
+     * Indicates the url of the record request and the http protocol.
+     * 表示记录请求的url与http协议.
+     */
+    private String request;
+
+    /**
+     * Indicates the status of the record request. The success is 200.
+     * 表示记录请求状态,成功是200.
+     */
+    private String status;
+
+    /**
+     * Indicates the size of the body of the file sent to the client.
+     * 表示记录发送给客户端文件主体内容大小.
+     */
+    private String body_bytes_sent;
+
+    /**
+     * Indicates the path used to record the user's access to the page.
+     * 表示用来记录用户访问页面链接途径.
+     */
+    private String http_referer;
+
+    /**
+     * Indicates information about the client's browser.
+     * 表示记录客户浏览器的相关信息.
+     */
+    private String http_user_agent;
+
+    /**
+     * Determine if the data is legal.
+     * 判断数据是否合法.
+     */
+    private boolean valid = true;
+
+    /**
+     * Get & Set method
+     * Get & Set 方法
+     *
+     * @return
+     */
+    public String getRemote_addr() {
+        return remote_addr;
+    }
+
+    public void setRemote_addr(String remote_addr) {
+        this.remote_addr = remote_addr;
+    }
+
+    public String getRemote_user() {
+        return remote_user;
+    }
+
+    public void setRemote_user(String remote_user) {
+        this.remote_user = remote_user;
+    }
+
+    public String getTime_local() {
+        return time_local;
+    }
+
+    public void setTime_local(String time_local) {
+        this.time_local = time_local;
+    }
+
+    public String getRequest() {
+        return request;
+    }
+
+    public void setRequest(String request) {
+        this.request = request;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getBody_bytes_sent() {
+        return body_bytes_sent;
+    }
+
+    public void setBody_bytes_sent(String body_bytes_sent) {
+        this.body_bytes_sent = body_bytes_sent;
+    }
+
+    public String getHttp_referer() {
+        return http_referer;
+    }
+
+    public void setHttp_referer(String http_referer) {
+        this.http_referer = http_referer;
+    }
+
+    public String getHttp_user_agent() {
+        return http_user_agent;
+    }
+
+    public void setHttp_user_agent(String http_user_agent) {
+        this.http_user_agent = http_user_agent;
+    }
+
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
+    }
+
+    /**
+     * To String method
+     * toString方法
+     */
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(this.valid);
+        stringBuilder.append("\001").append(this.remote_addr);
+        stringBuilder.append("\001").append(this.remote_user);
+        stringBuilder.append("\001").append(this.time_local);
+        stringBuilder.append("\001").append(this.request);
+        stringBuilder.append("\001").append(this.status);
+        stringBuilder.append("\001").append(this.body_bytes_sent);
+        stringBuilder.append("\001").append(this.http_referer);
+        stringBuilder.append("\001").append(this.http_user_agent);
+        return stringBuilder.toString();
+    }
+}
+```
+###### Create LogMappers.class
+``` java
+package com.geekparkhub.hadoop.logclean;
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * LogMappers
+ * <p>
+ */
+
+public class LogMappers extends Mapper<LongWritable, Text, Text, NullWritable> {
+
+    Text k = new Text();
+
+    /**
+     * Copy map method
+     * 复写 map方法
+     *
+     * @param key
+     * @param value
+     * @param context
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Get a row of data
+         * 获取一行数据
+         */
+        String line = value.toString();
+
+        /**
+         * Is the parsing log legal?
+         * 解析日志是否合法
+         */
+        LogBean logBean = pressLog(line);
+
+        /**
+         * If the data is not legal, return directly
+         * 如果数据不合法,则直接返回
+         */
+        if (!logBean.isValid()) {
+            return;
+        }
+
+        /**
+         * Package object
+         * 封装对象
+         */
+        k.set(logBean.toString());
+
+        /**
+         * Write data
+         * 写出数据
+         */
+        context.write(k, NullWritable.get());
+    }
+
+    /**
+     * Parsing log method
+     * 解析日志方法
+     *
+     * @param line
+     * @return
+     */
+    private LogBean pressLog(String line) {
+        LogBean logBean = new LogBean();
+
+        /**
+         * Cutting data
+         * 切割数据
+         */
+        String[] fields = line.split(" ");
+
+        /**
+         * Encapsulate data if the log length is greater than 11.
+         * 如果日志长度大于11,则封装数据
+         */
+        if (fields.length > 11) {
+            logBean.setRemote_addr(fields[0]);
+            logBean.setRemote_user(fields[1]);
+            logBean.setTime_local(fields[3].substring(1));
+            logBean.setRequest(fields[6]);
+            logBean.setStatus(fields[8]);
+            logBean.setBody_bytes_sent(fields[9]);
+            logBean.setHttp_referer(fields[10]);
+
+            /**
+             * Splice data if the client browser's information is greater than 12.
+             * 如果客户浏览器的信息大于12,则拼接数据
+             */
+            if (fields.length > 12) {
+                logBean.setHttp_user_agent(fields[11] + " " + fields[12]);
+            } else {
+                logBean.setHttp_user_agent(fields[11]);
+            }
+
+            /**
+             * Clean the data if the network status is greater than 400=HTTPERROR
+             * 如果网络状态大于400=HTTPERROR,则清洗该数据
+             */
+            if (Integer.parseInt(logBean.getStatus()) >= 400) {
+                logBean.setValid(false);
+            }
+        } else {
+            logBean.setValid(false);
+        }
+        return logBean;
+    }
+}
+```
+###### Create LogDrivers.class
+``` java
+package com.geekparkhub.hadoop.logclean;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * LogDrivers
+ * <p>
+ */
+
+public class LogDrivers {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        /**
+         * Preset data input and output path
+         * 预设数据输入输出路径
+         */
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_log",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_log_001"};
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(LogDrivers.class);
+
+        /**
+         * 3. Associate Map classes
+         * 3. 关联Map类
+         */
+        job.setMapperClass(LogMappers.class);
+
+        /**
+         * 4. Set the key and value types for the final data output
+         * 4. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(NullWritable.class);
+
+        /**
+         * 6.Set the number of Reduce Tasks to 0.
+         * 6.设置ReduceTask数量为0
+         */
+        job.setNumReduceTasks(0);
+
+        /**
+         * 5. Set the input path and output path
+         * 5. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+###### 4.运行并查看结果
+``` prolog
+true194.237.142.21-18/Sep/2013:06:49:18/wp-content/uploads/2013/07/rstudio-git3.png3040"-""Mozilla/4.0 (compatible;)"
+true163.177.71.12-18/Sep/2013:06:49:33/20020"-""DNSPod-Monitor/1.0"
+true163.177.71.12-18/Sep/2013:06:49:36/20020"-""DNSPod-Monitor/1.0"
+true101.226.68.137-18/Sep/2013:06:49:42/20020"-""DNSPod-Monitor/1.0"
+true101.226.68.137-18/Sep/2013:06:49:45/20020"-""DNSPod-Monitor/1.0"
+```
+
+
 #### 7.7.3.10 MapReduce 开发总结
+##### 1.输入数据接口:
+> InputFormat默认使用的实现类是:TextInputFormat
+> 
+> TextInputFormat的功能逻辑是:一次读一行文本,然后将该行的起始偏移量作为key,行内容作为value返回.
+> 
+> KeyValueTextInputFormat每一行均为一条记录,被分隔符分割为key,value.默认分隔符是tab(\t).
+> 
+> NlineInputFormat按照指定的行数N来划分切片.
+> 
+> CombineTextInputFormat可以把多个小文件合并成一个切片处理,提高处理效率.
+> 
+> 开发者还可以自定义InputFormat.
+
+##### 2.逻辑处理接口:Mapper
+> 开发者根据业务需求实现其中三个方法: map() | setup() | cleanup () 
+##### 3.Partitioner分区
+> Partitioner分区有默认实现HashPartitioner,逻辑是根据key的哈希值和numReduces来返回一个分区号.
+``` java
+key.hashCode()&Integer.MAXVALUE % numReduces
+```
+> 如果业务上有特别的需求,可以自定义分区.
+##### 4.Comparable排序
+> 当自定义的对象作为key来输出时,就必须要实现WritableComparable接口,重写其中的compareTo()方法.
+> 
+> 部分排序:对最终输出的每一个文件进行内部排序.
+> 
+> 全排序:对所有数据进行排序，通常只有一个Reduce.
+> 
+> 二次排序:排序的条件有两个.
+##### 5.Combiner合并
+> Combiner合并可以提高程序执行效率,减少IO传输,但是使用时必须不能影响原有的业务处理结果.
+##### 6.reduce端分组:Groupingcomparator
+> 在Reduce端对key进行分组,应用于:在接收的key为bean对象时,想让一个或几个字段相同(全部字段比较不相同)的key进入到一个reduce方法时,可以采用分组排序.
+> 
+##### 7.逻辑处理接口:Reducer
+> 用户根据业务需求实现其中三个方法：reduce()  | setup() | cleanup()
+##### 8.输出数据接口:
+> OutputFormat默认实现类是TextOutputFormat.
+> 
+> 功能逻辑是:将每一个KV对向目标文本文件中输出为一行.
+> 
+> SequenceFileOutputFormat将它的输出写为一个顺序文件.如果输出需要作为后续MapReduce任务的输入,这便是一种好的输出格式,因为它的格式紧凑,很容易被压缩.
+> 用户还可以自定义OutputFormat.
+
 
 ### 7.7.4 Hadoop 数据压缩
 #### 数据压缩 概述
-#### MR支持压缩编码
+> 压缩技术能够有效减少底层存储系统(HDFS)读写字节数,压缩提高了网络带宽和磁盘空间的效率.
+> 在Hadoop下,尤其是数据规模很大和工作负载密集的情况下,使用数据压缩显得非常重要,在这种情况下,I/O操作和网络数据传输要花大量的时间,还有Shuffle与Merge过程同样也面临着巨大的I/O压力.
+> 
+> 鉴于磁盘I/O和网络带宽是Hadoop的宝贵资源,数据压缩对于节省资源、最小化磁盘I/O和网络传输非常有帮助。
+> 不过,尽管压缩与解压操作的CPU开销不高,其性能的提升和资源的节省并非没有代价.
+> 
+> 如果磁盘I/O和网络带宽影响了MapReduce作业性能,在任意MapReduce阶段启用压缩都可以改善端到端处理时间并减少I/O和网络流量.
+
+##### 压缩策略和原则
+> 压缩是提高Hadoop运行效率的一种优化策略.
+> 
+> 通过压缩编码对Mapper或者Reducer的输出进行压缩,以减少磁盘IO,提高MR程序运行速度.
+> 
+> 注意:采用压缩技术减少了磁盘IO,但是同时也增加了cpu运算负担,所以压缩特性运用得当能提高性能,但运用不当也可能降低性能.
+
+##### 压缩基本原则
+> 1.运算密集型job,少用压缩.
+> 2.IO密集型job,多用压缩.
+
+#### MapReduce 支持压缩编码
+
+| 压缩格式 | hadoop自带 | 算法 | 文件扩展名 | 是否可切分 | 换成压缩格式后,原来的程序是否需要修改 |
+| :-------- | --------:| :------: | :------: | :------: | :------: |
+| DEFAULT  | 是,直接使用 | DEFAULT | .default | 否 | 和文本处理一样,不需要修改 |
+| Gzip  | 是,直接使用 | DEFAULT | .gz | 否 | 和文本处理一样,不需要修改 |
+| bzip2  | 是,直接使用 | bzip2 | .bz2 | 是 | 和文本处理一样,不需要修改 |
+| LZO  | 否,需要安装 | LZO | .lzo | 是 | 需要建索引,还需要指定输入格式 |
+| Snappy  | 否,需要安装 | Snappy | .snappy | 否 | 和文本处理一样,不需要修改 |
+
+> 为了支持多种压缩/解压缩算法,Hadoop引入了编码/解码器
+| 压缩格式 | 对应的编码/解码器 |
+| :-------- | --------:|
+| DEFLATE | org.apache.hadoop.io.compress.DefaultCodec |
+| gzip    | org.apache.hadoop.io.compress.BZip2Codec |
+| bzip2    |org.apache.hadoop.io.compress.BZip2Codec|
+| LZO    | com.hadoop.compression.lzo.LzopCodec |
+| Snappy    | org.apache.hadoop.io.compress.SnappyCodec |
+
+> 压缩性能的比较
+
+| 压缩算法 | 原始文件大小| 压缩文件大小| 压缩速度 | 解压速度 |
+| :-------- | --------:| :------: | :------: | :------: |
+| gzip   |   8.3GB |  1.8GB  | 17.5MB/s | 58MB/s   |
+| bzip2  |   8.3GB |  1.1GB  | 2.4MB/s  | 9.5MB/s  |
+| LZO    |   8.3GB |  2.9GB  | 49.3MB/s | 74.6MB/s |
+| snappy |   8.3GB |  1.5GB  | 250MB/s | 500MB/s |
+
 
 #### 压缩方式选择
 ##### Gzip压缩
+> 优点: 压缩率比较高,而且压缩/解压速度也比较快,hadoop本身支持,在应用中处理gzip格式的文件就和直接处理文本一样,大部分linux系统都自带gzip命令,使用方便.
+> 
+> 缺点: 不支持split.
+> 
+> 应用场景: 当每个文件压缩之后在130M以内的(1个块大小内),都可以考虑用gzip压缩格式.
+> 
+> 例如说一天或者一个小时的日志压缩成一个gzip文件,运行mapreduce程序的时候通过多个gzip文件达到并发,hive程序,streaming程序,和java写的mapreduce程序完全和文本处理一样,压缩之后原来的程序不需要做任何修改.
+
 ##### Bzip压缩
+> 优点: 支持split,具有很高的压缩率,比gzip压缩率都高,hadoop本身支持,但不支持native,在linux系统下自带bzip2命令,使用方便.
+> 
+> 缺点: 压缩/解压速度慢,不支持native.
+> 
+> 应用场景: 适合对速度要求不高,但需要较高的压缩率的时候,可以作为mapreduce作业的输出格式,或者输出之后的数据比较大,处理之后的数据需要压缩存档减少磁盘空间并且以后数据用得比较少的情况,或者对单个很大的文本文件想压缩减少存储空间,同时又需要支持split,而且兼容之前的应用程序(即应用程序不需要修改)的情况.
+
 ##### Lzo压缩
+> 优点: 压缩/解压速度也比较快,合理的压缩率,支持split,是hadoop中最流行的压缩格式,可以在linux系统下安装lzop命令,使用方便.
+> 
+> 缺点: 压缩率比gzip要低一些,hadoop本身不支持,需要安装,在应用中对lzo格式的文件需要做一些特殊处理(为了支持split需要建索引,还需要指定inputformat为lzo格式).
+> 
+> 应用场景: 一个很大的文本文件,压缩之后还大于200M以上的可以考虑,而且单个文件越大,lzo优点越越明显.
+
 ##### Snappy 压缩
+> 优点: 高速压缩速度和合理的压缩率.
+> 
+> 缺点: 不支持split,压缩率比gzip要低,hadoop本身不支持,需要安装.
+> 
+> 应用场景: 当Mapreduce作业的Map输出的数据比较大的时候,作为Map到Reduce的中间数据的压缩格式,或者作为一个Mapreduce作业的输出和另外一个Mapreduce作业的输入.
 
 #### 压缩位置选择
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_035.jpg)
+
 #### 压缩参数配置
+> 要在Hadoop中启用压缩,可以配置如下参数：
+| 参数      |     默认值 |   阶段   |   建议   |
+| :-------- | --------:| :------: | :------: |
+| io.compression.codecs(在core-site.xml中配置) | org.apache.hadoop.io.compress.DefaultCodec, org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.BZip2Codec  | 输入压缩 | Hadoop使用文件扩展名判断是否支持某种编解码器|
+| mapreduce.map.output.compress(在mapred-site.xml中配置) | false | mapper输出 |  这个参数设为true启用压缩 |
+| mapreduce.map.output.compress.codec(在core-site.xml中配置) | field2 | field3 |  field3 |
+| io.compression.codecs(在mapred-site.xml中配置) | org.apache.hadoop.io.compress.DefaultCodec | mapper输出 | 使用LZO或snappy编解码器在此阶段压缩数据 |
+| mapreduce.output.fileoutputformat.compress(在mapred-site.xml中配置) | false | reducer输出 |  这个参数设为true启用压缩 |
+| mapreduce.output.fileoutputformat.compress.codec(在mapred-site.xml中配置) | org.apache.hadoop.io.compress. DefaultCodec | reducer输出 |  使用标准工具或者编解码器,如gzip和bzip2 |
+| mapreduce.output.fileoutputformat.compress.type(在mapred-site.xml中配置) | RECORD | reducer输出 |  SequenceFile输出使用的压缩类型:NONE和BLOCK  |
+
 
 #### 压缩实操案例
 ##### 数据流的压缩和解压缩
+> CompressionCodec有两个方法可以用于轻松地压缩或解压缩数据,要想对正在被写入一个输出流的数据进行压缩,我们可以使用```createOutputStream(OutputStreamout)```方法创建一个```CompressionOutputStream```,将其以压缩格式写入底层的流.
+> 
+> 相反,要想对从输入流读取而来的数据进行解压缩,则调用```createInputStream(InputStreamin)```函数,从而获得一个```CompressionInputStream```,从而从底层的流读取未压缩的数据.
+###### Create TestCompress.class
+> 使用BZip2格式 进行压缩
+``` java
+package com.geekparkhub.hadoop.compress;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionOutputStream;
+import org.apache.hadoop.util.ReflectionUtils;
+import java.io.*;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TestCompress
+ * <p>
+ */
+
+public class TestCompress {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+        /**
+         * Get the specified compressed file and set it to compress using B Zip 2 format.
+         * 获取指定压缩文件,并设置使用BZip2格式进行压缩
+         */
+        compress("/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_combine_textInput_format/b.txt"
+                , "org.apache.hadoop.io.compress.BZip2Codec");
+    }
+
+    /**
+     * Compression method
+     * 压缩方法
+     *
+     * @param fileName
+     * @param method
+     */
+    private static void compress(String fileName, String method) throws IOException, ClassNotFoundException {
+
+        /**
+         * 获取输入流
+         */
+        FileInputStream fis = new FileInputStream(new File(fileName));
+
+        /**
+         * Pass the method parameter to the compression mode tool class through the reflection mechanism,
+         * and set the encoding mode to obtain the compression extension.
+         * 通过反射机制,将method参数传递给压缩方式工具类,并设置编码方式,获取压缩扩展名
+         */
+        Class classCodec = Class.forName(method);
+        CompressionCodec codec = (CompressionCodec) ReflectionUtils.newInstance(classCodec, new Configuration());
+
+        /**
+         * Get the output stream
+         * 获取输出流
+         */
+        FileOutputStream fos = new FileOutputStream(fileName + codec.getDefaultExtension());
+
+        /**
+         * Set the obtained normal output stream to the compressed output stream
+         * 将获取到的普通输出流,设置为压缩输出流
+         */
+        CompressionOutputStream cos = codec.createOutputStream(fos);
+
+        /**
+         * Copy between streams
+         * 流之间对拷
+         */
+        IOUtils.copyBytes(fis, cos, 1024 * 1024, false);
+
+        /**
+         * Close resource
+         * 关闭资源
+         */
+        IOUtils.closeStream(cos);
+        IOUtils.closeStream(fos);
+        IOUtils.closeStream(fis);
+    }
+}
+```
+> 使用Gzip格式 进行压缩
+``` java
+package com.geekparkhub.hadoop.compress;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionOutputStream;
+import org.apache.hadoop.util.ReflectionUtils;
+import java.io.*;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TestCompress
+ * <p>
+ */
+
+public class TestCompress {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+        /**
+         * Get the specified compressed file and set it to compress using Gzip format.
+         * 获取指定压缩文件,并设置使用Gzip格式进行压缩
+         */
+        compress("/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_combine_textInput_format/b.txt"
+                , "org.apache.hadoop.io.compress.GzipCodec");
+    }
+
+    /**
+     * Compression method
+     * 压缩方法
+     *
+     * @param fileName
+     * @param method
+     */
+    private static void compress(String fileName, String method) throws IOException, ClassNotFoundException {
+
+        /**
+         * 获取输入流
+         */
+        FileInputStream fis = new FileInputStream(new File(fileName));
+
+        /**
+         * Pass the method parameter to the compression mode tool class through the reflection mechanism,
+         * and set the encoding mode to obtain the compression extension.
+         * 通过反射机制,将method参数传递给压缩方式工具类,并设置编码方式,获取压缩扩展名
+         */
+        Class classCodec = Class.forName(method);
+        CompressionCodec codec = (CompressionCodec) ReflectionUtils.newInstance(classCodec, new Configuration());
+
+        /**
+         * Get the output stream
+         * 获取输出流
+         */
+        FileOutputStream fos = new FileOutputStream(fileName + codec.getDefaultExtension());
+
+        /**
+         * Set the obtained normal output stream to the compressed output stream
+         * 将获取到的普通输出流,设置为压缩输出流
+         */
+        CompressionOutputStream cos = codec.createOutputStream(fos);
+
+        /**
+         * Copy between streams
+         * 流之间对拷
+         */
+        IOUtils.copyBytes(fis, cos, 1024 * 1024, false);
+
+        /**
+         * Close resource
+         * 关闭资源
+         */
+        IOUtils.closeStream(cos);
+        IOUtils.closeStream(fos);
+        IOUtils.closeStream(fis);
+    }
+}
+```
+> 使用DefaultCodec格式 进行压缩
+``` java
+package com.geekparkhub.hadoop.compress;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionOutputStream;
+import org.apache.hadoop.util.ReflectionUtils;
+import java.io.*;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TestCompress
+ * <p>
+ */
+
+public class TestCompress {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
+
+        /**
+         * Get the specified compressed file and set it to compress using DefaultCodec Codec format.
+         * 获取指定压缩文件,并设置使用DefaultCodec格式进行压缩
+         */
+        compress("/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_combine_textInput_format/b.txt"
+                , "org.apache.hadoop.io.compress.DefaultCodec");
+    }
+
+    /**
+     * Compression method
+     * 压缩方法
+     *
+     * @param fileName
+     * @param method
+     */
+    private static void compress(String fileName, String method) throws IOException, ClassNotFoundException {
+
+        /**
+         * 获取输入流
+         */
+        FileInputStream fis = new FileInputStream(new File(fileName));
+
+        /**
+         * Pass the method parameter to the compression mode tool class through the reflection mechanism,
+         * and set the encoding mode to obtain the compression extension.
+         * 通过反射机制,将method参数传递给压缩方式工具类,并设置编码方式,获取压缩扩展名
+         */
+        Class classCodec = Class.forName(method);
+        CompressionCodec codec = (CompressionCodec) ReflectionUtils.newInstance(classCodec, new Configuration());
+
+        /**
+         * Get the output stream
+         * 获取输出流
+         */
+        FileOutputStream fos = new FileOutputStream(fileName + codec.getDefaultExtension());
+
+        /**
+         * Set the obtained normal output stream to the compressed output stream
+         * 将获取到的普通输出流,设置为压缩输出流
+         */
+        CompressionOutputStream cos = codec.createOutputStream(fos);
+
+        /**
+         * Copy between streams
+         * 流之间对拷
+         */
+        IOUtils.copyBytes(fis, cos, 1024 * 1024, false);
+
+        /**
+         * Close resource
+         * 关闭资源
+         */
+        IOUtils.closeStream(cos);
+        IOUtils.closeStream(fos);
+        IOUtils.closeStream(fis);
+    }
+}
+```
+###### 运行并查看结果
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_036.jpg)
+
+###### Create TestDecompression.class
+> 解压文件
+``` java
+package com.geekparkhub.hadoop.compress;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.CompressionCodecFactory;
+import org.apache.hadoop.io.compress.CompressionInputStream;
+import java.io.*;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TestDecompression
+ * <p>
+ */
+
+public class TestDecompression {
+
+    public static void main(String[] args) throws IOException {
+
+        /**
+         * Get compressed file.
+         * 获取压缩文件
+         */
+        decompress("/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_combine_textInput_format/b.txt.bz2");
+    }
+
+    /**
+     * Decompression method
+     * 解压方法
+     *
+     * @param fileName
+     */
+    private static void decompress(String fileName) throws IOException {
+
+        /**
+         * Check compression method
+         * 检查压缩方式
+         */
+        CompressionCodecFactory factory = new CompressionCodecFactory(new Configuration());
+        CompressionCodec codec = factory.getCodec(new Path(fileName));
+
+        /**
+         * Determine if the compressed file is empty
+         * 判断压缩文件是否为空
+         */
+        if (codec == null) {
+            System.out.println("当前格式,不支持解压! & Current format, does not support decompression!");
+            return;
+        }
+
+        /**
+         * Get the input stream
+         * 获取输入流
+         */
+        FileInputStream fis = new FileInputStream(new File(fileName));
+        CompressionInputStream cis = codec.createInputStream(fis);
+
+
+        /**
+         * Get the output stream
+         * 获取输出流
+         */
+        FileOutputStream fos = new FileOutputStream(new File(fileName + ".decode"));
+
+        /**
+         * Stream copy
+         * 流对拷
+         */
+        IOUtils.copyBytes(cis, fos, 1024 * 1024, false);
+
+        /**
+         * Close resource
+         * 关闭资源
+         */
+        IOUtils.closeStream(fos);
+        IOUtils.closeStream(cis);
+        IOUtils.closeStream(fis);
+    }
+}
+```
 ##### Map输出端采用压缩
+> 即使MapReduce的输入输出文件都是未压缩的文件,但仍然可以对map任务的中间结果输出做压缩,因为它要写在硬盘并且通过网络传输到reduce节点,对其压缩可以提高很多性能,这些工作只要设置两个属性即可.
+> 
+> 1.hadoop源码支持提供的压缩格式有: BZip2Codec 、DefaultCodec
+> 基于万能的WorkCount案例来实操一下吧
+> 只需要在WordcountDriver中设置属性即可
+``` java
+package com.geekparkhub.hadoop.wordcount;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.BZip2Codec;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.log4j.Logger;
+
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * WordcountDriver
+ * <p>
+ */
+
+public class WordcountDriver {
+
+    /**
+     * Statement Logger
+     */
+    private static org.apache.log4j.Logger log = Logger.getLogger(WordcountDriver.class);
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_combine_textInput_format",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_combine_textInput_format_004"};
+
+        Configuration configuration = new Configuration();
+        
+        /**
+         * Enable map output compression
+         * 开启map端输出压缩
+         */
+        configuration.setBoolean("mapreduce.map.output.compress", true);
+
+        /**
+         * Set the map side output compression method
+         * 设置map端输出压缩方式
+         */
+        configuration.setClass("mapreduce.map.output.compress.codec",  BZip2Codec.class, CompressionCodec.class);
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(WordcountDriver.class);
+
+        /**
+         * Set set Combiner Class
+         *设置setCombinerClass
+         */
+        job.setCombinerClass(WordcountCombiner.class);
+
+        /**
+         * 3. Associate Map and Reduce classes
+         * 3. 关联Map和Reduce类
+         */
+        job.setMapperClass(WordcountMapper.class);
+        job.setReducerClass(WordcountReducer.class);
+
+        /**
+         * 4. Set the key and value types of the output data in the Mapper stage.
+         * 4. 设置Mapper阶段输出数据的key与value类型
+         */
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(IntWritable.class);
+
+        /**
+         * 5. Set the key and value types for the final data output
+         * 5. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+        /**
+         * 6. Set the input path and output path
+         * 6. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+
 ##### Reduce输出端采用压缩
+> 基于万能的WorkCount案例来实操一下吧
+> 只需要在WordcountDriver中设置属性即可
+``` java
+package com.geekparkhub.hadoop.wordcount;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.BZip2Codec;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.io.compress.DefaultCodec;
+import org.apache.hadoop.io.compress.GzipCodec;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.log4j.Logger;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * WordcountDriver
+ * <p>
+ */
+
+public class WordcountDriver {
+
+    /**
+     * Statement Logger
+     */
+    private static org.apache.log4j.Logger log = Logger.getLogger(WordcountDriver.class);
+
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_combine_textInput_format",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_combine_textInput_format_004"};
+
+        Configuration configuration = new Configuration();
+
+        /**
+         * Enable map output compression
+         * 开启map端输出压缩
+         */
+        configuration.setBoolean("mapreduce.map.output.compress", true);
+
+        /**
+         * Set the map side output compression method
+         * 设置map端输出压缩方式
+         */
+        configuration.setClass("mapreduce.map.output.compress.codec", BZip2Codec.class, CompressionCodec.class);
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(WordcountDriver.class);
+
+        /**
+         * Set set Combiner Class
+         *设置setCombinerClass
+         */
+        job.setCombinerClass(WordcountCombiner.class);
+
+        /**
+         * 3. Associate Map and Reduce classes
+         * 3. 关联Map和Reduce类
+         */
+        job.setMapperClass(WordcountMapper.class);
+        job.setReducerClass(WordcountReducer.class);
+
+        /**
+         * 4. Set the key and value types of the output data in the Mapper stage.
+         * 4. 设置Mapper阶段输出数据的key与value类型
+         */
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(IntWritable.class);
+
+        /**
+         * 5. Set the key and value types for the final data output
+         * 5. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+//        job.setNumReduceTasks(2);
+
+        /**
+         * Set the Format mode to Combine Text Input Format
+         * 设置Format模式为Combine Text Input Format
+         * If you do not set the Input Format, it defaults to Text Input Format.class
+         * 如果不设置InputFormat，它默认用的是TextInputFormat.class
+         */
+//        job.setInputFormatClass(CombineTextInputFormat.class);
+
+        /**
+         * Set the virtual storage slice maximum to 20M
+         * 设置虚拟存储切片最大值为 20M
+         */
+//        CombineTextInputFormat.setMaxInputSplitSize(job, 20971520);
+
+        /**
+         * Set the virtual storage slice maximum to 4M
+         * 设置虚拟存储切片最大值为 4M
+         */
+//         CombineTextInputFormat.setMaxInputSplitSize(job, 4194304);
+
+        /**
+         * Set the virtual storage slice minimum to 2M
+         * 设置虚拟存储切片最小值为 2M
+         */
+//         CombineTextInputFormat.setMinInputSplitSize(job, 2097152);
+
+        /**
+         * 6. Set the input path and output path
+         * 6. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * Set reduce output compression on
+         * 设置reduce端输出压缩开启
+         */
+        FileOutputFormat.setCompressOutput(job, true);
+
+        /**
+         * Set compression mode
+         * 设置压缩方式
+         */
+        FileOutputFormat.setOutputCompressorClass(job, BZip2Codec.class);
+//        FileOutputFormat.setOutputCompressorClass(job, GzipCodec.class);
+//        FileOutputFormat.setOutputCompressorClass(job, DefaultCodec.class)
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
 
 ### 7.7.5 Yarn资源调度器 (面试重点)
+> Yarn是一个资源调度平台,负责为运算程序提供服务器运算资源,相当于一个分布式的操作系统平台,而Map Reduce等运算程序则相当于运行于操作系统之上的应用程序.
 #### Yarn 基本架构
+> YARN主要由ResourceManager、NodeManager、ApplicationMaster和Container等组件构成.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_037.jpg)
+
 #### Yarn 工作机制
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_038.jpg)
+
+## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+
 #### 作业提交全过程
 #### 资源调度器
 
