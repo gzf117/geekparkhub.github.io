@@ -1,4 +1,4 @@
-
+	
 # 大数据生态系统 修仙之道 Hadoop Blog
 
 @(2019-01-22)[Docs Language:简体中文 & English|Programing Language:Hadoop|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg)|GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub)]
@@ -10977,39 +10977,1553 @@ public class WordcountDriver {
 
 #### Yarn 工作机制
 ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_038.jpg)
-
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+##### 工作机制详解
+> 0.Mr程序提交到客户端所在的节点.
+> 1.Yarnrunner向Resourcemanager申请一个Application.
+> 2.rm将该应用程序的资源路径返回给yarnrunner.
+> 3.该程序将运行所需资源提交到HDFS上。（
+> 4.程序资源提交完毕后，申请运行mrAppMaster.
+> 5.RM将用户的请求初始化成一个task.
+> 6.其中一个NodeManager领取到task任务.
+> 7.该NodeManager创建容器Container，并产生MRAppmaster.
+> 8.Container从HDFS上拷贝资源到本地.
+> 9.MRAppmaster向RM 申请运行maptask资源.
+> 10.RM将运行maptask任务分配给另外两个NodeManager,另两个NodeManager分别领取任务并创建容器.
+> 11.MR向两个接收到任务的NodeManager发送程序启动脚本.这两个NodeManager分别启动maptask,maptask对数据分区排序.
+> 12.MrAppMaster等待所有maptask运行完毕后.向RM申请容器.运行reducetask.
+> 13.reducetask向maptask获取相应分区的数据.
+> 14.程序运行完毕后.MR会向RM申请注销自己.
 
 #### 作业提交全过程
+##### YARN作业提交全过程详解
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_038.jpg)
+###### 1.作业提交
+> 第0步: client调用job.waitForCompletion方法,向整个集群提交MapReduce作业.
+> 第1步: client向RM申请一个作业id.
+> 第2步: RM给client返回该job资源的提交路径和作业id.
+> 第3步: client提交jar包、切片信息和配置文件到指定的资源提交路径.
+> 第4步: client提交完资源后,向RM申请运行MrAppMaster.
+###### 2.作业初始化
+> 第5步: 当RM收到client的请求后,将该job添加到容量调度器中.
+> 第6步: 某一个空闲的NM领取到该job.
+> 第7步: 该NM创建Container.并产生MRAppmaster.
+> 第8步: 下载client提交的资源到本地.
+###### 3.任务分配
+> 第9步: MrAppMaster向RM申请运行多个maptask任务资源.
+> 第10步: RM将运行maptask任务分配给另外两个NodeManager,另两个NodeManager分别领取任务并创建容器.
+###### 4.任务运行
+> 第11步: MR向两个接收到任务的NodeManager发送程序启动脚本,这两个NodeManager分别启动maptask,maptask对数据分区排序.
+> 第12步: MrAppMaster等待所有maptask运行完毕后,向RM申请容器,运行reducetask.
+> 第13步: reducetask向maptask获取相应分区的数据.
+> 第14步: 程序 运行完毕后MR会向RM申请注销自己.
+###### 5.进度和状态更新
+> YARN中的任务将其进度和状态(包括counter)返回给应用管理器, 客户端每秒(通过mapreduce.client.progressmonitor.pollinterval设置)向应用管理器请求进度更新,,展示给用户.
+###### 6.作业完成
+> 除了向应用管理器请求作业进度外,客户端每5分钟都会通过调用waitForCompletion()来检查作业是否完成,时间间隔可以通过mapreduce.client.completion.pollinterval来设置 .
+> 作业完成之后,应用管理器和container会清理工作状态,作业的信息会被作业历史服务器存储以备之后用户核查.
+
+##### MapReduce作业提交全过程详解
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_039.jpg)
+
 #### 资源调度器
+> 目前,Hadoop作业调度器主要有三种: (FIFO | 队列调度器)、(Capacity  Scheduler | 容量调度器)和(Fair  Scheduler | 公平调度器).
+> 
+> Hadoop2.7.2 默认的资源调度器是Capacity Scheduler.
+> 
+> 具体设置详见: yarn-default.xml配置文件
+``` xml
+<?xml version="1.0" encoding="utf-8"?>
+<property>
+  <description>The class to use as the resource scheduler.</description>  
+  <name>yarn.resourcemanager.scheduler.class</name>
+ <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
+</property>
+```
+##### 1.FIFO调度器 (先进先出调度器)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_040.jpg)
+
+##### 2.Capacity Scheduler调度器 (容量调度器)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_041.jpg)
+
+##### 3.Fair Scheduler调度器 (公平调度器)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_042.jpg)
+
+##### 任务的推测执行
+##### 1.作业完成时间取决于最慢的任务完成时间
+> 一个作业由若干个Map任务和Reduce任务构成,因硬件老化,软件Bug等,某些任务可能运行非常慢.
+> 
+> 典型案例: 系统中有99%的Map任务都完成了,只有少数几个Map老是进度很慢,完不成,怎么办?
+##### 2.推测执行机制:
+> 发现拖后腿的任务,比如某个任务运行速度远慢于任务平均速度,为拖后腿任务启动一个备份任务,同时运行,谁先运行完,则采用谁的结果.
+> 
+##### 3.执行推测任务的前提条件
+> (1)每个task只能有一个备份任务.
+> (2)当前job已完成的task必须不小于0.05(5%).
+> (3)开启推测执行参数设置,Hadoop2.7.2-mapred-site.xml文件中默认是打开的.
+``` xml
+<?xml version="1.0" encoding="utf-8"?>
+<property> 
+  <name>mapreduce.map.speculative</name>  
+  <value>true</value>  
+  <description>If true, then multiple instances of some map tasks may be executed in parallel.</description> 
+</property>
+
+<property> 
+  <name>mapreduce.reduce.speculative</name>  
+  <value>true</value>  
+  <description>If true, then multiple instances of some reduce tasks may be executed in parallel.</description> 
+</property>
+```
+
+##### 4.不能启用推测执行机制情况
+> (1)任务间存在严重的负载倾斜.
+> (2)特殊任务,比如任务向数据库中写数据.
+> 
+##### 5.推测执行算法原理
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_043.jpg)
 
 ### 7.7.6 Hadoop 企业优化
 #### MapReduce 运行缓慢的原因
+##### MapReduce程序效率的瓶颈在于两点:
+##### 1.计算机性能
+> CPU / 内存 / 磁盘健康 / 网络
+##### 2.I/O 操作优化
+> (1)数据倾斜.
+> (2)map和reduce数设置不合理.
+> (3)map运行时间太长,导致reduce等待过久.
+> (4)小文件过多.
+> (5)大量的不可分块的超大文件.
+> (6)spill次数过多.
+> (7)merge次数过多等.
+
 #### MapReduce 优化方案
+> MapReduce优化方法主要从六个方面考虑: 数据输入 / Map阶段 / Reduce阶段 / IO传输 / 数据倾斜问题和常用的调优参数.
 ##### 数据输入
+> 1.合并小文件:在执行mr任务前将小文件进行合并,大量的小文件会产生大量的map任务,增大map任务装载次数,而任务的装载比较耗时,从而导致mr运行较慢.
+> 
+> 2.采用CombineTextInputFormat来作为输入,解决输入端大量小文件场景.
 ##### Map阶段
+> 1.减少溢写(spill)次数: 通过调整io.sort.mb及sort.spill.percent参数值,增大触发spill的内存上限,减少spill次数,从而减少磁盘IO.
+> 2.减少合并(merge)次数: 通过调整io.sort.factor参数,增大merge的文件数目,减少merge的次数,从而缩短mr处理时间.
+> 3.在map之后,不影响业务逻辑前提下,先进行combine处理,减少I/O.
 ##### Reduce阶段
+> 1.合理设置map和reduce数:两个都不能设置太少,也不能设置太多,太少,会导致task等待,延长处理时间,太多,会导致map、reduce任务间竞争资源,造成处理超时等错误.
+> 
+> 2.设置map reduce共存:调整slowstart.completedmaps参数,使map运行到一定程度后,reduce也开始运行,减少reduce的等待时间.
+> 
+> 3.规避使用reduce:因为reduce在用于连接数据集的时候将会产生大量的网络消耗.
+> 
+> 4.合理设置reduce端的buffer:默认情况下,数据达到一个阈值的时候,buffer中的数据就会写入磁盘,然后reduce会从磁盘中获得所有的数据,也就是说,buffer和reduce是没有直接关联的,中间多个一个写磁盘->读磁盘的过程,既然有这个弊端,那么就可以通过参数来配置,使得buffer中的一部分数据可以直接输送到reduce,从而减少IO开销:mapred.job.reduce.input.buffer.percent,默认为0.0,当值大于0的时候,会保留指定比例的内存读buffer中的数据直接拿给reduce使用,这样一来,设置buffer需要内存,读取数据需要内存,reduce计算也要内存,所以要根据作业的运行情况进行调整.
 ##### I/O传输
+> 1.采用数据压缩的方式,减少网络IO的的时间,安装Snappy和LZO压缩编码器.
+> 2.使用SequenceFile二进制文件.
 ##### 数据倾斜问题
+> 1.数据倾斜现象数据频率倾斜——某一个区域的数据量要远远大于其他区域,数据大小倾斜——部分记录的大小远远大于平均值.
+> 
+> 2.如何收集倾斜数据
+> 在reduce方法中加入记录map输出键的详细情况的功能.
+``` java
+    public static final String MAX_VALUES = "skew.maxvalues";
+    private int maxValueThreshold;
+
+    @Overridepublic
+    void configure(JobConf job) {
+        maxValueThreshold = job.getInt(MAX_VALUES, 100);
+    }
+
+    @Overridepublic
+    void reduce(Text key, Iterator<Text> values,
+        OutputCollector<Text, Text> output, Reporter reporter)
+        throws IOException {
+        int i = 0;
+
+        while (values.hasNext()) {
+            values.next();
+            i++;
+        }
+
+        if (++i > maxValueThreshold) {
+            log.info("Received " + i + " values for key " + key);
+        }
+    }
+```
+
+> 3.减少数据倾斜的方法
+> 
+> 方法1：
+> 抽样和范围分区可以通过对原始数据进行抽样得到的结果集来预设分区边界值.
+> 
+> 方法2: 
+> 自定义分区基于输出键的背景知识进行自定义分区,例如,如果map输出键的单词来源于一本书,且其中某几个专业词汇较多,那么就可以自定义分区将这这些专业词汇发送给固定的一部分reduce实例,而将其他的都发送给剩余的reduce实例.
+> 
+> 方法3: Combine使用Combine可以大量地减小数据倾斜,在可能的情下,combine的目的就是聚合并精简数据.
+> 
+> 方法4: 采用Map Join,尽量避免Reduce Join.
 ##### 常用调优参数
+###### 1.资源相关参数
+> (1)以下参数是在开发者的mr应用程序中配置就可以生效(mapred-default.xml)
+
+| 配置参数 	|   参数说明 |
+| :--------:| :--------:|
+| mapreduce.map.memory.mb    |   一个MapTask可使用的资源上限(单位:MB),默认为1024,如果MapTask实际使用的资源量超过该值,则会被强制杀死. |
+| mapreduce.reduce.memory.mb    |   一个ReduceTask可使用的资源上限(单位:MB),默认为1024,如果ReduceTask实际使用的资源量超过该值,则会被强制杀死. |
+| mapreduce.map.cpu.vcores    |   每个Maptask可使用的最多cpucore数目,默认值: 1 |
+| mapreduce.reduce.cpu.vcores    |   每个Reducetask可使用的最多cpu  core数目默认值: 1 |
+| mapreduce.reduce.shuffle.parallelcopies    |   每个reduce去map中拿数据的并行数,默认值是5. |
+| mapreduce.reduce.shuffle.merge.percent    |  buffer中的数据达到多少比例开始写入磁盘,默认值0.66 |
+| mapreduce.reduce.shuffle.input.buffer.percent    |  buffer大小占reduce可用内存的比例,默认值0.7 |
+| mapreduce.reduce.input.buffer.percent    |   定多少比例的内存用来存放buffer中的数据,默认值是0.0 |
+
+> (2)应该在yarn启动之前就配置在服务器的配置文件中才能生效(yarn-default.xml)
+| 配置参数 	|   参数说明 |
+| :--------:| :--------:|
+| yarn.scheduler.minimum-allocation-mb    1024    |   给应用程序container分配的最小内存 |
+| yarn.scheduler.maximum-allocation-mb    8192    |   给应用程序container分配的最大内存 |
+| yarn.scheduler.minimum-allocation-vcores   1    |   每个container申请的最小CPU核数 |
+| yarn.scheduler.maximum-allocation-vcores   32    |   每个container申请的最大CPU核数 |
+| yarn.nodemanager.resource.memory-mb      8192    |   给containers分配的最大物理内存 |
+
+> (3)shuffle性能优化的关键参数,应在yarn启动之前就配置好(mapred-default.xml)
+| 配置参数 	|   参数说明 |
+| :--------:| :--------:|
+| mapreduce.task.io.sort.mb     100    |   shuffle的环形缓冲区大小,默认100MB |
+| mapreduce.map.sort.spill.percent    0.8     |   环形缓冲区溢出的阈值,默认80% |
+
+###### 2.容错相关参数(mapreduce性能优化)
+| 配置参数 	|   参数说明 |
+| :--------:| :--------:|
+| mapreduce.map.maxattempts    |   每个MapTask最大重试次数,一旦重试参数超过该值,则认为MapTask运行失败,默认值: 4 |
+| mapreduce.reduce.maxattempts    |   每个ReduceTask最大重试次数,一旦重试参数超过该值,则认为MapTask运行失败,默认值: 4 |
+| mapreduce.task.timeout    |   Task超时时间,经常需要设置的一个参数,该参数表达的意思为: 如果一个task在一定时间内没有任何进入,即不会读取新的数据,也没有输出数据,则认为该task处于block状态,可能是卡住了,为了防止因为开发者程序永远block住不退出,则强制设置了一个该超时时间(单位毫秒)默认是600000,如果程序对每条输入数据的处理时间过长(比如会访问数据库,通过网络拉取数据等),建议将该参数调大,该参数过小常出现的错误提示是"AttemptID:attempt_14267829456721_123456_m_000224_0   Timed out after 300 secsContainer killed by the  ApplicationMaster."
+ |
 
 #### HDFS小文件优化方法
 ##### HDFS小文件弊端
+> HDFS上每个文件都要在namenode上建立一个索引,这个索引的大小约为150byte,这样当小文件比较多的时候,就会产生很多的索引文件,一方面会大量占用namenode的内存空间,另一方面就是索引文件过大是的索引速度变慢.
 ##### HDFS小文件解决方案
+###### 1.Hadoop Archive: 
+> 是一个高效地将小文件放入HDFS块中的文件存档工具,它能够将多个小文件打包成一个HAR文件,这样就减少了namenode的内存使用.
+###### 2.Sequence file:  
+> sequence file由一系列的二进制key/value组成,如果key为文件名,value为文件内容,则可以将大批小文件合并成一个大文件.
+###### 3.CombineFileInputFormat: 
+ > CombineFileInputFormat是一种新的inputformat,用于将多个文件合并成一个单独的split,另外,它会考虑数据的存储位置.
+###### 4.开启JVM重用
+> 对于大量小文件Job,可以开启JVM重用会减少45%运行时间.
+> JVM重用理解: 一 个map运行一个jvm,重用的话,在一个map在jvm上运行完毕后,jvm继续运行其他map.
+> 具体设置:mapreduce.job.jvm.numtasks 值在10-20之间
 
 ### 7.7.7 MapReduce 扩展案例
 #### 倒排索引案例(多job串联)
+##### Create OneIndexMapper.class
+``` java
+package com.geekparkhub.hadoop.index;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * OneIndexMapper
+ * <p>
+ */
+
+public class OneIndexMapper extends Mapper<LongWritable, Text, Text, IntWritable> {
+
+    String name;
+
+    @Override
+    protected void setup(Mapper<LongWritable, Text, Text, IntWritable>.Context context) throws IOException, InterruptedException {
+
+        /**
+         * Get the file name
+         * 获取文件名称
+         */
+        FileSplit inputSplit = (FileSplit) context.getInputSplit();
+        name = inputSplit.getPath().getName();
+    }
+
+    Text k = new Text();
+    IntWritable v = new IntWritable(1);
+
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Get a row of data
+         * 获取一行数据
+         */
+        String line = value.toString();
+
+        /**
+         * Cutting data
+         * 切割数据
+         */
+        String[] split = line.split(" ");
+
+        /**
+         * Loop traversal
+         * 循环遍历
+         */
+        for (String word : split) {
+            k.set(word + "- -" + name);
+            context.write(k, v);
+        }
+    }
+}
+```
+##### Create OneIndexReducer.class
+``` java
+package com.geekparkhub.hadoop.index;
+
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * OneIndexReducer
+ * <p>
+ */
+
+public class OneIndexReducer extends Reducer<Text, IntWritable, Text, IntWritable> {
+
+    IntWritable v = new IntWritable();
+
+    @Override
+    protected void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Cumulative summation
+         * 累加求和
+         */
+        int sum = 0;
+        for (IntWritable value : values) {
+            sum += value.get();
+        }
+        v.set(sum);
+
+        /**
+         * Write data
+         * 写出数据
+         */
+        context.write(key, v);
+    }
+}
+```
+##### Create OneIndexDriver.class
+``` java
+package com.geekparkhub.hadoop.index;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.compress.BZip2Codec;
+import org.apache.hadoop.io.compress.CompressionCodec;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * OneIndexDriver
+ * <p>
+ */
+
+public class OneIndexDriver {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        /**
+         * Preset data input and output path
+         * 预设数据输入输出路径
+         */
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_index",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_index_001"};
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(OneIndexDriver.class);
+
+        /**
+         * 3. Associate Map and Reduce classes
+         * 3. 关联Map和Reduce类
+         */
+        job.setMapperClass(OneIndexMapper.class);
+        job.setReducerClass(OneIndexReducer.class);
+
+        /**
+         * 4. Set the key and value types of the output data in the Mapper stage.
+         * 4. 设置Mapper阶段输出数据的key与value类型
+         */
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(IntWritable.class);
+
+        /**
+         * 5. Set the key and value types for the final data output
+         * 5. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(IntWritable.class);
+
+        /**
+         * 6. Set the input path and output path
+         * 6. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+> 第一阶段结果
+``` prolog
+add - - a.txt	1
+add - - b.txt	2
+delete - - a.txt	1
+delete - - c.txt	1
+install - - a.txt	1
+install - - c.txt	1
+number - - a.txt	1
+number - - b.txt	1
+number - - c.txt	1
+top - - a.txt	1
+top - - b.txt	1
+top - - c.txt	1
+update - - a.txt	1
+update - - b.txt	2
+```
+
+##### Create TwoIndexMapper.class
+``` java
+package com.geekparkhub.hadoop.index;
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TwoIndexMapper
+ * <p>
+ */
+
+public class TwoIndexMapper extends Mapper<LongWritable, Text, Text, Text> {
+
+    Text k = new Text();
+    Text v = new Text();
+
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Get a row of data
+         * 获取一行数据
+         */
+        String line = value.toString();
+
+        /**
+         * Cutting data
+         * 切割数据
+         */
+        String[] split = line.split(" - - ");
+
+        /**
+         * Package object
+         * 封装对象
+         */
+        k.set(split[0]);
+        v.set(split[1]);
+
+        /**
+         * Write data
+         * 写出数据
+         */
+        context.write(k,v);
+
+    }
+}
+```
+##### Create TwoIndexReducer.class
+``` java
+package com.geekparkhub.hadoop.index;
+
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TwoIndexReducer
+ * <p>
+ */
+
+public class TwoIndexReducer extends Reducer<Text, Text, Text, Text> {
+
+    Text v = new Text();
+
+    @Override
+    protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Splicing string
+         * 拼接字符串
+         */
+        StringBuffer sb = new StringBuffer();
+        for (Text value : values) {
+            sb.append(value.toString().replaceAll("\t", "- ->") + "\t");
+        }
+        v.set(sb.toString());
+
+        /**
+         * 写出数据
+         */
+        context.write(key, v);
+
+    }
+}
+```
+##### Create TwoIndexDriver.class
+``` java
+package com.geekparkhub.hadoop.index;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TwoIndexDriver
+ * <p>
+ */
+
+public class TwoIndexDriver {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        /**
+         * Preset data input and output path
+         * 预设数据输入输出路径
+         */
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_two_index",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_index_002"};
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(TwoIndexDriver.class);
+
+        /**
+         * 3. Associate Map and Reduce classes
+         * 3. 关联Map和Reduce类
+         */
+        job.setMapperClass(TwoIndexMapper.class);
+        job.setReducerClass(TwoIndexReducer.class);
+
+        /**
+         * 4. Set the key and value types of the output data in the Mapper stage.
+         * 4. 设置Mapper阶段输出数据的key与value类型
+         */
+        job.setMapOutputKeyClass(Text.class);
+        job.setMapOutputValueClass(Text.class);
+
+        /**
+         * 5. Set the key and value types for the final data output
+         * 5. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
+
+        /**
+         * 6. Set the input path and output path
+         * 6. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+> 第二次处理结果
+``` prolog
+add	a.txt - -> 1	b.txt - -> 2	
+delete	a.txt - -> 1	c.txt - -> 1	
+install	c.txt - -> 1	a.txt - -> 1	
+number	a.txt - -> 1	c.txt - -> 1	b.txt - -> 1	
+top	a.txt - -> 1	b.txt - -> 1	c.txt - -> 1	
+update	a.txt - -> 1	b.txt - -> 2	
+```
+
 #### TopN案例
-#### 找博客共同好友案例
+##### 1.需求
+> 根据如下数据源,输出流量使用量在前10的用户信息
+##### 2.数据源
+``` prolog
+13901129979 28219 21031 49250
+13621399979 132 15152 15284
+13716179966 9087 3673 12760
+13621399732 976 7661 8637
+13716179787 7596 264	 7860
+18674215555 4782 968 5750
+15527194444 5493 189 5682
+14701159999 5432 122 5554
+15510759999 2008 2779 4787
+13716179612 3992 738 4730
+```
+##### 3.实现代码
+###### Create TopFlowBean.class
+``` java
+package com.geekparkhub.hadoop.top;
+
+import org.apache.hadoop.io.WritableComparable;
+
+import java.io.DataInput;
+import java.io.DataOutput;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TopFlowBean
+ * <p>
+ */
+
+public class TopFlowBean implements WritableComparable<TopFlowBean> {
+
+    /**
+     * Total flow
+     * 总流量
+     */
+    private Long sumFlow;
+    
+    /**
+     * phone number
+     * 手机号
+     */
+    private String phoneNum;
+
+    /**
+     * When deserializing, you need to reflect the call to the null parameter constructor.
+     * 反序列化时,需要反射调用空参构造器
+     */
+    public TopFlowBean() {
+        super();
+    }
+
+    /**
+     * Parametric constructor
+     * 有参构造器
+     *
+     * @param sumFlow
+     * @param phoneNum
+     */
+    public TopFlowBean(Long sumFlow, String phoneNum) {
+        super();
+        this.sumFlow = sumFlow;
+        this.phoneNum = phoneNum;
+    }
+
+    /**
+     * Serialization method
+     * 序列化方法
+     *
+     * @param out
+     * @throws IOException
+     */
+    @Override
+    public void write(DataOutput out) throws IOException {
+        out.writeLong(sumFlow);
+        out.writeUTF(phoneNum);
+
+    }
+
+    /**
+     * Deserialization method, the deserialization method read order must be consistent with the write order of the write serialization method
+     * 反序列化方法,反序列化方法读顺序必须和写序列化方法的写顺序必须一致
+     *
+     * @param in
+     * @throws IOException
+     */
+    @Override
+    public void readFields(DataInput in) throws IOException {
+        this.sumFlow = in.readLong();
+        this.phoneNum = in.readUTF();
+    }
+
+    /**
+     * Rewrite the compare To() method
+     * 重写compareTo()方法
+     *
+     * @param bean
+     * @return
+     */
+    @Override
+    public int compareTo(TopFlowBean bean) {
+        int result;
+        result = this.sumFlow.compareTo(bean.sumFlow);
+        if ((result == 0)) {
+            result = this.phoneNum.compareTo(bean.phoneNum);
+        }
+        return result;
+    }
+
+    /**
+     * Get&Set method
+     * Get&Set方法
+     *
+     * @return
+     */
+    public Long getSumFlow() {
+        return sumFlow;
+    }
+
+    public void setSumFlow(Long sumFlow) {
+        this.sumFlow = sumFlow;
+    }
+
+    public String getPhoneNum() {
+        return phoneNum;
+    }
+
+    public void setPhoneNum(String phoneNum) {
+        this.phoneNum = phoneNum;
+    }
+
+    /**
+     * Write a to String method to facilitate subsequent printing to text
+     * 编写toString方法,方便后续打印到文本
+     */
+    @Override
+    public String toString() {
+        return sumFlow + "\t" + phoneNum;
+    }
+}
+```
+###### Create TopTenMapper.class
+``` java
+package com.geekparkhub.hadoop.top;
+
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+
+import java.io.IOException;
+import java.util.TreeMap;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TopTenMapper
+ * <p>
+ */
+
+public class TopTenMapper extends Mapper<LongWritable, Text, NullWritable, Text> {
+
+    /**
+     * Define a Tree Map as a container for storing data, sorted by key
+     * 定义一个TreeMap作为存储数据的容器,按key排序
+     */
+    private TreeMap<TopFlowBean, Text> flowMap = new TreeMap<TopFlowBean, Text>();
+
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+        TopFlowBean bean = new TopFlowBean();
+
+        /**
+         * Get a row of data
+         * 获取一行数据
+         */
+        String line = value.toString();
+
+        /**
+         * Cutting data
+         * 切割数据
+         */
+        String[] split = line.split(" ");
+
+        /**
+         * Get total traffic
+         * 获取总流量
+         */
+        long sumFlow = Long.parseLong(split[3]);
+
+        /**
+         * Package object
+         * 封装对象
+         */
+        bean.setSumFlow(sumFlow);
+        bean.setPhoneNum(split[0]);
+
+        /**
+         * Add data to the Tree Map
+         * 向TreeMap中添加数据
+         */
+        flowMap.put(bean, new Text(value));
+
+        /**
+         * Limit the amount of data in the Tree Map. If there are more than 10 data, delete the data with the smallest traffic.
+         * 限制TreeMap的数据量,超过10条就删除掉流量最小的一条数据
+         */
+        if (flowMap.size() > 10) {
+            flowMap.remove(flowMap.firstKey());
+        }
+    }
+
+    @Override
+    protected void cleanup(Context context) throws IOException, InterruptedException {
+        for (Text v : flowMap.values()) {
+            context.write(NullWritable.get(), v);
+        }
+    }
+}
+```
+###### Create TopTenReducer.class
+``` java
+package com.geekparkhub.hadoop.top;
+
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Reducer;
+
+import java.io.IOException;
+import java.util.TreeMap;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TopTenReducer
+ * <p>
+ */
+
+public class TopTenReducer extends Reducer<NullWritable, Text, NullWritable, Text> {
+
+    /**
+     * Define a Tree Map as a container for storing data, sorted by key
+     * 定义一个TreeMap作为存储数据的容器,按key排序
+     */
+    private TreeMap<TopFlowBean, Text> flowMap = new TreeMap<TopFlowBean, Text>();
+
+    @Override
+    protected void reduce(NullWritable key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Loop traversal
+         * 循环遍历
+         */
+        for (Text value : values) {
+            TopFlowBean bean = new TopFlowBean();
+            bean.setPhoneNum(value.toString().split(" ")[0]);
+            bean.setSumFlow(Long.valueOf(value.toString().split(" ")[3]));
+            flowMap.put(bean, new Text(value));
+
+            /**
+             * Limit the amount of data in the Tree Map. If there are more than 10 data, delete the data with the smallest traffic.
+             * 限制TreeMap的数据量,超过10条就删除掉流量最小的一条数据
+             */
+            if (flowMap.size() > 10) {
+                flowMap.remove(flowMap.firstKey());
+            }
+        }
+
+        /**
+         * Write data
+         * 写出数据
+         */
+        for (Text value : flowMap.descendingMap().values()) {
+            context.write(NullWritable.get(), value);
+        }
+    }
+}
+```
+###### Create TopTenDriver.class
+``` java
+package com.geekparkhub.hadoop.top;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TopTenDriver
+ * <p>
+ */
+
+public class TopTenDriver {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
+
+        /**
+         * Preset data input and output path
+         * 预设数据输入输出路径
+         */
+        args = new String[]{"/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/input_top",
+                "/Volumes/GEEK-SYSTEM/Technical_Framework/Hadoop/projects/mapreduce/src/main/resources/output_top_001"};
+
+        /**
+         * 1. Get the Job object
+         * 1. 获取Job对象
+         */
+        Configuration conf = new Configuration();
+        Job job = Job.getInstance(conf);
+
+        /**
+         * 2. Set the jar storage location
+         * 2. 设置jar存储位置
+         */
+        job.setJarByClass(TopTenDriver.class);
+
+        /**
+         * 3. Associate Map and Reduce classes
+         * 3. 关联Map和Reduce类
+         */
+        job.setMapperClass(TopTenMapper.class);
+        job.setReducerClass(TopTenReducer.class);
+
+        /**
+         * 4. Set the key and value types of the output data in the Mapper stage.
+         * 4. 设置Mapper阶段输出数据的key与value类型
+         */
+        job.setMapOutputKeyClass(NullWritable.class);
+        job.setMapOutputValueClass(Text.class);
+
+        /**
+         * 5. Set the key and value types for the final data output
+         * 5. 设置最终数据输出的key与value类型
+         */
+        job.setOutputKeyClass(NullWritable.class);
+        job.setOutputValueClass(Text.class);
+
+        /**
+         * 6. Set the input path and output path
+         * 6. 设置输入路径和输出路径
+         */
+        FileInputFormat.setInputPaths(job, new Path(args[0]));
+        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+
+        /**
+         * 7. Submit the Job
+         * 7. 提交Job
+         */
+        boolean result = job.waitForCompletion(true);
+
+        /**
+         * 8. Log printing
+         * 8. 日志打印
+         */
+        System.exit(result ? 0 : 1);
+    }
+}
+```
+##### 4.运行查看结果
+``` prolog
+13901129979 28219 21031 49250
+13621399979 132 15152 15284
+13716179966 9087 3673 12760
+13621399732 976 7661 8637
+13716179787 7596 264	 7860
+18674215555 4782 968 5750
+15527194444 5493 189 5682
+14701159999 5432 122 5554
+15510759999 2008 2779 4787
+13716179612 3992 738 4730
+```
+
+### 8. Hadoop 企业面试题总结
+#### 入门
+##### (1)简要描述如何安装配置Hadoop,只描述即可
+> 1.使用root用户登录
+> 2.修改IP
+> 3.修改host主机名称
+> 4.配置SSH无密登录
+> 5.关闭防火墙
+> 6.安装并解压JavaJDK & Hadoop
+> 7.配置hadoop核心文件 hadoop-env.sh / core-site.xml / mapred-site.xml / hdfs-site.xml
+> 8.配置java&hadoop环境变量
+> 9.格式化 hadoop namenode-format
+> 10.启动 start-all.sh
+
+##### (2)Hadoop中需要哪些配置文件,其作用是什么?
+> 1.corr-site.xml
+> 
+> fs.defaultFS:hdfs://cluster1(域名)
+> 这里的数值指的是默认的HDFS路径.
+> 
+> hadoop.tmp.dir:/export/data/hadoop_tmp
+> 这里的默认路径是NameNode,DataNode,secondarynamenode等存放数据的公共目录,开发者也可以自定义节点目录.
+> 
+> ha.zookeeper.quorun:hadoop:101:2018,hadoop:102:2018,hadoop:103:2018,
+> 这里是zookeeper集群的地址和端口,注意数量一定是奇数,且不少于三个节点.
+> 
+> 2.hadoop-env.sh
+> 只需要设置javajdk安装路径即可.
+> 
+> 3.hdfs-site.xml
+> dfs.replication 决定着系统里文件块的数据备份个数,默认为3.
+> dfs.data.dir.datanode 节点存储在文件系统目录.
+> dfs.name.dir:是namenode节点存储hadoop文件系统信息的本地系统路径.
+> 
+> 4.mapred-site.xml
+> mapreduce.framework.name:yarn 指定mr运行在yarn上.
+
+##### (3)请列出正常工作的Hadoop集群中hadoop分别需要启动哪些进程,作用分别是什么?
+
+> 1.NameNode 它是hadoop中的主服务器,管理文件系统名称空间和对集群中存储的文件的访问,保存有metadate.
+> 
+> 2.SecondaryNameNode 它不是namenode的冗余守护进程,而是提供周期检查点和清理任务,帮助NN合并edlistlog,减少NN启动时间.
+> 
+> 3.DataNode 负责管理连接节点的存储(一个集群中可以有多个节点),每个存储数据的节点运行一个datanode守护进程.
+> 
+> 4.ResourceManager(JobTracker) JobTracker负责调度DataNode上的工作,每个DataNode有一个TaskTracker会执行实际工作.
+> 
+> 5.NodeManager(TaskTracker)执行任务.
+> 
+> 6.DFSZKFailoverController 高可用时它负责监控NN状态,并及时的吧状态信息写入到ZK,它通过一个独立线程周期性的调用NN上的一个特定接口来获取NN健康状况.
+> 
+> 7.JournalNode 高可用情况下存放namenode的editlog文件.
+
+##### (4)简述Hadoop几个默认端口及含义
+> 1.dfs.namenode.http-address:50070
+> 2.SecondaryNameNode 辅助名称节点端口号:50090
+> 3.dfs.datanode.address：50010
+> 4.fs.defaultFS:8020 或 9000
+> 5.yarn.resourcemanager.webapp.address:8088
+
+#### HDFS
+#### (1)HDFS存储机制(读写流程)
+> HDFS存储机制,包括HDFS写入过程和读取过程两个部分
+> 
+> 读数据流程
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_018.jpg)
+
+> 1.客户端通过Distributed File System向NameNode请求下载文件,NameNode通过查询元数据,找到文件块所在的DataNode地址.
+> 
+> 2.挑选一台DataNode(就近原则,然后随机)服务器,请求读取数据.
+> 
+> 3.DataNode开始传输数据给客户端(从磁盘里面读取数据输入流,以packet为单位来做校验).
+> 
+> 4.客户端以packet为单位接收,先在本地缓存,然后写入目标文件.
+> 
+> 写数据流程
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_016.jpg)
+> 1.客户端通过Distributed File System模块向NameNode请求上传文件,NameNode检查目标文件是否存在,父目录是否存在.
+> 
+> 2.NameNode返回是否可以上传.
+> 
+> 3.客户端请求第一个block上传到哪个Datanode服务器.
+> 
+> 4.NameNode返回3个DataNode节点,分别问dn1,dn2,dn3.
+> 
+> 5.客户端通过FSDataOutputStream模块请求dh1上传数据,dn1收到请求会继续调用dn2,然后dn2调用dn3,将这个通信管道建立完成.
+> 
+> 6.dn1,dn2,dn3逐级应答客户端.
+> 
+> 7.客户端开始想dn1上传第一个block(先从磁盘读取数据放到一个本地内存缓存),以packet为单位,dn1收到一个packet就会传给dn2,dn2传给dn3,dn1每传一个packet会放入一个应答队列等待应答.
+> 
+> 8.当一个block传输完成之后,客户端再次请求NameNode上传第二个block的服务器(重复执行3-7步骤).
+
+#### (2)SecondaryNameNode 工作机制
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_019.jpg)
+
+> 第一阶段：NameNode启动
+> (1) 第一次启动 NameNode格式化后,创建 fsimage 和 edits 文件,如果不是第一次启动,直接加载编辑日志和镜像文件到内存.
+> (2) 客户端对元数据进行增删改的请求.
+> (3) NameNode 记录操作日志，更新滚动日志.
+> (4) NameNode 在内存中对数据进行增删改查.
+> 
+> 第二阶段：Secondary NameNode工作
+> (1) Secondary NameNode询问NameNode 是否需要 checkpoint,直接带回 NameNode是否检查结果.
+> (2) Secondary NameNode 请求执行 checkpoint.
+> (3) NameNode 滚动正在写的 edits 日志.
+> (4) 将滚动前的编辑日志和镜像文件拷贝到 Secondary NameNode.
+> (5) Secondary NameNode 加载编辑日志和镜像文件到内存，并合并.
+> (6) 生成新的镜像文件 fsimage.chkpoint.
+> (7) 拷贝 fsimage.chkpoint 到 NameNode.
+> (8) NameNode 将 fsimage.chkpoint 重新命名成 fsimage.
+
+#### (3)NameNode & SecondaryNameNode区别与联系?
+##### 1.机制流程一致.
+##### 2.区别
+> 01.NameNode负责管理整个文件系统的元数据,以及每一个路径(文件)所对应的数据块信息.
+> 02.SecondaryNameNode主要用于定期合并命名空间镜像和命名空间镜像的编辑日志.
+##### 3.联系
+> 01.SecondaryNameNode中保存了一份和namenode一致的镜像文件(fsimage)和编辑日志(edits).
+> 02.在主namenode发送故障时(假设没有及时备份数据),可以从SecondaryNameNode恢复数据.
+
+#### (4)服役新数据节点和退役旧节点步骤
+##### 1.节点上线操作:
+> 当要新上线数据节点的时候,需要把数据节点的名称追加到dfs.hosts配置文件中.
+> 01.关闭新增节点的防火墙.
+> 02.在NameNode节点的hosts配置文件中加入新增数据节点的hostname.
+> 03.在每个新增数据节点的hosts配置文件中加入NanmeNode的hostname.
+> 04.在NameNode节点上增加新增节点的SSH无密登录操作.
+> 05.在NameNode节点上的dfs.hosts中追加上新增节点的hostname.
+> 06.在其他节点上执行刷新操作,hdfs.dfsadmin -refreshNodes
+> 07.在NameNode节点上,更在slaves配置文件,将要上线的数据节点hostname追加到slaves配置文件中.
+##### 2.节点下线操作:
+> 01.修改/conf/hdfs-site.xml
+> 02.确定需要下线的机器,dfs.hosts.exclude文件中配置好需要下线的机器,这个是阻止下线的机器去连接NameNode.
+> 03.配置完成之后进程配置的刷新操作./bin/hadoop dfsadmin -refreshNodes,这个操作作用是在后台进行block块的移动.
+> 04.当执行命令完成之后,需要下线的汲取就可以关闭了,可以查看现在集群上连接的节点.
+> 05.机器下线完毕,将从excludes文件中移除.
+#### (5)NameNode挂掉怎么办
+##### 方法一: 
+> 将SecondaryNameNode中数据拷贝到namenode存储数据的目录.
+##### 方法二:
+> 使用-importCheckpoint选项启动namenode守护进程,从而将SecondaryNameNode中的数据拷贝到namenode目录中.
 
 
-### 8. HDFS HA高可用
+#### MapReduce
+#### (1) Hadoop序列化和反序列化及自定义bean对象实现序列化?
+##### 1.序列化与反序列化
+> 序列化：就是把内存中的对象,转换成字节序列,(或其他数据传输协议)以便于存储到磁盘(持久化)和网络传输.
+> 
+> 反序列化：就是将收到字节序列,(或其他数据传输协议)或者是磁盘的持久化数据,转换成内存中的对象.
+> 
+> java序列化是一个重量级序列化框架(Serializable),一个对象被序列化后,会附带很多额外的信息(各种校验信息,Header,继承体系等),不便于在网络上高效传输,所以Hadoop自己开发了一套序列化机制(Writable).            
+#### (2)FileInputFormat切片制
+##### 1.Job提交流程
+``` java
+waitForCompletion();
+    submit();
+        // 建立连接
+        connect();
+        // 创建提交job的代理
+        new Cluster(getConfiguration());
+            // 判断是本地yarn还是远程
+            initialize(jobTrackAddr, conf); 
+// 提交
+sjobsubmitter.submitJobInternal(Job.this, cluster);
+    // 创建给集群提交数据的Stag路径
+    Path jobStagingArea = JobSubmissionFiles.getStagingDir(cluster, conf); 
+    // 获取jobid,并创建job路径
+    JobID jobId = submitClient.getNewJobID();
+    // 拷贝jar包到集群
+    copyAndConfigureFiles(job, submitJobDir);
+        rUploader.uploadFiles(job, jobSubmitDir);
+    // 计算切片,生成切片规划文件
+    writeSplits(job, submitJobDir); 
+        maps = writeNewSplits(job, jobSubmitDir); 
+            input.getSplits(job); 
+    // 向Stag路径写xml配置文件
+    writeConf(conf, submitJobFile);
+        conf.writeXml(out);
+    // 提交job,返回提交状态
+    status = submitClient.submitJob(jobId,submitJobDir.toString(),job.getCredentials());
+```
+#### (3)自定义InputFormat流程
+##### 1.自定义一个类继承FileInputFormat
+##### 2.复写RecordReader,实现一次读取一个完整文件并封装为K/V.
 
+#### (4)如何决定一个Job的map和reduce的数量?
+##### 1.Map数量
+> map数量由处理的数据分成的block数量决定
+```
+splitSize=max{minSize,min{maxSize,blockSize}}
+```
+##### 2.Reduce数量
+> x为reduce的数量,不设置的话默认是为1
+```
+job.setNumReduceTasks(x);
+```
+##### 1.自定义一个类继承FileInputFormat
+##### 2.复写RecordReader,实现一次读取一个完整文件并封装为K/V.
 
-## 9. 常见错误(各种坑)及解决方案
+#### (5)MapTask的个数由什么决定?
+> 一个job的map阶段MapTask并行度(个数),由客户端提交job的切片个数决定.
 
+#### (6)MapTask工作机制
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_030.jpg)
+> 1.Read阶段:MapTask通过用户编写的RecordReader,从输入InputSplit中解析出一个个key/value.
+> 
+> 2.Map阶段:该节点主要是将解析出的key/value交给用户编写map()函数处理,并产生一系列新的key/value.
+> 
+> 3.Collect收集阶段:在用户编写map()函数中,当数据处理完成后,一般会调用OutputCollector.collect()输出结果,在该函数内部,它会将生成的key/value分区(调用Partitioner)并写入一个环形内存缓冲区中.
+> 
+> 4.Spill阶段：即"溢写"当环形缓冲区满后,MapReduce会将数据写到本地磁盘上,生成一个临时文件,需要注意的是,将数据写入本地磁盘之前,先要对数据进行一次本地排序,并在必要时对数据进行合并、压缩等操作.
+> 
+> 5.溢写阶段详情: 
+> 步骤1: 利用快速排序算法对缓存区内的数据进行排序,排序方式是,先按照分区编号partition进行排序,然后按照key进行排序,这样,经过排序后,数据以分区为单位聚集在一起,同一分区内所有数据按照key有序.
+> 
+> 步骤2: 按照分区编号由小到大依次将每个分区中的数据写入任务工作目录下的临时文件output/spillN.out(N表示当前溢写次数),如果用户设置了Combiner,则写入文件之前,对每个分区中的数据进行一次聚集操作.
+> 
+> 步骤3: 将分区数据的元信息写到内存索引数据结构SpillRecord中,其中每个分区的元信息包括在临时文件中的偏移量、压缩前数据大小和压缩后数据大小,如果当前内存索引大小超过1MB,则将内存索引写到文件output/spillN.out.index中.
+> 
+> 5.Combine阶段:当所有数据处理完成后,MapTask对所有临时文件进行一次合并,以确保最终只会生成一个数据文件.
+> 
+> 当所有数据处理完后,MapTask会将所有临时文件合并成一个大文件,并保存到文件output/file.out中,同时生成相应的索引文件output/file.out.index
+> 
+> 在进行文件合并过程中,MapTask以分区为单位进行合并,对于某个分区,它将采用多轮递归合并的方式,每轮合并io.sort.factor(默认100)文件,并将产生的文件重新加入待合并列表中,对文件排序后,重复以上过程,直到最终得到一个大文件.
+> 
+> 让每个MapTask最终只生成一个数据文件,可避免同时打开大量文件和同时读取大量小文件产生的随机读取带来的开销.
 
-## 10. 修仙之道 技术架构迭代 登峰造极之势
+#### (7)ReduceTask工作机制
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_034.jpg)
+> 1.Copy阶段:ReduceTask从各个MapTask上远程拷贝一片数据,并针对某一片数据,如果其大小超过一定阈值,则写到磁盘上,否则直接放到内存中.
+> 
+> 2.Merge阶段:在远程拷贝数据的同时,ReduceTask启动了两个后台线程对内存和磁盘上的文件进行合并,以防止内存使用过多或磁盘上文件过多.
+> 
+> 3.Sort阶段:按照MapReduce语义,用户编写reduce()函数输入数据是按key进行聚集的一组数据,为了将key相同的数据聚在一起,Hadoop采用了基于排序的策略,由于各个MapTask已经实现对自己的处理结果进行了局部排序,因此ReduceTask只需对所有数据进行一次归并排序即可.
+> 
+> 4.Reduce阶段:reduce()函数将计算结果写到HDFS上.
+#### (8)描述mapreduce有几种排序以及排序发生阶段
+##### 1.排序分类:
+> 全排序:最终输出结果只有一个文件,且文件内部有序,实现方式是只设置一个ReduceTask,但该方法在处理大型文件是效率极低,因为一台机器处理所有文件,完全丧失了MapRecuce所提供的并行架构.
+> 
+> 辅助排序:(GroupingComparator分组) 在Reduce端对key进行分组,应用于:在接收的key为bean对象时,想让一个或几个字段相同(全部字段比较不相同)的key进入到同一个reduce方法时,可以采用分组排序.
+> 
+> 二次排序:在自定义排序过程中,如果compareTo中的判断条件为两个即为二次排序.
+##### 2.自定义排序WritableComparable
+> bean对象作为key传输,需要实现WritableComparable接口并重写compareTo方法,就可以实现排序.
+``` java
+ /**
+ * Override the compareTo() method
+ * 重写compareTo()方法
+ */
+ 
+ @Override
+ public int compareTo(FlowBean o) {
+	 int result;
+	 // 按照总流量大小,倒序排序
+	 if(sumFlow > bean.getSumFlow()){
+		 result = -1;
+	 }else if(sumFlow < bean.getSumFlow()){
+		 result = 1;
+	 }else{
+		 result = 0;
+	 }
+	 return result;
+ }
+```
+##### 3.排序发生阶段:
+> 1.二次排序,全排序,部分排序发生在map阶段.
+> 2.辅助排序发生在reduce阶段.
+
+#### (9)描述MapReduce中Shuffle阶段工作流程,如何优化Shuffle阶段?
+> 分区,排序,溢写,拷贝对应reduce机器上,增加combiner,压缩溢写文件.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_031.jpg)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_027.jpg)
+#### (10)描述MapReduce中Combiner的作用是什么,一般使用场景,哪些情况不需要,以及和reduce的区别?
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_026.jpg)
+> Combine的意义就是对每一个MapTask的输出进行局部汇总,以减小网络传输量.
+> 
+> Combine能够应用的前提是不能影响最终的业务逻辑,而且Combiner的输出kv应该跟Reducer的输入kv类型要对应起来.
+> 
+> > Combine和Reducer的区别在于运行的位置:
+> Combine是在每一个MapTask所在的节点运行.
+> Reducer是接收全局所以的Mapper的输出结果.
+
+#### (11)MapReduce工作原理,简述MapReduce是如何运行?
+>  流程详解上面的流程是整个mapreduce最全工作流程,但是shuffle过程只是从第7步开始 到第16步结束,具体shuffle过程详解,如下:
+>  
+> 1.maptask收集我们的map()方法输出的kv对,放到内存缓冲区中.
+> 
+> 2.从内存缓冲区不断溢出本地磁盘文件,可能会溢出多个文件.
+> 
+> 3.多个溢出文件会被合并成大的溢出文件.
+> 
+> 4.在溢出过程中,及合并的过程中,都要调用partitioner进行分区和针对key进行排序.
+> 
+> 5.reducetask根据自己的分区号,去各个maptask机器上取相应的结果分区数据.
+> 
+> 6.reducetask会取到同一个分区的来自不同maptask的结果文件,reducetask会将这些文件再进行合并(归并排序).
+> 
+> 7.合并成大文件后,shuffle的过程也就结束了,后面进入reducetask的逻辑运算过程,(从文件中取出一个一个的键值对group,调用用户自定义的reduce()方法).
+> 
+> 8.注意Shuffle中的缓冲区大小会影响到mapreduce程序的执行效率,原则上说,缓冲区越大,磁盘io的次数越少,执行速度就越快,缓冲区的大小可以通过参数调整,参数:io.sort.mb,默认100M.
+#### (12)如没有定义Partitioner,那数据在被送达reducer前是如何被分区的?
+> 如果没有自定义的 partitioning,则默认的 Partition算法,既根据每一条数据的key的hashcode值运算(%)reduce数量,得到数字就是分区号.
+
+#### (13) MapReduce如何实现TopN?
+> 可以自定义groupingcomparator,或在map端对数据进行排序,然后在reduce输出时,控制只输出前n个数,就达到topn预期结果.
+> 
+#### (14)有可能使Hadoop任务输出到多个目录中吗? 如果可以,如何实现?
+##### 1.可以输出到多个目录中,采用自定义OutputFormat
+##### 2.实现步骤
+> 01.自定义OutputFormat
+> 02.复写recordwrite具体改写输出数据的方法write().
+#### (15)简述 Hadoop实现join几种方式以及每种方法的实现.
+##### 1.reduce side join
+> Map端的主要工作:为来自不同表(文件)的key/value对打标签以区别不同来源的记录,然后用连接字段作为key,其余部分和新加的标志作为value,最后进行输出.
+> 
+> Reduce端的主要工作:在reduce端以连接字段作为key的分组已经完成,我们只需要在每一个分组当中将那些来源于不同文件的记录(在map阶段已经打标志)分开,最后进行合并就ok了.
+##### 2.map join
+> 在map端缓存多张表,提前处理业务逻辑,这样增加map端业务,减少reduce端数据的压力,尽可能的减少数据倾斜.
+> 具体实现:采用distributedcache
+> 在mapper的setup阶段,将文件读取到缓存集合中.
+> 在驱动类中加载缓存
+
+#### (16)简述 hadoop如何实现二级排序.
+> 对map端输出的key进行排序,实现的compareTo方法,在compareTo方法中排序的条件有两个.
+#### (17)参考如下MapReduce系统场景:
+> hdfs块的大小为64MB.
+> 输入类型为FileInputFormat
+> 有三个文件大小分别为: 64KB / 65MB / 127MB
+> Hadoop框架会把这些文件拆分成多少块?
+> 5块 = 64k,64m,1m,64m,63m
+
+#### (18) Hadoop中RecordReader的作用是什么?
+> 自定义RecordReader可以读取不同类型的文件.
+
+#### Yarn
+##### (1)简述Hadoop1与Hadoop2架构的异同.
+> 增加了yarn,解决了资源调度问题.
+> 
+> 增加了zookeeper的支持实现比较可靠的高可用.
+
+##### (2)为什么会产生yarn,它解决了什么问题,有什么优势?
+> Yarn最主要功能就是解决运行程序与yarn框架完全解耦.
+> 
+> Yarn上可以运行各种类型的分布式运算程序(MapReduce只是其中一种,)如storm,spark等.
+
+##### (3)Yarn作业提交全过程
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_038.jpg)
+##### 工作机制详解
+> 0.Mr程序提交到客户端所在的节点.
+> 1.Yarnrunner向Resourcemanager申请一个Application.
+> 2.rm将该应用程序的资源路径返回给yarnrunner.
+> 3.该程序将运行所需资源提交到HDFS上。（
+> 4.程序资源提交完毕后，申请运行mrAppMaster.
+> 5.RM将用户的请求初始化成一个task.
+> 6.其中一个NodeManager领取到task任务.
+> 7.该NodeManager创建容器Container，并产生MRAppmaster.
+> 8.Container从HDFS上拷贝资源到本地.
+> 9.MRAppmaster向RM 申请运行maptask资源.
+> 10.RM将运行maptask任务分配给另外两个NodeManager,另两个NodeManager分别领取任务并创建容器.
+> 11.MR向两个接收到任务的NodeManager发送程序启动脚本.这两个NodeManager分别启动maptask,maptask对数据分区排序.
+> 12.MrAppMaster等待所有maptask运行完毕后.向RM申请容器.运行reducetask.
+> 13.reducetask向maptask获取相应分区的数据.
+> 14.程序运行完毕后.MR会向RM申请注销自己.
+##### (4)HDFS的数据压缩算法,以及每种算法应用场景.
+###### Bzip压缩
+> 优点: 支持split,具有很高的压缩率,比gzip压缩率都高,hadoop本身支持,但不支持native,在linux系统下自带bzip2命令,使用方便.
+> 
+> 缺点: 压缩/解压速度慢,不支持native.
+> 
+> 应用场景: 适合对速度要求不高,但需要较高的压缩率的时候,可以作为mapreduce作业的输出格式,或者输出之后的数据比较大,处理之后的数据需要压缩存档减少磁盘空间并且以后数据用得比较少的情况,或者对单个很大的文本文件想压缩减少存储空间,同时又需要支持split,而且兼容之前的应用程序(即应用程序不需要修改)的情况.
+
+###### Lzo压缩
+> 优点: 压缩/解压速度也比较快,合理的压缩率,支持split,是hadoop中最流行的压缩格式,可以在linux系统下安装lzop命令,使用方便.
+> 
+> 缺点: 压缩率比gzip要低一些,hadoop本身不支持,需要安装,在应用中对lzo格式的文件需要做一些特殊处理(为了支持split需要建索引,还需要指定inputformat为lzo格式).
+> 
+> 应用场景: 一个很大的文本文件,压缩之后还大于200M以上的可以考虑,而且单个文件越大,lzo优点越越明显.
+
+###### Snappy 压缩
+> 优点: 高速压缩速度和合理的压缩率.
+> 
+> 缺点: 不支持split,压缩率比gzip要低,hadoop本身不支持,需要安装.
+> 
+> 应用场景: 当Mapreduce作业的Map输出的数据比较大的时候,作为Map到Reduce的中间数据的压缩格式,或者作为一个Mapreduce作业的输出和另外一个Mapreduce作业的输入.
+
+##### (5)Hadoop的调度器总结
+> 目前,Hadoop作业调度器主要有三种: (FIFO | 队列调度器)、(Capacity  Scheduler | 容量调度器)和(Fair  Scheduler | 公平调度器).
+> 
+> Hadoop2.7.2 默认的资源调度器是Capacity Scheduler.
+> 
+> 具体设置详见: yarn-default.xml配置文件
+``` xml
+<?xml version="1.0" encoding="utf-8"?>
+<property>
+  <description>The class to use as the resource scheduler.</description>  
+  <name>yarn.resourcemanager.scheduler.class</name>
+ <value>org.apache.hadoop.yarn.server.resourcemanager.scheduler.capacity.CapacityScheduler</value>
+</property>
+```
+###### 1.FIFO调度器 (先进先出调度器)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_040.jpg)
+
+###### 2.Capacity Scheduler调度器 (容量调度器)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_041.jpg)
+
+###### 3.Fair Scheduler调度器 (公平调度器)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_042.jpg)
+
+##### (6)MapReduce推测执行算法以原理
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hadoop/start_043.jpg)
+###### 1.作业完成时间取决于最慢的任务完成时间
+> 一个作业由若干个Map任务和Reduce任务构成,因硬件老化,软件Bug等,某些任务可能运行非常慢.
+> 
+> 典型案例: 系统中有99%的Map任务都完成了,只有少数几个Map老是进度很慢,完不成,怎么办?
+###### 2.推测执行机制:
+> 发现拖后腿的任务,比如某个任务运行速度远慢于任务平均速度,为拖后腿任务启动一个备份任务,同时运行,谁先运行完,则采用谁的结果.
+###### 3.执行推测任务的前提条件
+> (1)每个task只能有一个备份任务.
+> (2)当前job已完成的task必须不小于0.05(5%).
+> (3)开启推测执行参数设置,Hadoop2.7.2-mapred-site.xml文件中默认是打开的.
+``` xml
+<?xml version="1.0" encoding="utf-8"?>
+<property> 
+  <name>mapreduce.map.speculative</name>  
+  <value>true</value>  
+  <description>If true, then multiple instances of some map tasks may be executed in parallel.</description> 
+</property>
+
+<property> 
+  <name>mapreduce.reduce.speculative</name>  
+  <value>true</value>  
+  <description>If true, then multiple instances of some reduce tasks may be executed in parallel.</description> 
+</property>
+```
+
+## 9. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
 

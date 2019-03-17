@@ -58,7 +58,7 @@ public class FlowsumDriver {
          * Set up Num Reduce Tasks
          * 设置NumReduceTasks
          */
-        job.setNumReduceTasks(5);
+        job.setNumReduceTasks(1);
 
         /**
          * Specify the mapper/Reducer business class to be used by this business job
