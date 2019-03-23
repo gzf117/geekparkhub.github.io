@@ -29,6 +29,9 @@
 * [Shell-Html](https://geekparkhub.github.io/technical_guide/programing_language/shell/shell.html) | [Shell-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/shell/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Shell_Blog.md)
 * [Zookeeper-Html](https://geekparkhub.github.io/technical_guide/programing_language/zookeeper/zookeeper.html) | [Zookeeper-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/zookeeper/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Zookeeper_Blog.md)
 * [Hadoop-Html](https://geekparkhub.github.io/technical_guide/programing_language/hadoop/hadoop.html) | [Hadoop-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/hadoop/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Hadoop_Blog.md) | [Hadoop-Projects](https://github.com/geekparkhub/geekparkhub.github.io/tree/master/technical_guide/programing_language/hadoop/hadoop_projects/)
+* [Hive-Html](https://geekparkhub.github.io/technical_guide/programing_language/hive/hive.html) | [Hive-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/hadoop/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Hadoop_Blog.md)
+
+
 ***
 
 ## 💡如何对该开源文档进行贡献💡
