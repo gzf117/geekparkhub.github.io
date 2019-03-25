@@ -1151,17 +1151,42 @@ hive (default)>
 > 注意某些系统级的参数,例如log4j相关的设定,必须用前两种方式设定,因为那些参数的读取在会话建立以前已经完成了.
 
 
+## 3. Hive 数据类型
+### 3.1 基本数据类型
+> 对于Hive的String类型相当于数据库的varchar类型,该类型是一个可变的字符串,不过它不能声明其中最多能存储多少个字符,理论上它可以存储2GB的字符数.
+
+| Hive 数据类型      |  Java 数据类型 |   长度   |   数值   |
+| :--------: | :--------:| :------: | :------: |
+| TINYINT    |   byte |  1byte有符号整数  |  20  |
+| SMALINT    |   short |  2byte有符号整数  |  20  |
+| INT    |   int |  4byte有符号整数  |  20  |
+| BIGINT    |   long |  8byte有符号整数  |  20  |
+| BOOLEAN    |   boolean |  布尔类型,true或者false  |  TRUE / FALSE  |
+| FLOAT    |   float |  单精度浮点数  |  3.14159  |
+| DOUBLE    |   double |  双精度浮点数  |  3.14159  |
+| STRING    |   string |  字符串类型,可以指定字符集,可以使用单引号或者双引号  |  'now is the time' /  "for all good men"  |
+| TIMESTAMP    |   |  时间类型  |   |
+| BINARY    |   |  字节数组  |    |
+
+### 3.2 集合数据类型
+> Hive有三种复杂数据类型ARRAY、MAP 和STRUCT,ARRAY和MAP与Java中的Array和Map类似,而STRUCT与C语言中的Struct类似,它封装了一个命名字段集合,复杂数据类型允许任意层次的嵌套.
+> 
+| 数据类型      |     描述 |   语法示例   |
+| :--------: | :--------:| :------: |
+| STRUCT    |   和c语言中的struct类似,都可以通过“点”符号访问元素内容,例如如果某个列的数据类型是STRUCT{first  STRING,last STRING},那么第1个元素可以通过字段.first来引用. |  struct()  |
+| MAP | MAP是一组键-值对元组集合,使用数组表示法可以访问数据,例如如果某个列的数据类型是MAP,其中键->值对是’first’->’John’和’last’->’Doe’,那么可以通过字段名[‘last’]获取最后一个元素. | map() |
+| ARRAY | 数组是一组具有相同类型和名称的变量的集合,这些变量称为数组的元素,每个数组元素都有一个编号,编号从零开始,例如数组值为[‘John’, ‘Doe’],那么第2个元素可以通过数组名[1]进行引用. | Array() |
+
 ## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+## 4. Hive 数据定义
+## 5. DDL 数据定义
+## 6. DML 数据操作
+## 7. 查询
+## 8. 函数
+## 9. 压缩 & 存储
+## 10. 企业级调优 
 
-## 3. Hive 数据定义
-## 4. DDL 数据定义
-## 5. DML 数据操作
-## 6. 查询
-## 7. 函数
-## 8. 压缩 & 存储
-## 9. 企业级调优 
-
-## 10. 修仙之道 技术架构迭代 登峰造极之势
+## 11. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
 
