@@ -1177,16 +1177,550 @@ hive (default)>
 | MAP | MAP是一组键-值对元组集合,使用数组表示法可以访问数据,例如如果某个列的数据类型是MAP,其中键->值对是’first’->’John’和’last’->’Doe’,那么可以通过字段名[‘last’]获取最后一个元素. | map() |
 | ARRAY | 数组是一组具有相同类型和名称的变量的集合,这些变量称为数组的元素,每个数组元素都有一个编号,编号从零开始,例如数组值为[‘John’, ‘Doe’],那么第2个元素可以通过数组名[1]进行引用. | Array() |
 
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
-## 4. Hive 数据定义
-## 5. DDL 数据定义
-## 6. DML 数据操作
-## 7. 查询
-## 8. 函数
-## 9. 压缩 & 存储
-## 10. 企业级调优 
+#### 3.2.1 案例实操
+##### 3.2.1.1 用JSON格式来表示其数据结构.
+``` json
+{
+    "name": "TestUser",
+    // Array 列表
+    "friends": ["TestUser001" , "TestUser002"] ,
+    // Map 键值
+    "children": {
+        "TestUser003": "003",
+        "TestUser004": "004"
+    },
+    // Struct 结构
+    "address": {
+        "street": "china",
+        "city": "beijing"
+    }
+}
+```
 
-## 11. 修仙之道 技术架构迭代 登峰造极之势
+##### 3.2.1.2 基于上述数据结构,在Hive里创建对应的表,并导入数据.
+> 创建本地测试文件test001.txt
+> 
+> 注: MAP,STRUCT和ARRAY里的元素间关系都可以用同一个字符`_`下划线表示.
+```
+TestUser,TestUser001_TestUser002,TestUser003:003_TestUser004:004,china_beijing
+DemoUser,DemoUser001_DemoUser002,DemoUser003:003_DemoUser004:004,china_beijing
+```
+> 在Hive创建test测试表
+> 
+> SQL File
+``` sql
+create table test001(
+name string,
+firends array<string>,
+children map<string,int>,
+address struct<street:string,city:string>
+)
+row format delimited fields terminated by ','
+collection items terminated by '_'
+map keys terminated by ':'
+lines terminated by '\n';
+```
+> 字段解释
+```
+表示列分隔符
+row format delimited fields terminated by ','
+
+表示MAP STRUCT 和 ARRAY 分隔符(数据分割符号)
+collection items terminated by '_'
+
+表示MAP中的key与value分隔符
+map keys terminated by ':'
+
+表示行分隔符
+lines terminated by '\n';
+```
+> create table
+```
+hive (default)> set hive.cli.print.current.db=true;
+hive (default)> create table test001(
+              > name string,
+              > firends array<string>,
+              > children map<string,int>,
+              > address struct<street:string,city:string>
+              > )
+              > row format delimited fields terminated by ','
+              > collection items terminated by '_'
+              > map keys terminated by ':'
+              > lines terminated by '\n';
+OK
+Time taken: 0.269 seconds
+hive (default)> show tables;
+OK
+tab_name
+test
+test001
+Time taken: 0.053 seconds, Fetched: 2 row(s)
+hive (default)> 
+```
+> 导入文本数据到测试表
+```
+hive (default)> load data local inpath '/opt/module/datas/test001.txt' into table test001;
+Loading data to table default.test001
+Table default.test001 stats: [numFiles=1, totalSize=158]
+OK
+Time taken: 1.268 seconds
+hive (default)> 
+```
+> 查询全部数据
+```
+hive (default)> select * from test001;
+OK
+test001.name    test001.firends test001.children        test001.address
+TestUser        ["TestUser001","TestUser002"]   {"TestUser003":3,"TestUser004":4}       {"street":"china","city":"beijing"}
+DemoUser        ["DemoUser001","DemoUser002"]   {"DemoUser003":3,"DemoUser004":4}       {"street":"china","city":"beijing"}
+Time taken: 0.121 seconds, Fetched: 2 row(s)
+hive (default)>	
+```
+> 查询三种集合列表数据
+> 以下分别是ARRAY / MAP / STRUCT的访问方式.
+```
+hive (default)> select firends[1],children['TestUser003'],address.city from test001 where name="TestUser";
+OK
+_c0     _c1     city
+TestUser002     3       beijing
+Time taken: 0.32 seconds, Fetched: 1 row(s)
+hive (default)>
+```
+
+### 3.3 类型转化
+> Hive的原子数据类型是可以进行隐式转换的,类似于Java的类型转换.
+> 
+> 例如某表达式使用INT类型,TINYINT会自动转换为INT类型,但是Hive不会进行反向转化.
+> 
+> 例如,某表达式使用TINYINT类型,INT不会自动转换为TINYINT类型,它会返回错误,除非使用`CAST`操作.
+#### 3.3.1 隐式类型转换规则
+> 1.任何整数类型都可以隐式地转换为一个范围更广的类型,如TINYINT可以转换成INT,INT可以转换成BIGINT.
+> 
+> 2.所有整数类型、FLOAT和STRING类型都可以隐式地转换成DOUBLE.
+> 
+> 3.TINYINT,SMALLINT,INT都可以转换为FLOAT.
+> 
+> 4.BOOLEAN类型不可以转换为任何其它的类型.
+
+#### 3.3.2 使用CAST显示进行数据类型转换
+> 例如`CAST('1' AS INT)`将把字符串`'1'` 转换成整数1,如果强制类型转换失败,如执行`CAST('X' AS INT)`,表达式返回空值NULL.
+
+## 4. DDL 数据定义
+> DDL(Data Definition Language)数据库模式定义语言,是用于描述数据库中要存储的现实世界实体的语言.
+
+### 4.1 创建数据库
+> 创建一个数据库,数据库在HDFS上的默认存储路径是/user/hive/warehouse/*.db
+> 
+> 避免要创建的数据库已经存在错误,增加if not exists判断.
+```
+hive (default)> create database if not exists hive_db;
+OK
+Time taken: 0.131 seconds
+hive (default)> 
+```
+> 当前创建的数据库会存放指定在HDFS路径.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hive/start_003.jpg)
+
+### 4.2 查询数据库
+#### 4.2.1 显示数据库
+> 1.显示数据库
+```
+hive (default)> show databases;
+OK
+database_name
+default
+hive_db
+Time taken: 0.131 seconds, Fetched: 2 row(s)
+hive (default)> 
+```
+> 2.过滤显示查询的数据库
+```
+hive (default)> show databases like 'hive_db*';
+OK
+database_name
+hive_db
+Time taken: 0.039 seconds, Fetched: 1 row(s)
+hive (default)> 
+```
+#### 4.2.2 查看数据库详情
+> 1.显示数据库信息
+```
+hive (default)> desc database hive_db;
+OK
+db_name comment location        owner_name      owner_type      parameters
+hive_db         hdfs://systemhub511:9000/user/hive/warehouse/hive_db.db root    USER    
+Time taken: 0.042 seconds, Fetched: 1 row(s)
+hive (default)> 
+```
+> 2.显示数据库详细信息
+```
+hive (default)> desc database extended hive_db;
+OK
+db_name comment location        owner_name      owner_type      parameters
+hive_db         hdfs://systemhub511:9000/user/hive/warehouse/hive_db.db root    USER    
+Time taken: 0.027 seconds, Fetched: 1 row(s)
+hive (default)> 
+```
+#### 4.2.3 切换当前数据库
+```
+hive (default)> use hive_db;
+OK
+Time taken: 0.028 seconds
+hive (hive_db)> 
+```
+
+### 4.3 修改数据库
+> 用户可以使用`ALTER  DATABASE`命令为某个数据库的`DBPROPERTIES`设置键-值对属性值,来描述这个数据库的属性信息.
+> 
+> 数据库的其他元数据信息都是不可更改的,包括数据库名和数据库所在的目录位置.
+```
+hive (hive_db)> alter database hive_db set dbproperties('createtime'='2090-00-00');
+OK
+Time taken: 0.073 seconds
+hive (hive_db)> desc database extended hive_db;
+OK
+db_name comment location        owner_name      owner_type      parameters
+hive_db         hdfs://systemhub511:9000/user/hive/warehouse/hive_db.db root    USER    {createtime=2090-00-00}
+Time taken: 0.034 seconds, Fetched: 1 row(s)
+hive (hive_db)> 
+```
+
+### 4.4 删除数据库
+> 如果数据库不为空,可以采用`cascade`命令,强制删除.
+```
+hive (default)> drop database hive_db cascade;
+Time taken: 0.034 seconds
+```
+
+### 4.5 创建表
+#### 4.5.1 建表语法
+``` sql
+CREATE [EXTERNAL] TABLE [IF NOT EXISTS] table_name 
+[(col_name data_type [COMMENT col_comment], ...)] 
+[COMMENT table_comment] 
+[PARTITIONED BY (col_name data_type [COMMENT col_comment], ...)] 
+[CLUSTERED BY (col_name, col_name, ...) 
+[SORTED BY (col_name [ASC|DESC], ...)] 
+INTO num_buckets BUCKETS] 
+[ROW FORMAT row_format] 
+[STORED AS file_format] 
+[LOCATION hdfs_path]
+```
+> 字段解释说明
+> 
+> 1.`CREATE  TABLE` 创建一个指定名字的表,如果相同名字的表已经存在,则抛出异常,用户可以用`IF NOT EXISTS` 选项来忽略这个异常.
+> 
+> 2.`EXTERNAL`关键字可以让用户创建一个外部表,在建表的同时指定一个指向实际数据的路径(LOCATION)Hive创建内部表时,会将数据移动到数据仓库指向的路径,若创建外部表,仅记录数据所在的路径,不对数据的位置做任何改变,在删除表的时候,内部表的元数据和数据会被一起删除,而外部表只删除元数据,不删除数据.
+> 
+> 3.`COMMENT`: 为表和列添加注释.
+> 
+> 4.`PARTITIONED BY`创建分区表.
+> 
+> 5.`CLUSTERED BY`创建分桶表.
+> 
+> 6.`SORTED BY`不常用.
+> 
+> 7.`ROW FORMAT DELIMITED  [FIELDS TERMINATED BY char] [COLLECTIONITEMS TERMINATED BY char]`
+> `[MAP KEYS TERMINATED BY char] [LINES TERMINATED BY char]  SERDE serde_name [WITH SERDEPROPERTIES (property_name=property_value, property_name=property_value, ...)]`
+> 
+> 开发者在建表的时候可以自定义SerDe或者使用自带的SerDe,如果没有指定ROW FORMAT 或者ROW FORMAT DELIMITED,将会使用自带的SerDe,在建表的时候,用户还需要为表指定列,开发者在指定表的列的同时也会指定自定义的SerDe,Hive通过SerDe确定表的具体的列的数据.
+> 
+> 8.`STORED AS` 指定存储文件类型.
+> 常用的存储文件类型: `SEQUENCEFILE(二进制序列文件)`,`TEXTFILE(文本)`,`RCFILE(列式存储格式文件)`,如果文件数据是纯文本,可以使用`STORED  AS  TEXTFILE`,如果数据需要压缩,使用`STORED AS SEQUENCEFILE`.
+> 
+> 9.`LOCATION`: 指定表在HDFS上的存储位置.
+> 
+> 10.`LIKE`允许开发者复制现有的表结构,但是不复制数据.
+
+#### 4.5.2 管理表
+##### 4.5.2.1 理论
+> 默认创建的表都是所谓的管理表,有时也被称为内部表.
+> 
+> 因为这种表,Hive会或多或少地制着数据的生命周期.
+> 
+> Hive默认情况下会将这些表的数据存储在由配置项`hive.metastore.warehouse.dir`(例如/user/hive/warehouse)所定义的目录的子目录下,当删除一个管理表时,Hive也会删除这个表中数据,管理表不适合和其他工具共享数据.
+
+##### 4.5.2.2 案例实操
+> 1.普通创建表.
+```
+hive (default)> create table if not exists test004(id int, name string)row format delimited fields terminated by '\t' stored as textfile location '/user/hive/warehouse/test004';
+OK
+Time taken: 0.098 seconds
+hive (default)> 
+```
+> 2.根据查询结果创建表(查询的结果会添加到新创建的表中).
+```
+hive (default)> show tables;
+OK
+tab_name
+test
+test001
+Time taken: 0.056 seconds, Fetched: 2 row(s)
+hive (default)> create table test002 as select * from test001;
+Query ID = root_20190328000840_11ef1852-3fee-44f5-a4d4-a15042411c6a
+Total jobs = 3
+Launching Job 1 out of 3
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_1553696946343_0001, Tracking URL = http://systemhub611:8088/proxy/application_1553696946343_0001/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553696946343_0001
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0
+Stage-1 map = 0%,  reduce = 0%
+Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.34 sec
+MapReduce Total cumulative CPU time: 1 seconds 340 msec
+Ended Job = job_1553696946343_0001
+Stage-4 is selected by condition resolver.
+Stage-3 is filtered out by condition resolver.
+Stage-5 is filtered out by condition resolver.
+Moving data to: hdfs://systemhub511:9000/user/hive/warehouse/.hive-staging_hive_2019-03-28_00-08-40_557_7477541425251721483-1/-ext-10001
+Moving data to: hdfs://systemhub511:9000/user/hive/warehouse/test002
+Table default.test002 stats: [numFiles=1, numRows=2, totalSize=150, rawDataSize=148]
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1   Cumulative CPU: 1.34 sec   HDFS Read: 3913 HDFS Write: 222 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 340 msec
+OK
+test001.name    test001.firends test001.children        test001.address
+Time taken: 33.974 seconds
+hive (default)> show tables;
+OK
+tab_name
+test
+test001
+test002
+Time taken: 0.041 seconds, Fetched: 3 row(s)
+hive (default)> select * from test002;
+OK
+test002.name    test002.firends test002.children        test002.address
+TestUser        ["TestUser001","TestUser002"]   {"TestUser003":3,"TestUser004":4}       {"street":"china","city":"beijing"}
+DemoUser        ["DemoUser001","DemoUser002"]   {"DemoUser003":3,"DemoUser004":4}       {"street":"china","city":"beijing"}
+Time taken: 0.157 seconds, Fetched: 2 row(s)
+hive (default)> 
+```
+> 3.根据已经存在的表结构创建表.
+```
+hive (default)> create table test003 like test;
+OK
+Time taken: 0.116 seconds
+hive (default)> select * from test003;
+OK
+test003.id      test003.name
+Time taken: 0.066 seconds
+hive (default)> 
+```
+> 4.查询表的类型.
+```
+hive (default)> desc formatted test002;
+OK
+col_name        data_type       comment
+# col_name              data_type               comment             
+                 
+name                    string                                      
+firends                 array<string>                               
+children                map<string,int>                             
+address                 struct<street:string,city:string>                           
+                 
+# Detailed Table Information             
+Database:               default                  
+Owner:                  root                         
+LastAccessTime:         UNKNOWN                  
+Protect Mode:           None                     
+Retention:              0                        
+Location:               hdfs://systemhub511:9000/user/hive/warehouse/test002     
+Table Type:             MANAGED_TABLE            
+Table Parameters:                
+        COLUMN_STATS_ACCURATE   true                
+        numFiles                1                   
+        numRows                 2                   
+        rawDataSize             148                 
+        totalSize               150                 
+        transient_lastDdlTime   1553702954          
+                 
+# Storage Information            
+SerDe Library:          org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe       
+InputFormat:            org.apache.hadoop.mapred.TextInputFormat         
+OutputFormat:           org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat       
+Compressed:             No                       
+Num Buckets:            -1                       
+Bucket Columns:         []                       
+Sort Columns:           []                       
+Storage Desc Params:             
+        serialization.format    1                   
+Time taken: 0.179 seconds, Fetched: 34 row(s)
+hive (default)> 
+```
+#### 4.5.3 外部表
+##### 4.5.3.1 理论
+> 因为表是外部表,所有Hive并非认为其完全拥有这份数据,删除该表并不会删除掉这份数据,不过描述表的元数据信息会被删除掉.
+##### 4.5.3.2 管理表和外部表的使用场景
+> 每天将收集到的网站日志定期流入HDFS文本文件,在外部表(原始日志表)基础上做大量的统计分析,用到的中间表、结果表使用内部表存储,数据通过SELECT+INSERT进入内部表.
+
+
+##### 4.5.3.3 案例实操
+> 分别创建部门和员工外部表,并向表中导入数据.
+###### 1.原始数据
+> dept.txt & emp.txt
+```
+[root@systemhub711 ~]# cd /opt/module/datas/
+[root@systemhub711 datas]# vim dept.txt
+
+50      ACCOUNTING      1900
+60      RESEARCH        1800
+70      SALES           1700
+80      OPERATIONS      1700
+```
+###### 2.建表语句
+```
+[root@systemhub711 datas]# vim emp.txt
+
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.00  20
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.00 300.00  30
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.00  30
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.30 30
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30
+7782    JAMSK   KIHNGSEHN       7769    1991-06-23      1100.00 20
+7788    FOESS   CLAEDFDFD       7698    1994-09-17      950.00  30
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.00 20
+```
+> 创建部门表
+```
+hive (default)> create external table dept(deptid int,dname string,loc int)
+> row format delimited fields terminated by '\t';
+OK
+Time taken: 0.137 seconds
+hive (default)> 
+```
+> 创建员工表
+```
+hive (default)> create external table if not exists emp(empno int,ename string,job string,mgr int,hiredate string,sal double,comm double,deptno int)
+> row format delimited fields terminated by '\t';
+OK
+Time taken: 0.121 seconds
+hive (default)> 
+```
+###### 3.向外部表中导入数据
+```
+hive (default)> load data local inpath '/opt/module/datas/dept.txt' into table dept;
+Loading data to table default.dept
+Table default.dept stats: [numFiles=1, totalSize=70]
+OK
+Time taken: 0.535 seconds
+hive (default)>
+```
+```
+hive (default)> load data local inpath '/opt/module/datas/emp.txt' into table emp;
+Loading data to table default.emp
+Table default.emp stats: [numFiles=1, totalSize=445]
+OK
+Time taken: 0.302 seconds
+hive (default)> 
+```
+###### 4.查看创建的表
+```
+hive (default)> select * from dept;
+OK
+dept.deptid     dept.dname      dept.loc
+50      ACCOUNTING      1900
+60      RESEARCH        1800
+70      SALES   NULL
+80      OPERATIONS      1700
+Time taken: 0.098 seconds, Fetched: 4 row(s)
+hive (default)> select * from emp;
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.0   20.0    NULL
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+7782    JAMSK   KIHNGSEHN       7769    1991-06-23      1100.0  20.0    NULL
+7788    FOESS   CLAEDFDFD       7698    1994-09-17      950.0   30.0    NULL
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+Time taken: 0.063 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+###### 5.查看表格式化数据
+```
+hive (default)> desc formatted dept;
+OK
+col_name        data_type       comment
+# col_name              data_type               comment             
+                 
+deptid                  int                                         
+dname                   string                                      
+loc                     int                                         
+                 
+# Detailed Table Information             
+Database:               default                  
+Owner:                  root                        
+LastAccessTime:         UNKNOWN                  
+Protect Mode:           None                     
+Retention:              0                        
+Location:               hdfs://systemhub511:9000/user/hive/warehouse/dept        
+Table Type:             EXTERNAL_TABLE           
+Table Parameters:                
+        COLUMN_STATS_ACCURATE   true                
+        EXTERNAL                TRUE                
+        numFiles                1                   
+        totalSize               70                  
+        transient_lastDdlTime   1553705763          
+                 
+# Storage Information            
+SerDe Library:          org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe       
+InputFormat:            org.apache.hadoop.mapred.TextInputFormat         
+OutputFormat:           org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat       
+Compressed:             No                       
+Num Buckets:            -1                       
+Bucket Columns:         []                       
+Sort Columns:           []                       
+Storage Desc Params:             
+        field.delim             \t                  
+        serialization.format    \t                  
+Time taken: 0.159 seconds, Fetched: 33 row(s)
+hive (default)> 
+```
+###### 6.删除外部dept数据表,并查看结果
+> 通过查看结果来看,只是删除了描述表的元数据信息,而不会删除该数据表的元数据.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hive/start_004.jpg)
+> 可通过再次创建外部dept数据表,依旧可以查看到dept元数据所在.
+```
+hive (default)> create external table if not exists dept(deptid int,dname string,loc int)row format delimited fields terminated by '\t';
+OK
+Time taken: 0.039 seconds
+hive (default)> select * from dept;
+OK
+dept.deptid     dept.dname      dept.loc
+50      ACCOUNTING      1900
+60      RESEARCH        1800
+70      SALES   NULL
+80      OPERATIONS      1700
+Time taken: 0.06 seconds, Fetched: 4 row(s)
+hive (default)> 
+```
+
+
+
+## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+
+### 4.6 分区表
+### 4.7 修改表
+### 4.8 删除表
+
+## 5. DML 数据操作
+> DML(Data Manipulation Language)数据操纵语言,负责对数据库对象运行数据访问工作的指令集.
+
+### 5.1 数据导入
+### 5.2 数据导出
+### 5.3 清除表中数据 (Truncate)
+
+
+## 6. 查询
+## 7. 函数
+## 8. 压缩 & 存储
+## 9. 企业级调优
+
+
+## 10. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
 
