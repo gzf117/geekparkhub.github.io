@@ -1697,14 +1697,524 @@ dept.deptid     dept.dname      dept.loc
 Time taken: 0.06 seconds, Fetched: 4 row(s)
 hive (default)> 
 ```
+#### 4.5.4 管理部与外部表相互转换 
+> 注: ('EXTERNAL'='TRUE') & ('EXTERNAL'='FALSE') 为固定写法,区分大小写.
+##### 查询内部表数据表类型
+```
+hive (default)> desc formatted test001;
+Table Type:             MANAGED_TABLE  
+```
+##### 修改内部表为外部表
+```
+alter table test001 set tblproperties('EXTERNAL'='TRUE');
+```
+##### 查询外部表数据表类型
+```
+hive (default)> desc formatted test001;
+Table Type:             EXTERNAL_TABLE  
+```
+##### 修改外部表为内部表
+```
+alter table test001 set tblproperties('EXTERNAL'='FALSE');
+```
+##### 查询内部表数据表类型
+```
+hive (default)> desc formatted test001;
+Table Type:             MANAGED_TABLE  
+```
 
 
+### 4.6 分区表
+> 分区表实际上就是对应一个HDFS文件系统上的独立的文件夹,该文件夹下是该分区所有的数据文件,Hive中的分区就是分目录,把一个大的数据集根据业务需要分割成小的数据集,在查询时通过WHERE子句中的表达式选择查询所需要的指定的分区,这样的查询效率会提高很多.
+#### 4.6.1 创建分区表语法
+```
+hive (default)> create table dept_partition(deptno int, dname string, loc string)
+              > partitioned by (month string)
+              > row format delimited fields terminated by '\t';
+OK
+Time taken: 0.614 seconds
+hive (default)> 
+```
+#### 4.6.2 加载数据到分区表中
+```
+hive (default)> load data local inpath '/opt/module/datas/dept.txt'into table default.dept_partition partition(month='2020-00-00');
+Loading data to table default.dept_partition partition (month=2020-00-00)
+Partition default.dept_partition{month=2020-00-00} stats: [numFiles=1, numRows=0, totalSize=70, rawDataSize=0]
+OK
+Time taken: 2.37 seconds
+hive (default)> load data local inpath '/opt/module/datas/dept.txt'into table default.dept_partition partition(month='2020-00-01');
+Loading data to table default.dept_partition partition (month=2020-00-01)
+Partition default.dept_partition{month=2020-00-01} stats: [numFiles=1, numRows=0, totalSize=70, rawDataSize=0]
+OK
+Time taken: 0.701 seconds
+hive (default)> load data local inpath '/opt/module/datas/dept.txt'into table default.dept_partition partition(month='2020-00-02');
+Loading data to table default.dept_partition partition (month=2020-00-02)
+Partition default.dept_partition{month=2020-00-02} stats: [numFiles=1, numRows=0, totalSize=70, rawDataSize=0]
+OK
+Time taken: 0.558 seconds
+hive (default)> load data local inpath '/opt/module/datas/dept.txt'into table default.dept_partition partition(month='2020-00-03');
+Loading data to table default.dept_partition partition (month=2020-00-03)
+Partition default.dept_partition{month=2020-00-03} stats: [numFiles=1, numRows=0, totalSize=70, rawDataSize=0]
+OK
+Time taken: 0.46 seconds
+hive (default)> load data local inpath '/opt/module/datas/dept.txt'into table default.dept_partition partition(month='2020-00-04');
+Loading data to table default.dept_partition partition (month=2020-00-04)
+Partition default.dept_partition{month=2020-00-04} stats: [numFiles=1, numRows=0, totalSize=70, rawDataSize=0]
+OK
+Time taken: 0.461 seconds
+hive (default)> load data local inpath '/opt/module/datas/dept.txt'into table default.dept_partition partition(month='2020-00-05');
+Loading data to table default.dept_partition partition (month=2020-00-05)
+Partition default.dept_partition{month=2020-00-05} stats: [numFiles=1, numRows=0, totalSize=70, rawDataSize=0]
+OK
+Time taken: 0.422 seconds
+hive (default)>
+```
+#### 4.6.3 查询分区表中数据
+##### 4.6.3.1 单分区查询
+```
+hive (default)> select * from dept_partition where month='2020-00-05';
+OK
+dept_partition.deptno   dept_partition.dname    dept_partition.loc      dept_partition.month
+50      ACCOUNTING      1900    2020-00-05
+60      RESEARCH        1800    2020-00-05
+70      SALES           2020-00-05
+80      OPERATIONS      1700    2020-00-05
+Time taken: 1.186 seconds, Fetched: 4 row(s)
+hive (default)>
+```
+##### 4.6.3.2 多分区联合查询
+```
+hive (default)> select * from dept_partition where month='2020-00-05'
+              > union
+              > select * from dept_partition where month='2020-00-04'
+              > union
+              > select * from dept_partition where month='2020-00-03'
+              > union
+              > select * from dept_partition where month='2020-00-02'
+              > union
+              > select * from dept_partition where month='2020-00-01';
+Query ID = root_20190328145346_e7c134f9-1082-4bd6-9588-951592861d78
+Total jobs = 4
+Launching Job 1 out of 4
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1553737906374_0001, Tracking URL = http://systemhub611:8088/proxy/application_1553737906374_0001/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553737906374_0001
+Hadoop job information for Stage-1: number of mappers: 2; number of reducers: 1
+Stage-1 map = 0%,  reduce = 0%
+Stage-1 map = 50%,  reduce = 0%, Cumulative CPU 1.5 sec
+Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 3.42 sec
+Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 5.2 sec
+MapReduce Total cumulative CPU time: 5 seconds 200 msec
+Ended Job = job_1553737906374_0001
+Launching Job 2 out of 4
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1553737906374_0002, Tracking URL = http://systemhub611:8088/proxy/application_1553737906374_0002/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553737906374_0002
+Hadoop job information for Stage-2: number of mappers: 2; number of reducers: 1
+Stage-2 map = 0%,  reduce = 0%
+Stage-2 map = 100%,  reduce = 0%, Cumulative CPU 2.87 sec
+Stage-2 map = 100%,  reduce = 100%, Cumulative CPU 4.42 sec
+MapReduce Total cumulative CPU time: 4 seconds 420 msec
+Ended Job = job_1553737906374_0002
+Launching Job 3 out of 4
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1553737906374_0003, Tracking URL = http://systemhub611:8088/proxy/application_1553737906374_0003/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553737906374_0003
+Hadoop job information for Stage-3: number of mappers: 2; number of reducers: 1
+Stage-3 map = 0%,  reduce = 0%
+Stage-3 map = 100%,  reduce = 0%, Cumulative CPU 2.67 sec
+Stage-3 map = 100%,  reduce = 100%, Cumulative CPU 4.41 sec
+MapReduce Total cumulative CPU time: 4 seconds 410 msec
+Ended Job = job_1553737906374_0003
+Launching Job 4 out of 4
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1553737906374_0004, Tracking URL = http://systemhub611:8088/proxy/application_1553737906374_0004/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553737906374_0004
+Hadoop job information for Stage-4: number of mappers: 2; number of reducers: 1
+Stage-4 map = 0%,  reduce = 0%
+Stage-4 map = 50%,  reduce = 0%, Cumulative CPU 1.21 sec
+Stage-4 map = 100%,  reduce = 0%, Cumulative CPU 2.61 sec
+Stage-4 map = 100%,  reduce = 100%, Cumulative CPU 4.5 sec
+MapReduce Total cumulative CPU time: 4 seconds 500 msec
+Ended Job = job_1553737906374_0004
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 2  Reduce: 1   Cumulative CPU: 5.2 sec   HDFS Read: 15645 HDFS Write: 434 SUCCESS
+Stage-Stage-2: Map: 2  Reduce: 1   Cumulative CPU: 4.42 sec   HDFS Read: 14689 HDFS Write: 603 SUCCESS
+Stage-Stage-3: Map: 2  Reduce: 1   Cumulative CPU: 4.41 sec   HDFS Read: 14810 HDFS Write: 772 SUCCESS
+Stage-Stage-4: Map: 2  Reduce: 1   Cumulative CPU: 4.5 sec   HDFS Read: 15517 HDFS Write: 545 SUCCESS
+Total MapReduce CPU Time Spent: 18 seconds 530 msec
+OK
+_u5.deptno      _u5.dname       _u5.loc _u5.month
+50      ACCOUNTING      1900    2020-00-01
+50      ACCOUNTING      1900    2020-00-02
+50      ACCOUNTING      1900    2020-00-03
+50      ACCOUNTING      1900    2020-00-04
+50      ACCOUNTING      1900    2020-00-05
+60      RESEARCH        1800    2020-00-01
+60      RESEARCH        1800    2020-00-02
+60      RESEARCH        1800    2020-00-03
+60      RESEARCH        1800    2020-00-04
+60      RESEARCH        1800    2020-00-05
+70      SALES           2020-00-01
+70      SALES           2020-00-02
+70      SALES           2020-00-03
+70      SALES           2020-00-04
+70      SALES           2020-00-05
+80      OPERATIONS      1700    2020-00-01
+80      OPERATIONS      1700    2020-00-02
+80      OPERATIONS      1700    2020-00-03
+80      OPERATIONS      1700    2020-00-04
+80      OPERATIONS      1700    2020-00-05
+Time taken: 164.191 seconds, Fetched: 20 row(s)
+hive (default)>
+```
+
+#### 4.6.4 增加分区
+##### 4.6.4.1 创建单个分区
+```
+hive (default)> alter table dept_partition add partition(month='2020-00-06');
+OK
+Time taken: 0.501 seconds
+hive (default)> 	
+```
+##### 4.6.4.2 同时创建多个分区
+```
+hive (default)> alter table dept_partition add partition(month='2020-00-07') partition(month='2020-00-08');
+OK
+Time taken: 0.184 seconds
+hive (default)> 
+```
+#### 4.6.5 删除分区
+##### 4.6.1 删除单个分区
+```
+hive (default)> alter table dept_partition drop partition(month='2020-00-06');
+Dropped the partition month=2020-00-06
+OK
+Time taken: 0.273 seconds
+hive (default)> 
+```
+##### 4.6.2 同时删除多个分区
+```
+hive (default)> alter table dept_partition drop partition(month='2020-00-07'),partition(month='2020-00-08');
+Dropped the partition month=2020-00-07
+Dropped the partition month=2020-00-08
+OK
+Time taken: 0.837 seconds
+hive (default)> 
+```
+#### 4.6.6 查看分区表有多少分区
+```
+hive (default)> show partitions dept_partition;
+OK
+partition
+month=2020-00-00
+month=2020-00-01
+month=2020-00-02
+month=2020-00-03
+month=2020-00-04
+month=2020-00-05
+Time taken: 0.155 seconds, Fetched: 6 row(s)
+hive (default)> 
+```
+
+#### 4.6.7 查看分区表结构
+```
+hive (default)> desc formatted dept_partition;
+OK
+col_name        data_type       comment
+# col_name              data_type               comment             
+                 
+deptno                  int                                         
+dname                   string                                      
+loc                     string                                      
+                 
+# Partition Information          
+# col_name              data_type               comment             
+                 
+month                   string                                      
+                 
+# Detailed Table Information             
+Database:               default                  
+Owner:                  root                        
+LastAccessTime:         UNKNOWN                  
+Protect Mode:           None                     
+Retention:              0                        
+Location:               hdfs://systemhub511:9000/user/hive/warehouse/dept_partition      
+Table Type:             MANAGED_TABLE            
+Table Parameters:                
+        transient_lastDdlTime   1553753699          
+                 
+# Storage Information            
+SerDe Library:          org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe       
+InputFormat:            org.apache.hadoop.mapred.TextInputFormat         
+OutputFormat:           org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat       
+Compressed:             No                       
+Num Buckets:            -1                       
+Bucket Columns:         []                       
+Sort Columns:           []                       
+Storage Desc Params:             
+        field.delim             \t                  
+        serialization.format    \t                  
+Time taken: 0.183 seconds, Fetched: 34 row(s)
+hive (default)>
+```
+
+#### 4.6.8 分区表注意事项
+##### 4.6.8.1 创建二级分区表
+```
+hive (default)> create table dept_partition002(deptno int, dname string, loc string)
+              > partitioned by (month string,day string)
+              > row format delimited fields terminated by '\t';
+OK
+Time taken: 0.215 seconds
+hive (default)> 
+```
+##### 4.6.8.2 加载数据
+###### 4.6.8.2.1 加载数据到二级分区表
+```
+hive (default)> load data local inpath '/opt/module/datas/dept.txt'into table default.dept_partition002 partition(month='2020-00-06', day='0101');
+Loading data to table default.dept_partition002 partition (month=2020-00-06, day=0101)
+Partition default.dept_partition002{month=2020-00-06, day=0101} stats: [numFiles=1, numRows=0, totalSize=70, rawDataSize=0]
+OK
+Time taken: 1.914 seconds
+hive (default)> 
+```
+###### 4.6.8.2.2 查询分区数据
+```
+hive (default)> select * from dept_partition002 where month='2020-00-06' and day='0101';
+OK
+dept_partition002.deptno        dept_partition002.dname dept_partition002.loc   dept_partition002.month dept_partition002.day
+50      ACCOUNTING      1900    2020-00-06      0101
+60      RESEARCH        1800    2020-00-06      0101
+70      SALES           2020-00-06      0101
+80      OPERATIONS      1700    2020-00-06      0101
+Time taken: 0.284 seconds, Fetched: 4 row(s)
+hive (default)>  
+```
+##### 4.6.8.3 将数据直接上传到分区目录,让分区表与数据产生关联的方式
+###### 4.6.8.3.1 方式一: 上传数据后修复
+> 上传数据
+```
+hive (default)> dfs -mkdir -p /user/hive/warehouse/dept_partition/month=2020-00-10;
+hive (default)> 
+```
+> 查询数据(查询不到刚上传的数据)
+```
+hive (default)> select * from dept_partition where month='2020-00-10';
+OK
+dept_partition.deptno   dept_partition.dname    dept_partition.loc      dept_partition.month
+Time taken: 0.147 seconds
+hive (default)> 
+```
+> 执行修复命令
+```
+hive (default)> msck repair table dept_partition;
+OK
+Partitions not in metastore:    dept_partition:month=2020-00-10
+Repair: Added partition to metastore dept_partition:month=2020-00-10
+Time taken: 0.297 seconds, Fetched: 2 row(s)
+hive (default)> 
+```
+
+###### 4.6.8.3.2 方式二: 上传数据后添加分区
+> 上传数据
+```
+hive (default)> dfs -mkdir -p /user/hive/warehouse/dept_partition/month=2020-00-12;
+hive (default)> 
+```
+> 执行添加分区
+```
+alter table dept_partition drop partition(month='2020-00-06',day='0101');
+OK
+Time taken: 0.273 seconds
+hive (default)> 
+```
+> 查询数据
+```
+hive (default)> select * from dept_partition002 where month='2020-00-06' and day='0101';
+OK
+dept_partition002.deptno        dept_partition002.dname dept_partition002.loc   dept_partition002.month dept_partition002.day
+50      ACCOUNTING      1900    2020-00-06      0101
+60      RESEARCH        1800    2020-00-06      0101
+70      SALES           2020-00-06      0101
+80      OPERATIONS      1700    2020-00-06      0101
+Time taken: 0.284 seconds, Fetched: 4 row(s)
+hive (default)>  
+```
+###### 4.6.8.3.3 方式三: 上传数据后load数据到分区
+> 创建目录
+```
+hive (default)> dfs -mkdir -p /user/hive/warehouse/dept_partition/month=2020-00-06/day=0101;
+hive (default)> 
+```
+> 上传数据
+```
+hive (default)> load data local inpath '/opt/module/datas/dept.txt'into table default.dept_partition partition(month='2020-00-06', day='0101');
+```
+> 查询数据
+```
+hive (default)> select * from dept_partition where month='2020-00-06' and day='0101';
+OK
+dept_partition002.deptno        dept_partition002.dname dept_partition002.loc   dept_partition002.month dept_partition002.day
+50      ACCOUNTING      1900    2020-00-06      0101
+60      RESEARCH        1800    2020-00-06      0101
+70      SALES           2020-00-06      0101
+80      OPERATIONS      1700    2020-00-06      0101
+Time taken: 0.284 seconds, Fetched: 4 row(s)
+hive (default)>  
+```
+
+### 4.7 修改表
+#### 4.7.1 重命名表
+##### 4.7.1.1 语法
+``` sql
+ALTER TABLE table_name RENAME TO new_table_name;
+```
+##### 4.7.1.2 实操案例
+```
+hive (default)> alter table dept_partition002 rename to dept_partition003;
+OK
+Time taken: 0.324 seconds
+hive (default)> 
+```
+#### 4.7.2 增加/修改/替换列信息
+##### 4.7.2.1 语法
+###### 4.7.2.1.1 更新列
+```
+ALTER   TABLE   table_name   CHANGE   [COLUMN]   col_old_name   col_new_name column_type [COMMENT col_comment] [FIRST|AFTER column_name]
+```
+###### 4.7.2.1.2 增加和替换列
+```
+ALTER    TABLE    table_name    ADD|REPLACE    COLUMNS    (col_name    data_type [COMMENT col_comment], ...)
+```
+> 注：ADD是代表新增一字段,字段位置在所有列后面(partition列前),REPLACE则是表示替换表中所有字段.
+
+##### 4.7.2.2 实操案例
+###### 4.7.2.2.1 查询表结构
+```
+hive (default)> desc dept_partition;
+OK
+col_name        data_type       comment
+deptno                  int                                         
+dname                   string                                      
+loc                     string                                      
+month                   string                                      
+                 
+# Partition Information          
+# col_name              data_type               comment             
+                 
+month                   string                                      
+Time taken: 0.122 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+###### 4.7.2.2.2 添加列
+```
+hive (default)> alter table dept_partition add columns(deptdesc string);
+OK
+Time taken: 0.133 seconds
+hive (default)>
+```
+> 查询表结构
+```
+hive (default)> desc dept_partition;
+OK
+col_name        data_type       comment
+deptno                  int                                         
+dname                   string                                      
+loc                     string                                      
+deptdesc                string                                      
+month                   string                                      
+                 
+# Partition Information          
+# col_name              data_type               comment             
+                 
+month                   string                                      
+Time taken: 0.09 seconds, Fetched: 10 row(s)
+hive (default)> 
+```
+###### 4.7.2.2.3 更新列
+```
+hive (default)> alter table dept_partition change column deptdesc desc int;
+OK
+Time taken: 0.113 seconds
+hive (default)> 
+```
+> 查询表结构
+```
+hive (default)> desc dept_partition;
+OK
+col_name        data_type       comment
+deptno                  int                                         
+dname                   string                                      
+loc                     string                                      
+desc                    int                                         
+month                   string                                      
+                 
+# Partition Information          
+# col_name              data_type               comment             
+                 
+month                   string                                      
+Time taken: 0.093 seconds, Fetched: 10 row(s)
+hive (default)> 
+```
+###### 4.7.2.2.4 替换列
+```
+hive (default)> alter table dept_partition replace columns(deptno string,dname string,loc string);
+OK
+Time taken: 0.084 seconds
+hive (default)> 
+```
+> 查询表结构
+```
+hive (default)> desc dept_partition;
+OK
+col_name        data_type       comment
+deptno                  string                                      
+dname                   string                                      
+loc                     string                                      
+month                   string                                      
+                 
+# Partition Information          
+# col_name              data_type               comment             
+                 
+month                   string                                      
+Time taken: 0.094 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+###### 4.7.2.2.5 删除表
+```
+hive (default)> drop table dept_partition003;
+OK
+Time taken: 0.343 seconds
+hive (default)> 
+```
 
 ## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
 
-### 4.6 分区表
-### 4.7 修改表
-### 4.8 删除表
 
 ## 5. DML 数据操作
 > DML(Data Manipulation Language)数据操纵语言,负责对数据库对象运行数据访问工作的指令集.
