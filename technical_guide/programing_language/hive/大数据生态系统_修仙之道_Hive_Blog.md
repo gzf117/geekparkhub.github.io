@@ -2213,22 +2213,745 @@ Time taken: 0.343 seconds
 hive (default)> 
 ```
 
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
-
-
 ## 5. DML 数据操作
 > DML(Data Manipulation Language)数据操纵语言,负责对数据库对象运行数据访问工作的指令集.
 
 ### 5.1 数据导入
-### 5.2 数据导出
-### 5.3 清除表中数据 (Truncate)
+#### 5.1.1 (Load 模式)向表中装载数据
+##### 5.1.1.1 语法
+```
+load  data  [local]  inpath  'FilePath'  [overwrite]  into  table  TableName [partition (partcol1=val1,...)];
+```
+> 1.`load data`: 表示加载数据.
+> 
+> 2.`local`: 表示从本地加载数据到hive表,否则从HDFS加载数据到hive表.
+> 
+> 3.`inpath`: 表示加载数据的路径.
+> 
+> 4.`into table`: 表示加载到哪张数据表.
+> 
+> 5.`TableName`: 表示具体数据表.
+> 
+> 6.`overwrite`: 表示覆盖表中已有数据,否则表示追加.
+> 
+> 7.`partition`: 表示上传到指定分区.
 
+##### 5.1.2.2 实操案例
+###### 5.1.2.2.1 创建一张数据表
+```
+hive (default)> create table test005(id string,name string)row format delimited fields terminated by '\t';
+OK
+Time taken: 0.081 seconds
+hive (default)> 
+```
+###### 5.1.2.2.2 加载本地文件到hive
+```
+hive (default)> load data local inpath '/opt/module/datas/test.txt' into table test005;
+Loading data to table default.test005
+Table default.test005 stats: [numFiles=1, totalSize=56]
+OK
+Time taken: 0.322 seconds
+hive (default)> 
+```
+###### 5.1.2.2.3 加载HDFS文件到hive中
+> 上传文件到HDFS
+```
+hive (default)> dfs -mkdir -p /user/geekparkhub/hive;
+hive (default)> dfs -put /opt/module/datas/test.txt /user/geekparkhub/hive/test.txt;
+```
+###### 5.1.2.2.4 加载数据覆盖表中已有的数据
+> 加载数据覆盖表中已有的数据
+```
+hive (default)> load data inpath '/user/geekparkhub/hive/test.txt' overwrite into table test005;
+Loading data to table default.test005
+Table default.test005 stats: [numFiles=1, numRows=0, totalSize=56, rawDataSize=0]
+OK
+Time taken: 0.21 seconds
+hive (default)> 
+```
+
+#### 5.1.2 (Insert 模式) 通过查询语句向表中插入数据
+##### 5.1.2.1 基本模式插入 (根据单张表查询结果)
+```
+hive (default)> insert overwrite table dept_partition002 partition(month='2020-00-11') select id, name from dept_partition where month='2020-00-12';
+```
+##### 5.1.2.2 多插入模式 (根据多张表查询结果)
+```
+hive (default)> from dept_partition
+insert overwrite table dept_partition002 partition(month='2020-00-13')
+select id, name where month='2020-00-10'
+insert overwrite table dept_partition002 partition(month='2020-00-14')
+select id, name where month='2020-00-10';
+```
+
+#### 5.1.3 (As Select 模式) 查询语句中创建表并加载数据
+> 根据查询结果创建表 (查询的结果会添加到新创建的表中)
+```
+create table if not exists test006 as select * from test;
+```
+#### 5.1.4 创建表时通过Location指定加载数据路径
+##### 5.1.4.1 创建表,并指定在HDFS上的位置
+```
+hive (default)> create table test007 like test;
+OK
+Time taken: 0.108 seconds
+hive (default)>
+```
+##### 5.1.4.2 上传数据到hdfs上
+```
+hive (default)> dfs -put /opt/module/datas/test.txt /user/hive/warehouse/test007;
+```
+##### 5.1.4.3 查询数据
+```
+hive (default)> select * from test007;
+OK
+test007.id      test007.name
+1       TestUser001
+2       TestUser002
+3       TestUser003
+4       TestUser004
+Time taken: 0.087 seconds, Fetched: 4 row(s)
+hive (default)> 
+```
+
+#### 5.1.5 Import数据到指定Hive表中
+> 先用export导出后,再将数据导入.
+```
+hive (default)> import table test006 from
+              > '/user/geekparkhub/export/test002';
+Copying data from hdfs://systemhub511:9000/user/geekparkhub/export/test002/data
+Copying file: hdfs://systemhub511:9000/user/geekparkhub/export/test002/data/test.txt
+Loading data to table default.test006
+OK
+Time taken: 0.571 seconds
+hive (default)> 
+```
+
+### 5.2 数据导出
+#### 5.2.1 Insert 导出
+##### 5.2.1 将查询的结果导出到本地
+```
+hive (default)> insert overwrite local directory '/opt/module/datas/export/test'
+              > select * from test;
+Query ID = root_20190328214019_01955e31-2364-4c10-8661-cafb4bd9bb38
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_1553780256887_0003, Tracking URL = http://systemhub611:8088/proxy/application_1553780256887_0003/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553780256887_0003
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0
+Stage-1 map = 0%,  reduce = 0%
+Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.35 sec
+MapReduce Total cumulative CPU time: 1 seconds 350 msec
+Ended Job = job_1553780256887_0003
+Copying data to local directory /opt/module/datas/export/test
+Copying data to local directory /opt/module/datas/export/test
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1   Cumulative CPU: 1.35 sec   HDFS Read: 2982 HDFS Write: 56 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 350 msec
+OK
+test.id test.name
+Time taken: 24.917 seconds
+hive (default)> 
+```
+```
+[root@systemhub711 ~]# cat /opt/module/datas/export/test/000000_0
+1TestUser001
+2TestUser002
+3TestUser003
+4TestUser004
+[root@systemhub711 ~]# 
+```
+##### 5.2.2 将查询的结果格式化导出到本地
+```
+hive (default)> insert overwrite local directory '/opt/module/datas/export/test001'
+              > row format delimited fields terminated by '\t'
+              > select * from test;
+Query ID = root_20190328214116_2a678b33-dc52-4aef-97d4-7c4932d14dc2
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_1553780256887_0004, Tracking URL = http://systemhub611:8088/proxy/application_1553780256887_0004/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553780256887_0004
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0
+Stage-1 map = 0%,  reduce = 0%
+Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.32 sec
+MapReduce Total cumulative CPU time: 1 seconds 320 msec
+Ended Job = job_1553780256887_0004
+Copying data to local directory /opt/module/datas/export/test001
+Copying data to local directory /opt/module/datas/export/test001
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1   Cumulative CPU: 1.32 sec   HDFS Read: 2995 HDFS Write: 56 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 320 msec
+OK
+test.id test.name
+Time taken: 24.856 seconds
+hive (default)> 
+```
+```
+[root@systemhub711 ~]# cat /opt/module/datas/export/test001/000000_0
+1       TestUser001
+2       TestUser002
+3       TestUser003
+4       TestUser004
+[root@systemhub711 ~]# 
+```
+##### 5.2.3 将查询的结果导出到HDFS
+```
+hive (default)> insert overwrite directory '/user/geekparkhub/export/test'
+              > row format delimited fields terminated by '\t'
+              > select * from test;
+Query ID = root_20190328214749_261af019-2978-43a9-99be-4cce6bf63837
+Total jobs = 3
+Launching Job 1 out of 3
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_1553780256887_0005, Tracking URL = http://systemhub611:8088/proxy/application_1553780256887_0005/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553780256887_0005
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 0
+Stage-1 map = 0%,  reduce = 0%
+Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.3 sec
+MapReduce Total cumulative CPU time: 1 seconds 300 msec
+Ended Job = job_1553780256887_0005
+Stage-3 is selected by condition resolver.
+Stage-2 is filtered out by condition resolver.
+Stage-4 is filtered out by condition resolver.
+Moving data to: hdfs://systemhub511:9000/user/geekparkhub/export/test/.hive-staging_hive_2019-03-28_21-47-49_139_9022836247083242678-1/-ext-10000
+Moving data to: /user/geekparkhub/export/test
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1   Cumulative CPU: 1.3 sec   HDFS Read: 2983 HDFS Write: 56 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 300 msec
+OK
+test.id test.name
+Time taken: 24.801 seconds
+hive (default)> 
+```
+```
+hive (default)> dfs -cat /user/geekparkhub/export/test/*;
+1       TestUser001
+2       TestUser002
+3       TestUser003
+4       TestUser004
+hive (default)> 
+```
+
+#### 5.2.2 Hadoop指令导出到本地
+```
+hive (default)> dfs -get /user/hive/warehouse/dept_partition/month=2020-00-00/dept.txt /opt/module/datas/test002.txt;
+hive (default)> 
+```
+#### 5.2.3 Hive Shell指令导出
+```
+[root@systemhub711 hive]# bin/hive -e 'select * from test;' > /opt/module/datas/test002.txt; 
+
+Logging initialized using configuration in file:/opt/module/hive/conf/hive-log4j.properties
+OK
+Time taken: 2.32 seconds, Fetched: 4 row(s)
+[root@systemhub711 hive]# 
+```
+#### 5.2.4 Export导出到HDFS上
+```
+hive (default)> export table test to '/user/geekparkhub/export/test002';
+Copying data from file:/tmp/root/16f13154-2779-4719-89d3-3453b1468948/hive_2019-03-28_22-04-33_411_6501223345710054079-1/-local-10000/_metadata
+Copying file: file:/tmp/root/16f13154-2779-4719-89d3-3453b1468948/hive_2019-03-28_22-04-33_411_6501223345710054079-1/-local-10000/_metadata
+Copying data from hdfs://systemhub511:9000/user/hive/warehouse/test
+Copying file: hdfs://systemhub511:9000/user/hive/warehouse/test/test.txt
+OK
+Time taken: 0.458 seconds
+hive (default)>
+hive (default)> dfs -cat /user/geekparkhub/export/test002/data/test.txt;
+1       TestUser001
+2       TestUser002
+3       TestUser003
+4       TestUser004
+hive (default)> 
+```
+
+### 5.3 清除表中数据 (Truncate)
+> 注意: Truncate只能删除管理表,不能删除外部表中数据
+```
+hive (default)> select * from test007;
+OK
+test007.id      test007.name
+1       TestUser001
+2       TestUser002
+3       TestUser003
+4       TestUser004
+Time taken: 0.079 seconds, Fetched: 4 row(s)
+hive (default)> truncate table test007;
+OK
+Time taken: 0.083 seconds
+hive (default)> select * from test007;
+OK
+test007.id      test007.name
+Time taken: 0.078 seconds
+hive (default)> 
+```
 
 ## 6. 查询
-## 7. 函数
-## 8. 压缩 & 存储
-## 9. 企业级调优
+> 查询基本语法
+```
+[WITH CommonTableExpression (, CommonTableExpression)*]
+(Note: Only available starting with Hive0.13.0)
+SELECT [ALL | DISTINCT] select_expr, select_expr, ...
+FROM table_reference
+[WHERE where_condition]
+[GROUP BY col_list]
+[ORDER BY col_list]
+[CLUSTER BY col_list| [DISTRIBUTE BY col_list] [SORT BY col_list]]
+[LIMIT number]
+```
 
+### 6.1 基本查询 (Select...From)
+#### 6.1.1 全表和特定列查询
+> 注意:
+> 
+> 1.SQL 语言大小写不敏感.
+> 
+> 2.SQL 可以写在一行或者多行.
+> 
+> 3.关键字不能被缩写也不能分行.
+> 
+> 4.各子句一般要分行写.
+> 
+> 5.使用缩进提高语句的可读性.
+##### 6.1.1.1 全表查询
+```
+hive (default)> select * from emp;
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.0   20.0    
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0    
+Time taken: 0.129 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+##### 6.1.1.2 选择特定列查询
+```
+hive (default)> select empno,ename from emp;
+OK
+empno   ename
+7369    SMITH
+7499    ALLTE
+7521    WAROS
+7566    JOSSS
+7654    SOCTD
+7698    ADAMS
+7782    JAMSK
+7788    FOESS
+7939    KINGS
+Time taken: 0.123 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+
+#### 6.1.2 列别名
+> 在列名和别名之间加入关键字`AS`
+```
+hive (default)> select empno as no,ename as name from emp;
+OK
+no      name
+7369    SMITH
+7499    ALLTE
+7521    WAROS
+7566    JOSSS
+7654    SOCTD
+7698    ADAMS
+7782    JAMSK
+7788    FOESS
+7939    KINGS
+Time taken: 0.078 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+#### 6.1.3 算术运算符
+
+| 运算符      |     描述 |
+| :--------: | :--------:|
+| A + B    |   A和B 相加 |
+| A - B   |   A减B |
+| A * B    |   A和B 相乘 |
+| A / B    |   A除以B |
+| A % B    |   A对B取余 |
+| A & B    |   A和B按位取与 |
+| AB    |   A和B按位取或 |
+| A+B    |   A和B按位取异或 |
+| ~A    |   A按位取反 |
+
+> 查询所员工薪水+1
+```
+hive (default)> select sal +1 as wage from emp;
+OK
+wage
+801.0
+1601.0
+1251.18
+2895.25
+2853.3
+25525.02
+1101.0
+951.0
+3001.0
+Time taken: 0.063 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+#### 6.1.4 常用函数
+#### 6.1.4.1 求总行数 (count)
+```
+hive (default)> select count(*) cnt from emp;
+Query ID = root_20190328225729_5783bab3-92a5-4a6c-b830-c0f8e7127225
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1553780256887_0006, Tracking URL = http://systemhub611:8088/proxy/application_1553780256887_0006/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553780256887_0006
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+Stage-1 map = 0%,  reduce = 0%
+Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.55 sec
+Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 3.43 sec
+MapReduce Total cumulative CPU time: 3 seconds 430 msec
+Ended Job = job_1553780256887_0006
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 3.43 sec   HDFS Read: 7647 HDFS Write: 2 SUCCESS
+Total MapReduce CPU Time Spent: 3 seconds 430 msec
+OK
+cnt
+9
+Time taken: 42.734 seconds, Fetched: 1 row(s)
+hive (default)> 
+```
+#### 6.1.4.2 求工资的最大值 (max)
+```
+hive (default)> select max(sal) max_wage from emp;
+Query ID = root_20190328225946_778636eb-c34a-4a75-b8e5-68684633a0a3
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1553780256887_0007, Tracking URL = http://systemhub611:8088/proxy/application_1553780256887_0007/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553780256887_0007
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+Stage-1 map = 0%,  reduce = 0%
+Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.33 sec
+Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 3.07 sec
+MapReduce Total cumulative CPU time: 3 seconds 70 msec
+Ended Job = job_1553780256887_0007
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 3.07 sec   HDFS Read: 7836 HDFS Write: 9 SUCCESS
+Total MapReduce CPU Time Spent: 3 seconds 70 msec
+OK
+max_wage
+25524.02
+Time taken: 31.112 seconds, Fetched: 1 row(s)
+hive (default)> 
+```
+#### 6.1.4.3 求工资的最小值 (min)
+```
+hive (default)> select min(sal) min_wage from emp;
+Query ID = root_20190328230109_5dbce45f-9887-44cc-b6fb-5aa64ac11a50
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1553780256887_0008, Tracking URL = http://systemhub611:8088/proxy/application_1553780256887_0008/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553780256887_0008
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+Stage-1 map = 0%,  reduce = 0%
+Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.52 sec
+Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 3.42 sec
+MapReduce Total cumulative CPU time: 3 seconds 420 msec
+Ended Job = job_1553780256887_0008
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 3.42 sec   HDFS Read: 7836 HDFS Write: 6 SUCCESS
+Total MapReduce CPU Time Spent: 3 seconds 420 msec
+OK
+min_wage
+800.0
+Time taken: 30.23 seconds, Fetched: 1 row(s)
+hive (default)>
+```
+#### 6.1.4.4 求工资的总和 (sum)
+```
+hive (default)> select sum(sal) sum_wage from emp;
+Query ID = root_20190328230304_600ecafd-b2a6-4b53-8ba8-fb9938c9f0c9
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1553780256887_0010, Tracking URL = http://systemhub611:8088/proxy/application_1553780256887_0010/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553780256887_0010
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+Stage-1 map = 0%,  reduce = 0%
+Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.36 sec
+Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 3.13 sec
+MapReduce Total cumulative CPU time: 3 seconds 130 msec
+Ended Job = job_1553780256887_0010
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 3.13 sec   HDFS Read: 7830 HDFS Write: 9 SUCCESS
+Total MapReduce CPU Time Spent: 3 seconds 130 msec
+OK
+sum_wage
+39970.75
+Time taken: 33.111 seconds, Fetched: 1 row(s)
+hive (default)> 
+```
+#### 6.1.4.5 求工资的平均值 (avg)
+```
+hive (default)> select avg(sal) avg_wage from emp;
+Query ID = root_20190328230301_15ba0d3a-130a-42a5-9b9a-a313f187e814
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks determined at compile time: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1553780256887_0009, Tracking URL = http://systemhub611:8088/proxy/application_1553780256887_0009/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553780256887_0009
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+Stage-1 map = 0%,  reduce = 0%
+Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.21 sec
+Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.96 sec
+MapReduce Total cumulative CPU time: 2 seconds 960 msec
+Ended Job = job_1553780256887_0009
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 2.96 sec   HDFS Read: 8011 HDFS Write: 18 SUCCESS
+Total MapReduce CPU Time Spent: 2 seconds 960 msec
+OK
+avg_wage
+4441.194444444444
+Time taken: 67.764 seconds, Fetched: 1 row(s)
+hive (default)> 
+```
+
+#### 6.1.5 Limit语句
+> 典型的查询会返回多行数据,LIMIT子句用于限制返回的行数.
+```
+hive (default)> select * from emp limit 5;
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.0   20.0    NULL
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+Time taken: 0.135 seconds, Fetched: 5 row(s)
+hive (default)> 
+```
+
+### 6.2 Where语句
+> 1.使用`WHERE`子句,将不满足条件的行过滤掉.
+> 2.`WHERE`子句紧随`FROM`子句.
+> 3.案例实操
+> 查询出薪水大于1000的所有员工.
+```
+hive (default)> select * from emp where sal > 1000;
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+7782    JAMSK   KIHNGSEHN       7769    1991-06-23      1100.0  20.0    NULL
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+Time taken: 0.26 seconds, Fetched: 7 row(s)
+hive (default)> 
+```
+#### 6.2.1 比较运算符 (Between / In / Is Null)
+> 下面表中描述了谓词操作符,这些操作符同样可以用于JOIN...ON和HAVING语句中.
+##### 6.2.1.1 比较运算符对照表
+| 操作符      |     支持数据类型 |   描述   |
+| :--------: | :--------:| :------: |
+| A=B    |   基本数据类型 |  如果A等于B则返回TRUE,反之返回FALSE.  |
+| A<=>B    |   基本数据类型 |  如果A和B都为NULL,则返回TRUE,其他的和等号(=)操作符的结果一致,如果任一为NULL则结果为NULL.  |
+| A<>B, A!=B    |   基本数据类型 |  A或者B为NULL则返回NULL,如果A不等于B,则返回TRUE,反之返回FALSE.  |
+| A<B    |   基本数据类型 |  A或者B为NULL,则返回NULL,如果A小于B,则返回TRUE,反之返回FALSE.  |
+| A<=B    |   基本数据类型 |  A或者B为NULL,则返回NULL,如果A小于等于B,则返回TRUE,反之返回FALSE.  |
+| A>B    |   基本数据类型 |  A或者B为NULL,则返回NULL,如果A大于B,则返回TRUE,反之返回FALSE.  |
+| A>=B    |   基本数据类型 |  A或者B为NULL,则返回NULL,如果A大于等于B,则返回TRUE,反之返回FALSE.  |
+| A [NOT] BETWEEN B AND C    |   基本数据类型 |  如果A,B或者C任一为NULL,则结果为NULL,如果A的值大于等于B而且小于或等于C,则结果为TRUE,反之为FALSE,如果使用NOT关键字则可达到相反的效果.  |
+| A IS NULL    |   所有数据类型 |  如果A等于NULL,则返回TRUE,反之返回FALSE.  |
+| A IS NOT NULL    |   所有数据类型 |  如果A不等于NULL,则返回TRUE,反之返回FALSE. |
+| IN(Num1,Num2)    |   所有数据类型 |  使用IN运算显示列表中的值.  |
+| A [NOT] LIKE B    |   STRING 类型 |  B是一个SQL下的简单正则表达式,如果A与其匹配的话,则返回TRUE,反之返回FALSE,B的表达式说明如下:‘x%’表示A必须以字母‘x’开头,‘%x’表示A必须以字母’x’结尾,而‘%x%’表示A包含有字母’x’,可以位于开头,结尾或者字符串中间,如果使用NOT,关键字则可达到相反的效果.  |
+| A RLIKE B,A REGEXP B    |   STRING 类型 |  B是一个正则表达式,如果A与其匹配，则返回TRUE,反之返回FALSE,匹配使用的是JDK中的正则表达式接口实现的,因为正则也依据其中的规则,例如,正则表达式必须和整个字符串A相匹配,而不是只需与其字符串匹配.  |
+
+##### 6.2.1.2 案例实操
+###### 6.2.1.2.1 查询薪水等于3000的所有员工
+```
+hive (default)> select * from emp where sal = 3000;
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+Time taken: 0.063 seconds, Fetched: 1 row(s)
+hive (default)> 
+```
+###### 6.2.1.2.2 查询工资在500到1000的员工信息
+```
+hive (default)> select * from emp where sal between 500 and 1000;
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.0   20.0    NULL
+7788    FOESS   CLAEDFDFD       7698    1994-09-17      950.0   30.0    NULL
+Time taken: 0.086 seconds, Fetched: 2 row(s)
+hive (default)> 
+```
+###### 6.2.1.2.3 查询comm为空的所有员工信息
+```
+hive (default)> select * from emp where comm is null;
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+Time taken: 0.077 seconds
+hive (default)> 
+```
+###### 6.2.1.2.4 查询工资是1500和3000的员工信息
+```
+hive (default)> select * from emp where sal IN(1500,3000);
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+Time taken: 0.117 seconds, Fetched: 1 row(s)
+hive (default)> 
+```
+
+
+#### 6.2.2 Like和RLike
+> 1.使用`LIKE`运算选择类似的值.
+> 
+> 2.选择条件可以包含字符或数字:
+> `%` 代表零个或多个字符(任意个字符)
+> `_` 代表一个字符
+> 
+> 3.`RLIKE`子句是Hive中这个功能的一个扩展,其可以通过Java的正则表达式这个更强大的语言来指定匹配条件.
+##### 6.2.2.1 案例实操
+###### 6.2.2.1.1 查找以2开头薪水的员工信息
+```
+hive (default)> select * from emp where sal LIKE '2%';
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+Time taken: 0.134 seconds, Fetched: 3 row(s)
+hive (default)> 
+```
+###### 6.2.2.1.2 查找第二个数值为2薪水的员工信息
+```
+hive (default)> select * from emp where sal LIKE '_2%';
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+Time taken: 0.075 seconds, Fetched: 1 row(s)
+hive (default)> 
+```
+###### 6.2.2.1.3 查找薪水中含有2的员工信息
+```
+hive (default)> select * from emp where sal RLIKE '[2]';
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+Time taken: 0.088 seconds, Fetched: 4 row(s)
+hive (default)> 
+```
+
+#### 6.2.3 逻辑运算符 (And / Or / Not)
+
+| 操作符      |     含义 |
+| :--------: | :--------:|
+| AND    |   逻辑并 |
+| OR    |   逻辑或 |
+| NOT    |   逻辑否 |
+##### 6.2.3.1 案例实操
+###### 6.2.3.1.1 查询薪水大于1000,部门是30
+```
+hive (default)> select * from emp where sal > 1000 AND deptno = 30;
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+Time taken: 0.107 seconds, Fetched: 2 row(s)
+hive (default)> 
+```
+###### 6.2.3.1.2 查询薪水大于1000,或者部门是30
+```
+hive (default)> select * from emp where sal > 1000 or deptno = 30;
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+7782    JAMSK   KIHNGSEHN       7769    1991-06-23      1100.0  20.0    NULL
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+Time taken: 0.088 seconds, Fetched: 7 row(s)
+hive (default)> 
+```
+###### 6.2.3.1.3 查询除了20部门和30部门以外的员工信息
+```
+hive (default)> select * from emp where deptno not IN(30,20);
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+Time taken: 0.067 seconds
+hive (default)> 
+```
+
+
+## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+
+
+### 6.3 分组
+### 6.4 Join语句
+### 6.5 排序
+### 6.6 分桶及抽样查询
+
+## 7. 函数
+### 7.1 系统函数
+### 7.2 自定义函数
+### 7.3 自定义UDF函数
+
+## 8. 压缩 & 存储
+### 8.1 Hadoop源码编译支持Snappy压缩
+### 8.2 Hadoop压缩配置
+### 8.3 开启Map输出阶段压缩
+### 8.4 开启Reduce输出阶段压缩
+### 8.5 文件存储格式
+### 8.6 存储和压缩结合
+
+## 9. 企业级调优
+### 9.1 Fetch抓取
+### 9.2 本地模式
+### 9.3 表的优化
+### 9.4 数据倾斜
+### 9.5 并行执行
+### 9.6 严格模式
+### 9.7 JVM重用
+### 9.8 推测执行
+### 9.10 执行计划 (Explain)
 
 ## 10. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
