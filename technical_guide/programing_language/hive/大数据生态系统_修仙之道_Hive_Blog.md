@@ -1793,7 +1793,7 @@ hive (default)> select * from dept_partition where month='2020-00-05'
               > select * from dept_partition where month='2020-00-02'
               > union
               > select * from dept_partition where month='2020-00-01';
-Query ID = root_20190328145346_e7c134f9-1082-4bd6-9588-951592861d78
+Query ID = root_201346_e7c134f9-1082-4bd6-9588-951592861d78
 Total jobs = 4
 Launching Job 1 out of 4
 Number of reduce tasks not specified. Estimated from input data size: 1
@@ -2451,8 +2451,8 @@ Time taken: 2.32 seconds, Fetched: 4 row(s)
 #### 5.2.4 Export导出到HDFS上
 ```
 hive (default)> export table test to '/user/geekparkhub/export/test002';
-Copying data from file:/tmp/root/16f13154-2779-4719-89d3-3453b1468948/hive_2019-03-28_22-04-33_411_6501223345710054079-1/-local-10000/_metadata
-Copying file: file:/tmp/root/16f13154-2779-4719-89d3-3453b1468948/hive_2019-03-28_22-04-33_411_6501223345710054079-1/-local-10000/_metadata
+Copying data from file:/tmp/root/16f13154-2779-4719-89d3-3453b1468948/hive_411_6501223345710054079-1/-local-10000/_metadata
+Copying file: file:/tmp/root/16f13154-2779-4719-89d3-3453b1468948/hive_411_6501223345710054079-1/-local-10000/_metadata
 Copying data from hdfs://systemhub511:9000/user/hive/warehouse/test
 Copying file: hdfs://systemhub511:9000/user/hive/warehouse/test/test.txt
 OK
@@ -2920,14 +2920,881 @@ Time taken: 0.067 seconds
 hive (default)> 
 ```
 
+### 6.3 分组
+#### 6.3.1 Group By 语句
+> `GROUP  BY`语句通常会和聚合函数一起使用,按照一个或者多个列队结果进行分组,然后对每个组执行聚合操作.
+> 
+> 1.计算emp表每个部门的平均工资.
+```
+hive (default)> select avg(sal) avg_sal from emp
+              > group by deptno;
+Query ID = root_20190329100652_589ff409-e520-40bc-9cb4-4637d9775441
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1553824894278_0001, Tracking URL = http://systemhub611:8088/proxy/application_1553824894278_0001/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553824894278_0001
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+Stage-1 map = 0%,  reduce = 0%
+Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.72 sec
+Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 3.55 sec
+MapReduce Total cumulative CPU time: 3 seconds 550 msec
+Ended Job = job_1553824894278_0001
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 3.55 sec   HDFS Read: 8446 HDFS Write: 37 SUCCESS
+Total MapReduce CPU Time Spent: 3 seconds 550 msec
+OK
+avg_sal
+5302.938571428572
+1425.0900000000001
+Time taken: 39.062 seconds, Fetched: 2 row(s)
+hive (default)> 
+```
+> 2.计算emp每个部门中每个岗位的最高薪水.
+```
+hive (default)> select deptno,job,avg(sal) avg_sal from emp
+              > group by deptno,job;
+Query ID = root_20190329101147_338b3ac5-d29e-46eb-abae-d4d2a3bcc3ae
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1553824894278_0002, Tracking URL = http://systemhub611:8088/proxy/application_1553824894278_0002/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553824894278_0002
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+Stage-1 map = 0%,  reduce = 0%
+Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.21 sec
+Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 2.97 sec
+MapReduce Total cumulative CPU time: 2 seconds 970 msec
+Ended Job = job_1553824894278_0002
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 2.97 sec   HDFS Read: 8904 HDFS Write: 182 SUCCESS
+Total MapReduce CPU Time Spent: 2 seconds 970 msec
+OK
+deptno  job     avg_sal
+NULL    CLADDJHEW       3000.0
+NULL    CLAEDFDFD       950.0
+NULL    CLERKSKLD       800.0
+NULL    JDHYHDSDS       2894.25
+NULL    JUSHHWESD       25524.02
+NULL    KIHNGSEHN       1100.0
+NULL    MANSJUSSD       2852.3
+30      SALESMANS       1600.0
+30      SJDHHJDJX       1250.18
+Time taken: 28.517 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+
+#### 6.3.2 Having 语句
+> having与where不同点
+> 
+> where针对表中的列发挥作用,查询数据.
+> having针对查询结果中的列发挥作用,筛选数据.
+> where后面不能写分组函数,而having后面可以使用分组函数.
+> having只用于group by分组统计语句.
+
+> 求每个部门的平均薪水大于2000的部门
+```
+hive (default)> select deptno,avg(sal) avg_sal from emp
+              > group by deptno
+              > having avg_sal > 2000;
+Query ID = root_20190329102456_d4f50a80-3441-421c-9e89-acf8665d98aa
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks not specified. Estimated from input data size: 1
+In order to change the average load for a reducer (in bytes):
+  set hive.exec.reducers.bytes.per.reducer=<number>
+In order to limit the maximum number of reducers:
+  set hive.exec.reducers.max=<number>
+In order to set a constant number of reducers:
+  set mapreduce.job.reduces=<number>
+Starting Job = job_1553824894278_0003, Tracking URL = http://systemhub611:8088/proxy/application_1553824894278_0003/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553824894278_0003
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+Stage-1 map = 0%,  reduce = 0%
+Stage-1 map = 100%,  reduce = 0%, Cumulative CPU 1.2 sec
+Stage-1 map = 100%,  reduce = 100%, Cumulative CPU 3.65 sec
+MapReduce Total cumulative CPU time: 3 seconds 650 msec
+Ended Job = job_1553824894278_0003
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 3.65 sec   HDFS Read: 8985 HDFS Write: 21 SUCCESS
+Total MapReduce CPU Time Spent: 3 seconds 650 msec
+OK
+deptno  avg_sal
+NULL    5302.938571428572
+Time taken: 29.14 seconds, Fetched: 1 row(s)
+hive (default)> 
+```
+
+### 6.4 Join语句
+#### 6.4.1 等值Join
+> Hive支持通常的`SQL JOIN`语句,但是只支持等值连接,不支持非等值连接.
+```
+hive (default)> select e.empno,e.ename,d.dname
+              > from emp e join dept d
+              > on e.deptno=d.deptid;
+Query ID = root_d5dfa88a-b9a2-4377-aebe-1328cf0b6653
+Total jobs = 1
+WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Execution log at: /tmp/root/aebe-1328cf0b6653.log
+Starting to launch local task to process map join;      maximum memory = 518979584
+Dump the side-table for tag: 1 with group count: 4 into file: file:/tmp/root/c9582a8b-1e8f-446e-b899-f5114533b280/-local-10003/HashTable-Stage-3/MapJoin-mapfile01--.hashtable
+Uploaded 1 File to: file:/tmp/root/c9582a8b-1e8f-446e-b899-f5114533b280/hive_2019-03-29_11-02-28_999_8089713357386975442-1/-local-10003/HashTable-Stage-3/MapJoin-mapfile01--.hashtable (373 bytes)
+End of local task; Time Taken: 1.969 sec.
+Execution completed successfully
+MapredLocal task succeeded
+Launching Job 1 out of 1
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_1553824894278_0004, Tracking URL = http://systemhub611:8088/proxy/application_1553824894278_0004/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553824894278_0004
+Hadoop job information for Stage-3: number of mappers: 1; number of reducers: 0
+Stage-3 map = 0%,  reduce = 0%
+Stage-3 map = 100%,  reduce = 0%, Cumulative CPU 1.81 sec
+MapReduce Total cumulative CPU time: 1 seconds 810 msec
+Ended Job = job_1553824894278_0004
+MapReduce Jobs Launched: 
+Stage-Stage-3: Map: 1   Cumulative CPU: 1.81 sec   HDFS Read: 7157 HDFS Write: 0 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 810 msec
+OK
+e.empno e.ename d.dname
+Time taken: 29.819 seconds
+hive (default)> 
+```
+#### 6.4.2 表别名
+> 1.好处:
+> 使用别名可以简化查询.
+> 使用表名前缀可以提高执行效率.
+> 
+> 案例实操
+```
+hive (default)> select e.empno,e.ename,d.dname
+              > from emp e join dept d
+              > on e.deptno=d.deptid;
+```
+#### 6.4.3 内连接
+> 内连接: 只有进行连接的两个表中都存在与连接条件相匹配的数据才会被保留下.
+#### 6.4.4 左外连接
+> 左外连接: JOIN操作符左边表中符合WHERE子句的所有记录将会被返回.
+```
+hive (default)> select e.empno,e.ename,d.dname
+              > from emp e left join dept d
+              > on e.deptno=d.deptid;
+Query ID = root_20190329112652_1446145a-1749-4a6f-85ad-b4576ee31e0f
+Total jobs = 1
+WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Execution log at: /tmp/root/root_20190329112652_1446145a-1749-4a6f-85ad-b4576ee31e0f.log
+Starting to launch local task to process map join;      maximum memory = 518979584
+2019-03-29 11:26:59     Dump the side-table for tag: 1 with group count: 4 into file: file:/tmp/root/c9582a8b-1e8f-446e-b899-f5114533b280/hive_2019-03-29_11-26-52_365_8094669471916599336-1/-local-10003/HashTable-Stage-3/MapJoin-mapfile11--.hashtable
+2019-03-29 11:26:59     Uploaded 1 File to: file:/tmp/root/c9582a8b-1e8f-446e-b899-f5114533b280/hive_2019-03-29_11-26-52_365_8094669471916599336-1/-local-10003/HashTable-Stage-3/MapJoin-mapfile11--.hashtable (373 bytes)
+End of local task; Time Taken: 1.522 sec.
+Execution completed successfully
+MapredLocal task succeeded
+Launching Job 1 out of 1
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_1553824894278_0005, Tracking URL = http://systemhub611:8088/proxy/application_1553824894278_0005/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553824894278_0005
+Hadoop job information for Stage-3: number of mappers: 1; number of reducers: 0
+Stage-3 map = 0%,  reduce = 0%
+Stage-3 map = 100%,  reduce = 0%, Cumulative CPU 1.44 sec
+MapReduce Total cumulative CPU time: 1 seconds 440 msec
+Ended Job = job_1553824894278_0005
+MapReduce Jobs Launched: 
+Stage-Stage-3: Map: 1   Cumulative CPU: 1.44 sec   HDFS Read: 7035 HDFS Write: 126 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 440 msec
+OK
+e.empno e.ename d.dname
+7369    SMITH   NULL
+7499    ALLTE   NULL
+7521    WAROS   NULL
+7566    JOSSS   NULL
+7654    SOCTD   NULL
+7698    ADAMS   NULL
+7782    JAMSK   NULL
+7788    FOESS   NULL
+7939    KINGS   NULL
+Time taken: 32.565 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+#### 6.4.5 右外连接
+> 右外连接: JOIN操作符右边表中符合WHERE子句的所有记录将会被返回.
+```
+hive (default)> select e.empno,e.ename,d.dname
+              > from emp e right join dept d
+              > on e.deptno=d.deptid;
+Query ID = root_20190329115001_8d324711-c545-4ea3-bef5-28cc14a11989
+Total jobs = 1
+19/03/29 11:50:06 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Execution log at: /tmp/root/root_20190329115001_8d324711-c545-4ea3-bef5-28cc14a11989.log
+Starting to launch local task to process map join;      maximum memory = 518979584
+2019-03-29 11:50:08     Dump the side-table for tag: 0 with group count: 2 into file: file:/tmp/root/c9582a8b-1e8f-446e-b899-f5114533b280/hive_2019-03-29_11-50-01_720_5879451311571173295-1/-local-10003/HashTable-Stage-3/MapJoin-mapfile20--.hashtable
+2019-03-29 11:50:09     Uploaded 1 File to: file:/tmp/root/c9582a8b-1e8f-446e-b899-f5114533b280/hive_2019-03-29_11-50-01_720_5879451311571173295-1/-local-10003/HashTable-Stage-3/MapJoin-mapfile20--.hashtable (413 bytes)
+End of local task; Time Taken: 1.56 sec.
+Execution completed successfully
+MapredLocal task succeeded
+Launching Job 1 out of 1
+Number of reduce tasks is set to 0 since there's no reduce operator
+Starting Job = job_1553824894278_0006, Tracking URL = http://systemhub611:8088/proxy/application_1553824894278_0006/
+Kill Command = /opt/module/hadoop/bin/hadoop job  -kill job_1553824894278_0006
+Hadoop job information for Stage-3: number of mappers: 1; number of reducers: 0
+Stage-3 map = 0%,  reduce = 0%
+Stage-3 map = 100%,  reduce = 0%, Cumulative CPU 1.42 sec
+MapReduce Total cumulative CPU time: 1 seconds 420 msec
+Ended Job = job_1553824894278_0006
+MapReduce Jobs Launched: 
+Stage-Stage-3: Map: 1   Cumulative CPU: 1.42 sec   HDFS Read: 6640 HDFS Write: 61 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 420 msec
+OK
+e.empno e.ename d.dname
+NULL    NULL    ACCOUNTING
+NULL    NULL    RESEARCH
+NULL    NULL    SALES
+NULL    NULL    OPERATIONS
+Time taken: 29.374 seconds, Fetched: 4 row(s)
+hive (default)> 
+```
+
+#### 6.4.6 满外连接
+> 满外连接: 将会返回所有表中符合WHERE语句条件的所有记录,如果任一表的指定字段没有符合条件的值的话,那么就使用NULL值替代.
+```
+hive (default)> select e.empno,e.ename,d.dname
+              > from emp e full join dept d
+              > on e.deptno=d.deptid;
+Stage-Stage-1: Map: 2  Reduce: 1   Cumulative CPU: 5.24 sec   HDFS Read: 13887 HDFS Write: 187 SUCCESS
+Total MapReduce CPU Time Spent: 5 seconds 240 msec
+OK
+e.empno e.ename d.dname
+7939    KINGS   NULL
+7788    FOESS   NULL
+7782    JAMSK   NULL
+7698    ADAMS   NULL
+7654    SOCTD   NULL
+7566    JOSSS   NULL
+7369    SMITH   NULL
+7521    WAROS   NULL
+7499    ALLTE   NULL
+NULL    NULL    ACCOUNTING
+NULL    NULL    RESEARCH
+NULL    NULL    SALES
+NULL    NULL    OPERATIONS
+Time taken: 35.59 seconds, Fetched: 13 row(s)
+hive (default)> 
+```
+
+#### 6.4.7 多表连接
+> 注意: 连接n个表,至少需要n-1个连接条件.
+> 例如: 连接三个表,至少需要两个连接条件.
+> 0.数据准备
+```
+[root@systemhub711 ~]# cd /opt/module/datas/
+[root@systemhub711 datas]# vim location.txt
+```
+```
+1700    Beijing
+1800    London
+1900    Tokyo
+```
+> 1.创建位置表
+```
+hive (default)> create table if not exists default.location(loc int,loc_name string)row format delimited fields terminated by '\t';
+OK
+Time taken: 0.328 seconds
+hive (default)> 
+```
+> 2.导入数据
+```
+hive (default)> load data local inpath '/opt/module/datas/location.txt' into table location;
+Loading data to table default.location
+Table default.location stats: [numFiles=1, totalSize=36]
+OK
+Time taken: 0.386 seconds
+hive (default)> select * from location;
+OK
+location.loc    location.loc_name
+1700    Beijing
+1800    London
+1900    Tokyo
+Time taken: 0.077 seconds, Fetched: 3 row(s)
+hive (default)> 
+```
+> 3.多表连接查询
+```
+hive (default)> select e.ename,d.dname,l.loc_name
+              > from emp e join dept d
+              > on e.deptno=d.deptid
+              > join location l
+              > on d.loc=l.loc;
+```
+> 大多数情况下,Hive会对每对JOIN连接对象启动一个MapReduce任务.
+> 
+> 本例中会首先启动一个MapReduce job对表e和表d进行连接操作,然后会再启动一个MapReduce job将第一个MapReduce job的输出和表l;进行连接操作.
+> 
+> 注意: 为什么不是表d和表l先进行连接操作呢? 这是因为Hive总是按照从左到右的顺序执行的.
+
+#### 6.4.8 笛卡尔积
+> 1.笛卡尔集会在下面条件下产生:
+> 
+> 省略连接条件.
+> 
+> 连接条件无效.
+> 
+> 所有表中的所有行互相连接.
+> 
+> 案例实操
+```
+hive (default)> select empno, deptno from emp, dept;
+Warning: Map Join MAPJOIN[7][bigTable=emp] in task 'Stage-3:MAPRED' is a cross product
+Query ID = root_20190329124854_dc330707-1941-4608-8244-1d5bd9214e38
+Total jobs = 1
+Total MapReduce CPU Time Spent: 1 seconds 470 msec
+OK
+empno   deptno
+7369    NULL
+7369    NULL
+7369    NULL
+7369    NULL
+7499    30
+7499    30
+7499    30
+7499    30
+7521    30
+```
+#### 6.4.9 连接谓词中不支持or
+> 错误示范
+```
+hive (default)> select e.empno,e.ename,d.deptno from emp e join dept d on e.deptno=d.deptno or e.ename=d.ename;
+
+FAILED: SemanticException [Error 10019]: Line 1:58 OR not supported in JOIN currently 'ename'
+hive (default)> 
+```
+
+### 6.5 排序
+#### 6.5.1 全局排序 (Order By)
+> Order By: 全局排序,一个MapReduce
+##### 6.5.1.1 使用`ORDER BY` 子句排序
+> ASC (ascend) 升序 (默认)
+> DESC (descend) 降序
+##### 6.5.1.2 `ORDER BY` 子句在`SELECT`语句结尾
+##### 6.5.1.3 案例实操
+###### 6.5.1.3.1 查询员工信息按工资升序排列
+```
+hive (default)> select * from emp order by sal;
+Query ID = root_20190329130738_e22bdd23-0e80-43cb-8667-dde41851efa4
+Total jobs = 1
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 3.13 sec   HDFS Read: 8460 HDFS Write: 472 SUCCESS
+Total MapReduce CPU Time Spent: 3 seconds 130 msec
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.0   20.0    NULL
+7788    FOESS   CLAEDFDFD       7698    1994-09-17      950.0   30.0    NULL
+7782    JAMSK   KIHNGSEHN       7769    1991-06-23      1100.0  20.0    NULL
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+Time taken: 29.233 seconds, Fetched: 9 row(s)
+hive (default)>
+```
+###### 6.5.1.3.2 查询员工信息按工资降序排列
+```
+hive (default)> select * from emp order by sal desc;
+Query ID = root_20190329131750_d47ccdca-56fa-4b3f-aac1-e9d35e5e44e3
+Total MapReduce CPU Time Spent: 3 seconds 450 msec
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7782    JAMSK   KIHNGSEHN       7769    1991-06-23      1100.0  20.0    NULL
+7788    FOESS   CLAEDFDFD       7698    1994-09-17      950.0   30.0    NULL
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.0   20.0    NULL
+```
+
+#### 6.5.2 按照别名排序
+> 按照员工薪水的2倍排序
+```
+hive (default)> select ename,sal*2 twosal from emp order by twosal;
+Query ID = root_20190329132035_8bf552a3-03b8-4e33-835b-56f26c8a5a12
+Total MapReduce CPU Time Spent: 3 seconds 490 msec
+OK
+ename   twosal
+SMITH   1600.0
+FOESS   1900.0
+JAMSK   2200.0
+WAROS   2500.36
+ALLTE   3200.0
+SOCTD   5704.6
+JOSSS   5788.5
+KINGS   6000.0
+ADAMS   51048.04
+Time taken: 31.107 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+
+#### 6.5.3 多列排序
+> 按照部门和工资升序排序
+```
+hive (default)> select ename,deptno,sal from emp order by deptno,sal;
+Query ID = root_20190329132255_7a5c8581-0c60-4a17-a726-5f8c1f8d8b36
+Total MapReduce CPU Time Spent: 2 seconds 770 msec
+OK
+ename   deptno  sal
+SMITH   NULL    800.0
+FOESS   NULL    950.0
+JAMSK   NULL    1100.0
+SOCTD   NULL    2852.3
+JOSSS   NULL    2894.25
+KINGS   NULL    3000.0
+ADAMS   NULL    25524.02
+WAROS   30      1250.18
+ALLTE   30      1600.0
+Time taken: 28.476 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+#### 6.5.4 MapReduce内部排序 (Sort By)
+> Sort By: 每个MapReduce内部进行排序,对全局结果集来说不是排序.
+> 
+> 1.设置reduce个数.
+```
+hive (default)> set mapreduce.job.reduces=3;
+```
+> 
+> 2.查看设置reduce个数.
+```
+hive (default)> set mapreduce.job.reduces;
+mapreduce.job.reduces=3
+hive (default)> 
+```
+> 
+> 3.根据部门编号降序查看员工信息.
+```
+hive (default)> select * from emp sort by empno desc;
+Query ID = root_20190329133608_60e6d25c-1197-4a09-8c96-df4fdbb35628
+Stage-Stage-1: Map: 1  Reduce: 3   Cumulative CPU: 7.96 sec   HDFS Read: 16132 HDFS Write: 472 SUCCESS
+Total MapReduce CPU Time Spent: 7 seconds 960 msec
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+7788    FOESS   CLAEDFDFD       7698    1994-09-17      950.0   30.0    NULL
+7782    JAMSK   KIHNGSEHN       7769    1991-06-23      1100.0  20.0    NULL
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.0   20.0    NULL
+Time taken: 32.412 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+
+#### 6.5.5 分区排序 (Distribute By)
+> Distribute By: 类似MR中partition,进行分区,结合`sort by`使用.
+> 注意,Hive要求`DISTRIBUTE BY`语句要写在`SORT BY`语句之前.
+> 对于`distribute by`进行测试,一定要分配多reduce进行处理,否则无法看到`distribute by`的效果.
+> 
+
+#### 6.5.6 Cluster By
+> 当`distribute by`和`sorts by`字段相同时,可以使用`cluster by`方式.
+> 
+> `cluster by`除了具有`distribute by`的功能外还兼具`sort by`的功能,但是排序只能是倒序排序,不能指定排序规则为`ASC`或者`DESC`.
+> 1.以下两种写法等价
+```
+hive (default)> select * from emp cluster by deptno;
+
+hive (default)> select * from emp distribute by deptno sort by deptno;
+```
+> 注意: 按照部门编号分区,不一定就是固定死的数值,可以是20号和30号部门分到一个分区里面去.
+
+### 6.6 分桶及抽样查询
+#### 6.6.1 分桶表数据存储
+> 分区针对的是数据的存储路径,分桶针对的是数据文件.
+> 
+> 分区提供一个隔离数据和优化查询的便利方式,不过并非所有的数据集都可形成合理的分区,特别是之前所提到过的要确定合适的划分大小这个疑虑.
+> 
+> 分桶是将数据集分解成更容易管理的若干部分的另一个技术.
+> 
+##### 6.6.1.1 先创建分桶表,通过直接导入数据文件的方式
+###### 6.6.1.1.1 数据准备
+```
+[root@systemhub711 datas]# vim test_bucket.txt
+```
+```
+1001    101
+1002    102
+1003    103
+1004    104
+1005    105
+1006    106
+1007    107
+1008    108
+1009    109
+1010    110
+1011    111
+1012    112
+1013    113
+1014    114
+1015    115
+1016    116
+```
+###### 6.6.1.1.2 创建分桶表
+```
+hive (default)> create table test_bucket(id int,name string)
+              > clustered by (id)
+              > into 4 buckets
+              > row format delimited fields terminated by '\t';
+OK
+Time taken: 0.138 seconds
+hive (default)> 
+```
+###### 6.6.1.1.3 查看表结构
+```
+hive (default)> desc formatted test_bucket;
+OK
+col_name        data_type       comment
+# col_name              data_type               comment             
+                 
+id                      int                                         
+name                    string                                      
+                 
+# Detailed Table Information             
+Database:               default                  
+Owner:                  root                       
+LastAccessTime:         UNKNOWN                  
+Protect Mode:           None                     
+Retention:              0                        
+Location:               hdfs://systemhub511:9000/user/hive/warehouse/test_bucket         
+Table Type:             MANAGED_TABLE            
+Table Parameters:                
+        transient_lastDdlTime   1553865393          
+                 
+# Storage Information            
+SerDe Library:          org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe       
+InputFormat:            org.apache.hadoop.mapred.TextInputFormat         
+OutputFormat:           org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat       
+Compressed:             No                       
+Num Buckets:            4                        
+Bucket Columns:         [id]                     
+Sort Columns:           []                       
+Storage Desc Params:             
+        field.delim             \t                  
+        serialization.format    \t                  
+Time taken: 0.123 seconds, Fetched: 28 row(s)
+hive (default)> 
+```
+###### 6.6.1.1.4 导入数据到分桶表中
+```
+hive (default)> load data local inpath '/opt/module/datas/test_bucket.txt' into table test_bucket;
+Loading data to table default.test_bucket
+Table default.test_bucket stats: [numFiles=1, totalSize=144]
+OK
+Time taken: 0.345 seconds
+hive (default)> 
+```
+###### 6.6.1.1.5 查看创建的分桶表中是否分成4个桶
+> 发现并没有分成4个桶,是什么原因呢
+```
+hive (default)> dfs -cat /user/hive/warehouse/test_bucket/*;
+1001    101
+1002    102
+1003    103
+1004    104
+1005    105
+1006    106
+1007    107
+1008    108
+1009    109
+1010    110
+1011    111
+1012    112
+1013    113
+1014    114
+1015    115
+1016    116
+hive (default)> 
+```
+
+##### 6.6.1.2 创建分桶表时,数据通过子查询的方式导入
+###### 6.6.1.2.1 新建一个普通test_buck表
+```
+hive (default)> create table test_buck(id int,name string)
+              > row format delimited fields terminated by '\t';
+OK
+Time taken: 0.084 seconds
+hive (default)> 
+```
+###### 6.6.1.2.2 向普通test_buck表中导入数据
+```
+hive (default)> load data local inpath '/opt/module/datas/test_bucket.txt' into table test_buck;
+Loading data to table default.test_buck
+Table default.test_buck stats: [numFiles=1, totalSize=144]
+OK
+Time taken: 0.239 seconds
+hive (default)> 
+```
+###### 6.6.1.2.3 清空test_bucket表中数据
+```
+hive (default)> truncate table test_bucket;
+OK
+Time taken: 0.151 seconds
+hive (default)> 
+```
+###### 6.6.1.2.4 通过子查询的方式,导入数据到分桶表
+```
+hive (default)> insert into table test_bucket
+              > select * from test_buck;
+Query ID = root_20190329213846_8d66d5f4-e16d-4725-9231-e9b9dd84c1de
+Loading data to table default.test_bucket
+Table default.test_bucket stats: [numFiles=1, numRows=16, totalSize=144, rawDataSize=128]
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1   Cumulative CPU: 1.29 sec   HDFS Read: 3550 HDFS Write: 220 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 290 msec
+OK
+test_buck.id    test_buck.name
+Time taken: 20.851 seconds
+hive (default)> 
+```
+###### 6.6.1.2.5 发现还是只有一个分桶
+```
+hive (default)> dfs -cat /user/hive/warehouse/test_bucket/*;
+1001    101
+1002    102
+1003    103
+1004    104
+1005    105
+1006    106
+1007    107
+1008    108
+1009    109
+1010    110
+1011    111
+1012    112
+1013    113
+1014    114
+1015    115
+1016    116
+hive (default)> 
+```
+###### 6.6.1.2.6 设置分桶属性
+```
+hive (default)> set hive.enforce.bucketing=true;
+hive (default)> set mapreduce.job.reduces=-1;
+hive (default)> insert into table test_bucket
+              > select id,name from test_buck cluster by(id);
+Loading data to table default.test_bucket
+Table default.test_bucket stats: [numFiles=5, numRows=32, totalSize=288, rawDataSize=256]
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 4   Cumulative CPU: 9.76 sec   HDFS Read: 15857 HDFS Write: 444 SUCCESS
+Total MapReduce CPU Time Spent: 9 seconds 760 msec
+OK
+id      name
+Time taken: 37.969 seconds
+hive (default)> 
+```
+###### 6.6.1.2.7 查询分桶数据
+> 查看分桶文件
+```
+hive (default)> dfs -ls /user/hive/warehouse/test_bucket/*;
+-rwxrwxrwx 3 root supergroup 14 /user/hive/warehouse/test_bucket/000000_0
+-rwxrwxrwx 3 root supergroup 36 /user/hive/warehouse/test_bucket/000001_0
+-rwxrwxrwx 3 root supergroup 36 /user/hive/warehouse/test_bucket/000002_0
+-rwxrwxrwx 3 root supergroup 36 /user/hive/warehouse/test_bucket/000003_0
+hive (default)> 
+```
+> 查看分桶数据
+```
+hive (default)> select * from test_bucket;
+OK
+test_bucket.id  test_bucket.name
+1001    101
+1002    102
+1003    103
+1004    104
+1005    105
+1006    106
+1007    107
+1008    108
+1009    109
+1010    110
+1011    111
+1012    112
+1013    113
+1014    114
+1015    115
+1016    116
+1004    104
+1008    108
+1012    112
+1016    116
+1001    101
+1005    105
+1009    109
+1013    113
+1002    102
+1006    106
+1010    110
+1014    114
+1003    103
+1007    107
+1011    111
+1015    115
+Time taken: 0.081 seconds, Fetched: 32 row(s)
+hive (default)> 
+```
+
+
+#### 6.6.2 分桶抽样查询
+> 对于非常大的数据集,有时开发者需要使用的是一个具有代表性的查询结果而不是全部结果,Hive可以通过对表进行抽样来满足这个需求.
+> 
+#### 6.6.2.1 查询test_bucket表中的数据
+```
+hive (default)> select * from test_bucket tablesample(bucket 1 out of 4 on id);
+OK
+test_bucket.id  test_bucket.name
+1004    104
+1008    108
+1012    112
+1016    116
+1004    104
+1008    108
+1012    112
+1016    116
+Time taken: 0.127 seconds, Fetched: 8 row(s)
+hive (default)> 
+```
+> 注: `tablesample`是抽样语句,语法: `TABLESAMPLE(BUCKET x OUT OF y)`
+> 
+> `x`表示从哪个bucket开始抽取,例如,table总bucket数为4,tablesample(bucket 4 out of 4),表示总共抽取(4/4=)个bucket的数据,抽取第4个bucket数据.
+> 
+> `y`必须是table总bucket数的倍数或者因子,hive根据y的大小,决定抽样的比例,例如table总共分了4份,当y=2时,抽取(4/2=)2个bucket数据,当y=8时,抽取(4/8=)1/2个bucket数据.
+> 
+> 注意: x的值必须小于等于y的值,否则
+```
+FAILED:   SemanticException   [Error   10061]:   Numerator   should   not   be   bigger   than denominator in sample clause for table test_bucket
+```
+
+#### 6.6.3 数据块抽样
+> Hive提供了另外一种按照百分比进行抽样的方式,这种是基于行数的,按照输入路径下的数据块百分比进行的抽样.
+```
+hive (default)> select * from test_buck tablesample(0.1 percent);
+OK
+test_buck.id    test_buck.name
+1001    101
+1002    102
+1003    103
+1004    104
+1005    105
+1006    106
+1007    107
+1008    108
+1009    109
+1010    110
+1011    111
+1012    112
+1013    113
+1014    114
+1015    115
+1016    116
+Time taken: 0.115 seconds, Fetched: 16 row(s)
+hive (default)> 
+```
+> 提示: 这种抽样方式不一定适用于所有的文件格式,另外这种抽样的最小抽样单元是一个HDFS数据块,因此,如果表的数据大小小于普通的块大小128M的话,那么将会返回所有行.
+
+### 6.7 其他常用查询函数
+#### 6.7.1 空字段赋值
+##### 6.7.1.1 函数说明
+> NVL:给值为NULL的数据赋值,格式是`NVL(string1,replace_with)`.
+> 
+> 它的功能是如果string1为NULL,则NVL函数返回replace_with的值,否则返回string1的值,如果两个参数为NULL,则返回NULL.
+##### 6.7.1.2 数据准备 采用emp数据表
+##### 6.7.1.3 查询deptno字段为NULL,则用-1代替
+```
+hive (default)> select empno,nvl(deptno,-1) from emp;
+OK
+empno   _c1
+7369    -1
+7499    30
+7521    30
+7566    -1
+7654    -1
+7698    -1
+7782    -1
+7788    -1
+7939    -1
+Time taken: 0.066 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+
+#### 6.7.2 CASE WHEN
+##### 6.7.2.1 数据准备
+> user表示用户名, a&b表示部门,男女表示性别
+```
+user001 A Male
+user002 A Male
+user003 B Female
+user004 A Female
+user005 B Female
+user006 B Female
+```
+##### 6.7.2.2 需求
+> 计算出不同部分员工性别有多少
+
+##### 6.7.2.3 创建本地文件并导入数据
+```
+[root@systemhub711 datas]# vim emp_sex.txt
+```
+
+##### 6.7.2.4 创建表并导入数据
+```
+hive (default)> create table emp_sex(name string,dept_id string,sex string) row format delimited fields terminated by ' ';
+OK
+Time taken: 0.11 seconds
+hive (default)> load data local inpath '/opt/module/datas/emp_sex.txt' into table emp_sex;
+Loading data to table default.emp_sex
+Table default.emp_sex stats: [numFiles=1, totalSize=84]
+OK
+Time taken: 0.255 seconds
+hive (default)> 
+```
+##### 6.7.2.5 按照需求查询数据
+```
+hive (default)>  select dept_id,
+              > sum(case sex when 'Male' then 1 else 0 end) male_count,
+              > sum(case sex when 'Female' then 1 else 0 end) female_count
+              > from emp_sex
+              > group by dept_id;
+Query ID = root_20190329235632_478f9985-3a7f-4c56-8648-fc0c2a760985
+Total MapReduce CPU Time Spent: 3 seconds 320 msec
+OK
+dept_id male_count female_count
+A       2       	1
+B       1       	2
+```
+
+
 
 ## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
 
 
-### 6.3 分组
-### 6.4 Join语句
-### 6.5 排序
-### 6.6 分桶及抽样查询
+#### 6.7.3 行转列
+#### 6.7.4 列转行
+#### 6.7.5 窗口函数
+#### 6.7.6 Rnak
+
 
 ## 7. 函数
 ### 7.1 系统函数
