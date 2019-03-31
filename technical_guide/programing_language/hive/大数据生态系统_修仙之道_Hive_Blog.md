@@ -3786,20 +3786,677 @@ B       1       	2
 ```
 
 
+#### 6.7.3 行转列
+##### 6.7.3.0 相关函数说明
+> `CONCAT(string A/col,string B/col...)` : 返回输入字符串连接后的结果,支持任意个输入字符串;
+> 
+> `CONCAT_WS(separator,str1,str2,...)` : 它是一个特殊形式的`CONCAT()`,第一个参数剩余参数间的分隔符,分隔符可以是与剩余参数一样的字符串,如果分隔符是NULL,返回值也将为NULL,这个函数会跳过分隔符参数后的任何NULL和空字符串,分隔符将被加到被连接的字符串之间.
+> 
+> `COLLECT_SET(col)` : 函数只接受基本数据类型,它的主要作用是将某字段的值进行去重汇总,产生array类型字段.
+
+##### 6.7.3.1 数据准备
+```
+TestUser001     白羊座  A
+TestUser002     射手座  A
+TestUser003     白羊座  B
+TestUser004     白羊座  A
+TestUser005     射手座  A
+```
+##### 6.7.3.2 需求
+> 把星座和血型一样的人归类到一起.
+> 
+##### 6.7.3.3 创建本地文件导入数据
+> vim constellation.txt
+```
+TestUser001     白羊座  A
+TestUser002     射手座  A
+TestUser003     白羊座  B
+TestUser004     白羊座  A
+TestUser005     射手座  A
+```
+##### 6.7.3.4 创建hive表并导入数据
+```
+hive (default)> create table person_info(name string,constellaction string,blood_type string)
+              > row format delimited fields terminated by '\t';
+OK
+Time taken: 0.17 seconds
+hive (default)> load data local inpath '/opt/module/datas/constellation.txt' into table person_info;
+Loading data to table default.person_info
+Table default.person_info stats: [numFiles=1, totalSize=120]
+OK
+Time taken: 1.473 seconds
+hive (default)> 
+```
+##### 6.7.3.5 按需求查询数据
+```
+hive (default)> select pi.base,concat_ws(" | ",collect_set(pi.name)) name from (select name,concat(constellaction," , ",blood_type) base from person_info) pi group by pi.base;
+Query ID = root_20190331163711_a233152e-be3a-40d4-8f7b-db294c916cad
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 5.39 sec   HDFS Read: 8077 HDFS Write: 123 SUCCESS
+Total MapReduce CPU Time Spent: 5 seconds 390 msec
+OK
+pi.base name
+射手座 , A      TestUser002 | TestUser005
+白羊座 , A      TestUser001 | TestUser004
+白羊座 , B      TestUser003
+Time taken: 50.112 seconds, Fetched: 3 row(s)
+hive (default)> 
+```
+
+#### 6.7.4 列转行
+##### 6.7.4.0 相关函数说明
+> `EXPLODE(col)` : 将hive一列中复杂的array或者map结构拆分成多行.
+> 
+> `LATERAL VIEW` : 
+> 
+> 用法 : `LATERAL VIEW udtf(expression) tableAlias AS columnAlias`
+> 
+> 解释 : 用于split,explode等UDTF一起使用,它能够将一列数据拆成多行数据,在此基础上可以对拆分后的数据进行聚合.
+
+##### 6.7.4.1 数据准备
+```
+《疑犯追踪》    悬疑,动作,科幻,剧情
+《Lietome》     悬疑,警匪,动作,心理,剧情
+《战狼2》       战争,动作,灾难
+```
+##### 6.7.4.2 需求
+> 将电影分类中的数组数据展开,结果如下
+##### 6.7.4.3 创建本地文件,导入数据
+> vim movie.txt
+```
+《疑犯追踪》    悬疑,动作,科幻,剧情
+《Lietome》     悬疑,警匪,动作,心理,剧情
+《战狼2》       战争,动作,灾难
+```
+##### 6.7.4.4 创建hive表并导入数据
+```
+hive (default)> create table movie_info (movie string,category array<string>)
+              > row format delimited fields terminated by '\t'  
+              > collection items terminated by ',';
+OK
+Time taken: 0.378 seconds
+hive (default)> load data local inpath '/opt/module/datas/movie.txt' into table movie_info;
+Loading data to table default.movie_info
+Table default.movie_info stats: [numFiles=1, totalSize=131]
+OK
+Time taken: 0.451 seconds
+hive (default)>
+```
+##### 6.7.4.5 按需求查询数据
+```
+hive (default)> select movie,category_name from movie_info LATERAL VIEW EXPLODE(category) mv as category_name; 
+OK
+movie   category_name
+《疑犯追踪》    悬疑
+《疑犯追踪》    动作
+《疑犯追踪》    科幻
+《疑犯追踪》    剧情
+《Lietome》     悬疑
+《Lietome》     警匪
+《Lietome》     动作
+《Lietome》     心理
+《Lietome》     剧情
+《战狼2》       战争
+《战狼2》       动作
+《战狼2》       灾难
+Time taken: 0.137 seconds, Fetched: 12 row(s)
+hive (default)> 
+```
+
+
+#### 6.7.5 窗口函数
+##### 6.7.5.0 相关函数说明
+> `OVER()` : 指定分析函数工作的数据窗口大小,这个数据窗口大小可能会随着行的变化而变化.
+> 
+> `CURRENT ROW` : 当前行.
+> 
+> `PRECEDINGn` : 往前n行数据.
+> 
+> `FOLLOWINGn` : 往后n行数据.
+> 
+> `UNBOUNDED` : `UNBOUNDED  PRECEDING` 表示从前面的起点,而`UNBOUNDED FOLLOWING`表示到后面的终点.
+> 
+> `LAG(col,n)` : 往前第n行数据.
+> 
+> `LEAD(col,n)` : 往后第n行数据.
+> 
+> `NTILE(n)` : 把有序分区中的行分发到指定数据的组中,各个组有编号,编号从1开始,对于每一行,NTILE返回此行所属的组的编号,注意:n必须为int类型.
+
+##### 6.7.5.1 数据准备
+```
+jack,2017-01-01,10
+tony,2017-01-02,15
+jack,2017-02-03,23
+tony,2017-01-04,29
+jack,2017-01-05,46
+jack,2017-04-06,42
+tony,2017-01-07,50
+jack,2017-01-08,55
+mart,2017-04-08,62
+mart,2017-04-09,68
+neil,2017-05-10,12
+mart,2017-04-11,75
+neil,2017-06-12,80
+mart,2017-04-13,94
+```
+##### 6.7.5.2 需求
+> 1.查询在2017年4月份购买过的顾客及总人数.
+> 2.查询顾客的购买明细及月购买总额.
+> 3.上述的场景,要将cost按照日期进行累加.
+> 4.查询顾客上次的购买时间.
+> 5.查询前20%时间的订单信息.
+##### 6.7.5.3 创建本地文件,导入数据
+> vim business.txt
+```
+jack,2017-01-01,10
+tony,2017-01-02,15
+jack,2017-02-03,23
+tony,2017-01-04,29
+jack,2017-01-05,46
+jack,2017-04-06,42
+tony,2017-01-07,50
+jack,2017-01-08,55
+mart,2017-04-08,62
+mart,2017-04-09,68
+neil,2017-05-10,12
+mart,2017-04-11,75
+neil,2017-06-12,80
+mart,2017-04-13,94
+```
+##### 6.7.5.4 创建hive表并导入数据
+```
+hive (default)> create table business(name string,orderdate string,cost int)
+              > row format delimited fields terminated by ',';
+OK
+Time taken: 0.096 seconds
+hive (default)> 
+hive (default)> load data local inpath '/opt/module/datas/business.txt' into table business;
+Loading data to table default.business
+Table default.business stats: [numFiles=1, totalSize=266]
+OK
+Time taken: 0.475 seconds
+hive (default)> 
+```
+##### 6.7.5.5 按需求查询数据
+###### 6.7.5.5.1 查询在2017年4月份购买过的顾客及总人数
+```
+hive (default)> select name,count(*)over() from business where substring(orderdate,1,7)='2017-04' group by name;
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 3.72 sec   HDFS Read: 7287 HDFS Write: 140 SUCCESS
+Stage-Stage-2: Map: 1  Reduce: 1   Cumulative CPU: 3.32 sec   HDFS Read: 6076 HDFS Write: 14 SUCCESS
+Total MapReduce CPU Time Spent: 7 seconds 40 msec
+OK
+name    count_window_0
+mart    2
+jack    2
+Time taken: 65.934 seconds, Fetched: 2 row(s)
+hive (default)> 
+```
+###### 6.7.5.5.2 查询顾客的购买明细及月购买总额
+```
+hive (default)> select name,orderdate,cost,sum(cost) over(partition by month(orderdate)) from business;
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 4.62 sec   HDFS Read: 9051 HDFS Write: 319 SUCCESS
+Total MapReduce CPU Time Spent: 4 seconds 620 msec
+OK
+name    orderdate       cost    sum_window_0
+jack    2017-01-01      10      205
+jack    2017-01-08      55      205
+tony    2017-01-07      50      205
+jack    2017-01-05      46      205
+tony    2017-01-04      29      205
+tony    2017-01-02      15      205
+jack    2017-02-03      23      23
+mart    2017-04-13      94      341
+jack    2017-04-06      42      341
+mart    2017-04-11      75      341
+mart    2017-04-09      68      341
+mart    2017-04-08      62      341
+neil    2017-05-10      12      12
+neil    2017-06-12      80      80
+Time taken: 31.257 seconds, Fetched: 14 row(s)
+hive (default)> 
+```
+###### 6.7.5.5.3 上述场景中,要将cost按照日期进行累加
+```
+hive (default)>  select *,sum(cost) over(sort by orderdate rows between UNBOUNDED PRECEDING and CURRENT ROW) from business;
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 3.32 sec   HDFS Read: 8890 HDFS Write: 319 SUCCESS
+Total MapReduce CPU Time Spent: 3 seconds 320 msec
+OK
+business.name   business.orderdate      business.cost   sum_window_0
+jack    2017-01-01      10      10
+tony    2017-01-02      15      25
+tony    2017-01-04      29      54
+jack    2017-01-05      46      100
+tony    2017-01-07      50      150
+jack    2017-01-08      55      205
+jack    2017-02-03      23      228
+jack    2017-04-06      42      270
+mart    2017-04-08      62      332
+mart    2017-04-09      68      400
+mart    2017-04-11      75      475
+mart    2017-04-13      94      569
+neil    2017-05-10      12      581
+neil    2017-06-12      80      661
+Time taken: 31.629 seconds, Fetched: 14 row(s)
+hive (default)> 
+```
+###### 6.7.5.5.4 查看顾客上次的购买时间
+```
+hive (default)> select name,orderdate,cost,
+              > lag(orderdate,1,'1900-01-01') over(partition by name order by orderdate) as time1,
+              > lag(orderdate,2) over(partition by name order by orderdate) as time2
+              > from business;
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 2.9 sec   HDFS Read: 9382 HDFS Write: 510 SUCCESS
+Total MapReduce CPU Time Spent: 2 seconds 900 msec
+OK
+name    orderdate       cost    time1   time2
+jack    2017-01-01      10      1900-01-01      NULL
+jack    2017-01-05      46      2017-01-01      NULL
+jack    2017-01-08      55      2017-01-05      2017-01-01
+jack    2017-02-03      23      2017-01-08      2017-01-05
+jack    2017-04-06      42      2017-02-03      2017-01-08
+mart    2017-04-08      62      1900-01-01      NULL
+mart    2017-04-09      68      2017-04-08      NULL
+mart    2017-04-11      75      2017-04-09      2017-04-08
+mart    2017-04-13      94      2017-04-11      2017-04-09
+neil    2017-05-10      12      1900-01-01      NULL
+neil    2017-06-12      80      2017-05-10      NULL
+tony    2017-01-02      15      1900-01-01      NULL
+tony    2017-01-04      29      2017-01-02      NULL
+tony    2017-01-07      50      2017-01-04      2017-01-02
+Time taken: 29.147 seconds, Fetched: 14 row(s)
+hive (default)>
+```
+###### 6.7.5.5.5 查询前20%时间的订单信息
+```
+hive (default)> select * from(
+              > select name,orderdate,cost,ntile(5) over(order by orderdate) sorted
+              > from business
+              > ) t
+              > where sorted = 1;
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 3.92 sec   HDFS Read: 8941 HDFS Write: 63 SUCCESS
+Total MapReduce CPU Time Spent: 3 seconds 920 msec
+OK
+t.name  t.orderdate     t.cost  t.sorted
+jack    2017-01-01      10      1
+tony    2017-01-02      15      1
+tony    2017-01-04      29      1
+Time taken: 32.417 seconds, Fetched: 3 row(s)
+hive (default)> 
+```
+
+#### 6.7.6 Rnak
+##### 6.7.6.1 函数说明
+> `RNAK()` 排序相同时会重复,总数不会变.
+> `DENSE_RNAK()` 排序相同时会重复,总数会减少
+> `ROW_NUMBER()` 根据顺序计算
+##### 6.7.6.2 数据准备
+```
+TestUser001     Language        87
+TestUser001     Mathematics     95
+TestUser001      English        68
+TestUser002     Language        94
+TestUser002     Mathematics     56
+TestUser002      English        84
+TestUser003     Language        64
+TestUser003     Mathematics     86
+TestUser003      English        84
+TestUser004     Language        65
+TestUser004     Mathematics     85
+TestUser004      English        78
+```
+##### 6.7.6.3 需求
+> 计算每门学科成绩排名.
+
+##### 6.7.6.4 创建本地文件,导入数据
+```
+[root@systemhub711 datas]# vim score.txt
+```
+```
+TestUser001     Language        87
+TestUser001     Mathematics     95
+TestUser001      English        68
+TestUser002     Language        94
+TestUser002     Mathematics     56
+TestUser002      English        84
+TestUser003     Language        64
+TestUser003     Mathematics     86
+TestUser003      English        84
+TestUser004     Language        65
+TestUser004     Mathematics     85
+TestUser004      English        78
+```
+
+##### 6.7.6.5 创建hive表并导入数据
+```
+hive (default)> create table score(name string,subject string,score int)
+              > row format delimited fields terminated by '\t';
+OK
+Time taken: 0.182 seconds
+hive (default)> 
+hive (default)> load data local inpath '/opt/module/datas/score.txt' into table score;
+Loading data to table default.score
+Table default.score stats: [numFiles=1, totalSize=388]
+OK
+Time taken: 0.268 seconds
+hive (default)> 
+```
+
+##### 6.7.6.6 按需求查询数据
+```
+hive (default)> select name,subject,
+              > RANK() OVER(partition by subject order by score desc),
+              > DENSE_RANK() OVER(partition by subject order by score desc),
+              > ROW_NUMBER() OVER(partition by subject order by score desc)
+              > from score;
+Query ID = root_20190331222827_cfb301fb-9df9-4531-aa71-9c4414112721
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 3.65 sec   HDFS Read: 9985 HDFS Write: 336 SUCCESS
+Total MapReduce CPU Time Spent: 3 seconds 650 msec
+OK
+name    subject rank_window_0   dense_rank_window_1     row_number_window_2
+TestUser003      English        1       1       1
+TestUser002      English        1       1       2
+TestUser004      English        3       2       3
+TestUser001      English        4       3       4
+TestUser002     Language        1       1       1
+TestUser001     Language        2       2       2
+TestUser004     Language        3       3       3
+TestUser003     Language        4       4       4
+TestUser001     Mathematics     1       1       1
+TestUser003     Mathematics     2       2       2
+TestUser004     Mathematics     3       3       3
+TestUser002     Mathematics     4       4       4
+Time taken: 32.982 seconds, Fetched: 12 row(s)
+hive (default)> 
+```
+
+## 7. 函数
+### 7.1 系统函数
+#### 7.1.1 查看系统自带函数
+```
+hive (default)> show functions;
+OK
+tab_name
+!
+!=
+%
+&
+*
++
+-
+/
+<
+<=
+<=>
+<>
+=
+==
+>
+>=
+^
+abs
+acos
+add_months
+and
+array
+array_contains
+ascii
+asin
+assert_true
+atan
+avg
+base64
+between
+bin
+case
+cbrt
+ceil
+ceiling
+coalesce
+collect_list
+collect_set
+compute_stats
+concat
+concat_ws
+context_ngrams
+conv
+corr
+cos
+count
+covar_pop
+covar_samp
+create_union
+cume_dist
+current_database
+current_date
+current_timestamp
+current_user
+date_add
+date_format
+date_sub
+datediff
+day
+dayofmonth
+decode
+degrees
+dense_rank
+div
+e
+elt
+encode
+ewah_bitmap
+ewah_bitmap_and
+ewah_bitmap_empty
+ewah_bitmap_or
+exp
+explode
+factorial
+field
+find_in_set
+first_value
+floor
+format_number
+from_unixtime
+from_utc_timestamp
+get_json_object
+greatest
+hash
+hex
+histogram_numeric
+hour
+if
+in
+in_file
+index
+initcap
+inline
+instr
+isnotnull
+isnull
+java_method
+json_tuple
+lag
+last_day
+last_value
+lcase
+lead
+least
+length
+levenshtein
+like
+ln
+locate
+log
+log10
+log2
+lower
+lpad
+ltrim
+map
+map_keys
+map_values
+matchpath
+max
+min
+minute
+month
+months_between
+named_struct
+negative
+next_day
+ngrams
+noop
+noopstreaming
+noopwithmap
+noopwithmapstreaming
+not
+ntile
+nvl
+or
+parse_url
+parse_url_tuple
+percent_rank
+percentile
+percentile_approx
+pi
+pmod
+posexplode
+positive
+pow
+power
+printf
+radians
+rand
+rank
+reflect
+reflect2
+regexp
+regexp_extract
+regexp_replace
+repeat
+reverse
+rlike
+round
+row_number
+rpad
+rtrim
+second
+sentences
+shiftleft
+shiftright
+shiftrightunsigned
+sign
+sin
+size
+sort_array
+soundex
+space
+split
+sqrt
+stack
+std
+stddev
+stddev_pop
+stddev_samp
+str_to_map
+struct
+substr
+substring
+sum
+tan
+to_date
+to_unix_timestamp
+to_utc_timestamp
+translate
+trim
+trunc
+ucase
+unbase64
+unhex
+unix_timestamp
+upper
+var_pop
+var_samp
+variance
+weekofyear
+when
+windowingtablefunction
+xpath
+xpath_boolean
+xpath_double
+xpath_float
+xpath_int
+xpath_long
+xpath_number
+xpath_short
+xpath_string
+year
+|
+~
+Time taken: 0.023 seconds, Fetched: 216 row(s)
+hive (default)> 
+```
+#### 7.1.2 显示自带函数用法
+```
+hive (default)> desc function upper;
+OK
+tab_name
+upper(str) - Returns str with all characters changed to uppercase
+Time taken: 0.015 seconds, Fetched: 1 row(s)
+hive (default)> 
+```
+#### 7.1.3 详细显示自带函数用法
+```
+hive (default)> desc function extended upper;
+OK
+tab_name
+upper(str) - Returns str with all characters changed to uppercase
+Synonyms: ucase
+Example:
+  > SELECT upper('Facebook') FROM src LIMIT 1;
+  'FACEBOOK'
+Time taken: 0.02 seconds, Fetched: 5 row(s)
+hive (default)> 
+```
+
+### 7.2 自定义函数
+> Hive自带了一些函数,比如 : `max`/`min`等,但是数量有限,自己可以通过自定义UDF来方便的扩展.
+> 
+> 当Hive提供的内置函数无法满足开发者业务处理需要时,此时就可以考虑使用`(UDF : User-Defined Function)`自定义函数.
+
+#### 7.2.1 自定义函数类别
+> 根据自定义函数类别分为以下三种
+##### 7.2.1.1 UDF (User-Defined-Function) 
+> 一进一出
+##### 7.2.1.2 UDAF (User-Defined Aggregation Function)
+> 聚集函数,多进一出,类似于:count/max/min
+##### 7.2.1.3 UDTF (User-Defined Table-Generating Functions)
+> 一进多出,如lateral view explore()
+
+#### 7.2.2 官方文档地址
+> [HivePlugins](https://cwiki.apache.org/confluence/display/Hive/HivePlugins)
+
+#### 7.2.3 编程步骤
+> 继承org.apache.hadoop.hive.ql.UDF
+> 需要实现evaluate函数,evaluate函数支持重载.
+> 在hive的命令行窗口创建函数.
+> 添加jar / `add jar linux_jar_path`
+> 创建function / `create [temporary] function [dbname.]function_name AS class_name;`
+> 在hive的命令行窗口删除函数.
+> `Drop [temporary] function [if exists] [dbname.]function_name;`
+> 注意事项 : UDF必须要有返回类型,可以返回null,但是返回类型不能为void.
+
+
 
 ## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
 
 
-#### 6.7.3 行转列
-#### 6.7.4 列转行
-#### 6.7.5 窗口函数
-#### 6.7.6 Rnak
-
-
-## 7. 函数
-### 7.1 系统函数
-### 7.2 自定义函数
-### 7.3 自定义UDF函数
+## 7.3 自定义UDF函数
 
 ## 8. 压缩 & 存储
 ### 8.1 Hadoop源码编译支持Snappy压缩
