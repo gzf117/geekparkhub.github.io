@@ -4439,7 +4439,7 @@ hive (default)>
 > 一进多出,如lateral view explore()
 
 #### 7.2.2 官方文档地址
-> [HivePlugins](https://cwiki.apache.org/confluence/display/Hive/HivePlugins)
+> [cwiki.apache.org/confluence/display/Hive/HivePlugins](https://cwiki.apache.org/confluence/display/Hive/HivePlugins)
 
 #### 7.2.3 编程步骤
 > 继承org.apache.hadoop.hive.ql.UDF
@@ -4452,25 +4452,1145 @@ hive (default)>
 > 注意事项 : UDF必须要有返回类型,可以返回null,但是返回类型不能为void.
 
 
-
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
-
-
 ## 7.3 自定义UDF函数
+### 7.3.1 JetBrains IntelliJ IDEA New Maven Project | 此过程省略
+### 7.3.2 配置 Maven pom.xml 
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.geekparkhub</groupId>
+    <artifactId>hive</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <dependencies>
+        <!--https://mvnrepository.com/artifact/org.apache.hive/hive-exec -->
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-exec</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+    </dependencies>
+
+</project>
+```
+### 7.3.3 Create HiveUdf.class
+``` java
+package com.geekparkhub.hive.hiveudf;
+
+import org.apache.hadoop.hive.ql.exec.UDF;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * HiveUdf
+ * <p>
+ */
+
+public class HiveUdf extends UDF {
+    public String evaluate(final String s) {
+        if (s == null) {
+            return null;
+        }
+        return s.toLowerCase();
+    }
+}
+```
+### 7.3.4 打包上传
+> 打成jar包上传到服务器/opt/module/jars/udf.jar
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hive/start_005.jpg)
+```
+[root@systemhub711 ~]# cd /opt/module/datas/jars/
+[root@systemhub711 jars]# ll
+total 4
+-rw-r--r--. 1 root root 2449 Apr  1 12:57 udf.jar
+[root@systemhub711 jars]# pwd
+/opt/module/datas/jars
+[root@systemhub711 jars]# 
+```
+### 7.3.4 将jar包添加到hive的classpath
+```
+hive (default)> add jar /opt/module/datas/jars/udf.jar;
+Added [/opt/module/datas/jars/udf.jar] to class path
+Added resources: [/opt/module/datas/jars/udf.jar]
+hive (default)> 
+```
+
+### 7.3.5 创建并关联临时函数
+> 创建临时函数并与HiveUdf.class相互关联.
+```
+hive (default)> create temporary function udf_lower as "com.geekparkhub.hive.hiveudf.HiveUdf";
+OK
+Time taken: 0.892 seconds
+hive (default)> 
+```
+### 7.3.6 使用自定义函数 实现大写转换小写
+> 未转换前
+```
+hive (default)> select emp.ename from emp;
+OK
+emp.ename
+SMITH
+ALLTE
+WAROS
+JOSSS
+SOCTD
+ADAMS
+JAMSK
+FOESS
+KINGS
+Time taken: 0.092 seconds, Fetched: 9 row(s)
+hive (default)>
+```
+> 自定义函数,转换后
+```
+hive (default)> select udf_lower(ename) from emp;
+OK
+_c0
+smith
+allte
+waros
+josss
+soctd
+adams
+jamsk
+foess
+kings
+Time taken: 1.305 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
 
 ## 8. 压缩 & 存储
 ### 8.1 Hadoop源码编译支持Snappy压缩
+#### 8.1.1 工具准备
+##### 8.1.1.1 CentOS联网
+> 配置CentOS能连接外网,Linux虚拟机ping www.baidu.com畅通即可.
+> 注意: 采用root角色编译,减少文件夹权限出现问题
+##### 8.1.1.2 jar包准备(hadoop源码/JDK/Maven/Protobuf)
+> `hadoop-2.7.2-src.tar.gz` | [快速下载通道](https://archive.apache.org/dist/hadoop/common/hadoop-2.7.2/)
+`jdk-8u144-linux-x64.tar.gz`  | [快速下载通道](https://www.oracle.com/technetwork/java/javase/documentation/8u-relnotes-2225394.html)
+`snappy-1.1.3.tar.gz`   | [快速下载通道](https://github.com/google/snappy/releases/download/1.1.3/snappy-1.1.3.tar.gz)
+`apache-maven-3.0.5-bin.tar.gz`  | [快速下载通道](http://archive.apache.org/dist/maven/maven-3/3.0.5/binaries/)
+`protobuf-2.5.0.tar.gz` (序列化框架)  | [快速下载通道](https://files.pythonhosted.org/packages/3f/ad/c8221a0778cc04197047f0f6ddee683ef1a0851976a4bd4ad17af19d22ec/protobuf-2.5.0.tar.gz)
+
+#### 8.1.2 jar包安装
+> 注意: 所有操作必须在root用户下完成.
+
+##### JDK
+> JDK解压、配置环境变量JAVA_HOME和PATH,验证java-version(如下都需要验证是否配置成功.
+> 
+> 验证命令 ：java -version
+```
+[root@systemhub611 ~]# java -version
+java version "1.8.0_162"
+Java(TM) SE Runtime Environment (build 1.8.0_162-b12)
+Java HotSpot(TM) 64-Bit Server VM (build 25.162-b12, mixed mode)
+[root@systemhub611 ~]# 
+```
+
+##### Maven
+> 解压tar包到指定目录
+``` powershell
+[root@systemhub611 software]# tar -zvxf apache-maven-3.0.5-bin.tar.gz -C /opt/module/
+```
+> 重命名
+``` powershell
+[root@systemhub611 module]# mv apache-maven-3.0.5 maven
+[root@systemhub611 module]# ll
+total 16
+drwxr-xr-x.  6 root   root  4096 Feb  4  2018 ant
+drwxr-xr-x. 15  10011 10011 4096 Jan 31 13:52 hadoop
+drwxr-xr-x.  6 root   root  4096 Feb  3 14:54 maven
+[root@systemhub611 module]# 
+```
+> 配置环境变量
+``` powershell
+[root@systemhub611 ~]# cd /opt/module/maven/
+[root@systemhub611 maven]# pwd
+/opt/module/maven
+[root@systemhub611 maven]# vim /etc/profile
+```
+``` powershell
+## MAVEN_HOME
+export MAVEN_HOME=/opt/module/maven
+export PATH=$PATH:$MAVEN_HOME/bin
+```
+``` powershell
+[root@systemhub611 maven]# source /etc/profile
+[root@systemhub611 maven]# mvn -version
+Apache Maven 3.0.5 (r01de14724cdef164cd33c7c8c2fe155faf9602da; 2013-02-19 21:51:28+0800)
+Maven home: /opt/module/maven
+Java version: 1.8.0_162, vendor: Oracle Corporation
+Java home: /opt/devtool/jdk1.8.0_162/jre
+Default locale: en_US, platform encoding: UTF-8
+OS name: "linux", version: "2.6.32-754.10.1.el6.x86_64", arch: "amd64", family: "unix"
+[root@corehub-001 maven]# 
+```
+
+##### Protobuf
+> 解压tar包到指定目录
+``` powershell
+[root@systemhub611 software]# tar -zvxf protobuf-2.5.0.tar.gz -C /opt/module/
+```
+> 重命名
+``` powershell
+[root@systemhub611 module]# mv protobuf-2.5.0 protobuf
+[root@systemhub611 module]# ll
+total 16
+drwxr-xr-x.  6 root   root  4096 Feb  4  2018 ant
+drwxr-xr-x. 15  10011 10011 4096 Jan 31 13:52 hadoop
+drwxr-xr-x.  6 root   root  4096 Feb  3 14:54 maven
+drwxr-x---.  4 109965  5000 4096 Feb 28  2013 protobuf
+[root@corehub-001 module]# 
+```
+> 配置环境变量
+``` powershell
+[root@systemhub611 ~]# cd /opt/module/protobuf/
+[root@systemhub611 protobuf]# pwd
+/opt/module/protobuf
+[root@systemhub611 protobuf]# vim /etc/profile
+```
+``` powershell
+## PROTOBUF_HOME
+export PROTOBUF_HOME=/opt/module/protobuf
+export PATH=$PATH:$PROTOBUF_HOME/bin
+```
+``` powershell
+[root@systemhub611 protobuf]# source /etc/profile
+```
+
+#### 8.1.3 编译源码
+##### 8.1.1 准备编译环境
+###### 8.1.1.1 yum install svn
+``` powershell
+[root@systemhub611 module]# yum install svn
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Determining fastest mirrors
+ * base: ap.stykers.moe
+ * extras: mirror.jdcloud.com
+ * updates: mirrors.neusoft.edu.cn
+base                                                                                      | 3.7 kB     00:00     
+extras                                                                                    
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+=================================================================================================================
+ Package                    Arch                   Version                            Repository            Size
+=================================================================================================================
+Installing:
+ subversion                 x86_64                 1.6.11-15.el6_7                    base                 2.3 M
+Installing for dependencies:
+ perl-URI                   noarch                 1.40-2.el6                         base                 117 k
+
+Transaction Summary
+=================================================================================================================
+Install       2 Package(s)
+
+Total download size: 2.4 M
+Installed size: 12 M
+Is this ok [y/N]: y
+Downloading Packages:
+(1/2): perl-URI-1.40-2.el6.noarch.rpm                                                     | 117 kB     00:00     
+(2/2): subversion-1.6.11-15.el6_7.x86_64.rpm                                              | 2.3 MB     00:00     
+-----------------------------------------------------------------------------------------------------------------
+Total                                                                            4.6 MB/s | 2.4 MB     00:00     
+Running rpm_check_debug
+Running Transaction Test
+Transaction Test Succeeded
+Running Transaction
+  Installing : perl-URI-1.40-2.el6.noarch                                                                    1/2 
+  Installing : subversion-1.6.11-15.el6_7.x86_64                                                             2/2 
+  Verifying  : perl-URI-1.40-2.el6.noarch                                                                    1/2 
+  Verifying  : subversion-1.6.11-15.el6_7.x86_64                                                             2/2 
+
+Installed:
+  subversion.x86_64 0:1.6.11-15.el6_7                                                                            
+
+Dependency Installed:
+  perl-URI.noarch 0:1.40-2.el6                                                                                   
+
+Complete!
+[root@systemhub611 module]#
+```
+###### 8.1.1.2 yum install autoconf automake libtool cmake
+``` powershell
+[root@systemhub611 module]# yum install autoconf automake libtool cmake
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Loading mirror speeds from cached hostfile
+ * base: ap.stykers.moe
+ * extras: mirror.jdcloud.com
+ * updates: mirrors.neusoft.edu.cn
+Setting up Install Process
+Resolving Dependencies
+--> Running transaction check
+---> Package autoconf.noarch 0:2.63-5.1.el6 will be installed
+---> Package automake.noarch 0:1.11.1-4.el6 will be installed
+---> Package cmake.x86_64 0:2.8.12.2-4.el6 will be installed
+---> Package libtool.x86_64 0:2.2.6-15.5.el6 will be installed
+--> Processing Dependency: gcc = 4.4.4 for package: libtool-2.2.6-15.5.el6.x86_64
+--> Running transaction check
+---> Package gcc.x86_64 0:4.4.7-23.el6 will be installed
+--> Processing Dependency: libgomp = 4.4.7-23.el6 for package: gcc-4.4.7-
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+=================================================================================================================
+ Package                    Arch                    Version                          Repository             Size
+=================================================================================================================
+Installing:
+ autoconf                   noarch                  2.63-5.1.el6                     base                  781 k
+ automake                   noarch                  1.11.1-4.el6                     base                  550 k
+ cmake                      x86_64                  2.8.12.2-4.el6                   base                  8.0 M
+
+Transaction Summary
+=================================================================================================================
+Install       9 Package(s)
+Upgrade       2 Package(s)
+
+Total download size: 25 M
+Is this ok [y/N]: y
+Downloading Packages:
+http://ap.stykers.moe/centos/6.10/os/x86_64/Packages/autoconf-2.63-5.1.el6.noarch.rpm: [Errno 14] PYCURL ERROR 6 - "Couldn't resolve host 'ap.stykers.moe'"
+Trying other mirror.
+http://mirrors.neusoft.edu.cn/centos/6.10/os/x86_64/Packages/autoconf-2.63-5.1.el6.noarch.rpm: [Errno 14] PYCURL ERROR 6 - "Couldn't resolve host 'mirrors.neusoft.edu.cn'"
+Trying other mirror.
+(1/11): autoconf-2.63-5.1.el6.noarch.rpm                                                  | 781 kB     00:02     
+(2/11): automake-1.11.1-4.el6.noarch.rpm                                                  | 550 kB     00:00                                                      | 1.3 MB     00:00     
+-----------------------------------------------------------------------------------------------------------------
+Total                                                                            485 kB/s |  25 MB     00:53     
+Running rpm_check_debug
+Running Transaction Test
+Transaction Test Succeeded
+Running Transaction
+  Updating   : libgcc-4.4.7-23.el6.x86_64                                                                   1/13 
+  Installing : autoconf-2.63-5.1.el6.noarch                                                                 2/13 
+  Installing : automake-1.11.1-4.el6.noarch                                                                 3/13 
+
+Installed:
+  autoconf.noarch 0:2.63-5.1.el6        automake.noarch 0:1.11.1-4.el6       cmake.x86_64 0:2.8.12.2-4.el6      
+  libtool.x86_64 0:2.2.6-15.5.el6      
+
+Dependency Installed:
+  cloog-ppl.x86_64 0:0.15.7-1.2.el6         cpp.x86_64 0:4.4.7-23.el6          gcc.x86_64 0:4.4.7-23.el6        
+  mpfr.x86_64 0:2.4.1-6.el6                 ppl.x86_64 0:0.10.2-11.el6        
+
+Dependency Updated:
+  libgcc.x86_64 0:4.4.7-23.el6                           libgomp.x86_64 0:4.4.7-23.el6                          
+
+Complete!
+[root@systemhub611 module]# 
+```
+###### 8.1.1.3 yum install ncurses-devel
+```
+[root@systemhub611 module]# yum install ncurses-devel
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Loading mirror speeds from cached hostfile
+ * base: ap.stykers.moe
+ * extras: mirror.jdcloud.com
+ * updates: mirrors.neusoft.edu.cn
+Setting up Install Process
+Resolving Dependencies
+--> Running transaction check
+---> Package ncurses-base.x86_64 0:5.7-4.20090207.el6 will be an update
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+=================================================================================================================
+ Package                      Arch                  Version                            Repository           Size
+=================================================================================================================
+Installing:
+ ncurses-devel                x86_64                5.7-4.20090207.el6                 base                641 k
+Updating for dependencies:
+ ncurses-base                 x86_64                5.7-4.20090207.el6                 base                 61 k
+ ncurses-libs                 x86_64                5.7-4.20090207.el6                 base                245 k
+
+Transaction Summary
+=================================================================================================================
+Install       1 Package(s)
+Upgrade       2 Package(s)
+
+Total download size: 947 k
+Is this ok [y/N]: y
+Downloading Packages:
+(1/3): ncurses-base-5.7-4.20090207.el6.x86_64.rpm                                         |  61 kB     00:00     
+(2/3): ncurses-devel-5.7-4.20090207.el6.x86_64.rpm                                        | 641 kB     00:00     
+(3/3): ncurses-libs-5.7-4.20090207.el6.x86_64.rpm                                         | 245 kB     00:00     
+-----------------------------------------------------------------------------------------------------------------
+Total                                                                            2.3 MB/s | 947 kB     00:00     
+Running rpm_check_debug
+Running Transaction Test
+Transaction Test Succeeded
+Running Transaction
+  Updating   : ncurses-base-5.7-4.20090207.el6.x86_64                                                        1/5 
+Installed:
+  ncurses-devel.x86_64 0:5.7-4.20090207.el6                                                                      
+
+Dependency Updated:
+  ncurses-base.x86_64 0:5.7-4.20090207.el6                ncurses-libs.x86_64 0:5.7-4.20090207.el6               
+
+Complete!
+[root@systemhub611 module]#
+```
+###### 8.1.1.4 yum install openssl-devel
+```
+[root@systemhub611 module]# yum install openssl-devel
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Loading mirror speeds from cached hostfile
+ * base: ap.stykers.moe
+ * extras: mirror.jdcloud.com
+ * updates: mirrors.neusoft.edu.cn
+Setting up Install Process
+Resolving Dependencies
+--> Running transaction check
+---> Package openssl.x86_64 0:1.0.1e-15.el6 will be updated
+---> Package openssl.x86_64 0:1.0.1e-57.el6 will be an update
+---> Package zlib-devel.x86_64 0:1.2.3-29.el6 will be installed
+--> Running transaction check
+---> Package keyutils-libs-devel.x86_64 0:1.4-5.el6 will be installed
+--> Processing Dependency: keyutils-libs = 1.4-5.el6 for package: keyutils-libs-devel-1.4-5.el6.x86_64
+---> Package krb5-libs.x86_64 0:1.10.3-10.el6_4.6 will be updated
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+=================================================================================================================
+ Package                           Arch                 Version                         Repository          Size
+=================================================================================================================
+Installing:
+ openssl-devel                     x86_64               1.0.1e-57.el6                   base               1.2 M
+Installing for dependencies:
+ keyutils-libs-devel               x86_64               1.4-5.el6                       base                29 k
+ krb5-devel                        x86_64               1.10.3-65.el6                  
+
+Transaction Summary
+=================================================================================================================
+Install       8 Package(s)
+Upgrade      12 Package(s)
+
+Total download size: 6.3 M
+Is this ok [y/N]: y
+Downloading Packages:
+(1/20): e2fsprogs-1.41.12-24.el6.x86_64.rpm                                               | 554 kB     00:00     
+(2/20): e2fsprogs-libs-1.41.12-24.el6.x86_64.rpm                                          | 121 kB     00:00     
+(3/20): keyutils-1.4-5.el6.x86_64.rpm                                                                                                         9/32 
+  Verifying  : keyutils-1.4-5.el6.x86_64                                                                   10/32 
+  Verifying  : e2fsprogs-libs-1.41.12-24.el6.x86_64                                                        11/32 
+  Verifying  : libselinux-python-2.0.94-7.el6.x86_64                                                       12/32 
+Installed:
+  openssl-devel.x86_64 0:1.0.1e-57.el6                                                                           
+
+Dependency Installed:
+  keyutils-libs-devel.x86_64 0:1.4-5.el6                    krb5-devel.x86_64 0:1.10.3-65.el6                    
+  libcom_err-devel.x86_64 0:1.41.12-24.el6                                 
+Complete!
+[root@systemhub611 module]# 
+```
+###### 8.1.1.5 yum install gcc*
+```
+[root@systemhub611 module]# yum install gcc*
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Loading mirror speeds from cached hostfile
+---> Package java_cup.x86_64 1:0.10k-5.el6 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+=================================================================================================================
+ Package                        Arch                  Version                          Repository           Size
+=================================================================================================================
+Installing:
+ gcc-c++                        x86_64                4.4.7-23.el6                     base                4.7 M
+ gcc-gfortran                   x86_64                4.4.7-23.el6                     base                4.7 M
+ gcc-gnat                       x86_64                4.4.7-23.el6                                      
+Transaction Summary
+=================================================================================================================
+Install      17 Package(s)
+Upgrade       1 Package(s)
+
+Total download size: 61 M
+Is this ok [y/N]: y
+Downloading Packages:
+(1/18): ecj-4.5.2-3.el6.x86_64.rpm                                                        | 3.9 MB     00:00     
+(2/18): gcc-c++-4.4.7-23.el6.x86_64.rpm                                                                                    | 139 kB     00:00     
+(9/18): java_cup-0.10k-5.el6.x86_64.rpm                                                   
+-----------------------------------------------------------------------------------------------------------------
+Total                                                                            6.3 MB/s |  61 MB     00:09     
+Running rpm_check_debug
+Running Transaction Test
+Transaction Test Succeeded
+Running Transaction
+  Installing : libgcj-4.4.7-23.el6.x86_64                                                                   1/19 
+  Installing : libgnat-4.4.7-23.el6.x86_64                                                                  2/19 
+  Updating   : libstdc++-4.4.7-23.el6.x86_64                                                                3/19 
+  Installing : libstdc++-devel-4.4.7-23.el6.x86_64                                                          4/19 
+  Installing : gcc-c++-4.4.7-23.el6.x86_64                                                                  5/19 
+  Installing : libgnat-devel-4.4.7-23.el6.x86_64                                                            6/19                                                     14/19 
+  Installing : gcc-objc++-4.4.7-23.el6.x86_64                                                              15/19 
+  Installing : gcc-gfortran-4.4.7-23.el6.x86_64                                                            16/19 
+  Installing : gcc-java-4.4.7-23.el6.x86_64                                                                17/19 
+  Installing : gcc-gnat-4.4.7-23.el6.x86_64                                                                18/19 
+  Cleanup    : libstdc++-4.4.7-4.el6.x86_64                                                                19/19 
+  Verifying  : libobjc-4.4.7-23.el6.x86_64                                                                  1/19 
+  Verifying  : gcc-java-4.4.7-23.el6.x86_64                                                                 2/19 
+  Verifying  : libgfortran-4.4.7-23.el6.x86_64                                                              3/19                                                      18/19 
+  Verifying  : libstdc++-4.4.7-4.el6.x86_64                                                                19/19 
+
+Installed:
+  gcc-c++.x86_64 0:4.4.7-23.el6      gcc-gfortran.x86_64 0:4.4.7-23.el6     gcc-gnat.x86_64 0:4.4.7-23.el6      
+  gcc-java.x86_64 0:4.4.7-23.el6     gcc-objc.x86_64 0:4.4.7-23.el6         gcc-objc++.x86_64 0:4.4.7-23.el6    
+
+Dependency Installed:
+  ecj.x86_64 1:4.5.2-3.el6                             java-1.5.0-gcj.x86_64 0:1.5.0.0-29.1.el6                  
+  java_cup.x86_64 1:0.10k-5.el6                        libgcj.x86_64 0:4.4.7-23.el6                                                  
+Dependency Updated:
+  libstdc++.x86_64 0:4.4.7-23.el6                                                                                
+Complete!
+[root@systemhub611 module]#
+```
+
+##### 8.1.12 编译安装 snappy
+```
+[root@systemhub611 software]# tar -zvxf snappy-1.1.3.tar.gz -C /opt/module/
+snappy-1.1.3/
+snappy-1.1.3/snappy-sinksource.cc
+snappy-1.1.3/configure
+snappy-1.1.3/config.guess
+```
+```
+[root@systemhub611 snappy]# ./configure
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+checking for a thread-safe mkdir -p... /bin/mkdir -p
+checking for gawk... gawk
+checking whether make sets $(MAKE)... yes
+checking whether make supports nested variables... yes
+checking build system type... x86_64-unknown-linux-gnu
+checking host system type... x86_64-unknown-linux-gnu
+checking how to print strings... printf
+checking for style of include used by make... GNU
+checking for gcc... gcc
+checking whether the C compiler works... yes
+checking for C compiler default output file name... a.out
+checking for suffix of executables... 
+checking whether we are cross compiling... no
+checking for suffix of object files... o
+```
+```
+[root@systemhub611 snappy]# make
+make  all-am
+make[1]: Entering directory `/opt/module/snappy'
+/bin/sh ./libtool  --tag=CXX   --mode=compile g++ -DHAVE_CONFIG_H -I.     -g -O2 -MT snappy.lo -MD -MP -MF .deps/snappy.Tpo -c -o snappy.lo snappy.cc
+libtool: compile:  g++ -DHAVE_CONFIG_H -I. -g -O2 -MT snappy.lo -MD -MP -MF .deps/snappy.Tpo -c snappy.cc  -fPIC -DPIC -o .libs/snappy.o
+libtool: compile:  g++ -DHAVE_CONFIG_H -I. -g -O2 -MT snappy.lo -MD -MP -MF .deps/snappy.Tpo -c snappy.cc -o snappy.o >/dev/null 2>&1
+```
+```
+[root@systemhub611 snappy]# make install
+make[1]: Entering directory `/opt/module/snappy'
+ /bin/mkdir -p '/usr/local/lib'
+ /bin/sh ./libtool   --mode=install /usr/bin/install -c   libsnappy.la '/usr/local/lib'
+libtool: install: /usr/bin/install -c .libs/libsnappy.so.1.3.0 /usr/local/lib/libsnappy.so.1.3.0
+libtool: install: (cd /usr/local/lib && { ln -s -f libsnappy.so.1.3.0 libsnappy.so.1 || { rm -f libsnappy.so.1 && ln -s libsnappy.so.1.3.0 libsnappy.so.1; }; })
+```
+> 查看snappy库文件
+```
+[root@systemhub611 snappy]# ls -lh /usr/local/lib |grep snappy
+-rw-r--r--. 1 root root 462K Apr  1 16:45 libsnappy.a
+-rwxr-xr-x. 1 root root  955 Apr  1 16:45 libsnappy.la
+lrwxrwxrwx. 1 root root   18 Apr  1 16:45 libsnappy.so -> libsnappy.so.1.3.0
+lrwxrwxrwx. 1 root root   18 Apr  1 16:45 libsnappy.so.1 -> libsnappy.so.1.3.0
+-rwxr-xr-x. 1 root root 223K Apr  1 16:45 libsnappy.so.1.3.0
+[root@systemhub611 snappy]# 
+```
+
+##### 8.1.13 编译安装 protobuf
+```
+[root@systemhub611 software]# tar -zvxf protobuf-2.5.0.tar.gz -C /opt/module/
+protobuf-2.5.0/
+protobuf-2.5.0/protobuf.egg-info/
+protobuf-2.5.0/protobuf.egg-info/namespace_packages.txt
+protobuf-2.5.0/protobuf.egg-info/top_level.txt
+```
+```
+[root@systemhub611 protobuf]# ./configure
+checking whether to enable maintainer-specific portions of Makefiles... yes
+checking build system type... x86_64-unknown-linux-gnu
+checking host system type... x86_64-unknown-linux-gnu
+checking target system type... x86_64-unknown-linux-gnu
+checking for a BSD-compatible install... /usr/bin/install -c
+checking whether build environment is sane... yes
+```
+```
+[root@systemhub611 protobuf]# make
+make  all-recursive
+make[1]: Entering directory `/opt/module/protobuf'
+Making all in .
+make[2]: Entering directory `/opt/module/protobuf'
+make[2]: Leaving directory `/opt/module/protobuf'
+Making all in src
+make[2]: Entering directory `/opt/module/protobuf/src'
+```
+```
+[root@systemhub611 protobuf]# make install
+Making install in .
+make[1]: Entering directory `/opt/module/protobuf'
+make[2]: Entering directory `/opt/module/protobuf'
+make[2]: Nothing to be done for `install-exec-am'.
+```
+> 查看protobuf版本以测试是否安装成功.
+```
+[root@systemhub611 protobuf]# protoc --version
+libprotoc 2.5.0
+[root@systemhub611 protobuf]# 
+```
+##### 8.1.14 编译hadoop native
+```
+[root@systemhub611 software]# tar -zxvf hadoop-2.7.2-src.tar.gz
+hadoop-2.7.2/
+hadoop-2.7.2/libexec/
+hadoop-2.7.2/libexec/yarn-config.sh
+hadoop-2.7.2/libexec/hadoop-config.sh
+hadoop-2.7.2/libexec/mapred-config.cmd
+```
+```
+[root@systemhub611 native]# cp ./* /opt/module/hadoop/lib/native/
+[root@systemhub611 native]# hadoop checknative
+19/04/01 20:50:03 WARN bzip2.Bzip2Factory: Failed to load/initialize native-bzip2 library system-native, will use pure-Java version
+19/04/01 20:50:03 INFO zlib.ZlibFactory: Successfully loaded & initialized native-zlib library
+Native library checking:
+hadoop:  true /opt/module/hadoop/lib/native/libhadoop.so
+zlib:    true /lib64/libz.so.1
+snappy:  true /opt/module/hadoop/lib/native/libsnappy.so.1
+lz4:     true revision:99
+bzip2:   false 
+openssl: true /usr/lib64/libcrypto.so
+[root@systemhub611 native]# 
+```
+
 ### 8.2 Hadoop压缩配置
+#### 8.28.2.1 MR支持压缩编码
+| 压缩格式 | 工具 | 算法 | 文件扩展名 | 是否可切分 |
+| :--------: | :--------:| :------: | :------: | :------: |
+| DEFAULT  | 无 | DEFAULT | .default | 否 |
+| Gzip  | gzip | DEFAULT | .gz | 否 |
+| bzip2  | bzip2 | bzip2 | .bz2 | 是 |
+| LZO  | lzop | LZO | .lzo | 是 |
+| Snappy  | 无 | Snappy | .snappy | 否 |
+
+> 为了支持多种压缩/解压缩算法,Hadoop引入了编码/解码器
+| 压缩格式 | 对应的编码/解码器 |
+| :-------- | --------:|
+| DEFLATE | org.apache.hadoop.io.compress.DefaultCodec |
+| gzip    | org.apache.hadoop.io.compress.BZip2Codec |
+| bzip2    |org.apache.hadoop.io.compress.BZip2Codec|
+| LZO    | com.hadoop.compression.lzo.LzopCodec |
+| Snappy    | org.apache.hadoop.io.compress.SnappyCodec |
+
+> 压缩性能比较
+| 压缩算法 | 原始文件大小| 压缩文件大小| 压缩速度 | 解压速度 |
+| :-------- | --------:| ------: | :------: | :------: |
+| gzip   |   8.3GB |  1.8GB  | 17.5MB/s | 58MB/s   |
+| bzip2  |   8.3GB |  1.1GB  | 2.4MB/s  | 9.5MB/s  |
+| LZO    |   8.3GB |  2.9GB  | 49.3MB/s | 74.6MB/s |
+| snappy |   8.3GB |  1.5GB  | 250MB/s | 500MB/s |
+
+
+#### 8.2.2 压缩参数配置
+> 要在Hadoop中启用压缩,可以配置如下参数：
+| 参数      |     默认值 |   阶段   |   建议   |
+| :--------: | :--------:| :------: | :------: |
+| io.compression.codecs (在core-site.xml中配置) | org.apache.hadoop.io.compress.DefaultCodec, org.apache.hadoop.io.compress.GzipCodec,org.apache.hadoop.io.compress.BZip2Codec  | 输入压缩 | Hadoop使用文件扩展名判断是否支持某种编解码器 |
+| mapreduce.map.output.compress (在mapred-site.xml中配置) | false  | mapper输出 |  这个参数设为true启用压缩 |
+| mapreduce.map.output.compress.codec (在core-site.xml中配置) | field2 | field3 |  field3 |
+| io.compression.codecs (在mapred-site.xml中配置) | org.apache.hadoop.io.compress.DefaultCodec | mapper输出 | 使用LZO或snappy编解码器在此阶段压缩数据 |
+| mapreduce.output.fileoutputformat.compress (在mapred-site.xml中配置) | false | reducer输出 |  这个参数设为true启用压缩 |
+| mapreduce.output.fileoutputformat.compress.codec(在mapred-site.xml中配置) | org.apache.hadoop.io.compress. DefaultCodec | reducer输出 |  使用标准工具或者编解码器,如gzip和bzip2 |
+| mapreduce.output.fileoutputformat.compress.type (在mapred-site.xml中配置) | RECORD | reducer输出 |  SequenceFile输出使用的压缩类型:NONE和BLOCK  |
+
 ### 8.3 开启Map输出阶段压缩
+> 开启map输出阶段压缩可以减少job中map和Reduce task间数据传输量.
+> 
+> 开启hive中间传输数据压缩功能.
+```
+hive (default)> set hive.exec.compress.intermediate=true;
+
+hive (default)> set hive.exec.compress.intermediate;
+hive.exec.compress.intermediate=true
+hive (default)> 
+```
+> 开启mapreduce中map输出压缩功能
+```
+hive (default)> set mapreduce.map.output.compress=true;
+
+hive (default)> set mapreduce.map.output.compress;
+mapreduce.map.output.compress=true
+hive (default)> 
+```
+> 设置mapreduce中map输出数据的压缩方式.
+```
+hive (default)> set mapreduce.map.output.compress.codec=org.apache.hadoop.io.compress.SnappyCodec;
+
+hive (default)> set mapreduce.map.output.compress.codec;
+mapreduce.map.output.compress.codec=org.apache.hadoop.io.compress.SnappyCodec
+hive (default)> 
+```
+> 执行查询语句
+```
+hive (default)> select count(ename) name from emp;
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 3.21 sec   HDFS Read: 7685 HDFS Write: 2 SUCCESS
+Total MapReduce CPU Time Spent: 3 seconds 210 msec
+OK
+ename
+9
+Time taken: 39.62 seconds, Fetched: 1 row(s)
+hive (default)> 
+```
+
 ### 8.4 开启Reduce输出阶段压缩
+> 当Hive将输出写入到表中时,输出内容同样可以进行压缩,属性`hive.exec.compress.output`控制着这个功能,开发者可能需要保持默认设置文件中的默认值false,这样默认的输出就是非压缩的纯文本文件了,也可以通过在查询语句或执行脚本中设置这个值为true,来开启输出结果压缩功能.
+> 
+> 开启hive最终输出数据压缩功能
+```
+hive (default)> set hive.exec.compress.output=true;
+hive (default)> set hive.exec.compress.output;
+hive.exec.compress.output=true
+hive (default)> 
+```
+> 开启mapreduce最终输出数据压缩
+```
+hive (default)> set mapreduce.output.fileoutputformat.compress=true;
+hive (default)> set mapreduce.output.fileoutputformat.compress;
+mapreduce.output.fileoutputformat.compress=true
+hive (default)> 
+```
+> 设置mapreduce最终数据输出压缩方式
+```
+hive (default)> set mapreduce.output.fileoutputformat.compress.codec=org.apache.hadoop.io.compress.SnappyCodec;
+hive (default)> set mapreduce.output.fileoutputformat.compress.codec;
+mapreduce.output.fileoutputformat.compress.codec=org.apache.hadoop.io.compress.SnappyCodec
+hive (default)> 
+```
+> 设置mapreduce最终数据输出压缩为块压缩
+```
+hive (default)> set mapreduce.output.fileoutputformat.compress.type=BLOCK;
+hive (default)> set mapreduce.output.fileoutputformat.compress.type;
+mapreduce.output.fileoutputformat.compress.type=BLOCK
+```
+> 测试输出结果是否是压缩文件
+```
+hive (default)> insert overwrite local directory '/opt/module/datas/distribute-result' select * from emp distribute by deptno sort by empno desc;
+[root@systemhub711 datas]# cat distribute-result/
+cat: distribute-result/: Is a directory
+[root@systemhub711 datas]# cd distribute-result/
+[root@systemhub711 distribute-result]# ll
+total 4
+-rw-r--r--. 1 root root 424 Apr  1 22:07 000000_0.snappy
+[root@systemhub711 distribute-result]# cat 000000_0.snappy 
+����<7939KINGSCLADDJHEW75661993-07-123000.020.0\N
+7788FOES4(EDFDFD76984$4-09-1795.3       3T2JAMSKKIHNGSEHN77693$1-06-23116gR�ADAMSJUSHHWESD45521985-05-1625524.0�.�@654SOCTDMANSJUS855j86-02-142852.3��`JOSSSJDHYHDSDS45451874j(52894.252iT521WAROSSJDHHJDJX78�D84-06-121250.185�H30
+7499ALLTESALES�
+/k5X369SMITHCLERKSKLD790%7�2316
+T0-12-17800.020.0\N
+[root@systemhub711 distribute-result]# 
+```
+
 ### 8.5 文件存储格式
+> Hive支持的存储数的格式主要有 : `TEXTFILE` / `SEQUENCEFILE` / `ORC` / `PARQUET`.
+> 
+> `TEXTFILE`和`SEQUENCEFILE`存储格式是基于行式存储.
+> 
+> `ORC`和`PARQUET`是基于列式存储.
+
+#### 8.5.1 列式存储 & 行式存储
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hive/start_006.jpg)
+> 图片中左边为逻辑表,右边第一个为行式存储,第二个为列式存储.
+> 
+> 行存储的特点 : 查询满足条件的一整行数据的时候,列存储则需要去每个聚集的字段找到对应的每个列的值,行存储只需要找到其中一个值,其余的值都在相邻地方,所以此时行存储查询的速度更快.
+> 
+> 列存储的特点 : 因为每个字段的数据聚集存储,在查询只需要少数几个字段的时候,能大大减少读取的数据量,每个字段的数据类型一定是相同的,列式存储可以针对性的设计更好的设计压缩算法.
+
+#### 8.5.2 TextFile格式
+> 默认格式,数据不做压缩,磁盘开销大,数据解析开销大,可结合Gzip、Bzip2使用,但使用Gzip这种方式,hive不会对数据进行切分,从而无法对数据进行并行操作.
+
+#### 8.5.3 Orc格式
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hive/start_007.jpg)
+
+> Orc(Optimized Row Columnar )Hive 0.11版里引入的新的存储格式.
+> 
+> 可以看到每个Orc文件由1个或多个stripe组成,每个stripe250MB大小,这个Stripe实际相当于RowGroup概念,不过大小由4MB->250MB,这样应该能提升顺序读的吞吐率,每个Stripe里有三部分组成,分别是Index Data,Row Data,Stripe Footer:
+> 
+> Index Data : 一个轻量级的index,默认是每隔1W行做一个索引,这里做的索引应该只是记录某行的各字段在Row Data中的offset.
+> Row Data : 存的是具体的数据,先取部分行,然后对这些行按列进行存储,对每个列进行了编码,分成多个Stream来存储.
+> 
+> Stripe Footer : 存的是各个Stream的类型,长度等信息.
+> 
+> 每个文件有一个File Footer,这里面存的是每个Stripe的行数,每个Column的数据类型信息等,每个文件的尾部是一个PostScript,这里面记录了整个文件的压缩类型以及FileFooter的长度信息等,在读取文件时,会seek到文件尾部读PostScript,从里面解析到File Footer长度,再读FileFooter,从里面解析到各个Stripe信息,再读各个Stripe,即从后往前读.
+
+#### 8.5.4 Parquet格式
+> Parquet文件的格式如下图所示
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hive/start_008.jpg)
+> Parquet是面向分析型业务的列式存储格式,由Twitter和Cloudera合作开发,2015年5月从Apache的孵化器里毕业成为Apache顶级项目.
+> 
+> Parquet文件是以二进制方式存储的,所以是不可以直接读取的,文件中包括该文件的数据和元数据,因此Parquet格式文件是自解析.
+> 
+> 通常情况下,在存储Parquet数据的时候会按照Block大小设置行组的大小,由于一般情况下每一个Mapper任务处理数据的最小单位是一个Block,这样可以把每一个行组由一个Mapper任务处理,增大任务执行并行度.
+> 
+> 上图展示了一个Parquet文件的内容,一个文件中可以存储多个行组,文件的首位都是该文件的Magic  Code,用于校验它是否是一个Parquet文件,Footer  length记录了文件元数据的大小,通过该值和文件长度可以计算出元数据的偏移量,文件的元数据中包括每一个行组的元数据信息和该文件存储数据的Schema信息,除了文件中每一个行组的元数据,每一页的开始都会存储该页的元数据,在Parquet中,有三种类型的页：数据页、字典页和索引页,数据页用于存储当前行组中该列的值,字典页存储该列值的编码字典,每一个列块中最多包含一个字典页,索引页用来存储当前行组下该列的索引,目前Parquet中还不支持索引页.
+
 ### 8.6 存储和压缩结合
+#### 8.6.1 修改Hadoop集群具有Snappy压缩方式
+> 1.查看hadoop checknative命令使用.
+```
+[root@systemhub511 native]# hadoop
+Usage: hadoop [--config confdir] [COMMAND | CLASSNAME]
+  checknative [-a|-h]  check native hadoop and compression libraries 
+Most commands print help when invoked w/o parameters.
+[root@systemhub511 native]# 
+
+```
+> 2.查看hadoop支持的压缩方式.
+```
+[root@systemhub511 native]# hadoop checknative
+19/04/01 23:14:06 WARN util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+Native library checking:
+hadoop:  false 
+zlib:    false 
+snappy:  false 
+lz4:     false 
+bzip2:   false 
+openssl: false 
+19/04/01 23:14:07 INFO util.ExitUtil: Exiting with status 1
+[root@systemhub511 native]# 
+```
+> 3.将编译好支持Snappy压缩hadoop-2.7.2.tar.gz包导入到/opt/software中.
+> 4.将hadoop-2.7.2.tar.gz解压到当前路径.
+```
+[root@systemhub611 software]# tar -zxvf hadoop-2.7.2.-src.tar.gz
+hadoop-2.7.2/
+hadoop-2.7.2/libexec/
+hadoop-2.7.2/libexec/yarn-config.sh
+hadoop-2.7.2/libexec/hadoop-config.sh
+hadoop-2.7.2/libexec/mapred-config.cmd
+```
+> 5.进入到/opt/software/hadoop-2.7.2/lib/native路径可以看到支持Snappy压缩动态链接库.
+```
+[root@systemhub611 opt]# cd software/
+[root@systemhub611 software]# cd hadoop-2.7.2/
+[root@systemhub611 hadoop-2.7.2]# cd lib/native/
+[root@systemhub611 native]# pwd
+/opt/software/hadoop-2.7.2/lib/native
+[root@systemhub611 native]# ll
+total 5188
+-rw-r--r--. 1 root root 1210260 Sep  1  2017 libhadoop.a
+-rw-r--r--. 1 root root 1487268 Sep  1  2017 libhadooppipes.a
+lrwxrwxrwx. 1 root root      18 Apr  1 19:30 libhadoop.so -> libhadoop.so.1.0.0
+-rwxr-xr-x. 1 root root  716316 Sep  1  2017 libhadoop.so.1.0.0
+-rw-r--r--. 1 root root  582048 Sep  1  2017 libhadooputils.a
+-rw-r--r--. 1 root root  364860 Sep  1  2017 libhdfs.a
+lrwxrwxrwx. 1 root root      16 Apr  1 19:30 libhdfs.so -> libhdfs.so.0.0.0
+-rwxr-xr-x. 1 root root  229113 Sep  1  2017 libhdfs.so.0.0.0
+-rw-r--r--. 1 root root  472950 Sep  1  2017 libsnappy.a
+-rwxr-xr-x. 1 root root     955 Sep  1  2017 libsnappy.la
+lrwxrwxrwx. 1 root root      18 Apr  1 19:30 libsnappy.so -> libsnappy.so.1.3.0
+lrwxrwxrwx. 1 root root      18 Apr  1 19:30 libsnappy.so.1 -> libsnappy.so.1.3.0
+-rwxr-xr-x. 1 root root  228177 Sep  1  2017 libsnappy.so.1.3.0
+[root@systemhub611 native]#
+```
+> 6.将/opt/software/hadoop-2.7.2/lib/native目录下所有内容拷贝到开发集群 的/opt/module/hadoop-2.7.2/lib/native路径中.
+```
+[root@systemhub611 native]# cp ./* /opt/module/hadoop/lib/native/
+```
+> 7.分发集群
+```
+[root@systemhub611 lib]# rsync -rvl /opt/module/hadoop/lib/native/ root@systemhub511:/opt/module/hadoop/lib/native/
+sending incremental file list
+libhadoop.a
+libhadoop.so
+libhadoop.so.1.0.0
+libhadooppipes.a
+libhadooputils.a
+libhdfs.a
+libhdfs.so
+libhdfs.so.0.0.0
+libsnappy.a
+libsnappy.la
+libsnappy.so
+libsnappy.so.1
+libsnappy.so.1.3.0
+
+sent 6617750 bytes  received 30829 bytes  4432386.00 bytes/sec
+total size is 6693730  speedup is 1.01
+[root@systemhub611 lib]# 
+[root@systemhub611 lib]# rsync -rvl /opt/module/hadoop/lib/native/ root@systemhub711:/opt/module/hadoop/lib/native/
+sending incremental file list
+libhadoop.a
+libhadoop.so
+libhadoop.so.1.0.0
+libhadooppipes.a
+libhadooputils.a
+libhdfs.a
+libhdfs.so
+libhdfs.so.0.0.0
+libsnappy.a
+libsnappy.la
+libsnappy.so
+libsnappy.so.1
+libsnappy.so.1.3.0
+
+sent 6613502 bytes  received 38665 bytes  4434778.00 bytes/sec
+total size is 6693730  speedup is 1.01
+[root@systemhub611 lib]# 
+```
+> 8.再次查看hadoop集群支持压缩类型.
+> systemhub511
+```
+[root@systemhub511 hadoop]# hadoop checknative
+19/04/01 23:24:45 WARN bzip2.Bzip2Factory: Failed to load/initialize native-bzip2 library system-native, will use pure-Java version
+19/04/01 23:24:45 INFO zlib.ZlibFactory: Successfully loaded & initialized native-zlib library
+Native library checking:
+hadoop:  true /opt/module/hadoop/lib/native/libhadoop.so
+zlib:    true /lib64/libz.so.1
+snappy:  true /opt/module/hadoop/lib/native/libsnappy.so.1
+lz4:     true revision:99
+bzip2:   false 
+openssl: false Cannot load libcrypto.so (libcrypto.so: cannot open shared object file: No such file or directory)!
+[root@systemhub511 hadoop]# 
+```
+> systemhub611
+```
+[root@systemhub611 lib]# hadoop checknative
+19/04/01 23:25:02 WARN bzip2.Bzip2Factory: Failed to load/initialize native-bzip2 library system-native, will use pure-Java version
+19/04/01 23:25:02 INFO zlib.ZlibFactory: Successfully loaded & initialized native-zlib library
+Native library checking:
+hadoop:  true /opt/module/hadoop/lib/native/libhadoop.so
+zlib:    true /lib64/libz.so.1
+snappy:  true /opt/module/hadoop/lib/native/libsnappy.so.1
+lz4:     true revision:99
+bzip2:   false 
+openssl: true /usr/lib64/libcrypto.so
+[root@systemhub611 lib]# 
+```
+> systemhub711
+```
+[root@systemhub711 hive]# hadoop checknative
+19/04/01 23:25:28 WARN bzip2.Bzip2Factory: Failed to load/initialize native-bzip2 library system-native, will use pure-Java version
+19/04/01 23:25:28 INFO zlib.ZlibFactory: Successfully loaded & initialized native-zlib library
+Native library checking:
+hadoop:  true /opt/module/hadoop/lib/native/libhadoop.so
+zlib:    true /lib64/libz.so.1
+snappy:  true /opt/module/hadoop/lib/native/libsnappy.so.1
+lz4:     true revision:99
+bzip2:   false 
+openssl: false Cannot load libcrypto.so (libcrypto.so: cannot open shared object file: No such file or directory)!
+[root@systemhub711 hive]# 
+```
+> 9.重新启动hadoop集群和hive.
+
+#### 8.6.2 测试存储 & 压缩
+> [LanguageManual+ORC 文档](https://cwiki.apache.org/confluence/display/Hive/LanguageManual+ORC)
+
+> ORC存储方式压缩
+
+| Key      |     Default |   Notes   |
+| :--------: | :--------:| :------: |
+| orc.compress    |   ZLIB |  high level compression (one of NONE,ZLIB, SNAPPY)  |
+| orc.compress.size    |   262,144 |  number of bytes in each compression chunk  |
+| orc.stripe.size    |   67,108,864 |  number of bytes in each stripe  |
+| orc.row.index.stride    |   10,000 |  number of rows between index entries(must be >= 1000)  |
+| orc.create.index    |   true |  whether to create row indexes  |
+| orc.bloom.filter.columns    |   "" |  comma separated list of column names for which bloom filter should be created  |
+| orc.bloom.filter.fpp    |   0.05 |  false  positive  probability  for  bloom  filter(must >0.0 and <1.0)  |
+
 
 ## 9. 企业级调优
 ### 9.1 Fetch抓取
+> Fetch抓取是指:Hive中对某些情况的查询可以不必使用MapReduce计算.
+> 
+> 例如 : `SELECT * FROM employees;`在这种情况下,Hive可以简单地读取employee对应的存储目录下的文件,然后输出查询结果到控制台.
+> 
+> 在hive-default.xml.template文件中`hive.fetch.task.conversion`默认是more,老版本hive默认是minimal,该属性修改为more以后,在全局查找、字段查找、limit查找等都不会执行MapReduce.
+```xml
+<property>
+    <name>hive.fetch.task.conversion</name>
+    <value>more</value>
+    <description>
+      Expects one of [none, minimal, more].
+      Some select queries can be converted to single FETCH task minimizing latency.
+      Currently the query should be single sourced not having any subquery and should not have
+      any aggregations or distincts (which incurs RS), lateral views and joins.
+      0. none : disable hive.fetch.task.conversion
+      1. minimal : SELECT STAR, FILTER on partition columns, LIMIT only
+      2. more    : SELECT, FILTER, LIMIT only (support TABLESAMPLE and virtual columns)
+    </description>
+  </property>
+```
+> 1.将hive.fetch.task.conversion属性设置成none,然后执行查询语句,都会执行MapReduce程序.
+> 
+> 当前默认属性是more.
+```
+hive (default)> set hive.fetch.task.conversion;
+hive.fetch.task.conversion=more
+hive (default)> 
+```
+> 设置属性为none.
+```
+hive (default)> set hive.fetch.task.conversion=none;
+hive (default)> set hive.fetch.task.conversion;
+hive.fetch.task.conversion=none
+hive (default)> 
+```
+> 查询数据表,结果每次查询都会执行MapReduce程序.
+```
+hive (default)> select * from emp;
+Query ID = root_20190401234234_12968ad3-7c1c-4e6b-a06c-7e06deabe984
+Total jobs = 1
+Launching Job 1 out of 1
+Number of reduce tasks is set to 0 since there's no reduce operator
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1   Cumulative CPU: 1.55 sec   HDFS Read: 4192 HDFS Write: 472 SUCCESS
+Total MapReduce CPU Time Spent: 1 seconds 550 msec
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.0   20.0    NULL
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+7782    JAMSK   KIHNGSEHN       7769    1991-06-23      1100.0  20.0    NULL
+7788    FOESS   CLAEDFDFD       7698    1994-09-17      950.0   30.0    NULL
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+Time taken: 35.844 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+> 2.将hive.fetch.task.conversion属性设置成more,然后执行查询语句,如下查询方式都不会执行MapReduce程序.
+```
+hive (default)> set hive.fetch.task.conversion=more;
+hive (default)> select * from emp;
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.0   20.0    NULL
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+7782    JAMSK   KIHNGSEHN       7769    1991-06-23      1100.0  20.0    NULL
+7788    FOESS   CLAEDFDFD       7698    1994-09-17      950.0   30.0    NULL
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+Time taken: 0.134 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+
 ### 9.2 本地模式
-### 9.3 表的优化
+> 大多数Hadoop Job是需要Hadoop提供的完整的可扩展性来处理大数据集.
+> 
+> 不过,有时Hive的输入数据量是非常小的,在这种情况下,为查询触发执行任务时消耗可能会比实际job的执行时间要多的多,对于大多数这种情况,Hive可以通过本地模式在单台机器上处理所有的任务,对于小数据集,执行时间可以明显被缩短.
+> 
+> 开发者可以通过设置`hive.exec.mode.local.auto`的值为`true`,来让Hive在适当的时候自动启动这个优化.
+```
+// 开启本地 MapReduce
+hive (default)> set hive.exec.mode.local.auto=true;
+// 设置LocalMapReduce的最大输入数据量,当输入数据量小于这个值时采用LocalMapReduce方式,默认为134217728,即128M.
+hive (default)> set hive.exec.mode.local.auto.inputbytes.max=50000000;
+// 设置LocalMapReduce最大输入文件个数,当输入文件个数小于这个值时采用LocalMapReduce方式,默认为4.
+hive (default)> set hive.exec.mode.local.auto.input.files.max=10;
+```
+> 开启本地模式,执行查询语句,并查看计算运行时间,所用查询时间为2.716秒
+```
+hive (default)> set hive.exec.mode.local.auto=true;
+hive (default)> select * from emp cluster by deptno;
+Automatically selecting local only mode for query
+Query ID = root_20190401235135_caee5452-243d-4299-b7a2-37ecf31c53c4
+MapReduce Jobs Launched: 
+Stage-Stage-1:  HDFS Read: 2724 HDFS Write: 41613642 SUCCESS
+Total MapReduce CPU Time Spent: 0 msec
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+7788    FOESS   CLAEDFDFD       7698    1994-09-17      950.0   30.0    NULL
+7782    JAMSK   KIHNGSEHN       7769    1991-06-23      1100.0  20.0    NULL
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.0   20.0    NULL
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+Time taken: 2.716 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+> 关闭本地模式,执行查询语句,并查看计算运行时间,所用查询时间为35.145秒.
+```
+hive (default)> set hive.exec.mode.local.auto=flase;
+hive (default)> select * from emp cluster by deptno;
+Query ID = root_20190401235235_043bf057-0655-46f1-8003-0c0a842009ca
+MapReduce Jobs Launched: 
+Stage-Stage-1: Map: 1  Reduce: 1   Cumulative CPU: 4.31 sec   HDFS Read: 8480 HDFS Write: 472 SUCCESS
+Total MapReduce CPU Time Spent: 4 seconds 310 msec
+OK
+emp.empno       emp.ename       emp.job emp.mgr emp.hiredate    emp.sal emp.comm        emp.deptno
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+7788    FOESS   CLAEDFDFD       7698    1994-09-17      950.0   30.0    NULL
+7782    JAMSK   KIHNGSEHN       7769    1991-06-23      1100.0  20.0    NULL
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.0   20.0    NULL
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+Time taken: 35.145 seconds, Fetched: 9 row(s)
+hive (default)>
+```
+
+### 9.3 数据表优化
+#### 9.3.1 小表/大表Join
+> 将key相对分散,并且数据量小的表放在join的左边,这样可以有效减少内存溢出错误发生的几率,再进一步,可以使用Group让小的维度表(1000条以下的记录条数)进内存,在map端完成reduce.
+> 
+> 实际测试发现 : 新版本hive已经对小表JOIN大表和大表JOIN小表进行了优化,小表放在左边和右边已经没有明显区别.
+> 
+#### 9.3.2 大表Join大表
+> 1.空KEY过滤
+> 有时join超时是因为某些key对应的数据太多,而相同key对应的数据都会发送到相同的reducer上,从而导致内存不够,此时应该仔细分析这些异常的key,很多情况下,这些key对应的数据是异常数据,需要在SQL语句中进行过滤,例如key对应的字段为空.
+#### 9.3.3 MapJoin
+> 如果不指定MapJoin或者不符合MapJoin的条件,那么Hive解析器会将Join操作转换成Common  Join,即在Reduce阶段完成join,容易发生数据倾斜,可以用MapJoin把小表全部加载到内存在map端进行join,避免reducer处理.
+#### 9.3.4 Group By
+> 默认情况下,Map阶段同一Key数据分发给一个reduce,当一个key数据过大时就倾斜了.
+> 并不是所有的聚合操作都需要在Reduce端完成,很多聚合操作都可以先在Map端进行部分聚合,最后在Reduce端得出最终结果.
+#### 9.3.5 Count(Distinct) 去重统计
+> 数据量小的时候无所谓,数据量大的情况下,由于COUNT DISTINCT操作需要用一个Reduce Task来完成,这一个Reduce需要处理的数据量太大,就会导致整个Job很难完成,一般COUNT DISTINCT使用先GROUP BY再COUNT的方式替换.
+#### 9.3.6 笛卡尔积
+> 尽量避免笛卡尔积,join的时候不加on条件,或者无效的on条件,Hive只能使用1个reducer来完成笛卡尔积.
+#### 9.3.7 行列过滤
+> 列处理 : 在SELECT中,只拿需要的列,如果有,尽量使用分区过滤,少用SELECT *
+> 
+> 行处理 : 在分区剪裁中,当使用外关联时,如果将副表的过滤条件写在Where后面,那么就会先全表关联,之后再过滤.
+
+#### 9.3.8 动态分区调整
+> 关系型数据库中,对分区表Insert数据时候,数据库自动会根据分区字段的值,将数据插入到相应的分区中,Hive中也提供了类似的机制,即动态分区(Dynamic Partition),只不过,使用Hive的动态分区,需要进行相应的配置.
+
+
+## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+
 ### 9.4 数据倾斜
+#### 9.4.1 合理设置Map数
+#### 9.4.2 小文件进行合并
+#### 9.4.3 复杂文件增加Map数
+#### 9.4.4 合理设置Reduce数
+
 ### 9.5 并行执行
 ### 9.6 严格模式
 ### 9.7 JVM重用
