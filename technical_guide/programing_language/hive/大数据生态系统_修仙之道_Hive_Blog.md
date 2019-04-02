@@ -5570,6 +5570,27 @@ hive (default)>
 #### 9.3.4 Group By
 > 默认情况下,Map阶段同一Key数据分发给一个reduce,当一个key数据过大时就倾斜了.
 > 并不是所有的聚合操作都需要在Reduce端完成,很多聚合操作都可以先在Map端进行部分聚合,最后在Reduce端得出最终结果.
+> 开启Map端聚合参数设置
+```
+hive (default)> set hive.map.aggr;
+hive.map.aggr=true
+hive (default)> 
+```
+> 在Map端进行聚合操作的条目数目
+```
+hive (default)> set hive.groupby.mapaggr.checkinterval;
+hive.groupby.mapaggr.checkinterval=100000
+hive (default)> 
+```
+> 有数据倾斜的时候进行负载均衡(默认是false)
+```
+hive (default)> set hive.groupby.skewindata=true;
+hive (default)> set hive.groupby.skewindata;
+hive.groupby.skewindata=true
+hive (default)> 
+```
+> 当选项设定为true,生成的查询计划会有两个MR  Job。第一个MR  Job中,Map的输出结果会随机分布到Reduce中,每个Reduce做部分聚合操作,并输出结果,这样处理的结果是相同的Group By Key有可能被分发到不同的Reduce中,从而达到负载均衡的目的,第二个MR Job再根据预处理的数据结果按照Group By Key分布到Reduce中(这个过程可以保证相同的Group By Key被分布到同一个Reduce中),最后完成最终的聚合操作.
+
 #### 9.3.5 Count(Distinct) 去重统计
 > 数据量小的时候无所谓,数据量大的情况下,由于COUNT DISTINCT操作需要用一个Reduce Task来完成,这一个Reduce需要处理的数据量太大,就会导致整个Job很难完成,一般COUNT DISTINCT使用先GROUP BY再COUNT的方式替换.
 #### 9.3.6 笛卡尔积
@@ -5581,21 +5602,490 @@ hive (default)>
 
 #### 9.3.8 动态分区调整
 > 关系型数据库中,对分区表Insert数据时候,数据库自动会根据分区字段的值,将数据插入到相应的分区中,Hive中也提供了类似的机制,即动态分区(Dynamic Partition),只不过,使用Hive的动态分区,需要进行相应的配置.
-
-
-## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
+> 
+> 1.开启动态分区参数设置
+> 开启动态分区功能(默认true,开启)
+```
+hive (default)> set hive.exec.dynamic.partition;
+hive.exec.dynamic.partition=true
+hive (default)> 
+```
+> 2.设置为非严格模式(动态分区的模式,默认strict,表示必须指定至少一个分区为静态分区,nonstrict模式表示允许所有的分区字段都可以使用动态分区)
+```
+hive (default)> set hive.exec.dynamic.partition.mode=nonstrict;
+hive (default)> set hive.exec.dynamic.partition.mode;
+hive.exec.dynamic.partition.mode=nonstrict
+hive (default)> 
+```
+> 3.在所有执行MR的节点上,最大一共可以创建多少个动态分区.
+```
+hive (default)> set hive.exec.max.dynamic.partitions=1000;
+```
+> 4.在每个执行MR的节点上,最大可以创建多少个动态分区,该参数需要根据实际的数据来设定,比如:源数据中包含了一年的数据,即day字段有365个值,那么该参数就需要设置成大于365,如果使用默认值100,则会报错.
+```
+hive (default)> set hive.exec.max.dynamic.partitions.pernode=100;
+```
+> 5.整个MR Job中,最大可以创建多少个HDFS文件.
+```
+hive (default)> set hive.exec.max.created.files=100000;
+```
+> 6.当有空分区生成时,是否抛出异常,一般不需要设置.
+```
+hive (default)> set hive.error.on.empty.partition=false;
+```
 
 ### 9.4 数据倾斜
 #### 9.4.1 合理设置Map数
+> 1 通常情况下,作业会通过input的目录产生一个或者多个map任务.
+> 主要的决定因素有:input的文件总个数,input的文件大小,集群设置的文件块大小.
+> 
+> 2 是不是map数越多越好?
+> 答案是否定的,如果一个任务有很多小文件(远远小于块大小128m),每个小文件也会被当做一个块,用一个map任务来完成,而一个map任务启动和初始化的时间远远大于逻辑处理的时间,就会造成很大的资源浪费,而且同时可执行的map数是受限.
+> 
+> 3 是不是保证每个map处理接近128m的文件块,就高枕无忧了?
+> 答案也是不一定,比如有一个127m的文件,正常会用一个map去完成,但这个文件只有一个或者两个小字段,却有几千万的记录,如果map处理的逻辑比较复杂,用一个map任务去做,肯定也比较耗时.
+> 
+> 针对上面的问题2和3,需要采取两种方式来解决:即减少map数和增加map数.
 #### 9.4.2 小文件进行合并
+> 在map执行前合并小文件,减少map数:`CombineHiveInputFormat`具有对小文件进行合并的功能(系统默认的格式),HiveInputFormat没有对小文件合并功能.
+```
+set hive.input.format= org.apache.hadoop.hive.ql.io.CombineHiveInputFormat;
+```
+
 #### 9.4.3 复杂文件增加Map数
+> 当input的文件都很大,任务逻辑复杂,map执行非常慢的时候,可以考虑增加Map数,来使得每个map处理的数据量减少,从而提高任务的执行效率.
+> 
+> 增加map的方法为:`computeSliteSize(Math.max(minSize,Math.min(maxSize,blocksize)))=blocksize=128M`公式,调整maxSize最大值,让maxSize最大值低于blocksize就可以增加map的个数.
+> 1.执行查询.
+```
+hive (default)> select count(*) from emp;
+Query ID = root_20190402124416_5f7d6098-c47e-4856-819f-379899affe76
+Hadoop job information for Stage-1: number of mappers: 1; number of reducers: 1
+```
+> 2.设置最大切片值为100个字节.
+```
+hive (default)> set mapreduce.input.fileinputformat.split.maxsize=100;
+hive (default)> select count(*) from emp;
+Query ID = root_20190402124739_5eebe641-2053-4b4a-bd8b-2f42b76042ab
+Hadoop job information for Stage-1: number of mappers: 4; number of reducers: 1
+```
 #### 9.4.4 合理设置Reduce数
+> `方法一 调整Reduce`
+> 
+> 1.每个Reduce处理的数据量默认是256MB.
+```
+hive (default)> set hive.exec.reducers.bytes.per.reducer=256000000;
+```
+> 2.每个任务最大的reduce数,默认为1009.
+```
+hive (default)> set hive.exec.reducers.max=1009;
+```
+> 3.计算reducer数的公式.
+```
+N=min(参数2,总输入数据量/参数1)
+```
+> 
+> `方法二 调整Reduce`
+> 
+> 在hadoop的mapred-default.xml文件中修改.
+> 设置每个job的Reduce个数
+```
+hive (default)> set mapreduce.job.reduces=15;
+```
+> `方法三 调整Reduce`
+> 
+> 1.过多的启动和初始化reduce也会消耗时间和资源
+> 2.另外,有多少个Reduce,就会有多少个输出文件,如果生成了很多个小文件,那么如果这些小文件作为下一个任务的输入,则也会出现小文件过多的问题.
+> 在设置Reduce个数的时候也需要考虑这两个原则:处理大数据量利用合适的reduce数,使单个reduce任务处理数据量大小要合适.
 
 ### 9.5 并行执行
+> Hive会将一个查询转化成一个或者多个阶段.
+> 这样的阶段可以是MapReduce阶段、抽样阶段、合并阶段、limit阶段,或者Hive执行过程中可能需要的其他阶段.
+> 默认情况下,Hive一次只会执行一个阶段,不过某个特定的job可能包含众多的阶段,而这些阶段可能并非完全互相依赖,也就是说有些阶段是可以并行执行,这样可能使得整个job的执行时间缩短,不过如果有更多的阶段可以并行执行,那么job可能就越快完成.
+> 
+> 通过设置参数`hive.exec.parallel`值为`true`,就可以开启并发执行,不过在共享集群中,需要注意下,如果job中并行阶段增多,那么集群利用率就会增加.
+```
+// 打开任务并行执行
+hive (default)> set hive.exec.parallel=true;
+// 同一个sql允许最大并行度,默认为8
+hive (default)> set hive.exec.parallel.thread.number=16;
+```
+> 当然在系统资源比较空闲的时候才有优势,否则没资源并行也起不来.
 ### 9.6 严格模式
+> Hive提供了一个严格模式,可以防止用户执行那些可能意向不到的不好的影响的查询.
+> 通过设置属性`hive.mapred.mode`值为默认是非严格模式`nonstrict`,开启严格模式需要修改`hive.mapred.mode`值为`strict`,开启严格模式可以禁止3种类型的查询.
+``` xml
+<property>
+  <name>hive.mapred.mode</name>
+  <value>strict</value>
+  <description>The mode in which the Hive operations are being performed. In strict mode, some risky queries are not allowed to run. They include:Cartesian Product.No partition being picked up for a query.Comparing bigints and strings.Comparing bigints and doubles.Orderby without limit.</description>
+</property>
+```
+```
+hive (default)> set hive.mapred.mode=strict;
+hive (default)> set hive.mapred.mode;
+hive.mapred.mode=strict
+hive (default)> 
+```
+> 1.对于分区表,除非where语句中含有分区字段过滤条件来限制范围,否则不允许执行,换句话说,就是用户不允许扫描所有分区,进行这个限制的原因是通常分区表都拥有非常大的数据集,而且数据增加迅速,没有进行分区限制的查询可能会消耗令人不可接受的巨大资源来处理这个表.
+> 
+> 2.对于使用了order by语句的查询,要求必须使用limit语句,因为order by为了执行排序过程会将所有的结果数据分发到同一个Reducer中进行处理,强制要求用户增加这个LIMIT语句可以防止Reducer额外执行很长一段时间.
+> 
+> 3.限制笛卡尔积的查询,对关系型数据库非常了解的用户可能期望在执行JOIN查询的时候不使用ON语句而是使用where语句,这样关系数据库的执行优化器就可以高效地将WHERE语句转化成那个ON语句,不幸的是Hive并不会执行这种优化,因此如果表足够大,那么这个查询就会出现不可控的情况.
+
 ### 9.7 JVM重用
+> JVM重用是Hadoop调优参数内容,其对Hive的性能具有非常大的影响,特别是对于很难避免小文件的场景或task特别多的场景,这类场景大多数执行时间都很短.
+> 
+> Hadoop默认配置通常是使用派生JVM来执行map和Reduce任务的,这时JVM的启动过程可能会造成相当大的开销,尤其是执行的job包含有成百上千task任务的情况,JVM重用可以使得JVM实例在同一个job中重新使用N次,N的值可以在Hadoop`mapred-site.xml`文件中进行配置,通常在10-20之间,具体多少需要根据具体业务场景测试得出.
+> 
+``` xml
+<property>
+  <name>mapreduce.job.jvm.numtasks</name>
+  <value>10</value>
+  <description>How many tasks to run per jvm. If set to -1, there isno limit.</description>
+</property>
+```
+```
+hive (default)> set mapreduce.job.jvm.numtasks=20;
+```
+> 这个功能的缺点是,开启JVM重用将一直占用使用到的task插槽,以便进行重用,直到任务完成后才能释放,如果某个“不平衡”job中有某几个ReduceTask执行的时间要比其他ReduceTask消耗的时间多的多的话,那么保留的插槽就会一直空闲着却无法被其他的job使用,直到所有的task都结束了才会释放.
+
 ### 9.8 推测执行
+> 推测执行算法原理
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hive/start_009.jpg)
+
+> 在分布式集群环境下,因为程序Bug(包括Hadoop本身Bug),负载不均衡或者资源分布不均等原因,会造成同一个作业的多个任务之间运行速度不一致,有些任务的运行速度可能明显慢于其他任务(比如一个作业的某个任务进度只有50%,而其他所有任务已经运行完毕),则这些任务会拖慢作业的整体执行进度.
+> 
+> 为了避免这种情况发生,Hadoop采用了推测执行(Speculative Execution)机制,它根据一定的法则推测出“拖后腿”的任务,并为这样的任务启动一个备份任务,让该任务与原始任务同时处理同一份数据,并最终选用最先成功运行完成任务的计算结果作为最终结果.
+> 
+> 设置开启推测执行参数 : Hadoop `mapred-site.xml`文件中进行配置.
+``` xml
+<property> 
+  <name>mapreduce.map.speculative</name>  
+  <value>true</value>  
+  <description>If true, then multiple instances of some map tasks may be executed in parallel.</description> 
+</property>
+
+<property> 
+  <name>mapreduce.reduce.speculative</name>  
+  <value>true</value>  
+  <description>If true, then multiple instances of some reduce tasks may be executed in parallel.</description>
+</property>
+```
+```
+hive (default)> set mapreduce.map.speculative;
+mapreduce.map.speculative=true
+hive (default)> 
+```
+```
+hive (default)> set mapreduce.reduce.speculative;
+mapreduce.reduce.speculative=true
+hive (default)> 
+```
+> 不过hive本身也提供了配置项来控制reduce-side的推测执行
+``` xml
+<property>
+  <name>hive.mapred.reduce.tasks.speculative.execution</name>
+  <value>true</value>
+  <description>Whether speculative execution for reducers should be turned on.</description>
+</property>
+```
+```
+hive (default)> set hive.mapred.reduce.tasks.speculative.execution;
+hive.mapred.reduce.tasks.speculative.execution=true
+hive (default)> 
+```
+> 关于调优这些推测执行变量,还很难给一个具体的建议,如果对于运行时的偏差非常敏感的话,那么可以将这些功能关闭掉.
+> 
+> 如果因为输入数据量很大而需要执行长时间的map或者ReduceTask的话,那么启动推测执行造成的浪费是非常巨大大.
+
 ### 9.10 执行计划 (Explain)
+> 1.基本语法
+```
+EXPLAIN [EXTENDED | DEPENDENCY | AUTHORIZATION] query
+```
+> 2.案例实操
+> 
+> 查看语句执行计划
+```
+hive (default)> explain select * from emp;
+OK
+Explain
+STAGE DEPENDENCIES:
+  Stage-0 is a root stage
+STAGE PLANS:
+  Stage: Stage-0
+    Fetch Operator
+      limit: -1
+      Processor Tree:
+        TableScan
+          alias: emp
+          Statistics: Num rows: 1 Data size: 445 Basic stats: COMPLETE Column stats: NONE
+          Select Operator
+            expressions: empno (type: int), ename (type: string), job (type: string), mgr (type: int), hiredate (type: string), sal (type: double), comm (type: double), deptno (type: int)
+            outputColumnNames: _col0, _col1, _col2, _col3, _col4, _col5, _col6, _col7
+            Statistics: Num rows: 1 Data size: 445 Basic stats: COMPLETE Column stats: NONE
+            ListSink
+Time taken: 0.534 seconds, Fetched: 17 row(s)
+hive (default)>
+```
+> 查看详细执行计划
+> 
+> explain extended select * from emp;
+```
+hive (default)> explain extended select * from emp;
+OK
+Explain
+ABSTRACT SYNTAX TREE:
+  
+TOK_QUERY
+   TOK_FROM
+      TOK_TABREF
+         TOK_TABNAME
+            emp
+   TOK_INSERT
+      TOK_DESTINATION
+         TOK_DIR
+            TOK_TMP_FILE
+      TOK_SELECT
+         TOK_SELEXPR
+            TOK_ALLCOLREF
+
+STAGE DEPENDENCIES:
+  Stage-0 is a root stage
+STAGE PLANS:
+  Stage: Stage-0
+    Fetch Operator
+      limit: -1
+      Processor Tree:
+        TableScan
+          alias: emp
+          Statistics: Num rows: 1 Data size: 445 Basic stats: COMPLETE Column stats: NONE
+          GatherStats: false
+          Select Operator
+            expressions: empno (type: int), ename (type: string), job (type: string), mgr (type: int), hiredate (type: string), sal (type: double), comm (type: double), deptno (type: int)
+            outputColumnNames: _col0, _col1, _col2, _col3, _col4, _col5, _col6, _col7
+            Statistics: Num rows: 1 Data size: 445 Basic stats: COMPLETE Column stats: NONE
+            ListSink
+Time taken: 0.092 seconds, Fetched: 34 row(s)
+hive (default)> 
+```
+> explain extended select deptno,avg(sal) avg_sal from emp group by deptno;
+```
+hive (default)> explain extended select deptno,avg(sal) avg_sal from emp group by deptno;
+OK
+Explain
+ABSTRACT SYNTAX TREE:
+  
+TOK_QUERY
+   TOK_FROM
+      TOK_TABREF
+         TOK_TABNAME
+            emp
+   TOK_INSERT
+      TOK_DESTINATION
+         TOK_DIR
+            TOK_TMP_FILE
+      TOK_SELECT
+         TOK_SELEXPR
+            TOK_TABLE_OR_COL
+               deptno
+         TOK_SELEXPR
+            TOK_FUNCTION
+               avg
+               TOK_TABLE_OR_COL
+                  sal
+            avg_sal
+      TOK_GROUPBY
+         TOK_TABLE_OR_COL
+            deptno
+
+
+STAGE DEPENDENCIES:
+  Stage-1 is a root stage
+  Stage-2 depends on stages: Stage-1
+  Stage-0 depends on stages: Stage-2
+
+STAGE PLANS:
+  Stage: Stage-1
+    Map Reduce
+      Map Operator Tree:
+          TableScan
+            alias: emp
+            Statistics: Num rows: 37 Data size: 445 Basic stats: COMPLETE Column stats: NONE
+            GatherStats: false
+            Select Operator
+              expressions: deptno (type: int), sal (type: double)
+              outputColumnNames: deptno, sal
+              Statistics: Num rows: 37 Data size: 445 Basic stats: COMPLETE Column stats: NONE
+              Group By Operator
+                aggregations: avg(sal)
+                keys: deptno (type: int)
+                mode: hash
+                outputColumnNames: _col0, _col1
+                Statistics: Num rows: 37 Data size: 445 Basic stats: COMPLETE Column stats: NONE
+                Reduce Output Operator
+                  key expressions: _col0 (type: int)
+                  sort order: +
+                  Map-reduce partition columns: rand() (type: double)
+                  Statistics: Num rows: 37 Data size: 445 Basic stats: COMPLETE Column stats: NONE
+                  tag: -1
+                  value expressions: _col1 (type: struct<count:bigint,sum:double,input:double>)
+                  auto parallelism: false
+      Path -> Alias:
+        hdfs://systemhub511:9000/user/hive/warehouse/emp [emp]
+      Path -> Partition:
+        hdfs://systemhub511:9000/user/hive/warehouse/emp 
+          Partition
+            base file name: emp
+            input format: org.apache.hadoop.mapred.TextInputFormat
+            output format: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+            properties:
+              COLUMN_STATS_ACCURATE true
+              EXTERNAL TRUE
+              bucket_count -1
+              columns empno,ename,job,mgr,hiredate,sal,comm,deptno
+              columns.comments 
+              columns.types int:string:string:int:string:double:double:int
+              field.delim       
+              file.inputformat org.apache.hadoop.mapred.TextInputFormat
+              file.outputformat org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+              location hdfs://systemhub511:9000/user/hive/warehouse/emp
+              name default.emp
+              numFiles 1
+              serialization.ddl struct emp { i32 empno, string ename, string job, i32 mgr, string hiredate, double sal, double comm, i32 deptno}
+              serialization.format      
+              serialization.lib org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+              totalSize 445
+              transient_lastDdlTime 1553705807
+            serde: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+          
+              input format: org.apache.hadoop.mapred.TextInputFormat
+              output format: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+              properties:
+                COLUMN_STATS_ACCURATE true
+                EXTERNAL TRUE
+                bucket_count -1
+                columns empno,ename,job,mgr,hiredate,sal,comm,deptno
+                columns.comments 
+                columns.types int:string:string:int:string:double:double:int
+                field.delim     
+                file.inputformat org.apache.hadoop.mapred.TextInputFormat
+                file.outputformat org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+                location hdfs://systemhub511:9000/user/hive/warehouse/emp
+                name default.emp
+                numFiles 1
+                serialization.ddl struct emp { i32 empno, string ename, string job, i32 mgr, string hiredate, double sal, double comm, i32 deptno}
+                serialization.format    
+                serialization.lib org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+                totalSize 445
+                transient_lastDdlTime 1553705807
+              serde: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+              name: default.emp
+            name: default.emp
+      Truncated Path -> Alias:
+        /emp [emp]
+      Needs Tagging: false
+      Reduce Operator Tree:
+        Group By Operator
+          aggregations: avg(VALUE._col0)
+          keys: KEY._col0 (type: int)
+          mode: partials
+          outputColumnNames: _col0, _col1
+          Statistics: Num rows: 37 Data size: 445 Basic stats: COMPLETE Column stats: NONE
+          File Output Operator
+            compressed: false
+            GlobalTableId: 0
+            directory: hdfs://systemhub511:9000/tmp/hive/root/0312e241-ceb7-4c14-bdc2-f7f19b1bca58/hive_2019-04-02_14-59-21_745_2157451334067662063-1/-mr-10003
+            NumFilesPerFileSink: 1
+            table:
+                input format: org.apache.hadoop.mapred.SequenceFileInputFormat
+                output format: org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat
+                properties:
+                  columns _col0,_col1
+                  columns.types int,struct<count:bigint,sum:double,input:double>
+                  escape.delim \
+                  serialization.lib org.apache.hadoop.hive.serde2.lazybinary.LazyBinarySerDe
+                serde: org.apache.hadoop.hive.serde2.lazybinary.LazyBinarySerDe
+            TotalFiles: 1
+            GatherStats: false
+            MultiFileSpray: false
+
+  Stage: Stage-2
+    Map Reduce
+      Map Operator Tree:
+          TableScan
+            GatherStats: false
+            Reduce Output Operator
+              key expressions: _col0 (type: int)
+              sort order: +
+              Map-reduce partition columns: _col0 (type: int)
+              Statistics: Num rows: 37 Data size: 445 Basic stats: COMPLETE Column stats: NONE
+              tag: -1
+              value expressions: _col1 (type: struct<count:bigint,sum:double,input:double>)
+              auto parallelism: false
+      Path -> Alias:
+        hdfs://systemhub511:9000/tmp/hive/root/0312e241-ceb7-4c14-bdc2-f7f19b1bca58/hive_451334067662063-1/-mr-10003 [hdfs://systemhub511:9000/tmp/hive/root/0312e241-ceb7-4c14-bdc2-f7f19b1bca58/hive_745_2157451334067662063-1/-mr-10003]
+      Path -> Partition:
+        hdfs://systemhub511:9000/tmp/hive/root/0312e241-ceb7-4c14-bdc2-f7f19b1bca58/hive_2157451334067662063-1/-mr-10003 
+          Partition
+            base file name: -mr-10003
+            input format: org.apache.hadoop.mapred.SequenceFileInputFormat
+            output format: org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat
+            properties:
+              columns _col0,_col1
+              columns.types int,struct<count:bigint,sum:double,input:double>
+              escape.delim \
+              serialization.lib org.apache.hadoop.hive.serde2.lazybinary.LazyBinarySerDe
+            serde: org.apache.hadoop.hive.serde2.lazybinary.LazyBinarySerDe
+          
+              input format: org.apache.hadoop.mapred.SequenceFileInputFormat
+              output format: org.apache.hadoop.hive.ql.io.HiveSequenceFileOutputFormat
+              properties:
+                columns _col0,_col1
+                columns.types int,struct<count:bigint,sum:double,input:double>
+                escape.delim \
+                serialization.lib org.apache.hadoop.hive.serde2.lazybinary.LazyBinarySerDe
+              serde: org.apache.hadoop.hive.serde2.lazybinary.LazyBinarySerDe
+      Truncated Path -> Alias:
+        hdfs://systemhub511:9000/tmp/hive/root/0312e241-ceb7-4c14-bdc2-f7f19b1bca58/hive_745_2157451334067662063-1/-mr-10003 [hdfs://systemhub511:9000/tmp/hive/root/0312e241-ceb7-4c14-bdc2-f7f19b1bca58/hive_745_2157451334067662063-1/-mr-10003]
+      Needs Tagging: false
+      Reduce Operator Tree:
+        Group By Operator
+          aggregations: avg(VALUE._col0)
+          keys: KEY._col0 (type: int)
+          mode: final
+          outputColumnNames: _col0, _col1
+          Statistics: Num rows: 18 Data size: 216 Basic stats: COMPLETE Column stats: NONE
+          File Output Operator
+            compressed: false
+            GlobalTableId: 0
+            directory: hdfs://systemhub511:9000/tmp/hive/root/0312e241-ceb7-4c14-bdc2-f7f19b1bca58/hive_745_2157451334067662063-1/-mr-10000/.hive-staging_hive_745_2157451334067662063-1/-ext-10001
+            NumFilesPerFileSink: 1
+            Statistics: Num rows: 18 Data size: 216 Basic stats: COMPLETE Column stats: NONE
+            Stats Publishing Key Prefix: hdfs://systemhub511:9000/tmp/hive/root/0312e241-ceb7-4c14-bdc2-f7f19b1bca58/hive_745_2157451334067662063-1/-mr-10000/.hive-staging_hive_745_2157451334067662063-1/-ext-10001/
+            table:
+                input format: org.apache.hadoop.mapred.TextInputFormat
+                output format: org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat
+                properties:
+                  columns _col0,_col1
+                  columns.types int:double
+                  escape.delim 
+                  hive.serialization.extend.additional.nesting.levels true
+                  serialization.format 1
+                  serialization.lib org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+                serde: org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe
+            TotalFiles: 1
+            GatherStats: false
+            MultiFileSpray: false
+  Stage: Stage-0
+    Fetch Operator
+      limit: -1
+      Processor Tree:
+        ListSink
+Time taken: 0.216 seconds, Fetched: 210 row(s)
+hive (default)> 
+```
 
 ## 10. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
