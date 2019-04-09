@@ -91,8 +91,12 @@ Flume功能强大,可以灵活调整架构/自定义插件/为开发者提供一
 > 
 > Flume也支持多Agent架构,可以将多个Agent级联工作,Flume从最初的数据源收集数据,经过两个Agent传输,最终将数据存储到HDFS中,多Agent架构可以起到复制/分流等作用,主要用于将集群外数据导入到集群内.
 
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_005.jpg)
+> Flume 组成架构详解
+
+
 #### 1.2.1 Agent
-> Agent主要由三大模块组成：`Source`/ `Channel` / `Sink`, 一个Agent内可以有多个Channel & Sink , Agent是一个java进程.
+> Agent主要由三大模块组成：`Source`/ `Channel` / `Sink`, 一个Agent内可以有多个Channel & Sink , Agent是一个JVM进程.
 > 
 > Agent具有字节有效载荷和可选的一组字符串属性的数据流的单元.
 > 
@@ -157,7 +161,8 @@ Flume功能强大,可以灵活调整架构/自定义插件/为开发者提供一
 > Event由`Header(报头)`&`Body(主体)`组成,Event以事件的形式将数据从源头送至目的地.
 
 ### 1.3 Flume 拓扑结构
-![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_005.jpg)
+
+
 
 ### 1.4 Flume Agent内部原理
 
