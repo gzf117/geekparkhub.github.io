@@ -79,7 +79,7 @@ Flume功能强大,可以灵活调整架构/自定义插件/为开发者提供一
 ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_001.jpg)
 > Flume主要作用是实时读取服务器本地磁盘数据,将数据写入到HDFS.
 
-### 1.2 Flume 组成架构
+### 1.2 Flume 组成架构 ♨️
 
 ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_002.jpg)
 > Flume 基础架构
@@ -161,16 +161,281 @@ Flume功能强大,可以灵活调整架构/自定义插件/为开发者提供一
 > Event由`Header(报头)`&`Body(主体)`组成,Event以事件的形式将数据从源头送至目的地.
 
 ### 1.3 Flume 拓扑结构
+#### 1.3.1 串行模式
+![enter image description here](https://img2018.cnblogs.com/blog/395849/201901/395849-20190102181057205-502969424.png)
+> 这种模式是将多个Flume给顺序连接起来了,从最初的Source开始到最终Sink传送到目的存储系统,此模式不建议桥接过多的Flume数量,Flume数量过多不仅会影响传输速率,而且一旦传输过程中某个节点Flume宕机,会影响整个传输系统.
+
+#### 1.3.2 单Source多Channel,Sink模式 (复制模式)
+![enter image description here](https://img2018.cnblogs.com/blog/395849/201901/395849-20190102181152096-873758554.png)
+> Flume支持将事件流向一个或者多个目的地,这种模式将数据源复制到多个Channel中,每个Channel都有相同的数据,Sink可以选择传送的不同的目的地.
+
+#### 1.3.3 单Source,Channel多Sink模式 (负载均衡)
+![enter image description here](https://img2018.cnblogs.com/blog/395849/201901/395849-20190102181333336-493046725.png)
+> Flume支持使用将多个sink逻辑上分到一个Sink组,Flume将数据发送到不同的Sink,主要解决负载均衡和故障转移问题.
+
+#### 1.3.4 聚合模式
+![enter image description here](https://img2018.cnblogs.com/blog/395849/201901/395849-20190102181409507-1332137680.png)
+> 这种模式是最常见的,也非常实用,日常Web应用通常分布在上百个服务器,大者甚至上千上万个服务器产生的日志处理起来也非常麻烦.
+> 
+> 而这种Flume组合方式能很好的解决这一问题,每台服务器部署一个Flume采集日志,传送到一个集中收集日志的Flume,再由此Flume上传至HDFS/Hive/HBase/Jms等进行日志分析.
+
+### 1.4 Flume Agent内部原理 🤔
+![enter image description here](https://img2018.cnblogs.com/blog/395849/201901/395849-20190102181726224-1004855716.png)
+
+## 2. 👨🏻‍💻 Flume Quick Start 👨🏻‍💻
+
+### 2.1 Flume 安装地址
+> Apache Flume官网 : [flume.apache.org](http://flume.apache.org/)
+> 
+> Apache Flume官方文档 : [flume.apache.org/FlumeUserGuide.html](http://flume.apache.org/FlumeUserGuide.html)
+> 
+> Apache Flume Download : [archive.apache.org/dist/flume](http://archive.apache.org/dist/flume/)
+
+### 2.2 安装部署
+> 1.将apache-flume-1.7.0-bin.tar.gz上传到linux的/opt/software目录下.
+``` powershell
+[root@systemhub711 ~]# cd /opt/software/
+[root@systemhub711 software]# ll
+total 657128
+-rw-r--r--. 1 root root  55711670 Apr  9 21:35 apache-flume-1.7.0-bin.tar.gz
+-rw-r--r--. 1 root root  92834839 Mar 24 23:51 apache-hive-1.2.1-bin.tar.gz
+-rwxrwxrwx. 1 root root   9621331 Jan 14 09:36 apache-tomcat-8.5.33.tar.gz
+-rwxrwxrwx. 1 root root 212046774 Jan 24 20:37 hadoop-2.7.2.tar.gz
+-rwxrwxrwx. 1 root root 189815615 Jan 14 10:22 jdk-8u162-linux-x64.tar.gz
+-rwxrwxrwx. 1 root root  35042811 Jan 17 19:18 zookeeper-3.4.10.tar.gz
+[root@systemhub711 software]# 
+```
+> 2.解压apache-flume-1.7.0-bin.tar.gz到/opt/module/目录下.
+``` powershell
+[root@systemhub711 software]# tar -zxvf apache-flume-1.7.0-bin.tar.gz -C /opt/module/
+apache-flume-1.7.0-bin/lib/flume-ng-configuration-1.7.0.jar
+apache-flume-1.7.0-bin/lib/slf4j-api-1.6.1.jar
+apache-flume-1.7.0-bin/lib/slf4j-log4j12-1.6.1.jar
+apache-flume-1.7.0-bin/lib/log4j-1.2.17.jar
+apache-flume-1.7.0-bin/lib/guava-11.0.2.jar
+apache-flume-1.7.0-bin/docs/searchindex.js
+apache-flume-1.7.0-bin/docs/team-list.html
+[root@systemhub711 software]# 
+```
+> 3.修改apache-flume-1.7.0-bin的名称为flume
+``` powershell
+[root@systemhub711 software]# cd /opt/module/
+[root@systemhub711 module]# mv apache-flume-1.7.0-bin flume
+[root@systemhub711 module]# ll
+total 28
+drwxr-xr-x.  9 root root 4096 Feb 24 21:55 apache-tomcat
+drwxr-xr-x.  6 root root 4096 Apr  3 22:36 datas
+drwxr-xr-x.  7 root root 4096 Apr  9 21:37 flume
+drwxr-xr-x. 12 root root 4096 Feb 27 14:24 hadoop
+drwxr-xr-x. 10 root root 4096 Mar 25 23:32 hive
+drwxr-xr-x.  8 uucp  143 4096 Dec 20  2017 jdk1.8.0_162
+drwxr-xr-x. 10 1001 1001 4096 Mar 23  2017 zookeeper
+[root@systemhub711 module]# 
+```
+
+> 4.将flume/conf下的flume-env.sh.template文件修改为flume-env.sh,并配置flume-env.sh脚本.
+```
+[root@systemhub711 module]# cd flume/conf/
+[root@systemhub711 conf]# mv flume-env.sh.template flume-env.sh
+[root@systemhub711 conf]# echo $JAVA_HOME
+/opt/module/jdk1.8.0_162
+[root@systemhub711 conf]# vim flume-env.sh
+```
+> 配置JAVA_HOME环境变量
+```
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Enviroment variables can be set here.
+
+export JAVA_HOME=/opt/module/jdk1.8.0_162
+```
 
 
+## 3. 🏢 企业开发案例 🏢
+### 3.1 监控端口数据
+> 首先Flume监控本机44444端口,然后通过telnet工具向本机44444端口发送消息,最后Flume将监听数据实时在控制台显示.
+#### 1.分析过程
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_007.jpg)
 
-### 1.4 Flume Agent内部原理
+#### 2.实现步骤
+##### 2.1 安装telnet工具
+> 将rpm软件包(`xinetd-2.3.14-40.el6.x86_64.rpm` / `telnet-0.17-48.el6.x86_64.rpm` / `telnet-server-0.17-48.el6.x86_64.rpm`)拷入Linux系统,并执行RPM软件包安装命令.
+> 在software目录下创建flume_flow文件夹,并上传至此目录
+``` powershell
+[root@systemhub711 conf]# cd /opt/software/
+[root@systemhub711 software]# mkdir flume_flow
+[root@systemhub711 software]# cd flume_flow/
+[root@systemhub711 flume_flow]# ll
+total 224
+-rw-r--r--. 1 root root  59332 Apr  9 21:48 telnet-0.17-48.el6.x86_64.rpm
+-rw-r--r--. 1 root root  37912 Apr  9 21:48 telnet-server-0.17-48.el6.x86_64.rpm
+-rw-r--r--. 1 root root 124812 Apr  9 21:48 xinetd-2.3.14-40.el6.x86_64.rpm
+[root@systemhub711 flume_flow]# 
+```
+> rpm -ivh指令安装
+``` powershell
+[root@systemhub711 flume_flow]# rpm -ivh xinetd-2.3.14-40.el6.x86_64.rpm
+Preparing...                ########################################### [100%]
+   1:xinetd                 ########################################### [100%]
+[root@systemhub711 flume_flow]# rpm -ivh telnet-0.17-48.el6.x86_64.rpm
+Preparing...                ########################################### [100%]
+   1:telnet                 ########################################### [100%]
+[root@systemhub711 flume_flow]# rpm -ivh telnet-server-0.17-48.el6.x86_64.rpm
+Preparing...                ########################################### [100%]
+   1:telnet-server          ########################################### [100%]
+[root@systemhub711 flume_flow]# 
+```
+##### 2.2 判断44444端口是否被占用
+> 功能描述 : `netstat`指令是一个监控TCP/IP网络非常有用的工具,它可以显示路由表,实际网络连接以及每一个网络接口设备状态信息.
+> 
+> 基本语法 : `netstat`[`选项`] / 选项参数 : 
+> 
+> `-t` 或 `--tcp` 表示显示TCP传输协议连接状况.
+> `-u` 或 `--udp` 表示显示UDPP传输协议连接状况.
+> `-n` 或 `--numeric` 表示直接使用IP地址,而不通过域名服务器.
+> `-l` 或 `--listening` 表示显示监控中的服务器Socket.
+> `-p` 或 `--programs` 表示正在使用Socket程序识别码和程序名称.
+```
+[root@systemhub711 flume_flow]# netstat -tunlp | grep 44444
+[root@systemhub711 flume_flow]# 
+```
+##### 2.3 创建Flume Agent配置文件flume_telnet_logger.conf
+> 在flume目录下创建job文件夹.
+```
+[root@systemhub711 flume_flow]# cd /opt/module/flume/
+[root@systemhub711 flume]# mkdir job
+[root@systemhub711 flume]# cd job/
+[root@systemhub711 job]# 
+```
+> 在job文件夹下创建FlumeAgent配置文件`flume_telnet_logger.conf`
+```
+[root@systemhub711 job]# touch flume_telnet_logger.conf
+[root@systemhub711 job]# ll
+total 0
+-rw-r--r--. 1 root root 0 Apr  9 22:31 flume_telnet_logger.conf
+[root@systemhub711 job]# vim flume_telnet_logger.conf
+```
+> 配置`flume_telnet_logger.conf`文件
+> 
+> ‼️ 注 ‼️ : 配置文件来源于官方文档 : [flume.apache.org/FlumeUserGuide.html](http://flume.apache.org/FlumeUserGuide.html)
+> 
+> 配置文件解析
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_008.jpg)
+``` dsconfig
+# example.conf: A single-node Flume configuration
+
+# Name the components on this agent
+a1.sources = r1
+a1.sinks = k1
+a1.channels = c1
+
+# Describe/configure the source
+a1.sources.r1.type = netcat
+a1.sources.r1.bind = localhost
+a1.sources.r1.port = 44444
+
+# Describe the sink
+a1.sinks.k1.type = logger
+
+# Use a channel which buffers events in memory
+a1.channels.c1.type = memory
+a1.channels.c1.capacity = 1000
+a1.channels.c1.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a1.sources.r1.channels = c1
+a1.sinks.k1.channel = c1
+```
+> 添加内容如下
+``` dsconfig
+# example.conf: A single-node Flume configuration
+
+# Name the components on this agent
+a1.sources = r1
+a1.sinks = k1
+a1.channels = c1
+
+# Describe/configure the source
+a1.sources.r1.type = netcat
+a1.sources.r1.bind = systemhub711
+a1.sources.r1.port = 44444
+
+# Describe the sink
+a1.sinks.k1.type = logger
+
+# Use a channel which buffers events in memory
+a1.channels.c1.type = memory
+a1.channels.c1.capacity = 1000
+a1.channels.c1.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a1.sources.r1.channels = c1
+a1.sinks.k1.channel = c1
+```
+
+##### 2.4 开启Flume监听端口
+> 参数说明 : 
+> 
+> `--conf conf/` 表示配置文件存储在conf/目录.
+> 
+> `--name a1` 表示为agent起别名为a1.
+> 
+> `--conf-file job/flume_telnet_logger.conf`  表示flume本次启动读取配置文件是在job目录下的flume_telnet_logger.conf文件.
+> 
+> `-Dflume.root.logger==INFO,console` 表示flume运行时动态修改flume.root.logger参数属性值,并将控制台日志打印级别设置为INFO级别.
+> 
+> 日志级别包括 : `log` / `info` / `warn` / `error`
+
+``` powershell
+[root@systemhub711 flume]# bin/flume-ng agent --conf conf/ --name a1 --conf-file job/flume_telnet_logger.conf -Dflume.root.logger==INFO,console
+Info: Sourcing environment configuration script /opt/module/flume/conf/flume-env.sh
+Info: Including Hadoop libraries found via (/opt/module/hadoop/bin/hadoop) for HDFS access
+Info: Including Hive libraries found via (/opt/module/hive) for Hive access
++ exec /opt/module/jdk1.8.0_162/bin/java -Xmx20m -Dflume.root.logger==INFO,console -cp '/opt/module/flume/conf:/opt/module/flume/lib/*:/opt/module/hadoop/etc/hadoop:/opt/module/hadoop/share/hadoop/common/lib/*:/opt/module/hadoop/share/hadoop/common/*:/opt/module/hadoop/share/hadoop/hdfs:/opt/module/hadoop/share/hadoop/hdfs/lib/*:/opt/module/hadoop/share/hadoop/hdfs/*:/opt/module/hadoop/share/hadoop/yarn/lib/*:/opt/module/hadoop/share/hadoop/yarn/*:/opt/module/hadoop/share/hadoop/mapreduce/lib/*:/opt/module/hadoop/share/hadoop/mapreduce/*:/contrib/capacity-scheduler/*.jar:/opt/module/hive/lib/*' -Djava.library.path=:/opt/module/hadoop/lib/native org.apache.flume.node.Application --name a1 --conf-file job/flume_telnet_logger.conf
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/module/flume/lib/slf4j-log4j12-1.6.1.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/module/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+```
+
+##### 2.5 使用telnet工具向本机的44444端口发送内容
+``` powershell
+[root@systemhub711 ~]# telnet systemhub711 44444
+Trying ...
+Connected to systemhub711.
+Escape character is '^]'.
+hello_world
+OK
+are you ready?
+OK
+```
+##### 2.6 查看Flume监听窗口接收数据情况
+``` dsconfig
+(SinkRunner-PollingRunner-DefaultSinkProcessor) [INFO - org.apache.flume.sink.LoggerSink.process(LoggerSink.java:95)] Event: { headers:{} body: 68 65 6C 6C 6F 5F 77 6F 72 6C 64 0D             hello_world. }
+
+(SinkRunner-PollingRunner-DefaultSinkProcessor) [INFO - org.apache.flume.sink.LoggerSink.process(LoggerSink.java:95)] Event: { headers:{} body: 61 72 65 20 79 6F 75 20 72 65 61 64 79 3F 0D    are you ready?. }
+```
 
 
+### 3.2 实时读取本地文件到HDFS
+### 3.3 实时读取目录文件到HDFS
+### 3.4 单Flume多Channel/Sink
+### 3.5 多Flume汇总数据到单Flume
+### 3.6 多数据源汇总
 
+## 4. Flume监控Ganglia
+## 5. Flume自定义MySQL
+## 6. Flume知识扩展
+## 7. 企业面试题(重点)
 
-
-## 10. 修仙之道 技术架构迭代 登峰造极之势
+## 8. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
 
