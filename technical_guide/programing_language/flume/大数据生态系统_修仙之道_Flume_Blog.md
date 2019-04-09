@@ -268,6 +268,7 @@ export JAVA_HOME=/opt/module/jdk1.8.0_162
 #### 2.实现步骤
 ##### 2.1 安装telnet工具
 > 将rpm软件包拷贝(`xinetd-2.3.14-40.el6.x86_64.rpm` / `telnet-0.17-48.el6.x86_64.rpm` / `telnet-server-0.17-48.el6.x86_64.rpm`)到Linux系统,并执行RPM软件包安装命令.
+> 
 > 在software目录下创建flume_flow文件夹,并上传至此目录.
 ``` powershell
 [root@systemhub711 conf]# cd /opt/software/
