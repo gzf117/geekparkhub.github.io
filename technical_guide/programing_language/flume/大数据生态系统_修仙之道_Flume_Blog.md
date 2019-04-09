@@ -4,7 +4,7 @@
 
 ##  🐘 Flume Technology 修仙之道 炼神返虚 🐘
 
-![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hive/hive.jpg)
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/fiume_cover.jpg)
 
 - **极客实验室是极客国际公园旗下为未来而构建的极客社区;**
 - **我们正在构建一个活跃的小众社区,汇聚众多优秀开发者与设计师;**
