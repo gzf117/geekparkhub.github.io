@@ -192,7 +192,7 @@ Flume功能强大,可以灵活调整架构/自定义插件/为开发者提供一
 > Apache Flume Download : [archive.apache.org/dist/flume](http://archive.apache.org/dist/flume/)
 
 ### 2.2 安装部署
-> 1.将apache-flume-1.7.0-bin.tar.gz上传到linux的/opt/software目录下.
+> 1.将apache-flume-1.7.0-bin.tar.gz上传到linux /opt/software目录下.
 ``` powershell
 [root@systemhub711 ~]# cd /opt/software/
 [root@systemhub711 software]# ll
@@ -217,7 +217,7 @@ apache-flume-1.7.0-bin/docs/searchindex.js
 apache-flume-1.7.0-bin/docs/team-list.html
 [root@systemhub711 software]# 
 ```
-> 3.修改apache-flume-1.7.0-bin的名称为flume
+> 3.修改apache-flume-1.7.0-bin名称为flume
 ``` powershell
 [root@systemhub711 software]# cd /opt/module/
 [root@systemhub711 module]# mv apache-flume-1.7.0-bin flume
@@ -267,8 +267,8 @@ export JAVA_HOME=/opt/module/jdk1.8.0_162
 
 #### 2.实现步骤
 ##### 2.1 安装telnet工具
-> 将rpm软件包(`xinetd-2.3.14-40.el6.x86_64.rpm` / `telnet-0.17-48.el6.x86_64.rpm` / `telnet-server-0.17-48.el6.x86_64.rpm`)拷入Linux系统,并执行RPM软件包安装命令.
-> 在software目录下创建flume_flow文件夹,并上传至此目录
+> 将rpm软件包拷贝(`xinetd-2.3.14-40.el6.x86_64.rpm` / `telnet-0.17-48.el6.x86_64.rpm` / `telnet-server-0.17-48.el6.x86_64.rpm`)到Linux系统,并执行RPM软件包安装命令.
+> 在software目录下创建flume_flow文件夹,并上传至此目录.
 ``` powershell
 [root@systemhub711 conf]# cd /opt/software/
 [root@systemhub711 software]# mkdir flume_flow
@@ -323,11 +323,11 @@ total 0
 -rw-r--r--. 1 root root 0 Apr  9 22:31 flume_telnet_logger.conf
 [root@systemhub711 job]# vim flume_telnet_logger.conf
 ```
-> 配置`flume_telnet_logger.conf`文件
+> 配置`flume_telnet_logger.conf`文件.
 > 
 > ‼️ 注 ‼️ : 配置文件来源于官方文档 : [flume.apache.org/FlumeUserGuide.html](http://flume.apache.org/FlumeUserGuide.html)
 > 
-> 配置文件解析
+> 配置文件解析.
 ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_008.jpg)
 ``` dsconfig
 # example.conf: A single-node Flume configuration
@@ -354,7 +354,7 @@ a1.channels.c1.transactionCapacity = 100
 a1.sources.r1.channels = c1
 a1.sinks.k1.channel = c1
 ```
-> 添加内容如下
+> 添加内容如下.
 ``` dsconfig
 # example.conf: A single-node Flume configuration
 
@@ -405,7 +405,7 @@ SLF4J: Found binding in [jar:file:/opt/module/flume/lib/slf4j-log4j12-1.6.1.jar!
 SLF4J: Found binding in [jar:file:/opt/module/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
 ```
 
-##### 2.5 使用telnet工具向本机的44444端口发送内容
+##### 2.5 使用telnet工具向systemhub711主机44444端口发送消息
 ``` powershell
 [root@systemhub711 ~]# telnet systemhub711 44444
 Trying ...
