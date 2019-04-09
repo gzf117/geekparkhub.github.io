@@ -261,7 +261,7 @@ export JAVA_HOME=/opt/module/jdk1.8.0_162
 
 ## 3. 🏢 企业开发案例 🏢
 ### 3.1 监控端口数据
-> 首先Flume监控本机44444端口,然后通过telnet工具向本机44444端口发送消息,最后Flume将监听数据实时在控制台显示.
+> 首先Flume监控本机44444端口,然后通过telnet工具向systemhub711主机44444端口发送消息,最后Flume将监听数据实时在控制台显示.
 #### 1.分析过程
 ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_007.jpg)
 
