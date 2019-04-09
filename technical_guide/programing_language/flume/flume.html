@@ -42,6 +42,12 @@
 <li><a href="#大数据生态系统-修仙之道-flume-blog">大数据生态系统 修仙之道 Flume Blog</a><ul>
 <li><a href="#flume-technology-修仙之道-炼神返虚">🐘 Flume Technology 修仙之道 炼神返虚 🐘</a></li>
 <li><a href="#1-flume-概述">1. Flume 概述</a><ul>
+<li><a href="#10-flume-功能特性">1.0 Flume 功能&amp;特性</a><ul>
+<li><a href="#101-flume-功能">1.0.1 Flume 功能</a></li>
+<li><a href="#102-flume-特性">1.0.2 Flume 特性</a></li>
+<li><a href="#103-flume与其他日志收集系统-区别">1.0.3 Flume与其他日志收集系统 区别</a></li>
+</ul>
+</li>
 <li><a href="#11-flume-定义">1.1 Flume 定义</a></li>
 <li><a href="#12-flume-组成架构">1.2 Flume 组成架构</a><ul>
 <li><a href="#121-agent">1.2.1 Agent</a></li>
@@ -80,9 +86,50 @@
 <h2 id="1-flume-概述">1. Flume 概述</h2>
 
 <blockquote>
-  <p>Flume是Cloudera公司提供的一个<code>高可用</code>/<code>高可靠</code>/<code>分布式海量日志采集</code>/<code>聚合</code>/<code>传输</code>系统. <br>
-  Flume作为Hadoop平台日志收集的核心组件,提供了强大可扩展性的设计架构和</p>
+  <p>Flume是Cloudera公司提供的一个<code>高可用</code>/<code>高可靠</code>/<code>分布式海量日志采集</code>/<code>聚合</code>/<code>传输</code>系统.</p>
+  
+  <p>Flume作为Hadoop平台日志收集的核心组件,提供了强大可扩展性的设计架构和丰富的插件,能够将来自不同数据源的海量日志数据高效的收集/聚合/移动/存储到统一的数据存储系统中.</p>
 </blockquote>
+
+
+
+<h3 id="10-flume-功能特性">1.0 Flume 功能&amp;特性</h3>
+
+<h4 id="101-flume-功能">1.0.1 Flume 功能</h4>
+
+<p>Flume功能强大,可以灵活调整架构/自定义插件/为开发者提供一下功能.</p>
+
+<ul><li><p>从固定目录下采集日志信息到目的地(HDFS/HBaes/Kafka).</p></li>
+<li><p>实时采集日志信息到目的地(HDFS/HBaes/Kafka).</p></li>
+<li><p>支持级联(多个Agent对接工作).</p></li>
+<li><p>支持按照开发者定制实现数据采集,可以使用Flume来对接多种类型数据源,包括但不限于网络流量数据/社交媒体生成数据/电子邮件消息以及其他数据源.</p></li>
+</ul>
+
+<h4 id="102-flume-特性">1.0.2 Flume 特性</h4>
+
+<ul><li><p>压缩加密 : Flume级联节点之间的数据传输支持压缩和加密,提升数据传输效率和安全性.</p></li>
+<li><p>复杂流 : Flume支持(fan-in)扇入流&amp;(fan-out)扇出流,扇入流既Source可以接受多个输入,扇出流既Sink可以将Event分流输出到多个目标位置.</p></li>
+<li><p>传输可靠性 : Flume在传输过程中,支持Channel缓存/数据发送/故障转移,保证传输过程中数据不会丢失,增强了数据传输的可靠性.</p></li>
+<li><p>数据过滤 : Flume在传输数据过程中,可以对数据简单过滤/清洗,去除不关心的数据,如需对复杂数据过滤,需要开发者根据自身数据特殊性,开发过滤插件,Flume支持第三方过滤插件使用.</p></li>
+</ul>
+
+
+
+<h4 id="103-flume与其他日志收集系统-区别">1.0.3 Flume与其他日志收集系统 区别</h4>
+
+<blockquote>
+  <p>目前常用的开源日志收集系统除了Flume之外还有Facebook的Scribe,Apache的Chukwa &amp; Kafka(最早由Linkedin开发).</p>
+  
+  <p>Scribe是Facebook开发的分布式日志收集系统,它为日志的”分布式收集和统一处理”,提供了一个可扩展/高容错性方案.</p>
+  
+  <p>Chukwa是用于监控大型分布式系统的开源数据收集系统,集成了Hadoop一些组件,将HDFS作为存储系统,使用MapReduce框架处理数据,并提供灵活且功能强大的工具包,用于显示/监控/分析结果.</p>
+  
+  <p>Kafka是一个高吞吐量的分布式订阅消息系统,可用于分布式系统的日志收集,它最初是由LinkedIn公司开发,之后成为了Apache项目的一部分.</p>
+  
+  <p>对比体现表</p>
+</blockquote>
+
+<table><tbody><tr style="font-weight:bold">  <td align="center">日志收集产品</td>  <td align="right">Flume</td>  <td align="center">Scribe</td>  <td align="center">Chukwa</td>  <td align="center">Kafka</td></tr><tr>  <td align="center">开发语言</td>  <td align="right">Java</td>  <td align="center">C/C++</td>  <td align="center">Java</td>  <td align="center">Scala</td></tr><tr>  <td align="center">容错性</td>  <td align="right">Agent与存储之间有容错性机制,提供End-to-end/Store on failure/Best effort 三种级别可靠性保障.</td>  <td align="center">Agent与存储之间有容错性机制,Agent与收集器之间的容错性需要开发者自行实现.</td>  <td align="center">Agent与存储之间有容错性机制.</td>  <td align="center">Agent和收集器、存储之间都有容错性机制.</td></tr><tr>  <td align="center">负载均衡</td>  <td align="right">Zookeeper</td>  <td align="center">不适用</td>  <td align="center">不适用</td>  <td align="center">Zookeeper</td></tr><tr>  <td align="center">Agent</td>  <td align="right">Flume提供丰富Agent,可直接使用,支持对Agent中的Source/Channel/Sink进行自定义开发.</td>  <td align="center">Scribe内部定义了ThriftAPI,开发者需要开发实现ThriftAgent.</td>  <td align="center">提供一些自带Agent</td>  <td align="center">开发者需根据Kafka提供的API自行开发实现Agent.</td></tr><tr>  <td align="center">收集器(用于收集汇总数据)</td>  <td align="right">不适用</td>  <td align="center">使用ThriftServer</td>  <td align="center">不适用</td>  <td align="center">使用sendfile/zore-copy等技术提高收集效率.</td></tr><tr>  <td align="center">存储</td>  <td align="right">可使用HDFS</td>  <td align="center">可使用HDFS</td>  <td align="center">可使用HDFS</td>  <td align="center">可使用HDFS</td></tr></tbody></table>
 
 <h3 id="11-flume-定义">1.1 Flume 定义</h3>
 
