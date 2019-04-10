@@ -426,9 +426,586 @@ OK
 
 
 ### 3.2 实时读取本地文件到HDFS
+> 实时监控hive日志并上传到HDFS.
+> 
+#### 1.步骤分析.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_009.jpg)
+#### 2.实现步骤.
+##### 1.拷贝Hadoop相关jar包到/flume/lib/指定目录下.
+> `commons-configuration-1.6.jar` / `commons-io-2.4.jar`
+> `hadoop-auth-2.7.2.jar` / `hadoop-common-2.7.2.jar`
+> `hadoop-hdfs-2.7.2.jar` / `htrace-core-3.1.0-incubating.jar`
+> 注意 : 根据自身版本查找jar包
+``` powershell
+[root@systemhub711 ~]# cd /opt/module/flume/lib/
+[root@systemhub711 lib]# ll
+total 64452
+-rw-r--r--. 1 root root  298829 Apr 10 10:10 commons-configuration-1.6.jar
+-rw-r--r--. 1 root root  185140 Apr 10 10:10 commons-io-2.4.jar
+-rw-r--r--. 1 root root   70571 Apr 10 10:10 hadoop-auth-2.7.2.jar
+-rw-r--r--. 1 root root 3440968 Apr 10 10:10 hadoop-common-2.7.2.jar
+-rw-r--r--. 1 root root 8248640 Apr 10 10:10 hadoop-hdfs-2.7.2.jar
+-rw-r--r--. 1 root root 1475955 Apr 10 10:10 htrace-core-3.1.0-incubating.jar
+[root@systemhub711 lib]# 
+```
+##### 2.创建`flume_file_hdfs.conf`配置文件.
+``` powershell
+[root@systemhub711 lib]# cd ..
+[root@systemhub711 flume]# cd job/
+[root@systemhub711 job]# touch flume_file_hdfs.conf
+[root@systemhub711 job]# vim flume_file_hdfs.conf
+```
+> 配置信息详情.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_010.jpg)
+> 配置信息.
+``` dsconfig
+    #Name the components on this agent
+    a2.sources = r2
+    a2.sinks = k2
+    a2.channels = c2
+    
+    #Describe/configure the source
+    a2.sources.r2.type = exec
+    a2.sources.r2.command = tail -f /opt/module/hive/logs/hive.log
+    a2.sources.r2.shell = /bin/bash -c
+    
+    #Describe the sink
+    a2.sinks.k2.type = hdfs
+    a2.sinks.k2.hdfs.path = hdfs://systemhub511:9000/flume/%Y%m%d/%H
+    
+    #上传文件前缀
+    a2.sinks.k2.hdfs.filePrefix = hive_logs
+    #是否按照时间滚动文件夹
+    a2.sinks.k2.hdfs.round = true
+    #多少时间单位创建一个新的文件夹
+    a2.sinks.k2.hdfs.roundValue = 1
+    #重新定义时间单位
+    a2.sinks.k2.hdfs.roundUnit = hour
+    #是否使用本地时间戳
+    a2.sinks.k2.hdfs.useLocalTimeStamp = true
+    #积攒多少个Event才flush到HDFS一次
+    a2.sinks.k2.hdfs.batchSize = 1000
+    #设置文件类型,可支持压缩
+    a2.sinks.k2.hdfs.fileType = DataStream
+    #多久生成一个新文件
+    a2.sinks.k2.hdfs.rollInterval = 600
+    #设置每个文件滚动大小
+    a2.sinks.k2.hdfs.rollSize = 134217700
+    #文件的滚动与Event数量无关
+    a2.sinks.k2.hdfs.rollCount = 0
+    #最小冗余数
+    a2.sinks.k2.hdfs.minBlockReplicas = 1
+
+    #Use a channel which buffers events in memory
+    a2.channels.c2.type = memory
+    a2.channels.c2.capacity = 1000
+    a2.channels.c2.transactionCapacity = 100
+
+    #Bind the source and sink to the channel
+    a2.sources.r2.channels = c2
+    a2.sinks.k2.channel = c2
+```
+##### 3.执行监控配置
+> 分别启动hadoop/flume/hive服务.
+> 
+> 启动Flume监控.
+```
+[root@systemhub711 flume]# bin/flume-ng agent --conf conf/ --name a2 --conf-file job/flume_file_hdfs.conf
+Info: Sourcing environment configuration script /opt/module/flume/conf/flume-env.sh
+Info: Including Hadoop libraries found via (/opt/module/hadoop/bin/hadoop) for HDFS access
+Info: Including Hive libraries found via (/opt/module/hive) for Hive access
+```
+> 启动Hive
+```
+[root@systemhub711 module]# cd hive/
+[root@systemhub711 hive]# bin/hive
+Logging initialized using configuration in file:/opt/module/hive/conf/hive-log4j.properties
+hive (default)> 
+```
+##### 4.查看Flume监听窗口数据
+```
+[root@systemhub511 hadoop]# hadoop fs -ls /flume/*
+Found 1 items
+drwxr-xr-x   - root supergroup 0 /flume/20500610/10
+[root@systemhub511 hadoop]# hadoop fs -cat /flume/20500610/10/hive_logs.1554864629108.tmp
+INFO  [main]: metastore.HiveMetaStore (HiveMetaStore.java:logInfo(746)) - 0: get_functions: db=default pat=*
+INFO  [main]: HiveMetaStore.audit (HiveMetaStore.java:logAuditEvent(371)) - ugi=root    ip=unknown-ip-addr      cmd=get_functions: db=default pat=*       
+INFO  [main]: metastore.HiveMetaStore (HiveMetaStore.java:logInfo(746)) - 0: get_functions: db=hive_db pat=*
+INFO  [main]: HiveMetaStore.audit (HiveMetaStore.java:logAuditEvent(371)) - ugi=root    ip=unknown-ip-addr      cmd=get_functions: db=hive_db pat=*       
+```
+
+
 ### 3.3 实时读取目录文件到HDFS
+> 使用flume监听整个目录的文件.
+> 
+#### 1.步骤分析.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_011.jpg)
+#### 2.实现步骤.
+> 创建`flume_dir_hdfs.conf`配置文件.
+```
+[root@systemhub711 flume]# cd job/
+[root@systemhub711 job]# touch flume_dir_hdfs.conf
+[root@systemhub711 job]# vim flume_dir_hdfs.conf
+```
+> 配置信息详情.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_012.jpg)
+> 配置信息.
+```
+    a3.sources = r3
+    a3.sinks = k3
+    a3.channels = c3
+
+    #Describe/configure the source
+    a3.sources.r3.type = spooldir
+    a3.sources.r3.spoolDir = /opt/module/flume/upload
+    a3.sources.r3.fileSuffix = .COMPLETED
+    a3.sources.r3.fileHeader = true
+    #忽略所有以.tmp结尾的文件,不上传
+    a3.sources.r3.ignorePattern = ([^]*\.tmp)
+
+    #Describe the sink
+    a3.sinks.k3.type = hdfs
+    a3.sinks.k3.hdfs.path = hdfs://systemhub511:8020/flume/upload/%Y%m%d/%H
+    #上传文件前缀
+    a3.sinks.k3.hdfs.filePrefix = upload-
+    #是否按照时间滚动文件夹
+    a3.sinks.k3.hdfs.round = true
+    #多少时间单位创建一个新文件夹
+    a3.sinks.k3.hdfs.roundValue = 1
+    #重新定义时间单位
+    a3.sinks.k3.hdfs.roundUnit = hour
+    #是否使用本地时间戳
+    a3.sinks.k3.hdfs.useLocalTimeStamp = true
+    #积攒多少个Event才flush到HDFS一次
+    a3.sinks.k3.hdfs.batchSize = 1000
+    #设置文件类型,可支持压缩
+    a3.sinks.k3.hdfs.fileType = DataStream
+    #多久生成一个新文件
+    a3.sinks.k3.hdfs.rollInterval = 600
+    #设置每个文件的滚动大小
+    a3.sinks.k3.hdfs.rollSize = 134217700
+    #文件滚动与Event数量无关
+    a3.sinks.k3.hdfs.rollCount = 0
+    #最小冗余数
+    a3.sinks.k3.hdfs.minBlockReplicas = 1
+
+    #Use a channel which buffers events in memory
+    a3.channels.c3.type = memory
+    a3.channels.c3.capacity = 1000
+    a3.channels.c3.transactionCapacity = 100
+    
+    #Bind the source and sink to the channel
+    a3.sources.r3.channels = c3
+    a3.sinks.k3.channel = c3
+```
+> 在Flume集群中创建upload目录.
+```
+[root@systemhub711 flume]# mkdir upload
+[root@systemhub711 flume]# cd upload/
+[root@systemhub711 upload]# 
+```
+> 创建log文件
+```
+[root@systemhub711 module]# cd flume/upload/
+[root@systemhub711 upload]# touch test.log
+[root@systemhub711 upload]# ll
+total 0
+-rw-r--r--. 1 root root 0 Apr 10 13:41 test.log
+[root@systemhub711 upload]#
+```
+> 开启监听服务
+```
+[root@systemhub711 flume]# bin/flume-ng agent --conf conf/ --name a3 --conf-file job/flume_dir_hdfs.conf
+Info: Sourcing environment configuration script /opt/module/flume/conf/flume-env.sh
+Info: Including Hadoop libraries found via (/opt/module/hadoop/bin/hadoop) for HDFS access
+```
+> 查看log文件
+> 上传完成的文件会以.COMPLETED结尾
+```
+[root@systemhub711 upload]# ll
+total 0
+-rw-r--r--. 1 root root 0 Apr 10 13:41 test.log.COMPLETED
+[root@systemhub711 upload]#
+```
+
+
 ### 3.4 单Flume多Channel/Sink
-### 3.5 多Flume汇总数据到单Flume
+> 使用flume-1监控文件变动,flume-1将变动内容传递给flume-2,flume-2负责存储到HDFS,同时flume-1将变动内容传递给flume-3,flume-3负责输出到LocalFileSystem.
+#### 1.步骤分析.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_013.jpg)
+
+#### 2.实现步骤.
+> 准备工作
+> 1.在/opt/module/flume/job目录下创建group_001文件夹.
+``` powershell
+[root@systemhub711 flume]# cd job/
+[root@systemhub711 job]# mkdir group_001
+[root@systemhub711 job]# ll
+total 16
+-rw-r--r--. 1 root root 1582 Apr 10 16:28 flume_dir_hdfs.conf
+-rw-r--r--. 1 root root 1519 Apr 10 10:49 flume_file_hdfs.conf
+-rw-r--r--. 1 root root  548 Apr  9 22:46 flume_telnet_logger.conf
+drwxr-xr-x. 2 root root 4096 Apr 10 17:24 group_001
+[root@systemhub711 job]# 
+```
+> 2.在/opt/module/datas/core_flow/develop/project目录下创建flume3文件夹.
+``` powershell
+[root@systemhub711 project]# pwd
+/opt/module/datas/core_flow/develop/project
+[root@systemhub711 project]# mkdir flume3
+[root@systemhub711 project]# ll
+total 8
+drwxr-xr-x. 3 root root 4096 Apr  3 22:36 analysis
+drwxr-xr-x. 2 root root 4096 Apr 10 17:24 flume3
+[root@systemhub711 project]# 
+```
+> 3.在group_001目录下创建`flume_file_flume.conf`配置文件.
+> 用于监控hive.log文件的变动,同时产生两个channel和两个sink分别输送给flume-2和flume3
+```
+[root@systemhub711 job]# cd group_001/
+[root@systemhub711 group_001]# touch flume_file_flume.conf
+[root@systemhub711 group_001]# vim flume_file_flume.conf
+```
+> 添加配置信息
+```
+# Name the components on this agen
+a1.sources = r1
+a1.sinks = k1 k2
+a1.channels = c1 c2
+# 将数据流复制给多个channel
+a1.sources.r1.selector.type = replicating
+
+# Describe/configure the source
+a1.sources.r1.type = exec
+a1.sources.r1.command = tail -F /opt/module/hive/logs/hive.log
+a1.sources.r1.shell = /bin/bash -c
+
+# Describe the sink
+a1.sinks.k1.type = avro
+a1.sinks.k1.hostname = systemhub511
+a1.sinks.k1.port = 5151
+
+a1.sinks.k2.type = avro
+a1.sinks.k2.hostname = systemhub511
+a1.sinks.k2.port = 5152
+
+# Describe the channel
+a1.channels.c1.type = memory
+a1.channels.c1.capacity = 1000
+a1.channels.c1.transactionCapacity = 100
+
+a1.channels.c2.type = memory
+a1.channels.c2.capacity = 1000
+a1.channels.c2.transactionCapacity = 100
+
+# Bind the source andsink to the channe
+a1.sources.r1.channels = c1 c2
+a1.sinks.k1.channel = c1
+a1.sinks.k2.channel = c2
+```
+
+> 4.在group_001目录下创建`flume_flume_hdfs.conf`配置文件.
+> 用于接收flume-1的event,同时产生1个channel和1个sink,将数据输送给hdfs
+```
+[root@systemhub711 group_001]# touch flume_flume_hdfs.conf
+[root@systemhub711 group_001]# vim flume_flume_hdfs.conf
+```
+> 添加配置信息.
+```
+# Name the components on this agent
+a2.sources = r1
+a2.sinks = k1
+a2.channels = c1
+
+# Describe/configure the source
+a2.sources.r1.type = avro
+a2.sources.r1.bind = systemhub511
+a2.sources.r1.port = 5151
+
+# Describe the sink
+a2.sinks.k1.type = hdfs
+a2.sinks.k1.hdfs.path = hdfs://systemhub511:9000/flume2/%Y%m%d/%H
+#上传文件前缀
+a2.sinks.k1.hdfs.filePrefix = flume2-
+#是否按照时间滚动文件夹
+a2.sinks.k1.hdfs.round = true
+#多少时间单位创建一个新文件夹
+a2.sinks.k1.hdfs.roundValue = 1
+#重新定义时间单位
+a2.sinks.k1.hdfs.roundUnit = hour
+#是否使用本地时间戳
+a2.sinks.k1.hdfs.useLocalTimeStamp = true
+#积攒多少个Event才flush到HDFS一次
+a2.sinks.k1.hdfs.batchSize =100
+#设置文件类型,可支持压缩
+a2.sinks.k1.hdfs.fileType = DataStream
+#多久生成一个新文件
+a2.sinks.k1.hdfs.rollInterval = 600
+#设置每个文件的滚动大小大概是128M
+a2.sinks.k1.hdfs.rollSize = 134217700
+#文件的滚动与Event数量无关
+a2.sinks.k1.hdfs.rollCount = 0
+#最小冗余数
+a2.sinks.k1.hdfs.minBlockReplicas = 1
+
+# Describe the channel
+a2.channels.c1.type = memory
+a2.channels.c1.capacity = 1000
+a2.channels.c1.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a2.sources.r1.channels = c1
+a2.sinks.k1.channel = c1
+```
+> 5.在group_001目录下创建`flume_flume_dir.conf`配置文件.
+> 用于接收flume-1的event,同时产生1个channel和1个sink,将数据传输到指定目录
+```
+[root@systemhub711 group_001]# touch flume_flume_dir.conf
+[root@systemhub711 group_001]# vim flume_flume_dir.conf
+```
+> 添加配置信息.
+```
+# Name the components on this agent
+a3.sources = r1
+a3.sinks = k1
+a3.channels = c1
+
+# Describe/configure the source
+a3.sources.r1.type = avro
+a3.sources.r1.bind = systemhub511
+a3.sources.r1.port = 5152
+
+# Describe the sink
+a3.sinks.k1.type = file_roll
+a3.sinks.k1.sink.directory = /opt/module/datas/core_flow/develop/project/flume3
+
+# Describe the channel
+a3.channels.c1.type = memory
+a3.channels.c1.capacity = 1000
+a3.channels.c1.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a3.sources.r1.channels = c1
+a3.sinks.k1.channel = c1
+```
+> 6.执行配置文件
+> 
+> `执行flume_flume_dir.conf`
+```
+[root@systemhub711 flume]# bin/flume-ng agent --conf conf/ --name a3 --conf-file job/group_001/flume_flume_dir.conf
+Info: Sourcing environment configuration script /opt/module/flume/conf/flume-env.sh
+Info: Including Hadoop libraries found via (/opt/module/hadoop/bin/hadoop) for HDFS access
+Info: Including Hive libraries found via (/opt/module/hive) for Hive access
+```
+> `执行flume_flume_hdfs.conf`
+```
+[root@systemhub711 flume]# bin/flume-ng agent --conf conf/ --name a2 --conf-file job/group_001/flume_flume_hdfs.conf
+Info: Sourcing environment configuration script /opt/module/flume/conf/flume-env.sh
+Info: Including Hadoop libraries found via (/opt/module/hadoop/bin/hadoop) for HDFS access
+Info: Including Hive libraries found via (/opt/module/hive) for Hive access
+```
+> `执行flume_file_flume.conf`
+```
+[root@systemhub711 flume]#  bin/flume-ng agent --conf conf/ --name a1 --conf-file job/group_001/flume_file_flume.conf
+Info: Sourcing environment configuration script /opt/module/flume/conf/flume-env.sh
+Info: Including Hadoop libraries found via (/opt/module/hadoop/bin/hadoop) for HDFS access
+Info: Including Hive libraries found via (/opt/module/hive) for Hive access
+```
+> `执行hive`
+```
+[root@systemhub711 hive]# bin/hive
+Logging initialized using configuration in file:/opt/module/hive/conf/hive-log4j.properties
+hive (default)> 
+```
+> 7.查看Flume监听窗口数据
+```
+[root@systemhub711 flume3]# ll
+total 0
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-1
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-10
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-11
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-12
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-13
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-14
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-15
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-16
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-17
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-18
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-19
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-2
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-20
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-21
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-22
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-23
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-3
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-4
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-5
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-6
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-7
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-8
+-rw-r--r--. 1 root root 0 Apr 10 1554891473772-9
+```
+
+### 3.5 单Source,Channel多Sink
+> 使用Flume1监控文件变动,Flume1将变动内容传输给Flume2,Flume2负责将信息传输到控制台,同时Flume1将变动内容传输给Flume3,Flume3负责存储到HDFS.
+
+#### 1.步骤分析.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_014.jpg)
+
+#### 2.实现步骤.
+> 准备工作
+> 1.在/opt/module/flume/job目录下创建group_002文件夹.
+```
+[root@systemhub711 project]# cd /opt/module/flume/job/
+[root@systemhub711 job]# mkdir group_002
+[root@systemhub711 job]# ll
+total 20
+-rw-r--r--. 1 root root 1582 Apr 10 16:28 flume_dir_hdfs.conf
+-rw-r--r--. 1 root root 1519 Apr 10 10:49 flume_file_hdfs.conf
+-rw-r--r--. 1 root root  548 Apr  9 22:46 flume_telnet_logger.conf
+drwxr-xr-x. 2 root root 4096 Apr 10 21:30 group_001
+drwxr-xr-x. 2 root root 4096 Apr 10 21:33 group_002
+[root@systemhub711 job]# 
+```
+> 3.在group_002目录下创建`flume_telnet_flume.conf`配置文件.
+```
+[root@systemhub711 job]# cd group_002
+[root@systemhub711 group_002]# touch flume_telnet_flume.conf
+[root@systemhub711 group_002]# vim flume_telnet_flume.conf
+```
+
+> 添加配置信息.
+```
+# Name the components on this agent
+a1.sources = r1
+a1.channels = c1
+a.sinkgroups = g1
+a1.sinks = k1 k2
+
+# Describe/configure the source
+a1.sources.r1.type = netcat
+a1.sources.r1.bind = systemhub711
+a1.sources.r1.port = 44444
+a1.sinkgroups.g1.processor.type = load balance
+a1.sinkgroups.g1.processor.backoff = true
+a1.sinkgroups.g1.processor.selector = round robin
+a1.sinkgroups.g1.processor.selector.maxTimeOut = 10000
+
+# Describe the sink
+a1.sinks.k1.type = avro
+a1.sinks.k1.hostname = systemhub711
+a1.sinks.k1.port = 4141
+
+a1.sinks.k2.type = avro
+a1.sinks.k2.hostname = systemhub711
+a1.sinks.k2.port = 4142
+
+# Describe the channel
+a1.channels.c1.type = memory
+a1.channels.c1.capacity = 1000
+a1.channels.c1.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a1.sources.r1.channels = c1
+a1.sinkgroups.g1.sinks = k1 k2
+a1.sinks.k1.channel = c1
+a1.sinks.k2.channel = c1
+```
+
+> 在group_002目录下创建`flume_flume_console1.conf`配置文件.
+> 配置上级Flume输出源,输出位置到本地控制台.
+```
+[root@systemhub711 group_002]# touch flume_flume_console1.conf
+[root@systemhub711 group_002]# vim flume_flume_console1.conf
+```
+> 添加配置信息.
+```
+# Name the components on this agent
+a2.sources = r1
+a2.sinks = k1
+a2.channels = c1
+
+# Describe/configure the source
+a2.sources.r1.type = avro
+a2.sources.r1.bind = systemhub711
+a2.sources.r1.port = 4141
+
+# Describe the sink
+a2.sinks = k1.type = logger
+
+# Describe/configure the source
+a2.channels.c1.type = memory
+a2.channels.c1.capacity = 1000
+a2.channels.c1.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a2.sources.r1.channels = c1
+a2.sinks.k1.channel = c1
+```
+> 在group_002目录下创建`flume_flume_console2.conf`配置文件.
+```
+[root@systemhub711 group_002]# touch flume_flume_console2.conf
+[root@systemhub711 group_002]# vim flume_flume_console2.conf
+```
+> 添加配置信息.
+```
+# Name the components on this agent
+a3.sources = r1
+a3.sinks = k1
+a3.channels = c2
+
+# Describe/configure the source
+a3.sources.r1.type = avro
+a3.sources.r1.bind = systemhub711
+a3.sources.r1.port = 4142
+
+# Describe the sink
+a3.sinks = k1.type= logger
+
+# Describe/configure the source
+a3.channels.c2.type = memory
+a3.channels.c2.capacity = 1000
+a3.channels.c2.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a3.sources.r1.channels = c2
+a3.sinks.k1.channel = c2
+```
+
+> 6.执行配置文件
+> 
+> 启动`flume_flume_console2.conf`
+```
+[root@systemhub711 flume]# bin/flume-ng agent --conf conf/ --name a3 --conf-file job/group_002/flume_flume_console2.conf -Dflume.root.logger==INFO,console
+Info: Sourcing environment configuration script /opt/module/flume/conf/flume-env.sh
+```
+> 启动`flume_flume_console1.conf`
+```
+[root@systemhub711 flume]# bin/flume-ng agent --conf conf/ --name a2 --conf-file job/group_002/flume_flume_console1.conf -Dflume.root.logger==INFO,console
+Info: Sourcing environment configuration script /opt/module/flume/conf/flume-env.sh
+```
+> 启动`flume_telnet_flume.conf`
+```
+[root@systemhub711 flume]# bin/flume-ng agent --conf conf/ --name a1 --conf-file job/group_002/flume_telnet_flume.conf
+Info: Sourcing environment configuration script /opt/module/flume/conf/flume-env.sh
+
+```
+
+> 启动telnet工具向systemhub711主机44444端口发送消息
+```
+[root@systemhub711 flume]# telnet systemhub711 44444
+Trying ...
+Connected to systemhub711.
+Escape character is '^]'.
+hey.
+OK
+```
+
+> 7.查看Flume监听窗口数据
+```
+(SinkRunner-PollingRunner-DefaultSinkProcessor) [INFO - org.apache.flume.sink.LoggerSink.process(LoggerSink.java:95)] Event: { headers:{} body: 68 65 6C 6C 6F 5F 77 6F 72 6C 64 0D    hey. }
+```
+
 ### 3.6 多数据源汇总
 
 ## 4. Flume监控Ganglia
