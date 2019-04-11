@@ -1505,7 +1505,7 @@ OK
 > 比如Spooling Directory Source为文件的每一行创建一个事物,一旦事物中所有事件全部传递到Channel且提交成功,那么Source就会将该文件标记为已完成任务.
 > 
 > 同理,事物以类似的方式处理从Channel到Sink的传递过程,如果因为某种原因使得事件无法记录,那么事物将会数据回滚,且所有事件都会保存到Channel中,等待重新传递.
-### 5.6 Flume 采集数据会丢失吗
+### 5.6 Flume 采集数据会不会丢失
 > Channel有两种存储方式
 > Memory Channel / File Channel
 > 
