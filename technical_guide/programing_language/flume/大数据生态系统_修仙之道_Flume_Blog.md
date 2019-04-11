@@ -1007,13 +1007,514 @@ OK
 ```
 
 ### 3.6 多数据源汇总
+> 服务器1上的Flume1监控文件/opt/module/group.log.
+> 服务器2上的Flume2监控某个端口的数据流.
+> 服务器1与服务器2将数据发送给服务器3上的Flume3,Flume3将最终数据打印到控制台.
+
+#### 1.步骤分析.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_015.jpg)
+
+#### 2.实现步骤.
+> 准备工作
+> 
+> 1.在/opt/module/flume/job目录下创建group_003文件夹.
+```
+[root@systemhub711 job]# mkdir group_003
+[root@systemhub711 job]# ll
+total 24
+-rw-r--r--. 1 root root 1582 Apr 10 16:28 flume_dir_hdfs.conf
+-rw-r--r--. 1 root root 1519 Apr 10 10:49 flume_file_hdfs.conf
+-rw-r--r--. 1 root root  548 Apr  9 22:46 flume_telnet_logger.conf
+drwxr-xr-x. 2 root root 4096 Apr 10 21:30 group_001
+drwxr-xr-x. 2 root root 4096 Apr 11 01:33 group_002
+drwxr-xr-x. 2 root root 4096 Apr 11 16:53 group_003
+```
+> 2.分发Flume.
+> 
+> 向systemhub611服务器分发Flume.
+```
+[root@systemhub711 module]# rsync -rvl flume/ root@systemhub611:/opt/module/flume/
+```
+> 向systemhub511服务器分发Flume.
+```
+[root@systemhub711 module]# rsync -rvl flume/ root@systemhub511:/opt/module/flume/
+```
+> 3.分发完成,查看结果.
+```
+[root@systemhub511 module]# ll
+total 20
+drwxr-xr-x.  9 root  root  4096 Feb 24 21:55 apache-tomcat
+drwxr-xr-x. 10 root  root  4096 Apr 11 17:02 flume
+drwxr-xr-x. 12 10011 10011 4096 Mar  3 00:42 hadoop
+drwxr-xr-x.  8 uucp    143 4096 Dec 20  2017 jdk1.8.0_162
+drwxr-xr-x. 10  1001  1001 4096 Mar 23  2017 zookeeper
+[root@systemhub511 module]#
+```
+```
+[root@systemhub611 module]# ll
+total 32
+drwxr-xr-x.  9 root   root 4096 Feb 24 21:55 apache-tomcat
+drwxr-xr-x. 10 root   root 4096 Apr 11 17:01 flume
+drwxr-xr-x. 12 root   root 4096 Feb 27 14:24 hadoop
+drwxr-xr-x.  8 uucp    143 4096 Dec 20  2017 jdk1.8.0_162
+drwxr-xr-x.  6 root   root 4096 Apr  1 14:50 maven
+drwxr-xr-x. 10 109965 5000 4096 Apr  1 18:15 protobuf
+drwxr-xr-x.  6  60692 5000 4096 Apr  1 16:45 snappy
+drwxr-xr-x. 10   1001 1001 4096 Mar 23  2017 zookeeper
+[root@systemhub611 module]#
+```
+> 4.在systemhub711服务器上创建并配置`flume1_logger_flume.conf`配置文件.
+> 配置Source用于监控hive.log文件,配置Sink输出数据到下一级Flume.
+```
+[root@systemhub711 //]# cd /opt/module/flume/
+[root@systemhub711 flume]# cd job/group_003
+[root@systemhub711 group_003]# touch flume1_logger_flume.conf
+[root@systemhub711 group_003]# vim flume1_logger_flume.conf
+```
+> 添加配置信息.
+```
+# Name the components on this agent
+a1.sources = r1
+a1.sinks = k1
+a1.channels = c1
+
+# Describe/configure the source
+a1.sources.r1.type = exec
+a1.sources.r1.command = tail -F /opt/module/hive/logs/hive.log
+a1.sources.r1.shell = /bin/bash -c
+
+# Describe the sink
+a1.sinks.k1.type = avro
+a1.sinks.k1.hostname = systemhub511
+a1.sinks.k1.port = 4141
+
+# Describe the channel
+a1.channels.c1.type = memory
+a1.channels.c1.capacity = 1000
+a1.channels.c1.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a1.sources.r1.channels = c1
+a1.sinks.k1.channel = c1
+```
+> 5.在systemhub611服务器上创建并配置`flume2_netcat_flume.conf`配置文件.
+> 配置Source监控端口44444数据流,配置Sink数据到下一级Flume.
+```
+[root@systemhub611 module]# cd flume/job/group_003
+[root@systemhub611 group_003]# touch flume2_netcat_flume.conf
+[root@systemhub611 group_003]# vim flume2_netcat_flume.conf
+```
+> 添加配置信息.
+```
+# Name the components on this agent
+a2.sources = r1
+a2.sinks = k1
+a2.channels = c1
+
+# Describe/configure the source
+a2.sources.r1.type = netcat
+a2.sources.r1.bind = systemhub611
+a2.sources.r1.port = 44444
+
+# Describe the sin
+a2.sinks.k1.type = avro
+a2.sinks.k1.hostname = systemhub511
+a2.sinks.k1.port = 4141
+
+# Use a channel which buffers events in memory
+a2.channels.c1.type = memory
+a2.channels.c1.capacity = 1000
+a2.channels.c1.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a2.sources.r1.channels = c1
+a2.sinks.k1.channel = c1
+```
+
+> 6.在systemhub511服务器上创建并配置`flume3_flume_logger.conf`配置文件.
+> 配置Source用于接收Flume1与Flume1发送的数据,最终合并到Sink到控制台.
+```
+[root@systemhub511 opt]# cd module/flume/job/group_003
+[root@systemhub511 group_003]# touch flume3_flume_logger.conf
+[root@systemhub511 group_003]# vim flume3_flume_logger.conf
+```
+> 添加配置信息.
+```
+# Name the components on this agent
+a3.sources = r1
+a3.sinks = k1
+a3.channels = c1
+
+# Describe/configure the source
+a3.sources.r1.type = avro
+a3.sources.r1.bind = systemhub511
+a3.sources.r1.port = 4141
+a3.sinks = k1.type= logger
+
+# Describe the channel
+a3.channels.c1.type = memory
+a3.channels.c1.capacity = 1000
+a3.channels.c1.transactionCapacity = 100
+
+# Bind the source and sink to the channel
+a3.sources.r1.channels = c1
+a3.sinks.k1.channel = c1
+```
+> 6.执行配置文件
+> 启动systemhub511服务
+```
+[root@systemhub511 flume]# bin/flume-ng agent --conf conf/ --name a3 --conf-file job/group_003/flume3_flume_logger.conf -Dflume.root.logger==INFO,console
+Info: Sourcing environment configuration script //opt/module/flume/conf/flume-env.sh
+```
+> 启动systemhub611服务
+```
+[root@systemhub611 flume]# bin/flume-ng agent --conf conf/ --name a2 --conf-file job/group_003/flume2_netcat_flume.conf
+Info: Sourcing environment configuration script /opt/module/flume/conf/flume-env.sh
+```
+> 启动systemhub711服务
+```
+[root@systemhub711 flume]# bin/flume-ng agent --conf conf/ --name a1 --conf-file job/group_003/flume1_logger_flume.conf
+Info: Sourcing environment configuration script /opt/module/flume/conf/flume-env.sh
+```
+> 7.启动telnet工具向systemhub611主机44444端口发送消息
+```
+[root@systemhub611 ~]# telnet systemhub611 44444
+Trying ...
+Connected to systemhub611.
+Escape character is '^]'.
+het^Hy.
+OK
+```
+> 8.在systemhub511服务器查看Flume监听窗口数据
+```
+(SinkRunner-PollingRunner-DefaultSinkProcessor) [INFO - org.apache.flume.sink.LoggerSink.process(LoggerSink.java:95)] Event: { headers:{} body: 68 65 6C 6C 6F 5F 77 6F 72 6C 64 0D    het^Hy }
+```
+
+
 
 ## 4. Flume监控Ganglia
-## 5. Flume自定义MySQL
-## 6. Flume知识扩展
-## 7. 企业面试题(重点)
+### 4.1 Ganglia的安装与部署
+#### 4.1.1 安装httpd服务与php
+> install httpd php
+```
+[root@systemhub711 flume]# yum -y install httpd php
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Determining fastest mirrors
+ * base: mirrors.neusoft.edu.cn
+ * extras: mirrors.huaweicloud.com
+ * updates: mirrors.huaweicloud.com
+ Installed:
+  php.x86_64 0:5.3.3-49.el6
+Dependency Installed:
+  php-cli.x86_64 0:5.3.3-49.el6
+  php-common.x86_64 0:5.3.3-49.el6
+  httpd.x86_64 0:2.2.15-69.el6.centos
+Dependency Updated:
+  httpd-tools.x86_64 0:2.2.15-69.el6.centos                    
+Complete!
+```
+#### 4.1.2 安装其他依赖
+> install rrdtool perl-rrdtool rrdtool-devel
+```
+[root@systemhub711 flume]# yum -y install rrdtool perl-rrdtool rrdtool-devel
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Loading mirror speeds from cached hostfile
+ * base: mirrors.neusoft.edu.cn
+ * extras: mirrors.huaweicloud.com
+ * updates: mirrors.huaweicloud.com
+Installed:
+  rrdtool.x86_64 0:1.3.8-10.el6 rrdtool-devel.x86_64 0:1.3.8-10.el6 rrdtool-perl.x86_64 0:1.3.8-10.el6
+Dependency Installed:
+  dejavu-lgc-sans-mono-fonts.noarch 0:2.33-1.el6
+  dejavu-fonts-common.noarch 0:2.33-1.el6   dejavu-sans-fonts.noarch 0:2.33-1.el6   dejavu-sans-mono-fonts.noarch 0:2.33-1.el6   dejavu-serif-fonts.noarch 0:2.33-1.el6  
+Complete!
+```
+> install apr-devel
+```
+[root@systemhub711 flume]# yum -y install apr-devel
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Loading mirror speeds from cached hostfile
+ * base: mirrors.neusoft.edu.cn
+ * extras: mirrors.huaweicloud.com
+ * updates: mirrors.huaweicloud.com
+Installed:
+  apr-devel.x86_64 0:1.3.9-5.el6_9.1  
+Dependency Updated:
+  apr.x86_64 0:1.3.9-5.el6_9.1 
+Complete!
+```
+#### 4.1.3 安装ganglia
+```
+[root@systemhub711 flume]# rpm -Uvh http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+Retrieving http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm
+warning: /var/tmp/rpm-tmp.p3Rjmd: Header V3 RSA/SHA256 Signature, key ID 0608b895: NOKEY
+Preparing...                ########################################### [100%]
+   1:epel-release           ########################################### [100%]
+[root@systemhub711 flume]# 
+```
+> install ganglia-gmetad
+```
+[root@systemhub711 flume]# yum -y install ganglia-gmetad
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Loading mirror speeds from cached hostfile
+ * base: mirrors.neusoft.edu.cn
+ * extras: mirrors.huaweicloud.com
+ * updates: mirrors.huaweicloud.com
+Installed:
+  ganglia-gmetad.x86_64 0:3.7.2-2.el6
+  ganglia.x86_64 0:3.7.2-2.el6
+[root@systemhub711 flume]#
+```
+> install ganglia-web
+```
+[root@systemhub711 flume]# yum -y install ganglia-web
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Loading mirror speeds from cached hostfile
+ * base: mirrors.neusoft.edu.cn
+ * extras: mirrors.huaweicloud.com
+ * updates: mirrors.huaweicloud.com
+Installed:
+  ganglia-web.x86_64 0:3.7.1-2.el6
+Dependency Installed
+  libXpm.x86_64 0:3.5.10-2.el6  php-ZendFramework.noarch 0:1.12.20-1.el6 php-bcmath.x86_64 0:5.3.3-49.el6 php-gd.x86_64 0:5.3.3-49.el6 php-process.x86_64 0:5.3.3-49.el6
+  php-xml.x86_64 0:5.3.3-49.el6
+[root@systemhub711 flume]# 
+```
+> install -y ganglia-gmond
+```
+[root@systemhub711 flume]# yum install -y ganglia-gmond
+Loaded plugins: fastestmirror, refresh-packagekit, security
+Loading mirror speeds from cached hostfile
+ * base: mirrors.neusoft.edu.cn
+ * extras: mirrors.huaweicloud.com
+ * updates: mirrors.huaweicloud.com
+Setting up Install Process
+Running Transaction
+  Installing : ganglia-gmond-3.7.2-2.el6.x86_64
+  1/1 
+  Verifying  : ganglia-gmond-3.7.2-2.el6.x86_64
+  1/1 
+Installed:
+  ganglia-gmond.x86_64 0:3.7.2-2.el6
+[root@systemhub711 flume]# 
+```
+#### 4.1.4 修改配置文件
+> `/etc/httpd/conf.d/ganglia.conf`
+```
+[root@systemhub711 flume]# vim /etc/httpd/conf.d/ganglia.conf
+```
+```
+#
+# Ganglia monitoring system php web frontend
+#
+Alias /ganglia /usr/share/ganglia\
+<Location /ganglia>
+  Order deny,allow
+  Deny from all
+  Allow from all
+  # Allow from 127.0.0.1
+  # Allow from ::1
+  # Allow from .example.com
+</Location>
+```
+> `/etc/ganglia/gmetad.conf`
+```
+[root@systemhub711 flume]# vim /etc/ganglia/gmetad.conf
+```
+```
+data_source "systemhub711" 122.16.178.132
+```
+> `/etc/ganglia/gmond.conf`
+```
+[root@systemhub711 flume]# vim /etc/ganglia/gmond.conf
+```
+```
+/*
+ * The cluster attributes specified will be used as part of the <CLUSTER>
+ * tag that will wrap all hosts collected by this instance.
+ */
+cluster {
+  name = "systemhub711"
+  owner = "unspecified"
+  latlong = "unspecified"
+  url = "unspecified"
+}
 
-## 8. 修仙之道 技术架构迭代 登峰造极之势
+/* Feel free to specify as many udp_send_channels as you like.  Gmond
+   used to only support having a single channel */
+udp_send_channel {
+  #bind_hostname = yes # Highly recommended, soon to be default.
+                       # This option tells gmond to use a source address
+                       # that resolves to the machine's hostname.  Without
+                       # this, the metrics may appear to come from any
+                       # interface and the DNS names associated with
+                       # those IPs will be used to create the RRDs.
+  #mcast_join = 239.2.11.71
+  host = 122.16.178.132
+  port = 8649
+  ttl = 1
+}
+
+/* You can specify as many udp_recv_channels as you like as well. */
+udp_recv_channel {
+  #mcast_join = 239.2.11.71
+  port = 8649
+  bind = 122.16.178.132
+  retry_bind = true
+  # Size of the UDP buffer. If you are handling lots of metrics you really
+  # should bump it up to e.g. 10MB or even higher.
+  # buffer = 10485760
+}
+```
+> `/etc/selinux/config`
+```
+[root@systemhub711 flume]# vim /etc/selinux/config
+```
+``` dsconfig
+# This file controls the state of SELinux on the system.
+# SELINUX= can take one of these three values:
+#     enforcing - SELinux security policy is enforced.
+#     permissive - SELinux prints warnings instead of enforcing.
+#     disabled - No SELinux policy is loaded.
+#     SELINUX=enforcing
+SELINUX=disabled
+# SELINUXTYPE= can take one of these two values:
+#     targeted - Targeted processes are protected,
+#     mls - Multi Level Security protection.
+SELINUXTYPE=targeted
+```
+> selinux本次生效关闭必须重启,如果此时不想重启,可以临时生效
+```
+[root@systemhub711 flume]# sudo setenforce 0
+```
+
+#### 4.1.5 启动ganglia
+##### 4.1.5.1 启动服务
+```
+[root@systemhub711 flume]# service httpd start
+正在启动 httpd：
+[root@systemhub711 flume]# service gmetad start
+Starting GANGLIA gmetad:  [确定]
+[root@systemhub711 flume]# service gmond start
+Starting GANGLIA gmond:  [确定]
+[root@systemhub711 flume]# 
+```
+##### 4.1.5.2 Browser access
+> http://systemhub711/ganglia
+> 
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_016.jpg)
+
+
+### 4.2 操作Flume测试监控
+#### 4.2.1 修改flume-env.sh配置
+```
+[root@systemhub711 conf]# vim flume-env.sh
+```
+```
+export JAVA_OPTS="-Dflume.monitoring.type=ganglia -Dflume.monitoring.hosts=122.16.178.132:8649 -Xms100m -Xmx200m"
+```
+#### 4.2.2 启动flume任务
+```
+[root@systemhub711 flume]# bin/flume-ng agent 
+--conf conf/ 
+--name a1 
+--conf-file job/flume_telnet_logger.conf 
+-Dflume.root.logger==INFO,console 
+-Dflume.monitoring.type=ganglia 
+-Dflume.monitoring.hosts=122.16.178.132:8649
+
+Info: Sourcing environment configuration script /opt/module/flume/conf/flume-env.sh
+Info: Including Hadoop libraries found via (/opt/module/hadoop/bin/hadoop) for HDFS access
+Info: Including Hive libraries found via (/opt/module/hive) for Hive access
+```
+#### 4.2.3 发送数据查看Ganglia监测图
+```
+[root@systemhub711 ~]# telnet systemhub711 44444
+Trying ...
+Connected to systemhub711.
+Escape character is '^]'.
+01010101
+OK
+```
+```
+(SinkRunner-PollingRunner-DefaultSinkProcessor) [INFO - org.apache.flume.sink.LoggerSink.process(LoggerSink.java:95)] Event: { headers:{} body: 30 31 30 31 30 31 30 31 0D                      01010101. }
+```
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flume/start_018.jpg)
+
+> 监测说明
+| 字段 (图表名称) | 字段含义 |
+| :--------: | :--------:|
+| EventPutAttemptCount    |   Source尝试写入Channel事件总数量. |
+| EventPutSuccessCount    |   成功写入Channel且提交事件总数量. |
+| EventTakeAttemptCount    |   Sink尝试从Channel拉取事件总数量,这不意味着每次事件都被返回,因为Sink拉取时候Channel可能没有任何数据. |
+| EventTakeSuccessCount    |   Sink成功读取事件总数量. |
+| StartTime    |   Channel启动时间 (毫秒) |
+| StopTime    |   Channel停止时间 (毫秒) |
+| ChannelSize    |   目前Channel中事件总数量. |
+| ChannelFillPercentage    |   Channel占用百分比. |
+| ChannelCapacity    |   Channel容量. |
+
+
+
+
+## 5. 企业面试题(重点)
+### 5.1 如何实现Flume数据传输监控
+> 使用第三方框架Ganglia实时监控Flume.
+
+### 5.2 Flume中Source/Sink/Channel的作用
+> 作用 : 
+> 
+> `Source组件`是专门用于收集数据,可以处理各种类型,各种格式日志数据,包括Avro / Thrift / Exec / Jms / Spooling Directory / Netcat / Sequence Generator / Syslog / Http / Legacy
+> 
+> `Channel组件`对采集到的数据进行缓存,可以存放在Memory或File中.
+> 
+> `Sink组件`是用于把数据发送发送到目的地的组件,目的地包括HDFS / Looger / Avro / Thrift / Ipc / File / HBase / Solr / 自定义.
+> 
+> `Source类型为` : 
+> 监控后后台日志 : exec
+> 监控后台产生日志端口 : netcat
+
+### 5.3 Flume Channel Selectors
+> Channel Selectors可以让不同的项目日志通过不同的Channel到不同的Sink中.
+> 
+> Channel Selectors (选择器)有两种类型 : 
+> Replicating Channel Selector (Flume默认选择器)
+> Multiplexing Channel Selector
+> 
+> 这两种Selector区别是Replicating会将Source的Events发往所有的Channel,类似于广播式传输,而Multiplexing可以选择Channel发送数据.
+
+### 5.4 Flume 参数调优
+> `Source`
+> 可以增加Source个数,可以增大Source读取数据的能力.
+> 目录产生文件过多时,需要将这个文件目录拆分成多个文件目录,同时配置好多个Source以保证Source有足够能力获取新产生的数据.
+> 
+> batchSize参数决定Source一次批量传输到Channel的Enent条数,适当将阈值调大,可以提高Source搬运Enent到Channel时的性能.
+> 
+> `Channel`
+> type选择Memory是Channel性能最好,但是如果Flume进程意外宕机可能会丢失数据,type选择File时Channel容量性更好,但是性能上会比Memory Channel差.
+> 使用File Channel时dataDirs配置多个不同磁盘下的目录可以提高性能.
+> 
+> `Sink`
+> 增加Sink个数,也可以增加Sink消费Event的能力,Sink并不是增加的越多越好,过多Sink会占用系统资源,造成系统资源不必要的浪费.
+> 
+> batchSize参数决定Sink一次批量从Channel读取Event条数,适当将阈值调大可以提高Sink从Channel搬出Event性能.
+
+### 5.5 Flume 事务机制
+> Flume数据机制(类似于数据库事务机制) : Flume使用两个独立的事物分别负责从Source到Channel,以及从Channel到Sink的事物传递.
+> 
+> 比如Spooling Directory Source为文件的每一行创建一个事物,一旦事物中所有事件全部传递到Channel且提交成功,那么Source就会将该文件标记为已完成任务.
+> 
+> 同理,事物以类似的方式处理从Channel到Sink的传递过程,如果因为某种原因使得事件无法记录,那么事物将会数据回滚,且所有事件都会保存到Channel中,等待重新传递.
+### 5.6 Flume 采集数据会丢失吗
+> Channel有两种存储方式
+> Memory Channel / File Channel
+> 
+> 当Channel存储方式采用File Channel,不会丢失数据,因为数据存储在磁盘中,且自身有事物机制.
+> 
+> 当Channel存储方式采用Memory Channel,会丢失数据,因为数据存储在内存中,数据传输可靠性差.
+
+
+## 6. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
 
