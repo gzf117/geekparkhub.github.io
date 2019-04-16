@@ -64,7 +64,7 @@
 > 
 > Kafka是一个分布式消息队列,Kafka对消息保存时根据Topic进行归类,发送消息者称为Producer,消息接受者称为Consumer,此外Kafka集群有多个Kafka实例组成,每个实例(Server)成为Broker.
 > 
-> 无论是Kafka集群,还是Producer和consumer都依赖于Zookeeper集群保存一些Meta信息来保证系统可用性.
+> 无论是Kafka集群,还是Producer和Consumer都依赖于Zookeeper集群保存一些Meta信息来保证系统可用性.
 
 ### 1.4 Kafka 架构
 
