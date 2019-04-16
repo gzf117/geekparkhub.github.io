@@ -56,16 +56,34 @@
 > `异步通信` : 很多时候用户不想也不需要立即处理消息,消息队列提供了异步处理机制,允许用户把一个消息放入队列,但并不立即处理它,想向队列中放入多少消息就放多少,然后在需要的时候再去处理它们.
 
 ### 1.3 Kafka 简介
-> 在流式计算中,Kafka一般用来缓存数据,Storm通过消费Kafka的数据进行计算.
+> 在流式计算中,Kafka一般用来缓存数据,Storm通过消费Kafka数据进行计算.
 > 
 > Apache Kafka是一个开源消息系统,是由Scala编程语言编写,Apache软件基金会开发一个开源消息系统项目.
 > 
-> Kafka最初是由LinkedIn公司开发,并于2011年初开源,2012年10月从Apache Incubator毕业,该项目的目标是为处理实时数据提供一个统一、高通量、低等待平台.
+> Kafka最初是由LinkedIn公司开发,并于2011年初开源,2012年10月从Apache Incubator毕业,该项目的目标是为处理实时数据提供一个统一 / 高通量 / 低等待平台.
 > 
-> Kafka是一个分布式消息队列,Kafka对消息保存时根据Topic进行归类,发送消息者称为Producer,消息接受者称为Consumer,此外kafka集群有多个kafka实例组成,每个实例(server)成为broker.
+> Kafka是一个分布式消息队列,Kafka对消息保存时根据Topic进行归类,发送消息者称为Producer,消息接受者称为Consumer,此外Kafka集群有多个Kafka实例组成,每个实例(Server)成为Broker.
 > 
-> 无论是kafka集群,还是producer和consumer都依赖于zookeeper集群保存一些meta信息,来保证系统可用性.
+> 无论是Kafka集群,还是Producer和consumer都依赖于Zookeeper集群保存一些Meta信息来保证系统可用性.
 
+### 1.4 Kafka 架构
+
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/kafka/start_003.jpg)
+
+> `Producer` : 消息生产者,向Kafka Broker发消息的客户端.
+> 
+> `Consumer` : 消息消费者,向Kafka Broker拉取消息的客户端.
+> 
+> `Topic` : 可以理解为一个队列.
+> 
+> `Consumer Group`(CG) : 这是Kafka用来实现Topic消息广播(发给所有Consumer)单播(发给任意一个Consumer)手段,一个Topic可以有多个CG,Topic消息会复制(仅仅只是概念上的复制)所有CG,但每个Partion只会把消息发给该CG中一个Consumer.
+> 如果需要实现广播,只要每个Consumer有一个独立CG就可以了,要实现单播只要所有Consumer在同一个CG,用CG还可以将Consumer进行自由分组而不需要多次发送消息到不同的Topic.
+> 
+> `Broker` : 一台Kafka服务器就是一个Broker,一个集群由多个Broker组成,一个Broker可以容纳多个Topic.
+> 
+> `Partition` : 为了实现扩展性,一个非常大的Topic可以分布到多个Broker(即是服务器),一个Topic可以分为多个Partition,每个Partition是一个有序队列,Partition中每条消息都会被分配一个有序Id(Offset),Kafka只保证按一个Partition中顺序将消息发给Consumer,不保证一个Topic整体(多个Partition间)顺序.
+> 
+> `Offset` : Kafka存储文件都是按照offset.kafka来命名,用Offset作为名称的好处是方便查找,例如想找位于2049位置,只要找到2048.kafka文件即可,当然`the first offset`就是00000000000.kafka.
 
 ## 2. Kafka 集群部署
 
@@ -78,8 +96,7 @@
 ## 6. Kafka Streams
 
 
-
-## 10. 修仙之道 技术架构迭代 登峰造极之势
+## 7. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
 
