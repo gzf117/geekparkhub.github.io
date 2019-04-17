@@ -64,7 +64,7 @@
 > 
 > Kafka是一个分布式消息队列,Kafka对消息保存时根据Topic进行归类,发送消息者称为Producer,消息接受者称为Consumer,此外Kafka集群有多个Kafka实例组成,每个实例(Server)成为Broker.
 > 
-> 无论是Kafka集群,还是Producer和Consumer都依赖于Zookeeper集群保存一些Meta信息来保证系统可用性.
+> 无论是Kafka集群,还是Producer和consumer都依赖于Zookeeper集群保存一些Meta信息来保证系统可用性.
 
 ### 1.4 Kafka 架构
 
@@ -86,6 +86,566 @@
 > `Offset` : Kafka存储文件都是按照offset.kafka来命名,用Offset作为名称的好处是方便查找,例如想找位于2049位置,只要找到2048.kafka文件即可,当然`the first offset`就是00000000000.kafka.
 
 ## 2. Kafka 集群部署
+### 2.1 环境准备
+#### 2.1.1 集群规划
+| Server Node | Zookooper Server | Kafka Server |
+| :--------: | :--------:| :------: |
+| systemhub511 🖥️ | zookeeper ✅ | kafka ✅  |
+| systemhub611 🖥️ | zookeeper ✅ | kafka ✅  |
+| systemhub711 🖥️ | zookeeper ✅ | kafka ✅  |
+
+#### 2.1.2 Download
+- `Download Zookeeper` : [archive.apache.org/dist/zookeeper](https://archive.apache.org/dist/zookeeper/)
+- `Download Kafka` : [kafka.apache.org/downloads](http://kafka.apache.org/downloads.html)
+
+#### 2.1.3 安装 Zookeeper
+##### 2.1.3.1 解压 zookeeper
+```
+[root@systemhub511 ~]#  cd /opt/software/
+[root@systemhub511 software]# ll
+total 512064
+-rwxrwxrwx. 1 root root  35042811 Jan 17 19:18 zookeeper-3.4.10.tar.gz
+[root@systemhub511 software]# tar -zxvf zookeeper-3.4.10.tar.gz -C /opt/module/
+zookeeper-3.4.10/
+zookeeper-3.4.10/LICENSE.txt
+zookeeper-3.4.10/lib/
+zookeeper-3.4.10/lib/log4j-1.2.16.LICENSE.txt
+[root@systemhub511 software]#
+```
+##### 2.1.3.2 重命名 zookeeper
+```
+[root@systemhub511 module]# mv zookeeper-3.4.10 zookeeper
+[root@systemhub511 module]# ll
+total 20
+drwxr-xr-x.  9 root  root  4096 Feb 24 21:55 apache-tomcat
+drwxr-xr-x. 10 root  root  4096 Apr 11 17:02 flume
+drwxr-xr-x. 12 10011 10011 4096 Mar  3 00:42 hadoop
+drwxr-xr-x.  8 uucp    143 4096 Dec 20  2017 jdk1.8.0_162
+drwxr-xr-x. 10  1001  1001 4096 Mar 23  2017 zookeeper
+```
+##### 2.1.3.3 创建 zkData目录
+```
+[root@systemhub511 zookeeper]# mkdir zkData
+```
+##### 2.1.3.4 重命名配置文件
+```
+[root@systemhub511 conf]# mv zoo_sample.cfg zoo.cfg
+[root@systemhub511 conf]# ll
+total 12
+-rw-rw-r--. 1 1001 1001  535 Mar 23  2017 configuration.xsl
+-rw-rw-r--. 1 1001 1001 2161 Mar 23  2017 log4j.properties
+-rw-rw-r--. 1 1001 1001  922 Mar 23  2017 zoo.cfg
+[root@systemhub511 conf]# 
+```
+##### 2.1.3.5 配置 zoo.cfg文件
+> 配置数据缓存路径
+```
+[root@systemhub511 zkData]# pwd
+/opt/module/zookeeper/zkData
+[root@systemhub511 zookeeper]# cd conf/
+[root@systemhub511 conf]# vim zoo.cfg
+```
+> 修改配置信息
+> 
+> 配置参数解读 : `Server.A = B:C:D`
+> A表示 标识服务器节点ID.
+> B表示 标识服务器节点名称.
+> C表示 标识服务器与集群中Leader服务器交换信息端口.
+> D表示 如集群中Leader服务器宕机时,需要一个端口来重新进行选举,并选出新的Leader,而这个端口就是用来执行选举时服务器相互通信端口.
+``` dsconfig
+# The number of milliseconds of each tick
+tickTime=2000
+# The number of ticks that the initial 
+# synchronization phase can take
+initLimit=10
+# The number of ticks that can pass between 
+# sending a request and getting an acknowledgement
+syncLimit=5
+# the directory where the snapshot is stored.
+# do not use /tmp for storage, /tmp here is just 
+# example sakes.
+dataDir=/opt/module/zookeeper/zkData
+# the port at which the clients will connect
+clientPort=2181
+
+################### Cluster ######################
+server.1=systemhub511:2888:3888
+server.2=systemhub611:2888:3888
+server.3=systemhub711:2888:3888
+```
+
+##### 2.1.3.6 Zookeeper 集群
+> 集群模式下需配置myid文件,此文件是在dataDir目录下,此文件数据中就是A值,Zookeeper启动时读取此文件,得到的数据与zoo.cfg中配置信息比较从而判断哪个Server.
+> 
+> 创建myid
+```
+[root@systemhub511 zookeeper]# cd zkData/
+[root@systemhub511 zkData]# touch myid
+[root@systemhub511 zkData]# vim myid
+```
+> 根据zoo.cfg服务节点配置对应id,在当前systemhub511服务器,id如1
+```
+1
+```
+> 集群分发
+```
+[root@systemhub511 module]# scp -r zookeeper/ root@systemhub611:/opt/module/zookeeper/
+README.txt 100% 1585     1.6KB/s   00:00 
+zookeeper-3.4.10-recipes-election.jar 100%   13KB  13.4KB/s   00:00    
+[root@systemhub511 module]# 
+[root@systemhub511 module]# scp -r zookeeper/ root@systemhub711:/opt/module/zookeeper/
+README.txt 100% 1585     1.6KB/s   00:00 
+zookeeper-3.4.10-recipes-election.jar 100%   13KB  13.4KB/s   00:00    
+[root@systemhub511 module]#  
+```
+> 分别配置myid文件
+```
+[root@systemhub611 module]# cd zookeeper/zkData/
+[root@systemhub611 zkData]# vim myid
+```
+```
+2
+```
+```
+[root@systemhub711 module]# cd zookeeper/zkData/
+[root@systemhub711 zkData]# vim myid
+```
+```
+3
+```
+> 启动 Zookeeper Server 集群
+> 
+> 应事先关闭集群防火墙
+> 
+>  Start systemhub511 Server Node
+```
+[root@systemhub511 zookeeper]# bin/zkServer.sh start
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeeper/bin/../conf/zoo.cfg
+Starting zookeeper ... already running as process 31221.
+[root@systemhub511 zookeeper]#
+```
+>  Start systemhub611 Server Node
+```
+[root@systemhub611 zookeeper]# bin/zkServer.sh start
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeeper/bin/../conf/zoo.cfg
+Starting zookeeper ... already running as process 29605.
+[root@systemhub611 zookeeper]# 
+```
+>  Start systemhub711 Server Node
+```
+[root@systemhub711 zookeeper]# bin/zkServer.sh start
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeeper/bin/../conf/zoo.cfg
+Starting zookeeper ... already running as process 29650.
+[root@systemhub711 zookeeper]#
+```
+> 查看 Zookeeper Server 集群状态
+> 
+> systemhub511 Server Node Info
+```
+[root@systemhub511 zookeeper]# bin/zkServer.sh status
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeeper/bin/../conf/zoo.cfg
+Mode: follower
+[root@systemhub511 zookeeper]#
+```
+> systemhub611 Server Node Info
+```
+[root@systemhub611 zookeeper]# bin/zkServer.sh status
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeeper/bin/../conf/zoo.cfg
+Mode: leader
+[root@systemhub611 zookeeper]# 
+```
+> systemhub711 Server Node Info
+```
+[root@systemhub711 zookeeper]# bin/zkServer.sh status
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeeper/bin/../conf/zoo.cfg
+Mode: follower
+[root@systemhub711 zookeeper]#
+```
+
+
+### 2.2 Kafka集群部署
+#### 2.2.1 解压 kafka
+```
+[root@systemhub511 software]# tar -zxvf kafka_2.11-0.11.0.0.tgz -C /opt/module/
+kafka_2.11-0.11.0.0/
+kafka_2.11-0.11.0.0/LICENSE
+kafka_2.11-0.11.0.0/NOTICE
+kafka_2.11-0.11.0.0/bin/
+[root@systemhub511 software]#
+```
+#### 2.2.2 重命名文件名称
+```
+[root@systemhub511 module]# mv kafka_2.11-0.11.0.0 kafka
+[root@systemhub511 module]# ll
+drwxr-xr-x.  6 root  root  4096 Jun 23  2017 kafka
+[root@systemhub511 module]# 
+```
+#### 2.2.3 创建logs目录
+```
+[root@systemhub511 module]# cd kafka/
+[root@systemhub511 kafka]# mkdir logs
+```
+#### 2.2.4 修改配置文件
+```
+[root@systemhub511 kafka]# cd config/
+[root@systemhub511 config]# vim server.properties
+```
+> 
+```
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# see kafka.server.KafkaConfig for additional details and defaults
+
+############################# Server Basics #############################
+
+# The id of the broker. This must be set to a unique integer for each broker.
+broker.id=0
+
+# Switch to enable topic deletion or not, default value is false
+delete.topic.enable=true
+
+############################# Socket Server Settings #############################
+
+# The address the socket server listens on. It will get the value returned from 
+# java.net.InetAddress.getCanonicalHostName() if not configured.
+#   FORMAT:
+#     listeners = listener_name://host_name:port
+#   EXAMPLE:
+#     listeners = PLAINTEXT://your.host.name:9092
+#listeners=PLAINTEXT://:9092
+
+# Hostname and port the broker will advertise to producers and consumers. If not set, 
+# it uses the value for "listeners" if configured.  Otherwise, it will use the value
+# returned from java.net.InetAddress.getCanonicalHostName().
+#advertised.listeners=PLAINTEXT://your.host.name:9092
+
+# Maps listener names to security protocols, the default is for them to be the same. See the config documentation for more details
+#listener.security.protocol.map=PLAINTEXT:PLAINTEXT,SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL
+
+# The number of threads that the server uses for receiving requests from the network and sending responses to the network
+num.network.threads=3
+
+# The number of threads that the server uses for processing requests, which may include disk I/O
+num.io.threads=8
+
+# The send buffer (SO_SNDBUF) used by the socket server
+socket.send.buffer.bytes=102400
+
+# The receive buffer (SO_RCVBUF) used by the socket server
+socket.receive.buffer.bytes=102400
+
+# The maximum size of a request that the socket server will accept (protection against OOM)
+socket.request.max.bytes=104857600
+
+
+############################# Log Basics #############################
+
+# A comma seperated list of directories under which to store log files
+log.dirs=/opt/module/kafka/logss
+
+# The default number of log partitions per topic. More partitions allow greater
+# parallelism for consumption, but this will also result in more files across
+# the brokers.
+num.partitions=1
+
+# The number of threads per data directory to be used for log recovery at startup and flushing at shutdown.
+# This value is recommended to be increased for installations with data dirs located in RAID array.
+num.recovery.threads.per.data.dir=1
+
+############################# Internal Topic Settings  #############################
+# The replication factor for the group metadata internal topics "__consumer_offsets" and "__transaction_state"
+# For anything other than development testing, a value greater than 1 is recommended for to ensure availability such as 3.
+offsets.topic.replication.factor=1
+transaction.state.log.replication.factor=1
+transaction.state.log.min.isr=1
+
+############################# Log Flush Policy #############################
+
+# Messages are immediately written to the filesystem but by default we only fsync() to sync
+# the OS cache lazily. The following configurations control the flush of data to disk.
+# There are a few important trade-offs here:
+#    1. Durability: Unflushed data may be lost if you are not using replication.
+#    2. Latency: Very large flush intervals may lead to latency spikes when the flush does occur as there will be a lot of data to flush.
+#    3. Throughput: The flush is generally the most expensive operation, and a small flush interval may lead to exceessive seeks.
+# The settings below allow one to configure the flush policy to flush data after a period of time or
+# every N messages (or both). This can be done globally and overridden on a per-topic basis.
+
+# The number of messages to accept before forcing a flush of data to disk
+#log.flush.interval.messages=10000
+
+# The maximum amount of time a message can sit in a log before we force a flush
+#log.flush.interval.ms=1000
+
+############################# Log Retention Policy #############################
+
+# The following configurations control the disposal of log segments. The policy can
+# be set to delete segments after a period of time, or after a given size has accumulated.
+# A segment will be deleted whenever *either* of these criteria are met. Deletion always happens
+# from the end of the log.
+
+# The minimum age of a log file to be eligible for deletion due to age
+log.retention.hours=168
+
+# A size-based retention policy for logs. Segments are pruned from the log as long as the remaining
+# segments don't drop below log.retention.bytes. Functions independently of log.retention.hours.
+#log.retention.bytes=1073741824
+
+# The maximum size of a log segment file. When this size is reached a new log segment will be created.
+log.segment.bytes=1073741824
+
+# The interval at which log segments are checked to see if they can be deleted according
+# to the retention policies
+log.retention.check.interval.ms=300000
+
+############################# Zookeeper #############################
+
+# Zookeeper connection string (see zookeeper docs for details).
+# This is a comma separated host:port pairs, each corresponding to a zk
+# server. e.g. "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002".
+# You can also append an optional chroot string to the urls to specify the
+# root directory for all kafka znodes.
+zookeeper.connect=systemhub511:2181,systemhub611:2181,systemhub711:2181
+
+# Timeout in ms for connecting to zookeeper
+zookeeper.connection.timeout.ms=6000
+
+
+############################# Group Coordinator Settings #############################
+
+# The following configuration specifies the time, in milliseconds, that the GroupCoordinator will delay the initial consumer rebalance.
+# The rebalance will be further delayed by the value of group.initial.rebalance.delay.ms as new members join the group, up to a maximum of max.poll.interval.ms.
+# The default value for this is 3 seconds.
+# We override this to 0 here as it makes for a better out-of-the-box experience for development and testing.
+# However, in production environments the default value of 3 seconds is more suitable as this will help to avoid unnecessary, and potentially expensive, rebalances during application startup.
+group.initial.rebalance.delay.ms=0
+```
+#### 2.2.5 配置环境变量
+```
+[root@systemhub511 kafka]# pwd
+/opt/module/kafka
+[root@systemhub511 kafka]# vim /etc/profile
+```
+> 配置信息
+```
+## SET KAFKA_HOME
+export KAFKA_HOME=/opt/module/kafka
+export PATH=$PATH:$KAFKA_HOME/bin	
+```
+> 更新配置文件
+```
+[root@systemhub511 kafka]# source /etc/profile
+[root@systemhub511 kafka]# echo $KAFKA_HOME
+/opt/module/kafka
+```
+
+#### 2.2.6 分发 kafka集群
+```
+[root@systemhub511 module]# scp -r kafka/ root@systemhub611:/opt/module/kafka/
+connect-file-source.properties 100%  881     0.9KB/s   00:00    
+.server.properties.swp 100%   16KB  16.0KB/s   00:00    
+connect-file-sink.properties 100%  883     0.9KB/s   00:00
+[root@systemhub511 module]#
+```
+```
+[root@systemhub511 module]# scp -r kafka/ root@systemhub711:/opt/module/kafka/
+connect-file-source.properties 100%  881     0.9KB/s   00:00    
+.server.properties.swp 100%   16KB  16.0KB/s   00:00 
+[root@systemhub511 module]#
+```
+> 分别修改配置文件,broker.id不得重复
+```
+[root@systemhub611 ~]# cd /opt/module/kafka/config/
+[root@systemhub611 config]# vim server.properties
+```
+```
+# The id of the broker. This must be set to a unique integer for each broker.
+broker.id=1
+```
+```
+[root@systemhub711 ~]# cd /opt/module/kafka/config/
+[root@systemhub711 config]# vim server.properties
+```
+```
+# The id of the broker. This must be set to a unique integer for each broker.
+broker.id=2
+```
+
+#### 2.2.7 启动 kafka集群
+> 因KafkaServer依赖于ZookeeperServer,所以要事先开启ZookeeperServer.
+```
+[root@systemhub511 kafka]#  bin/kafka-server-start.sh config/server.properties
+[1] 23152
+```
+
+```
+[root@systemhub611 kafka]#  bin/kafka-server-start.sh config/server.properties
+[1] 22647
+```
+
+```
+[root@systemhub711 kafka]# bin/kafka-server-start.sh config/server.properties &
+[1] 22736
+```
+#### 2.2.8 关闭 kafka集群
+```
+[root@systemhub511 kafka]# bin/kafka-server-stop.sh stop
+```
+```
+[root@systemhub611 kafka]# bin/kafka-server-stop.sh stop
+```
+```
+[root@systemhub711 kafka]# bin/kafka-server-stop.sh stop
+```
+
+
+### 2.3 Kafka 命令行操作
+#### 2.3.1 创建topic
+> 参数说明 : 
+> `--topic` 定义topic名称
+> `--replication-factor` 定义副本数量
+> `--partitions`   定义分区数量
+```
+[root@systemhub511 kafka]# bin/kafka-topics.sh --create --zookeeper systemhub511:2181 -partitions 2 --replication-factor 2 --topic topic001
+Created topic "topic001".
+[root@systemhub511 kafka]# 
+```
+#### 2.3.2 查看当前服务中所有Topic
+```
+[root@systemhub511 kafka]# bin/kafka-topics.sh --list --zookeeper systemhub511:2181
+topic001
+[root@systemhub511 kafka]# 
+```
+
+#### 2.3.3 生产者
+```
+[root@systemhub511 kafka]# bin/kafka-console-producer.sh --broker-list systemhub511:9092 --topic topic001
+>hello kafka
+```
+#### 2.3.4 消费者
+> 过时版本语法
+```
+[root@systemhub711 kafka]# bin/kafka-console-consumer.sh --zookeeper systemhub511:2181 --topic topic001
+Using the ConsoleConsumer with old consumer is deprecated and will be removed in a future major release. Consider using the new consumer by passing [bootstrap-server] instead of [zookeeper].
+hello kafka
+```
+> 新版本语法
+``` dsconfig
+[root@systemhub711 kafka]# bin/kafka-console-consumer.sh --bootstrap-server systemhub511:9092 --topic topic001 --from-beginning
+
+hello kafka
+```
+#### 2.3.5 查看Topic详情
+```
+[root@systemhub511 kafka]# bin/kafka-topics.sh --describe --zookeeper systemhub511 --topic topic001
+Topic:topic001  PartitionCount:2        ReplicationFactor:2     Configs:
+        Topic: topic001 Partition: 0    Leader: 1       Replicas: 1,0   Isr: 0,1
+        Topic: topic001 Partition: 1    Leader: 2       Replicas: 2,1   Isr: 1,2
+[root@systemhub511 kafka]# 
+```
+#### 2.3.6 删除Topic
+> 需要在server.properties配置文件中设置`delete.topic.enable=true`
+> 否则只是标记删除或者直接重启
+```
+[root@systemhub511 kafka]# bin/kafka-topics.sh --delete --zookeeper systemhub511:2181 --topic topic001
+Topic topic001 is marked for deletion.
+Note: This will have no impact if delete.topic.enable is not set to true.
+[root@systemhub511 kafka]# 
+```
+
+### 2.4 Kafka 配置信息
+#### 2.4.1 Broker 配置信息
+
+| 属性        |     默认值 |   描述   |
+| :--------: | :--------:| :------: |
+| broker.id     |   0/1/2/3/... |  必填参数,broker唯一标识.  |
+| log.dirs     |   /tmp/kafka-logs |  Kafka数据存放的目录,可以指定多个目录,中间用逗号分隔,当新partition被创建时会被存放到当前存放partition最少的目录.  |
+| port     |   9092 |  BrokerServer接受客户端连接端口号  |
+| zookeeper.connect     |   null |  Zookeeper连接串格式为:`hostname1:port1,hostname2:port2,hostname3:port3`,注意,此配置允许指定一个zookeeper路径来存放此kafka集群所有数据,为了与其他应用集群区分开,建议在此配置中指定本集群存放目录格式为:`hostname1:port1,hostname2:port2,hostname3:port3/chroot/path`,要注意的是,消费者参数要和此参数一致.  |
+| message.max.bytes     |   1000000 |  服务器可以接收到最大消息的大小,注意此参数要和consumer的`maximum.message.size`值大小一致,否则会因为生产者生产消息太大导致消费者无法消费.  |
+| num.io.threads     |   8 |  服务器用来执行读写请求IO线程数,此参数数量至少要等于服务器上磁盘数量.  |
+| queued.max.requests     |   500 |  I/O线程可以处理请求队列大小,若实际请求数超过此大小,网络线程将停止接收新请求.  |
+| socket.send.buffer.bytes     |   100 * 1024 |  The SO_SNDBUFF buffer    the server prefers for socket connections  |
+| socket.receive.buffer.bytes.     |   field2 |  field3  |
+| field1     |   100 * 1024 |  The SO_RCVBUFF buffer the server prefers for socket connections.  |
+| socket.request.max.bytes     |   100 * 1024 * 1024 |  服务器允许请求最大值,用来防止内存溢出,其值应该小于Java heap size.  |
+| num.partitions     |   1 |  默认partition数量,如果topic在创建时没有指定partition数量,默认使用此值,建议改为5.  |
+| log.segment.bytes     |   1024 * 1024 * 1024 |  Segment文件大小,超过此值将会自动新建一个segment,此值可以被topic级别参数覆盖.  |
+| log.roll.{ms,hours}     |   24 * 7 hours |  新建segment文件时间,此值可以被topic级别参数覆盖.  |
+| log.retention.{ms,minutes,hours}     |   7 days |  Kafka segment log保存周期,保存周期超过此时间日志就会被删除,此参数可以被topic级别参数覆盖,数据量大时建议减小此值.  |
+| log.retention.bytes     |   -1 |  每个partition最大容量,若数据量超过此值,partition数据将会被删除,注意这个参数控制每个partition而不是topic,此参数可以被log级别参数覆盖.  |
+| log.retention.check.interval.ms     |   5 minutes |  删除策略的检查周期  |
+| auto.create.topics.enable     |   true |  自动创建topic参数,建议此值设置为false,严格控制topic管理,防止生产者错写topic.  |
+| default.replication.factor     |   1 |  默认副本数量,建议改为2  |
+| replica.lag.time.max.ms     |   10000 |  在此窗口时间内没有收到follower fetch请求,leader会将其从ISR(in-syncreplicas)中移除.  |
+| replica.lag.max.messages     |   4000 |  如果replica节点落后leader节点此值大小消息数量,leader节点就会将其从ISR中移除.  |
+| replica.socket.timeout.ms     |   30 * 1000 |  replica向leader发送请求的超时时间.  |
+| replica.socket.receive.buffer.bytes     |   64 * 1024 |  The socket  receive buffer for network requests tothe leader for replicating data.  |
+| replica.fetch.max.bytes     |   1024 * 1024 |  The number of byes   of messages to attempt to fetch for each partition in the fetch requests  the replicas send to the leader.  |
+| replica.fetch.wait.max.ms     |   500 |  The maximum amount of time  towait time for data to arrive on the leader in the fetch requests sent by the replicas to the leader.  |
+| num.replica.fetchers     |   1 |  Number of threads used to replicate messages from leaders. Increasing this value can increase the degree of  I/O parallelism in thefollower broker  |
+| fetch.purgatory.purge.interval.requests     |   1000 |  The purge    interval (in number of requests) of the fetch request purgatory.  |
+| zookeeper.session.timeout.ms     |   6000 |  ZooKeeper session超时时间,如果在此时间内server没有向zookeeper发送心跳,zookeeper就会认为此节点已挂掉,此值太低导致节点容易被标记死亡,若太高会导致太迟发现节点死亡. |
+| zookeeper.connection.timeout.ms     |   6000 |  客户端连接zookeeper超时时间.  |
+| controlled.shutdown.enable     |   true |  允许broker shutdown,如果启用broker在关闭之前会把它上面所有leaders转移到其它brokers上,建议启用增加集群稳定性.  |
+| auto.leader.rebalance.enable     |   true |  If this is enabled the   controller will automatically try to balance leadership for partitions   among the brokers by periodically returning leadership to the “preferred”  replica for each partition if it is available.  |
+| leader.imbalance.per.broker.percentage     |   10 |  The percentage   of leader imbalance allowed per broker. The controller will rebalance  leadership if this ratio goes above the configured value per broker  |
+| delete.topic.enable     |   false |  启用deletetopic参数,建议设置为true.  |
+
+
+#### 2.4.2 Producer 配置信息
+
+| 属性        |     默认值 |   描述   |
+| :--------: | :--------:| :------: |
+| metadata.broker.list     |   |  启动时producer查询brokers列表,可以是集群中所有brokers一个子集,注意这个参数只是用来获取topic元信息,producer会从元信息中挑选合适的broker并与之建立socket连接,格式为:`host1:port1,host2:port2`  |
+| request.timeout.ms     |   10000 |  Broker等待ack超时时间,若等待时间超过此值,会返回客户端错误信息.  |
+| producer.type     |   sync |  同步异步模式,async表示异步,sync表示同步,如果设置成异步模式,可以允许生产者以batch形式push数据,这样会极大提高broker性能,推荐设置为异步.  |
+| serializer.class     |   kafka.serializer.DefaultEncoder |  序列号类,默认序列化类型为byte[]  |
+| key.serializer.class     |   |  Key序列化类,默认同上  |
+| partitioner.class     |   kafka.producer.DefaultPartitioner |  Partition类,默认对key进行hash.  |
+| compression.codec     |   none |  指定producer消息压缩格式,可选参数为：none / gzip / snappy  |
+| compressed.topics     |   null |  启用压缩topic名称,若上面参数选择了一个压缩格式,那么压缩仅对本参数指定的topic有效,若本参数为空则对所有topic有效.  |
+| message.send.max.retries     |   3 |  Producer发送失败时重试次数,若网络出现问题可能会导致不断重试.  |
+| queue.buffering.max.ms     |   5000 |  启用异步模式时,producer缓存消息时间,比如设置成1000时,它会缓存1秒数据再一次发送出去,这样可以极大增加broker吞吐量,但也会造成时效性降低.  |
+| queue.buffering.max.messages     |   10000 |  采用异步模式时producer  buffer队列里最大缓存消息数量,如果超过这个数值,producer就会阻塞或者丢掉消息.  |
+| queue.enqueue.timeout.ms     |   -1 |  当达到上面参数值时producer阻塞等待时间,如果值设置为0,buffer队列满时producer不会阻塞,消息直接被丢掉,若值设置为-1,producer会被阻塞不会丢消息.  |
+| batch.num.messages     |   200 |  用异步模式时,一个batch缓存消息数量,达到这个数量值时producer才会发送消息.  |
+| send.buffer.bytes     |   100 * 1024 |  Socket write buffer size  |
+
+
+#### 2.4.3 Consumer 配置信息
+| 属性        |     默认值 |   描述   |
+| :--------: | :--------:| :------: |
+| group.id     |   |  Consumer组ID,相同goup.id的consumer属于同一个组.  |
+| zookeeper.connect     |   |  Consumer的zookeeper连接串,要和broker的配置一致. |
+| consumer.id     |   null |  如果不设置会自动生成.  |
+| socket.timeout.ms     |   30 * 1000 |  网络请求socket超时时间,实际超时时间由`max.fetch.wait` + `socket.timeout.ms` 确定. |
+| fetch.message.max.bytes     |   1024 * 1024 |  查询topic-partition时允许的最大消息大小,consumer会为每个partition缓存此大小消息到内存,因此这个参数可以控制consumer内存使用量,这个值应该至少比server允许最大消息大小大,以免producer发送消息大于consumer允许消息.  |
+| auto.commit.enable     |   true |  如果此值设置为true,consumer会周期性把当前消费offset值保存到zookeeper,当consumer失败重启之后将会使用此值作为新开始消费的值.  |
+| auto.commit.interval.ms     |   60 * 1000 |  Consumer提交offset值到zookeeper周期.  |
+| queued.max.message.chunks     |   2 |  用来被consumer消费message chunks 数量,每个chunk可以缓存`fetch.message.max.bytes`大小数据量.  |
+| auto.commit.interval.ms     |   60 * 1000 |  Consumer提交offset值到zookeeper周期.  |
+| queued.max.message.chunks     |   2 |  用来被consumer消费message chunks 数量,每个chunk可以缓存`fetch.message.max.bytes`大小数据量.  |
+| consumer.timeout.ms     |   -1 |  若在指定时间内没有消息消费,consumer将会抛出异常.  |
+
 
 ## 3. Kafka 工作流分析
 
