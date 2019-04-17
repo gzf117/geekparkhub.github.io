@@ -517,8 +517,8 @@ broker.id=2
 ```
 
 
-### 2.3 Kafka 命令行操作
-#### 2.3.1 创建topic
+### 2.3 Kafka 指令
+#### 2.3.1 创建Topic
 > 参数说明 : 
 > `--topic` 定义topic名称
 > `--replication-factor` 定义副本数量

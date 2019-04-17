@@ -74,8 +74,8 @@
 <li><a href="#228-关闭-kafka集群">2.2.8 关闭 kafka集群</a></li>
 </ul>
 </li>
-<li><a href="#23-kafka-命令行操作">2.3 Kafka 命令行操作</a><ul>
-<li><a href="#231-创建topic">2.3.1 创建topic</a></li>
+<li><a href="#23-kafka-指令">2.3 Kafka 指令</a><ul>
+<li><a href="#231-创建topic">2.3.1 创建Topic</a></li>
 <li><a href="#232-查看当前服务中所有topic">2.3.2 查看当前服务中所有Topic</a></li>
 <li><a href="#233-生产者">2.3.3 生产者</a></li>
 <li><a href="#234-消费者">2.3.4 消费者</a></li>
@@ -804,9 +804,9 @@
 <pre class="prettyprint hljs-dark"><code class="hljs vbscript"><div class="hljs-line">[root@systemhub711 kafka]# bin/kafka-<span class="hljs-built_in">server</span>-<span class="hljs-keyword">stop</span>.sh <span class="hljs-keyword">stop</span>
 </div></code></pre>
 
-<h3 id="23-kafka-命令行操作">2.3 Kafka 命令行操作</h3>
+<h3 id="23-kafka-指令">2.3 Kafka 指令</h3>
 
-<h4 id="231-创建topic">2.3.1 创建topic</h4>
+<h4 id="231-创建topic">2.3.1 创建Topic</h4>
 
 <blockquote>
   <p>参数说明 :  <br>
@@ -814,8 +814,6 @@
   <code>--replication-factor</code> 定义副本数量 <br>
   <code>--partitions</code>   定义分区数量</p>
 </blockquote>
-
-
 
 <pre class="prettyprint hljs-dark"><code class="hljs autoit"><div class="hljs-line">[root<span class="hljs-symbol">@systemhub511</span> kafka]<span class="hljs-meta"># bin/kafka-topics.sh --create --zookeeper systemhub511:2181 -partitions 2 --replication-factor 2 --topic topic001</span>
 </div><div class="hljs-line">Created topic <span class="hljs-string">"topic001"</span>.
