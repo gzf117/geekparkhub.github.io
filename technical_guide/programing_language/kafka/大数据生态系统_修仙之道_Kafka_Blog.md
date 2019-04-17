@@ -269,7 +269,7 @@ Mode: follower
 ```
 
 
-### 2.2 Kafka集群部署
+### 2.2 Kafka 集群部署
 #### 2.2.1 解压 kafka
 ```
 [root@systemhub511 software]# tar -zxvf kafka_2.11-0.11.0.0.tgz -C /opt/module/
