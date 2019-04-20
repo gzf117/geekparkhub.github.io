@@ -802,7 +802,7 @@ total 312
 ```
 ```
 #consumer group id
-group.id=systemhub511
+group.id=systemhub611
 ```
 ```
 [root@systemhub611 module]# cd kafka/
