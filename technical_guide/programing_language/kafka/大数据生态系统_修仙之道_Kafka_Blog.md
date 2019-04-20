@@ -722,22 +722,43 @@ Note: This will have no impact if delete.topic.enable is not set to true.
 #### 3.2.1 存储方式
 > 物理上把topic分成一个或多个patition(对应server.properties中`num.partitions=3`配置),每个patition物理上对应一个文件夹(该文件夹存储该patition的所有消息和索引文件).
 ```
-[root@systemhub511 kafka]# cd logs
-[root@systemhub511 logs]# ll
-total 312
--rw-r--r--. 1 root root   293 Apr 17 21:07 controller.log
--rw-r--r--. 1 root root     0 Apr 17 14:15 kafka-authorizer.log
--rw-r--r--. 1 root root     0 Apr 17 14:15 kafka-request.log
--rw-r--r--. 1 root root 21691 Apr 18 00:01 kafkaServer-gc.log.0.current
--rw-r--r--. 1 root root   318 Apr 17 22:37 log-cleaner.log
--rw-r--r--. 1 root root   195 Apr 18 00:01 server.log
--rw-r--r--. 1 root root 32012 Apr 17 22:37 state-change.log
-[root@systemhub511 logs]# 
+[root@systemhub711 logss]# ll
+total 88
+-rw-r--r-- 1 root root    4 Apr 17 22:37 cleaner-offset-checkpoint
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-11
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-14
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-17
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-2
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-20
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-23
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-26
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-29
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-32
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-35
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-38
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-41
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-44
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-47
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-5
+drwxr-xr-x 2 root root 4096 Apr 20 15:23 __consumer_offsets-8
+-rw-r--r-- 1 root root    4 Apr 20 18:59 log-start-offset-checkpoint
+-rw-r--r-- 1 root root   54 Apr 17 14:16 meta.properties
+-rw-r--r-- 1 root root  399 Apr 20 18:59 recovery-point-offset-checkpoint
+-rw-r--r-- 1 root root  399 Apr 20 19:00 replication-offset-checkpoint
+drwxr-xr-x 2 root root 4096 Apr 20 15:28 topic001-0
+[root@systemhub711 logss]# cd topic001-0/
+[root@systemhub711 topic001-0]# ll
+total 8
+-rw-r--r-- 1 root root 10485760 Apr 20 15:23 00000000000000000000.index
+-rw-r--r-- 1 root root       80 Apr 20 15:28 00000000000000000000.log
+-rw-r--r-- 1 root root 10485756 Apr 20 15:23 00000000000000000000.timeindex
+-rw-r--r-- 1 root root        8 Apr 20 15:28 leader-epoch-checkpoint
+[root@systemhub711 topic001-0]# 
 ```
 #### 3.2.2 存储策略
 > 无论消息是否被消费,kafka都会保留所有消息,有两种策略可以删除旧数据:
-> 1.基于时间 : log.retention.hours=168
-> 2.基于大小 : log.retention.bytes=1073741824
+> 1.基于时间 : `log.retention.hours=168`
+> 2.基于大小 : `log.retention.bytes=1073741824`
 > 需要注意的是,因为Kafka读取特定消息的时间复杂度为O(1),即与文件大小无关,所以这里删除过期文件与提高Kafka性能无关.
 
 #### 3.2.3 Zookeeper 存储结构
@@ -746,7 +767,7 @@ total 312
 
 
 ### 3.3 Kafka 消费过程
-> Kafka提供两套consumer API : 高级Consumer API 和 低级API
+> Kafka提供两套Consumer API : 高级Consumer API 和 低级 API
 #### 3.3.1 高级 API
 > `高级API 优点`
 - 高级API编写起来非常简单. 
@@ -842,6 +863,594 @@ hello kafka!
 
 
 ## 4. Kafka API
+### 4.1 环境准备
+- JetBrains IntelliJ IDEA New Maven Project | 此过程省略
+- Maven pom.xml
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.geekparkhub.core.kafka</groupId>
+    <artifactId>kafka_server</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>3.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>0.11.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka_2.11</artifactId>
+            <version>0.11.0.0</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+### 4.2 Kafka 生产者 Java API
+#### 4.2.1 Create (过时API)生产者
+> Create OldConsumerProduce.class
+``` java
+package com.geekparkhub.core.kafka;
+
+import kafka.javaapi.producer.Producer;
+import kafka.producer.KeyedMessage;
+import kafka.producer.ProducerConfig;
+import java.util.Properties;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * OldConsumerProduce
+ * <p>
+ */
+
+public class OldConsumerProduce {
+    @SuppressWarnings("deprecation")
+    public static void main(String[] args) {
+        /**
+         * Configuration information
+         * 配置信息
+         */
+        Properties props = new Properties();
+
+        /**
+         * Kafka configuration information
+         * Kafka配置信息
+         */
+        props.put("metadata.broker.list", "systemhub511:9092");
+
+        /**
+         * Response level
+         * 应答级别
+         */
+        props.put("request.required.acks", "1");
+
+        /**
+         * K value serialization
+         * K值 序列化
+         */
+        props.put("serializer.class", "kafka.serializer.StringEncoder");
+
+        /**
+         * Instantiate producer object
+         * 实例化 生产者对象
+         */
+        Producer<Integer, String> producer = new Producer<Integer, String>(new ProducerConfig(props));
+
+        /**
+         * Send data
+         * 发送数据
+         */
+        KeyedMessage<Integer, String> message = new KeyedMessage<Integer, String>("topic001", "Hello,World");
+        producer.send(message);
+
+    }
+}
+```
+#### 4.2.2 Create (新API)生产者
+> Create NewConsumerProduce.class
+``` java
+package com.geekparkhub.core.kafka;
+
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.Producer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import java.util.Properties;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * NewConsumerProduce
+ * <p>
+ */
+
+public class NewConsumerProduce {
+    public static void main(String[] args) {
+
+        /**
+         * Configuration information
+         * 配置信息
+         */
+        Properties props = new Properties();
+
+        /**
+         * Kafka configuration information
+         * Kafka配置信息
+         */
+        props.put("bootstrap.servers", "systemhub511:9092");
+
+        /**
+         * Response level
+         * 应答级别
+         */
+        props.put("acks", "all");
+
+        /**
+         * number of retries
+         * 重试次数
+         */
+        props.put("retries", 0);
+
+        /**
+         * Cache size
+         * 缓存大小
+         */
+        props.put("batch.size", 16384);
+
+        /**
+         * Submission delay
+         * 提交延时
+         */
+        props.put("linger.ms", 1);
+
+        /**
+         * Cache mode
+         * 缓存方式
+         */
+        props.put("buffer.memory", 33554432);
+
+        /**
+         * K value serialization
+         * K值 序列化
+         */
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+        /**
+         * V value serialization
+         * V值 序列化
+         */
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+        /**
+         * Instantiate producer object
+         * 实例化 生产者对象
+         */
+        KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+
+        /**
+         * Cycling data
+         * 循环发送数据
+         */
+        for (int i = 0; i < 10; i++) {
+            producer.send(new ProducerRecord<String, String>("topic001", String.valueOf(i)));
+            System.out.println("Result is = " + producer.toString());
+        }
+
+        /**
+         * Close resource
+         * 关闭资源
+         */
+        producer.close();
+
+    }
+}
+```
+- 启动zk和kafka集群,在kafka集群中开启消费者服务,并查看数据.
+```
+[root@systemhub511 kafka]# bin/kafka-console-consumer.sh --zookeeper systemhub511:2181 --topic topic001
+Using the ConsoleConsumer with old consumer is deprecated and will be removed in a future major release. Consider using the new consumer by passing [bootstrap-server] instead of [zookeeper].
+0
+2
+4
+6
+8
+1
+3
+5
+7
+9
+```
+#### 4.2.3 Create (新API)生产者回调函数
+> Create CallBackConsumerProduce.class
+``` java
+package com.geekparkhub.core.kafka;
+
+import org.apache.kafka.clients.producer.Callback;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+import java.util.Properties;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * CallBackConsumerProduce
+ * <p>
+ */
+
+public class CallBackConsumerProduce {
+    public static void main(String[] args) {
+        /**
+         * Configuration information
+         * 配置信息
+         */
+        Properties props = new Properties();
+
+        /**
+         * Kafka configuration information
+         * Kafka配置信息
+         */
+        props.put("bootstrap.servers", "systemhub511:9092");
+
+        /**
+         * Response level
+         * 应答级别
+         */
+        props.put("acks", "all");
+
+        /**
+         * number of retries
+         * 重试次数
+         */
+        props.put("retries", 0);
+
+        /**
+         * Cache size
+         * 缓存大小
+         */
+        props.put("batch.size", 16384);
+
+        /**
+         * Submission delay
+         * 提交延时
+         */
+        props.put("linger.ms", 1);
+
+        /**
+         * Cache mode
+         * 缓存方式
+         */
+        props.put("buffer.memory", 33554432);
+
+        /**
+         * K value serialization
+         * K值 序列化
+         */
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+        /**
+         * V value serialization
+         * V值 序列化
+         */
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+        /**
+         * Instantiate producer object
+         * 实例化 生产者对象
+         */
+        KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+
+        /**
+         * Cycling data
+         * 循环发送数据
+         */
+        for (int i = 0; i < 10; i++) {
+            producer.send(new ProducerRecord<String, String>("topic001", String.valueOf(i)), new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata metadata, Exception exception) {
+                    /**
+                     * Determine if the exception is empty
+                     * 判断exception是否为空
+                     */
+                    if (exception == null) {
+                        System.out.println("Data Sent Successfully !");
+                        /**
+                         * Get metadata information : offset & partition
+                         * 获取元数据信息 : offset & partition
+                         */
+                        long offset = metadata.offset();
+                        int partition = metadata.partition();
+                        System.out.println("Offset is = " + offset + " -- & -- Partition is = " + partition);
+                    } else {
+                        System.out.println("Data Transmission Failed !");
+                    }
+                }
+            });
+        }
+
+        /**
+         * Close resource
+         * 关闭资源
+         */
+        producer.close();
+    }
+}
+```
+- 查看结果
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/kafka/start_008.jpg)
+```
+[root@systemhub511 kafka]# bin/kafka-console-consumer.sh --zookeeper systemhub511:2181 --topic topic001
+Using the ConsoleConsumer with old consumer is deprecated and will be removed in a future major release. Consider using the new consumer by passing [bootstrap-server] instead of [zookeeper].
+0
+2
+4
+6
+8
+1
+3
+5
+7
+9
+```
+#### 4.2.4 自定义分区生产者
+- 将所有数据存储到topic第0号分区.
+- 自定义分区类,实现Partitioner接口,重写分区方法.
+- Create CustomPartitioner.class
+``` java
+package com.geekparkhub.core.kafka;
+
+import org.apache.kafka.clients.producer.Partitioner;
+import org.apache.kafka.common.Cluster;
+
+import java.util.Map;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * CustomPartitioner
+ * <p>
+ */
+
+public class CustomPartitioner implements Partitioner {
+
+    /**
+     * Empty reference constructor
+     * 空参构造器
+     */
+    public CustomPartitioner() {
+        super();
+    }
+
+    /**
+     * 复写分区方法
+     *
+     * @param topic
+     * @param key
+     * @param keyBytes
+     * @param value
+     * @param valueBytes
+     * @param cluster
+     * @return
+     */
+    @Override
+    public int partition(String topic, Object key, byte[] keyBytes, Object value, byte[] valueBytes, Cluster cluster) {
+        return 0;
+    }
+
+    /**
+     * Close resource
+     * 关闭资源
+     */
+    @Override
+    public void close() {
+    }
+
+    /**
+     * Configuration information
+     * 配置信息
+     *
+     * @param configs
+     */
+    @Override
+    public void configure(Map<String, ?> configs) {
+    }
+}
+```
+- Create CustomConsumerProducePartitioner.class
+``` java
+package com.geekparkhub.core.kafka;
+
+import org.apache.kafka.clients.producer.Callback;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+
+import java.util.Properties;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * CustomConsumerProducePartitioner
+ * <p>
+ */
+
+public class CustomConsumerProducePartitioner {
+    public static void main(String[] args) {
+        /**
+         * Configuration information
+         * 配置信息
+         */
+        Properties props = new Properties();
+
+        /**
+         * Kafka configuration information
+         * Kafka配置信息
+         */
+        props.put("bootstrap.servers", "systemhub511:9092");
+
+        /**
+         * Response level
+         * 应答级别
+         */
+        props.put("acks", "all");
+
+        /**
+         * number of retries
+         * 重试次数
+         */
+        props.put("retries", 0);
+
+        /**
+         * Cache size
+         * 缓存大小
+         */
+        props.put("batch.size", 16384);
+
+        /**
+         * Submission delay
+         * 提交延时
+         */
+        props.put("linger.ms", 1);
+
+        /**
+         * Cache mode
+         * 缓存方式
+         */
+        props.put("buffer.memory", 33554432);
+
+        /**
+         * K value serialization
+         * K值 序列化
+         */
+        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+        /**
+         * V value serialization
+         * V值 序列化
+         */
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+
+        /**
+         * Custom Partition
+         * 自定义分区
+         */
+        props.put("partitioner.class", "com.geekparkhub.core.kafka.CustomPartitioner");
+
+        /**
+         * Instantiate producer object
+         * 实例化 生产者对象
+         */
+        KafkaProducer<String, String> producer = new KafkaProducer<>(props);
+
+        /**
+         * Cycling data
+         * 循环发送数据
+         */
+        for (int i = 0; i < 10; i++) {
+            producer.send(new ProducerRecord<String, String>("topic001", String.valueOf(i)), new Callback() {
+                @Override
+                public void onCompletion(RecordMetadata metadata, Exception exception) {
+                    /**
+                     * Determine if the exception is empty
+                     * 判断exception是否为空
+                     */
+                    if (exception == null) {
+                        System.out.println("Data Sent Successfully !");
+                        /**
+                         * Get metadata information : offset & partition
+                         * 获取元数据信息 : offset & partition
+                         */
+                        long offset = metadata.offset();
+                        int partition = metadata.partition();
+                        System.out.println("Offset is = " + offset + " -- & -- Partition is = " + partition);
+                    } else {
+                        System.out.println("Data Transmission Failed !");
+                    }
+                }
+            });
+        }
+
+        /**
+         * Close resource
+         * 关闭资源
+         */
+        producer.close();
+    }
+}
+```
+- 查看结果
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/kafka/start_009.jpg)
+```
+[root@systemhub511 kafka]# bin/kafka-console-consumer.sh --zookeeper systemhub511:2181 --topic topic001
+Using the ConsoleConsumer with old consumer is deprecated and will be removed in a future major release. Consider using the new consumer by passing [bootstrap-server] instead of [zookeeper].
+0
+1
+2
+3
+4
+5
+6
+7
+8
+9
+```
+
+### 4.3 Kafka 消费者 Java API
 
 ## 5. Kafka Producer拦截器
 
