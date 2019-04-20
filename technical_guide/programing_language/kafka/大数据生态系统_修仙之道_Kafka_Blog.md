@@ -816,6 +816,7 @@ group.id=systemhub611
 ```
 [root@systemhub511 kafka]# bin/kafka-console-consumer.sh --zookeeper systemhub511:2181 --topic topic001 --consumer.config config/consumer.properties
 Using the ConsoleConsumer with old consumer is deprecated and will be removed in a future major release. Consider using the new consumer by passing [bootstrap-server] instead of [zookeeper].
+[067] WARN [systemhub611_systemhub611-1555744110617-1d4d406d], no brokers found when trying to rebalance. (kafka.consumer.ZookeeperConsumerConnector)
 ```
 ```
 [root@systemhub611 kafka]# bin/kafka-console-consumer.sh --zookeeper systemhub511:2181 --topic topic001 --consumer.config config/consumer.properties

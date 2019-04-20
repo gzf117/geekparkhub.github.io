@@ -1211,6 +1211,7 @@
 
 <pre class="prettyprint hljs-dark"><code class="hljs oxygene"><div class="hljs-line">[root@systemhub511 kafka]# bin/kafka-console-consumer.sh --zookeeper systemhub511:<span class="hljs-number">2181</span> --topic topic001 --consumer.config config/consumer.properties
 </div><div class="hljs-line"><span class="hljs-keyword">Using</span> the ConsoleConsumer <span class="hljs-keyword">with</span> <span class="hljs-keyword">old</span> consumer <span class="hljs-keyword">is</span> <span class="hljs-keyword">deprecated</span> <span class="hljs-keyword">and</span> will be removed <span class="hljs-keyword">in</span> a <span class="hljs-keyword">future</span> major release. Consider <span class="hljs-keyword">using</span> the <span class="hljs-keyword">new</span> consumer <span class="hljs-keyword">by</span> passing [bootstrap-server] instead <span class="hljs-keyword">of</span> [zookeeper].
+</div><div class="hljs-line">[<span class="hljs-number">067</span>] WARN [systemhub611_systemhub611-<span class="hljs-number">1555744110617</span>-<span class="hljs-number">1</span>d4d406d], no brokers found when trying <span class="hljs-keyword">to</span> rebalance. (kafka.consumer.ZookeeperConsumerConnector)
 </div></code></pre>
 
 <pre class="prettyprint hljs-dark"><code class="hljs oxygene"><div class="hljs-line">[root@systemhub611 kafka]# bin/kafka-console-consumer.sh --zookeeper systemhub511:<span class="hljs-number">2181</span> --topic topic001 --consumer.config config/consumer.properties
