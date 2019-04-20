@@ -830,6 +830,10 @@ Using the ConsoleConsumer with old consumer is deprecated and will be removed in
 > 查看systemhub511和systemhub611 接收者
 > 同一时刻只有一个消费者接收到消息.
 ```
+[root@systemhub511 kafka]# bin/kafka-console-consumer.sh --zookeeper systemhub511:2181 --topic topic001 --consumer.config config/consumer.properties
+Using the ConsoleConsumer with old consumer is deprecated and will be removed in a future major release. Consider using the new consumer by passing [bootstrap-server] instead of [zookeeper].
+```
+```
 [root@systemhub611 kafka]# bin/kafka-console-consumer.sh --zookeeper systemhub511:2181 --topic topic001 --consumer.config config/consumer.properties
 Using the ConsoleConsumer with old consumer is deprecated and will be removed in a future major release. Consider using the new consumer by passing [bootstrap-server] instead of [zookeeper].
 hello kafka!
