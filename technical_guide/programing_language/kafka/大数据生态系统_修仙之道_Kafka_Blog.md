@@ -898,13 +898,14 @@ hello kafka!
 
 ### 4.2 Kafka 生产者 Java API
 #### 4.2.1 Create (过时API)生产者
-> Create OldConsumerProduce.class
+> Create OldProduce.class
 ``` java
-package com.geekparkhub.core.kafka;
+package com.geekparkhub.core.kafka.producer;
 
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
+
 import java.util.Properties;
 
 /**
@@ -919,11 +920,11 @@ import java.util.Properties;
  *
  * @author system
  * <p>
- * OldConsumerProduce
+ * OldProduce
  * <p>
  */
 
-public class OldConsumerProduce {
+public class OldProduce {
     @SuppressWarnings("deprecation")
     public static void main(String[] args) {
         /**
@@ -967,9 +968,9 @@ public class OldConsumerProduce {
 }
 ```
 #### 4.2.2 Create (新API)生产者
-> Create NewConsumerProduce.class
+> Create NewProduce.class
 ``` java
-package com.geekparkhub.core.kafka;
+package com.geekparkhub.core.kafka.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -988,11 +989,11 @@ import java.util.Properties;
  *
  * @author system
  * <p>
- * NewConsumerProduce
+ * NewProduce
  * <p>
  */
 
-public class NewConsumerProduce {
+public class NewProduce {
     public static void main(String[] args) {
 
         /**
@@ -1089,9 +1090,9 @@ Using the ConsoleConsumer with old consumer is deprecated and will be removed in
 9
 ```
 #### 4.2.3 Create (新API)生产者回调函数
-> Create CallBackConsumerProduce.class
+> Create CallBackProduce.class
 ``` java
-package com.geekparkhub.core.kafka;
+package com.geekparkhub.core.kafka.producer;
 
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -1111,11 +1112,11 @@ import java.util.Properties;
  *
  * @author system
  * <p>
- * CallBackConsumerProduce
+ * CallBackProduce
  * <p>
  */
 
-public class CallBackConsumerProduce {
+public class CallBackProduce {
     public static void main(String[] args) {
         /**
          * Configuration information
@@ -1234,7 +1235,7 @@ Using the ConsoleConsumer with old consumer is deprecated and will be removed in
 - 自定义分区类,实现Partitioner接口,重写分区方法.
 - Create CustomPartitioner.class
 ``` java
-package com.geekparkhub.core.kafka;
+package com.geekparkhub.core.kafka.producer;
 
 import org.apache.kafka.clients.producer.Partitioner;
 import org.apache.kafka.common.Cluster;
@@ -1301,16 +1302,16 @@ public class CustomPartitioner implements Partitioner {
     public void configure(Map<String, ?> configs) {
     }
 }
+
 ```
-- Create CustomConsumerProducePartitioner.class
+- Create CustomProducePartitioner.class
 ``` java
-package com.geekparkhub.core.kafka;
+package com.geekparkhub.core.kafka.producer;
 
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
-
 import java.util.Properties;
 
 /**
@@ -1325,11 +1326,11 @@ import java.util.Properties;
  *
  * @author system
  * <p>
- * CustomConsumerProducePartitioner
+ * CustomProducePartitioner
  * <p>
  */
 
-public class CustomConsumerProducePartitioner {
+public class CustomProducePartitioner {
     public static void main(String[] args) {
         /**
          * Configuration information
@@ -1389,7 +1390,7 @@ public class CustomConsumerProducePartitioner {
          * Custom Partition
          * 自定义分区
          */
-        props.put("partitioner.class", "com.geekparkhub.core.kafka.CustomPartitioner");
+        props.put("partitioner.class", "com.geekparkhub.core.kafka.producer.CustomPartitioner");
 
         /**
          * Instantiate producer object
@@ -1451,6 +1452,196 @@ Using the ConsoleConsumer with old consumer is deprecated and will be removed in
 ```
 
 ### 4.3 Kafka 消费者 Java API
+#### 4.3.1 Create (过时API)消费者
+- Create OldCustomConsumer.class
+``` java
+package com.geekparkhub.core.kafka.consumer;
+
+import kafka.consumer.Consumer;
+import kafka.consumer.ConsumerConfig;
+import kafka.consumer.ConsumerIterator;
+import kafka.consumer.KafkaStream;
+import kafka.javaapi.consumer.ConsumerConnector;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * OldCustomConsumer
+ * <p>
+ */
+
+public class OldCustomConsumer {
+    
+    @SuppressWarnings("deprecation")
+    public static void main(String[] args) {
+        Properties properties = new Properties();
+        properties.put("zookeeper.connect", "systemhub511:2181");
+        properties.put("group.id", "test");
+        properties.put("zookeeper.session.timeout.ms", "500");
+        properties.put("zookeeper.sync.time.ms", "250");
+        properties.put("auto.commit.interval.ms", "1000");
+
+        ConsumerConnector consumer = Consumer.createJavaConsumerConnector(new ConsumerConfig(properties));
+        HashMap<String, Integer> topicCount = new HashMap<>();
+        topicCount.put("topic001", 1);
+        Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCount);
+        KafkaStream<byte[], byte[]> stream = consumerMap.get("topic001").get(0);
+        ConsumerIterator<byte[], byte[]> it = stream.iterator();
+        while (it.hasNext()) {
+            System.out.println(new String(it.next().message()));
+        }
+    }
+}
+```
+
+#### 4.3.2 Create (新API)消费者
+- Create CustomConsumer.class
+``` java
+package com.geekparkhub.core.kafka.consumer;
+
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+
+import java.util.Arrays;
+import java.util.Properties;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * CustomConsumer
+ * <p>
+ */
+
+public class CustomConsumer {
+
+    public static void main(String[] args) {
+
+        /**
+         * Configuration information
+         * 配置信息
+         */
+        Properties props = new Properties();
+
+        /**
+         * Kafka configuration information
+         * Kafka配置信息
+         */
+        props.put("bootstrap.servers", "systemhub511:9092");
+
+        /**
+         * Consumer group ID
+         * 消费者组ID
+         */
+        props.put("group.id", "test");
+
+        /**
+         * Set auto-submit offset
+         * 设置自动提交offset
+         */
+        props.put("enable.auto.commit", "true");
+
+        /**
+         * Submission delay
+         * 提交延时
+         */
+        props.put("auto.commit.interval.ms", "1000");
+
+        /**
+         * K value Deserialization
+         * K值 反序列化
+         */
+        props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+
+        /**
+         * V value Deserialization
+         * V值 反序列化
+         */
+        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+
+        /**
+         * Instantiation Consumer Object
+         * 实例化 消费者对象
+         */
+        KafkaConsumer<String, String> consumer = new KafkaConsumer<>(props);
+
+        /**
+         * Specify Topic
+         * 指定Topic
+         */
+        consumer.subscribe(Arrays.asList("topic001", "topic002", "topic003"));
+
+        while (true) {
+            /**
+             * retrieve data
+             * 获取数据
+             */
+            ConsumerRecords<String, String> consumerRecords = consumer.poll(100);
+
+            /**
+             * Loop output
+             * 循环输出
+             */
+            for (ConsumerRecord<String, String> records : consumerRecords) {
+                String topic = records.topic();
+                int partition = records.partition();
+                String value = records.value();
+                System.out.println("Topic is = " + topic + " -- & -- Partition is = " + partition + " -- & -- Value is = " + value);
+            }
+        }
+    }
+}
+```
+- 分别开启生产者服务
+```
+[root@systemhub711 kafka]# bin/kafka-console-producer.sh --broker-list systemhub511:9092 --topic topic001
+```
+```
+[root@systemhub711 kafka]# bin/kafka-console-producer.sh --broker-list systemhub511:9092 --topic topic002
+```
+```
+root@systemhub711 kafka]# bin/kafka-console-producer.sh --broker-list systemhub511:9092 --topic topic003
+```
+- 执行CustomConsumer.class
+
+- 生产者发送消息
+```
+[root@systemhub711 kafka]# bin/kafka-console-producer.sh --broker-list systemhub511:9092 --topic topic001
+>hello topic001
+```
+```
+[root@systemhub711 kafka]# bin/kafka-console-producer.sh --broker-list systemhub511:9092 --topic topic002
+>hello topic002
+```
+```
+[root@systemhub711 kafka]# bin/kafka-console-producer.sh --broker-list systemhub511:9092 --topic topic003
+>hello topic003
+```
+
+- 查看结果
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/kafka/start_010.jpg)
 
 ## 5. Kafka Producer拦截器
 
