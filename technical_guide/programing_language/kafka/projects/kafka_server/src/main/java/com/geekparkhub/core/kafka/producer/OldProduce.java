@@ -1,4 +1,4 @@
-package com.geekparkhub.core.kafka;
+package com.geekparkhub.core.kafka.producer;
 
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
@@ -18,11 +18,11 @@ import java.util.Properties;
  *
  * @author system
  * <p>
- * OldConsumerProduce
+ * OldProduce
  * <p>
  */
 
-public class OldConsumerProduce {
+public class OldProduce {
     @SuppressWarnings("deprecation")
     public static void main(String[] args) {
         /**

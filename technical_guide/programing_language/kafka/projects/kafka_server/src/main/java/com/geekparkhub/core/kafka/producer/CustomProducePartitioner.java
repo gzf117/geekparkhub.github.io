@@ -1,4 +1,4 @@
-package com.geekparkhub.core.kafka;
+package com.geekparkhub.core.kafka.producer;
 
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -19,11 +19,11 @@ import java.util.Properties;
  *
  * @author system
  * <p>
- * CustomConsumerProducePartitioner
+ * CustomProducePartitioner
  * <p>
  */
 
-public class CustomConsumerProducePartitioner {
+public class CustomProducePartitioner {
     public static void main(String[] args) {
         /**
          * Configuration information
@@ -83,7 +83,7 @@ public class CustomConsumerProducePartitioner {
          * Custom Partition
          * 自定义分区
          */
-        props.put("partitioner.class", "com.geekparkhub.core.kafka.CustomPartitioner");
+        props.put("partitioner.class", "com.geekparkhub.core.kafka.producer.CustomPartitioner");
 
         /**
          * Instantiate producer object

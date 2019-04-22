@@ -1,4 +1,4 @@
-package com.geekparkhub.core.kafka;
+package com.geekparkhub.core.kafka.producer;
 
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
@@ -19,11 +19,11 @@ import java.util.Properties;
  *
  * @author system
  * <p>
- * CallBackConsumerProduce
+ * CallBackProduce
  * <p>
  */
 
-public class CallBackConsumerProduce {
+public class CallBackProduce {
     public static void main(String[] args) {
         /**
          * Configuration information

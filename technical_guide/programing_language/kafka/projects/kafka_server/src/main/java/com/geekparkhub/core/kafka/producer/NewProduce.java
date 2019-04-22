@@ -1,4 +1,4 @@
-package com.geekparkhub.core.kafka;
+package com.geekparkhub.core.kafka.producer;
 
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
@@ -18,11 +18,11 @@ import java.util.Properties;
  *
  * @author system
  * <p>
- * NewConsumerProduce
+ * NewProduce
  * <p>
  */
 
-public class NewConsumerProduce {
+public class NewProduce {
     public static void main(String[] args) {
 
         /**
