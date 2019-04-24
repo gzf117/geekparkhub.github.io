@@ -1,10 +1,8 @@
 package com.geekparkhub.core.kafka.producer;
 
-import org.apache.kafka.clients.producer.Callback;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.clients.producer.*;
 
+import java.util.ArrayList;
 import java.util.Properties;
 
 /**
@@ -83,7 +81,12 @@ public class CustomProducePartitioner {
          * Custom Partition
          * 自定义分区
          */
-        props.put("partitioner.class", "com.geekparkhub.core.kafka.producer.CustomPartitioner");
+//        props.put("partitioner.class", "com.geekparkhub.core.kafka.producer.CustomPartitioner");
+
+        ArrayList<String> interceptors = new ArrayList<>();
+        interceptors.add("com.geekparkhub.core.kafka.interceptor.Timeinterceptor");
+        interceptors.add("com.geekparkhub.core.kafka.interceptor.Countinterceptor");
+        props.put(ProducerConfig.INTERCEPTOR_CLASSES_CONFIG, interceptors);
 
         /**
          * Instantiate producer object
@@ -96,7 +99,7 @@ public class CustomProducePartitioner {
          * 循环发送数据
          */
         for (int i = 0; i < 10; i++) {
-            producer.send(new ProducerRecord<String, String>("topic001", String.valueOf(i)), new Callback() {
+            producer.send(new ProducerRecord<String, String>("topic002", String.valueOf(i)), new Callback() {
                 @Override
                 public void onCompletion(RecordMetadata metadata, Exception exception) {
                     /**

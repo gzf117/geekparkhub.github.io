@@ -1452,62 +1452,8 @@ Using the ConsoleConsumer with old consumer is deprecated and will be removed in
 ```
 
 ### 4.3 Kafka 消费者 Java API
-#### 4.3.1 Create (过时API)消费者
-- Create OldCustomConsumer.class
-``` java
-package com.geekparkhub.core.kafka.consumer;
 
-import kafka.consumer.Consumer;
-import kafka.consumer.ConsumerConfig;
-import kafka.consumer.ConsumerIterator;
-import kafka.consumer.KafkaStream;
-import kafka.javaapi.consumer.ConsumerConnector;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
-/**
- * Geek International Park | 极客国际公园
- * GeekParkHub | 极客实验室
- * Website | https://www.geekparkhub.com/
- * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
- * HackerParkHub | 黑客公园枢纽
- * Website | https://www.hackerparkhub.com/
- * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
- * GeekDeveloper : JEEP-711
- *
- * @author system
- * <p>
- * OldCustomConsumer
- * <p>
- */
-
-public class OldCustomConsumer {
-    
-    @SuppressWarnings("deprecation")
-    public static void main(String[] args) {
-        Properties properties = new Properties();
-        properties.put("zookeeper.connect", "systemhub511:2181");
-        properties.put("group.id", "test");
-        properties.put("zookeeper.session.timeout.ms", "500");
-        properties.put("zookeeper.sync.time.ms", "250");
-        properties.put("auto.commit.interval.ms", "1000");
-
-        ConsumerConnector consumer = Consumer.createJavaConsumerConnector(new ConsumerConfig(properties));
-        HashMap<String, Integer> topicCount = new HashMap<>();
-        topicCount.put("topic001", 1);
-        Map<String, List<KafkaStream<byte[], byte[]>>> consumerMap = consumer.createMessageStreams(topicCount);
-        KafkaStream<byte[], byte[]> stream = consumerMap.get("topic001").get(0);
-        ConsumerIterator<byte[], byte[]> it = stream.iterator();
-        while (it.hasNext()) {
-            System.out.println(new String(it.next().message()));
-        }
-    }
-}
-```
-
-#### 4.3.2 Create (新API)消费者
+#### 4.3.1 高级 API
 - Create CustomConsumer.class
 ``` java
 package com.geekparkhub.core.kafka.consumer;
@@ -1643,12 +1589,578 @@ root@systemhub711 kafka]# bin/kafka-console-producer.sh --broker-list systemhub5
 - 查看结果
 ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/kafka/start_010.jpg)
 
+
+#### 4.3.2 低级 API
+- 实现使用低级API读取指定Topic / 指定Partition / 指定offset数据.
+- 消费者使用低级API主要步骤 : 
+| 步骤      |     主要工作 |
+| :--------: | :-------:|
+| 1    |   根据指定分区从主题元数据中找到主副本. |
+| 2    |   获取分区最新消费进度. |
+| 3    |   从主副本拉取分区消息. |
+| 4    |   识别主副本变化. |
+- 方法描述 : 
+| 方法名      |     描述 |
+| :--------: | :--------:|
+| findLeader()    |   客户端向种子节点发送主题元数据,将副本集加入备用节点. |
+| getLastOffset()    |   消费者客户端发送偏移量请求,获取分区最近偏移量. |
+| run()    |   消费者低级API拉取消息主要方法 |
+| findNewLeader()    |   当分区主副本节点发送故障,客户将要找出新的主副本. |
+
+- Create LowerConsumer.class
+``` java
+package com.geekparkhub.core.kafka.consumer;
+
+import kafka.api.FetchRequestBuilder;
+import kafka.cluster.BrokerEndPoint;
+import kafka.javaapi.*;
+import kafka.javaapi.consumer.SimpleConsumer;
+import kafka.javaapi.message.ByteBufferMessageSet;
+import kafka.message.MessageAndOffset;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * LowerConsumer
+ * <p>
+ */
+
+public class LowerConsumer {
+    public static void main(String[] args) {
+
+        /**
+         * Define related parameters
+         * 定义相关参数
+         */
+
+        /**
+         * Kafka cluster
+         * Kafka 集群
+         */
+        ArrayList<String> brokers = new ArrayList<>();
+        brokers.add("systemhub511");
+        brokers.add("systemhub611");
+        brokers.add("systemhub711");
+
+        /**
+         * port number
+         * 端口号
+         */
+        int port = 9092;
+
+        /**
+         * Theme Topic
+         * 主题 Topic
+         */
+        String topic = "topic002";
+
+        /**
+         * Partition
+         * 分区 Partition
+         */
+        int partition = 0;
+
+        /**
+         * Offset
+         */
+        long offset = 2;
+
+        /**
+         * Instantiate the LowerConsumer object
+         * 实例化 LowerConsumer对象
+         */
+        LowerConsumer lowerConsumer = new LowerConsumer();
+        lowerConsumer.getData(brokers,port,topic,partition,offset);
+    }
+
+    /**
+     * Discover partition leader
+     * 发现分区Leader
+     *
+     * @return
+     */
+    private BrokerEndPoint findLeader(List<String> brokers, int port, String topic, int partition) {
+
+        /**
+         * Instantiation Partition Leader Consumer Object
+         * 实例化 分区Leader消费者对象
+         */
+        for (String broker : brokers) {
+            SimpleConsumer getLeader = new SimpleConsumer(broker, port, 1000, 1024 * 4, "getLeader");
+
+            /**
+             * Create topic metadata information request
+             * 创建主题元数据信息请求
+             */
+            TopicMetadataRequest topicMetadataRequest = new TopicMetadataRequest(Collections.singletonList(topic));
+
+            /**
+             * Get theme metadata return value
+             * 获取主题元数据返回值
+             */
+            TopicMetadataResponse metadataResponse = getLeader.send(topicMetadataRequest);
+
+            /**
+             * Parse the metadata return value
+             * 解析元元数据返回值
+             */
+            List<TopicMetadata> topicsMetadata = metadataResponse.topicsMetadata();
+
+            /**
+             * Loop theme metadata
+             * 循环 主题元数据
+             */
+            for (TopicMetadata topicMetadatum : topicsMetadata) {
+
+                /**
+                 * Get multiple partition metadata information
+                 * 获取多个分区元数据信息
+                 */
+                List<PartitionMetadata> partitionsMetadata = topicMetadatum.partitionsMetadata();
+
+                /**
+                 * Loop multi-partition metadata
+                 * 循环 多分区元数据
+                 */
+                for (PartitionMetadata partitionMetadata : partitionsMetadata) {
+                    /**
+                     * Returns the leader metadata information if the partition number is equal to 0
+                     * 如果分区号等于0,则返回leader元数据信息
+                     */
+                    if (partition == partitionMetadata.partitionId()) {
+                        return partitionMetadata.leader();
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * retrieve data
+     * 获取数据
+     */
+    private void getData(List<String> brokers, int port, String topic, int partition, long offset) {
+
+        /**
+         * Get Partition leader
+         * 获取分区leader
+         */
+        BrokerEndPoint leader = findLeader(brokers, port, topic, partition);
+        if (leader == null) {
+            return;
+        }
+
+        String leaderHost = leader.host();
+
+        /**
+         * Get data consumer object
+         * 获取数据消费者对象
+         */
+        SimpleConsumer getData = new SimpleConsumer(leaderHost, port, 1000, 1024 * 4, "getData");
+
+        /**
+         * Instantiation get data object
+         * 实例化 获取数据对象
+         */
+        kafka.api.FetchRequest fetchRequest = new FetchRequestBuilder().addFetch(topic, partition, offset, 100).build();
+
+        /**
+         * Get data return value
+         * 获取数据返回值
+         */
+        FetchResponse fetchResponse = getData.fetch(fetchRequest);
+
+        /**
+         * Parse the return value
+         * 解析返回值
+         */
+        ByteBufferMessageSet messageAndOffsets = fetchResponse.messageSet(topic, partition);
+        for (MessageAndOffset messageAndOffset : messageAndOffsets) {
+            long offset1 = messageAndOffset.offset();
+            ByteBuffer payload = messageAndOffset.message().payload();
+            byte[] bytes = new byte[payload.limit()];
+            payload.get(bytes);
+            System.out.println("Offset is = " + offset1 + " -- & -- Message is = " + new String(bytes));
+        }
+    }
+}
+```
+
+- 开启 Zookeeper集群服务 & Kafka集群服务
+```
+[root@systemhub511 zookeeper]# bin/zkServer.sh start
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeeper/bin/../conf/zoo.cfg
+Starting zookeeper ... STARTED
+[root@systemhub511 zookeeper]#
+```
+```
+[root@systemhub611 zookeeper]# bin/zkServer.sh start
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeeper/bin/../conf/zoo.cfg
+Starting zookeeper ... STARTED
+[root@systemhub611 zookeeper]#
+```
+```
+[root@systemhub711 zookeeper]# bin/zkServer.sh start
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeeper/bin/../conf/zoo.cfg
+Starting zookeeper ... STARTED
+[root@systemhub711 zookeeper]#
+```
+```
+root@systemhub511 kafka]# bin/kafka-server-start.sh config/server.properties &
+[1] 23017
+```
+```
+[root@systemhub611 kafka]# bin/kafka-server-start.sh config/server.properties &
+[1] 23716
+```
+```
+[root@systemhub711 kafka]# bin/kafka-server-start.sh config/server.properties &
+[1] 24134
+```
+
+- 执行LowerConsumer.class
+- 查看结果
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/kafka/start_011.jpg)
+
+
 ## 5. Kafka Producer拦截器
+### 5.1 拦截器原理
+> Producer拦截器(interceptor)是在Kafka 0.10版本被引入,主要用于实现Clients定制化控制逻辑.
+> 
+> 对于Producer而言,interceptor使得用户在消息发送前以及Producer回调逻辑前有机会对消息做一些定制化需求,比如修改消息等,同时Producer允许用户指定多个interceptor按序作用于同一条消息从而形成一个拦截链(interceptor Chain).
+> 
+> Intercetpor实现接口是`org.apache.kafka.clients.producer.ProducerInterceptor`,其定义的方法包括:
+- `configure(configs)` 获取配置信息和初始化数据时调用.
+- `onSend(ProducerRecord)` 该方法封装进KafkaProducer.send方法中,即它运行在用户主线程中,Producer确保在消息被序列化以及计算分区前调用该方法,用户可以在该方法中对消息做任何操作,但最好保证不要修改消息所属的topic和分区,否则会影响目标分区计算.
+- `nAcknowledgement(RecordMetadata, Exception)` 该方法会在消息被应答或消息发送失败时调用,并且通常都是在producer回调逻辑触发之前,onAcknowledgement运行在producer的IO线程中,因此不要在该方法中放入很重逻辑,否则会拖慢Producer的消息发送效率.
+- `close` 关闭interceptor,主要用于执行一些资源清理工作如前所述,interceptor可能被运行在多个线程中,因此在具体实现时用户需要自行确保线程安全,另外倘若指定了多个interceptor,则producer将按照指定顺序调用它们,并仅仅是捕获每个interceptor可能抛出的异常记录到错误日志中而非在向上传递.
+
+### 5.2 拦截器案例
+- 实现一个简单双interceptor组成拦截链.
+- 第一个interceptor会在消息发送前将时间戳信息加载到消息value最前部.
+- 第二个interceptor会在消息发送后更新成功发送消息数或失败发送消息数.
+- Create Timeinterceptor.class
+``` java
+package com.geekparkhub.core.kafka.interceptor;
+
+import org.apache.kafka.clients.producer.ProducerInterceptor;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+
+import java.util.Map;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * Timeinterceptor
+ * <p>
+ */
+
+public class Timeinterceptor implements ProducerInterceptor<String, String> {
+
+
+    @Override
+    public ProducerRecord<String, String> onSend(ProducerRecord<String, String> record) {
+        return new ProducerRecord<String, String>(record.topic(), record.key(), System.currentTimeMillis() + " - - " + record.value());
+    }
+
+    @Override
+    public void onAcknowledgement(RecordMetadata metadata, Exception exception) {
+
+    }
+
+    @Override
+    public void close() {
+
+    }
+
+    @Override
+    public void configure(Map<String, ?> configs) {
+
+    }
+}
+```
+- Create Countinterceptor.class
+``` java
+package com.geekparkhub.core.kafka.interceptor;
+
+import org.apache.kafka.clients.producer.ProducerInterceptor;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
+
+import java.util.Map;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * Countinterceptor
+ * <p>
+ */
+
+public class Countinterceptor implements ProducerInterceptor<String, String> {
+
+    private int successCount = 0;
+    private int errorCount = 0;
+
+    @Override
+    public ProducerRecord<String, String> onSend(ProducerRecord<String, String> record) {
+        return record;
+    }
+
+    @Override
+    public void onAcknowledgement(RecordMetadata metadata, Exception exception) {
+
+        if (exception == null) {
+            successCount++;
+        } else {
+            errorCount++;
+        }
+    }
+
+    @Override
+    public void close() {
+        System.out.println("Success : " + successCount + "Article Data !");
+        System.out.println("Failure : " + errorCount + "Article Data !");
+    }
+
+    @Override
+    public void configure(Map<String, ?> configs) {
+
+    }
+}
+```
+- 开启消费者服务
+```
+[root@systemhub511 kafka]# bin/kafka-console-consumer.sh --zookeeper systemhub511:2181 --topic topic002
+Using the ConsoleConsumer with old consumer is deprecated and will be removed in a future major release. Consider using the new consumer by passing [bootstrap-server] instead of [zookeeper].
+```
+- 执行生产者并查看日志信息
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/kafka/start_012.jpg)
 
 ## 6. Kafka Streams
+### 6.1 概述
+#### 6.1.1 Kafka Streams
+- Kafka Streams,Apache Kafka开源项目一个组成部分,是一个功能强大,易于使用库,用于在Kafka上构建高可分布式、拓展性,容错的应用程序.
+#### 6.1.2 Kafka Streams 特点
+- 功能强大 : 高扩展性,弹性,容错
+- 轻量级 : 无需专门集群一个库,而不是框架
+- 完全集成 : 100%Kafka 0.10.0版本兼容,易于集成到现有的应用程序
+- 实时性 : 毫秒级延迟/并非微批处理/窗口允许乱序数据/允许迟到数据
+#### 6.1.3 为什么要有Kafka Stream
+> 当前已经有非常多的流式处理系统,最知名且应用最多开源流式处理系统有Spark Streaming和Apache Storm,Apache Storm发展多年应用广泛,提供记录级别的处理能力,当前也支持SQL on Stream,而Spark Streaming基于Apache Spark,可以非常方便与图计算,SQL处理等集成,功能强大,对于熟悉其它Spark应用开发用户而言使用门槛低,另外,目前主流的Hadoop发行版,如Cloudera和Hortonworks,都集成了Apache Storm和Apache Spark,使得部署更容易.
+> 
+> 第一,Spark和Storm都是流式处理框架,而Kafka Stream提供是一个基于Kafka流式处理类库,框架要求开发者按照特定的方式去开发逻辑部分,供框架调用,开发者很难了解框架具体运行方式,从而使得调试成本高,并且使用受限,而Kafka Stream作为流式处理类库,直接提供具体的类给开发者调用,整个应用运行方式主要由开发者控制,方便使用和调试.
+> 
+> 第二,虽然Cloudera与Hortonworks方便了Storm和Spark部署,但是这些框架的部署仍然相对复杂,而Kafka Stream作为类库,可以非常方便嵌入应用程序中,它对应用打包和部署基本没有任何要求.
+> 
+> 第三.就流式处理系统而言.基本都支持Kafka作为数据源.例如Storm具有专门kafka-Spout.而Spark也提供专门Spark-Streaming-Kafka模块.事实上Kafka基本上是主流的流式处理系统的标准数据源,换言之大部分流式系统中都已部署了Kafka,此时使用Kafka Stream的成本非常低.
+> 
+> 第四,使用Storm或SparkStreaming时,需要为框架本身的进程预留资源,如Storm的Supervisor和Spark on YARN的NodeManager,即使对于应用实例而言,框架本身也会占用部分资源,如Spark Streaming需要为Shuffle和Storage预留内存,但是Kafka作为类库不占用系统资源.
+> 
+> 第五,由于Kafka本身提供数据持久化,因此Kafka Stream提供滚动部署滚动升级以及重新计算能力.
+> 
+> 第六,由于Kafka Consumer Rebalance机制,Kafka Stream可以在线动态调整并行度.
 
 
-## 7. 修仙之道 技术架构迭代 登峰造极之势
+### 6.2 Kafka Stream 数据清洗
+- 实时处理单词带有`>>>`前缀内容.
+- 例如输入hello>>>kafka!最终处理成hello_kafka!
+- UpDate pom.xml
+``` xml
+ <dependency>
+  <groupId>org.apache.kafka</groupId>
+  <artifactId>kafka-streams</artifactId>
+  <version>0.11.0.0</version>
+ </dependency>
+```
+- Create KafkaStream.class
+``` java
+package com.geekparkhub.core.kafka.streams;
+
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.processor.Processor;
+import org.apache.kafka.streams.processor.ProcessorSupplier;
+import org.apache.kafka.streams.processor.TopologyBuilder;
+import java.util.Properties;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * KafkaStream
+ * <p>
+ */
+
+public class KafkaStream {
+    public static void main(String[] args) {
+
+        /**
+         * Instantiate topology objects
+         * 实例化 拓扑对象
+         */
+        TopologyBuilder builder = new TopologyBuilder();
+
+        /**
+         * Instantiation configuration file
+         * 实例化 配置文件
+         */
+        Properties properties = new Properties();
+        properties.put("bootstrap.servers", "systemhub511:9092");
+        properties.put("application.id", "KafkaStream");
+
+        /**
+         * Build topology
+         * 构建拓扑结构
+         */
+        builder.addSource("SOURCE", "topic001")
+                .addProcessor("PROCESSOR", new ProcessorSupplier() {
+                    @Override
+                    public Processor get() {
+                        return new LogProcessor() {
+                        };
+                    }
+                }, "SOURCE")
+                .addSink("SINK", "topic002", "PROCESSOR");
+
+        /**
+         * Instantiate KafkaStreams objects
+         * 实例化 KafkaStreams对象
+         */
+        KafkaStreams kafkaStreams = new KafkaStreams(builder, properties);
+        kafkaStreams.start();
+    }
+}
+```
+- Create LogProcessor.class
+``` java
+package com.geekparkhub.core.kafka.streams;
+
+import org.apache.kafka.streams.processor.Processor;
+import org.apache.kafka.streams.processor.ProcessorContext;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * LogProcessor
+ * <p>
+ */
+
+public class LogProcessor implements Processor<byte[], byte[]> {
+    private ProcessorContext context;
+
+    @Override
+    public void init(ProcessorContext processorContext) {
+        context = processorContext;
+    }
+
+    @Override
+    public void process(byte[] key, byte[] value) {
+
+        /**
+         * Get a row of data
+         * 获取一行数据
+         */
+        String line = new String(value);
+
+        /**
+         * Remove dirty data
+         * 去除脏数据
+         */
+        line = line.replaceAll(">>>", "_");
+
+        value = line.getBytes();
+
+        context.forward(key, value);
+    }
+
+    @Override
+    public void punctuate(long l) {
+
+    }
+
+    @Override
+    public void close() {
+
+    }
+}
+```
+- 执行KafkaStream.class
+
+- 开启生产者服务 发送消息
+```
+[root@systemhub511 kafka]# bin/kafka-console-producer.sh --broker-list systemhub511:9092 --topic topic001
+>hello
+>hello>>>kafka!
+```
+
+- 开启消费者服务 接收消息
+```
+[root@systemhub511 kafka]# bin/kafka-console-consumer.sh --zookeeper systemhub511:2181 --topic topic002
+Using the ConsoleConsumer with old consumer is deprecated and will be removed in a future major release. Consider using the new consumer by passing [bootstrap-server] instead of [zookeeper].
+hello
+hello_kafka!
+```
+## 7. Kafka 扩展
+### 7.1 Kafka与Flume比较
+- `Flume` : 适合多个生产者,适合下游数据消费者不多的情况,适合数据安全性要不高的操作,适合与Hadoop生态体系对接操作.
+- `Kafka` : 适合数据下游消费者众多的情况,适合数据安全性要求较高的操作,支持replication.
+- 常用模型 : Online Data ➡️ Flume ➡️ Kafka ➡️ HDFS
+
+
+
+## 8. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
 
