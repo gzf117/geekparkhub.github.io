@@ -1,6 +1,6 @@
 # 🙈 修仙之道 🙈
 
-@(Update Time:2019-04-25)[ Docs Language:简体中文 & English | Programing Language:Technology Architecture | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) ]
+@(Update Time:2019-04-26)[ Docs Language:简体中文 & English | Programing Language:Technology Architecture | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) ]
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/hello_world.jpg" alt="修仙之路" title="修仙之路">
@@ -43,7 +43,7 @@
 * [Flink-Html]() | [Flink-Markdown]()
 ***
 
-### Linux云计算 修仙之道
+### Linux云计算 修神之道
 #### 入门开山
 * [集群]()
 * [负载均衡集群]()
@@ -55,7 +55,7 @@
 * [ISCSI块存储]()
 * [集群监控]()
 
-### 人工智能 修仙之道
+### 人工智能 修性之道
 #### 机器学习 入门开山
 * [人工智能导论]()
 * [数学基础]()
