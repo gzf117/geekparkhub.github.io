@@ -29,12 +29,54 @@
 * [Shell-Html](https://geekparkhub.github.io/technical_guide/programing_language/shell/shell.html) | [Shell-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/shell/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Shell_Blog.md)
 * [Zookeeper-Html](https://geekparkhub.github.io/technical_guide/programing_language/zookeeper/zookeeper.html) | [Zookeeper-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/zookeeper/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Zookeeper_Blog.md)
 * [Hadoop-Html](https://geekparkhub.github.io/technical_guide/programing_language/hadoop/hadoop.html) | [Hadoop-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/hadoop/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Hadoop_Blog.md) | [Hadoop-Projects](https://github.com/geekparkhub/geekparkhub.github.io/tree/master/technical_guide/programing_language/hadoop/hadoop_projects/)
+* [HadoopHA-Html]() | [HadoopHA-Markdown]()
 * [Hive-Html](https://geekparkhub.github.io/technical_guide/programing_language/hive/hive.html) | [Hive-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/hive/大数据生态系统_修仙之道_Hive_Blog.md) | [PornhubActionProject](https://github.com/geekparkhub/geekparkhub.github.io/tree/master/technical_guide/programing_language/hive/projects/PornhubAction) | [PornhubActionProject-ReadMe](https://geekparkhub.github.io/technical_guide/programing_language/hive/projects/PornhubAction/readme.html)
 * [Flume-Html](https://geekparkhub.github.io/technical_guide/programing_language/flume/flume.html) | [Flume-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/flume/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Flume_Blog.md)
 * [Kafka-Html](https://geekparkhub.github.io/technical_guide/programing_language/kafka/kafka.html) | [Kafka-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/kafka/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Kafka_Blog.md) | [Kafka-Projects](https://github.com/geekparkhub/geekparkhub.github.io/tree/master/technical_guide/programing_language/kafka/projects)
 * [HBase-Html](https://geekparkhub.github.io/technical_guide/programing_language/hbase/hbase.html) | [HBase-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/hbase/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_HBase_Blog.md)
 
+* [Sqoop-Html]() | [Sqoop-Markdown]()
+* [Azkaban-Html]() | [Azkaban-Markdown]()
+* [Oozie-Html]() | [Oozie-Markdown]()
+* [Scala-Html]() | [Scala-Markdown]()
+* [Spark-Html]() | [Spark-Markdown]()
+* [Flink-Html]() | [Flink-Markdown]()
 ***
+
+### Linux云计算 修仙之道
+#### 入门开山
+* [集群]()
+* [负载均衡集群]()
+* [调度算法]()
+* [高可用集群]()
+* [多级负载]()
+* [Squid代理服务]()
+* [MFS分布式存储]()
+* [ISCSI块存储]()
+* [集群监控]()
+
+### 人工智能 修仙之道
+#### 机器学习 入门开山
+* [人工智能导论]()
+* [数学基础]()
+* [Python基础]()
+* [机器学习分类]()
+* [机器学习基础]()
+* [机器学习模型]()
+* [统计学习方法]()
+* [推荐系统算法]()
+
+#### 深度学习 入门开山
+* [神经传导原理]()
+* [矩阵运算仿神经网络]()
+* [多层感知器模型]()
+* [反向传播算法训练]()
+* [TensorFlow & Keras]()
+* [Keras MNIST 手写数字识别数据集]()
+* [Keras 多层感知器识别手写数字]()
+* [Keras 卷积神经网络识别手写数字]()
+* [TensorFlow 张量运算仿真神经网络]()
+
 
 ## 💡如何对该开源文档进行贡献💡
 
