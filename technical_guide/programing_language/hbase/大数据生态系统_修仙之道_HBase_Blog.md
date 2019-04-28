@@ -2,7 +2,7 @@
 
 @(2019-04-10)[ Docs Language:简体中文 & English|Programing Language:HBase|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
-##  🐘 HBase Technology 修仙之道 内炼金丹 🐘
+##  🐘 HBase Technology 修仙之道 炼虚合道 🐘
 
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hbase/hbase.jpg)
 
@@ -93,7 +93,7 @@
 - 维护集群元数据信息
 - 处理Region分配或移除
 - 通过Zookeeper发布自身位置给客户端
--
+
 #### 1.5.2 HRegionServer
 > HRegionServer是HBase从节点,HRegionServer负责提供表数据读写服务,是数据存储和和计算单元,HRegionServer与HDFS集群的DataNode部署在一起,实现数据存储功能.
 - `HRegionServer 功能`
@@ -136,13 +136,492 @@
 > Hbase表分片,HBase表会根据RowKey值被切分成不同Region存储在RegionServer中,在一个RegionServer中可以有多个不同的Region.
 
 ## 2. HBase 部署
+### 2.1 Zookeeper 服务
+- 保证Zookeeper集群服务正常运行
+```
+[root@systemhub511 zookeeper]$ bin/zkServer.sh start
+```
+```
+[root@systemhub611 zookeeper]$ bin/zkServer.sh start
+```
+```
+[root@systemhub711 zookeeper]$ bin/zkServer.sh start
+```
+### 2.2 Hadoop 服务
+- 保证Hadoop集群服务正常运行
+```
+[root@systemhub511 hadoop]$ sbin/start-dfs.sh
+```
+```
+[root@systemhub611 hadoop]$ sbin/start-yarn.sh
+```
+### 2.3 HBase 服务
+- 解压HBase到指定目录
+```
+[root@systemhub511 software]# tar -zxvf hbase-1.3.1-bin.tar.gz -C /opt/module/
+```
+- 重命名包名称
+```
+[root@systemhub511 module]# mv hbase-1.3.1 hbase
+```
+- 查看HBase目录结构
+```
+[root@systemhub511 hbase]# ll
+total 348
+drwxr-xr-x.  4 root root   4096 Apr  5  2017 bin
+-rw-r--r--.  1 root root 148959 Apr  7  2017 CHANGES.txt
+drwxr-xr-x.  2 root root   4096 Apr  5  2017 conf
+drwxr-xr-x. 12 root root   4096 Apr  7  2017 docs
+drwxr-xr-x.  7 root root   4096 Apr  7  2017 hbase-webapps
+-rw-r--r--.  1 root root    261 Apr  7  2017 LEGAL
+drwxr-xr-x.  3 root root   4096 Apr 26 14:43 lib
+-rw-r--r--.  1 root root 130696 Apr  7  2017 LICENSE.txt
+-rw-r--r--.  1 root root  43258 Apr  7  2017 NOTICE.txt
+-rw-r--r--.  1 root root   1477 Sep 21  2016 README.txt
+[root@systemhub511 hbase]# 
+```
+- 配置HBase
+- vim `hbase-env.sh`配置文件
+```
+[root@systemhub511 hbase]# echo $JAVA_HOME
+/opt/module/jdk1.8.0_162
+[root@systemhub511 hbase]# cd conf/
+[root@systemhub511 conf]# vim hbase-env.sh
+```
+```
+# The java implementation to use.  Java 1.7+ required.
+export JAVA_HOME=/opt/module/jdk1.8.0_162
+export HBASE_MANAGES_ZK=false
+```
+- vim `hbase-site.xml`配置文件
+```
+<configuration>
+  <property>
+   <name>hbase.rootdir</name>   
+   <value>hdfs://systemhub511:9000/hbase</value>     
+  </property>
+  <property>             
+    <name>hbase.cluster.distributed</name>
+    <value>true</value>
+  </property>
+  <!--0.98后的新变动,之前版本没有.port,默认端口为60000 -->
+  <property>
+    <name>hbase.master.port</name>
+    <value>16000</value>
+  </property>          
+  <property>            
+    <name>hbase.zookeeper.quorum</name>
+    <value>systemhub511:2181,systemhub611:2181,systemhub711:2181</value>
+  </property>
+  <property>                        
+    <name>hbase.zookeeper.property.dataDir</name>
+    <value>/opt/module/zookeeper/zkData</value>
+  </property>
+</configuration>
+```
+
+- vim `regionservers`配置文件
+```
+systemhub511
+systemhub611
+systemhub711
+```
+- 在/usr/local/bin目录下创建脚本
+- 启动所有集群节点
+- vim `start-cluster.sh`
+```
+#!/bin/bash
+echo "================          Start All Node Services         ==========="
+echo "================================================================"
+echo "================          Starting Zookeeper              ==========="
+echo "================================================================"
+
+for i in root@systemhub511 root@systemhub611 root@systemhub711
+do
+    ssh $i 'source /etc/profile;/opt/module/zookeeper/bin/zkServer.sh start'
+done
+
+echo "================          Starting HDFS           ==========="
+ssh root@systemhub511 '/opt/module/hadoop/sbin/start-dfs.sh'
+
+echo "================          Starting YARN           ==========="
+ssh root@systemhub611 '/opt/module/hadoop/sbin/start-yarn.sh'
+
+echo "================          Starting JobHistoryServer       ==========="
+ssh root@systemhub511 '/opt/module/hadoop/sbin/mr-jobhistory-daemon.sh start historyserver'
+```
+- 关闭所有集群节点
+- vim `stop-cluster.sh`
+```
+#!/bin/bash
+echo "================          Stopping All Node Services      ==========="
+echo "================          Stopping JobHistoryServer       ==========="
+ssh root@systemhub511 '/opt/module/hadoop/sbin/mr-jobhistory-daemon.sh stop historyserver'
+
+echo "================          Stopping YARN           ==========="
+ssh root@systemhub611 '/opt/module/hadoop/sbin/stop-yarn.sh'
+
+echo "================          Stopping HDFS           ==========="
+ssh root@systemhub511 '/opt/module/hadoop/sbin/stop-dfs.sh'
+
+echo "================          Stopping Zookeeper      ==========="
+for i in root@systemhub511 root@systemhub611 root@systemhub711
+do
+    ssh $i 'source /etc/profile;/opt/module/zookeeper/bin/zkServer.sh stop'
+done
+```
+- 查看所有集群节点状态
+- vim `jps.sh`
+```
+ #!/bin/bash
+for host in root@systemhub511 root@systemhub611 root@systemhub711
+do
+    echo "================      $host All Processes             ==========="
+    ssh $host '/opt/module/jdk1.8.0_162/bin/jps'
+done
+```
+- HBase软连接Hadoop配置
+```
+[root@systemhub511 ~]# ln -s /opt/module/hadoop/etc/hadoop/core-site.xml /opt/module/hbase/conf/core-site.xml
+[root@systemhub511 ~]#
+[root@systemhub511 ~]# ln -s /opt/module/hadoop/etc/hadoop/hdfs-site.xml /opt/module/hbase/conf/hdfs-site.xml
+[root@systemhub511 ~]#
+```
+- HBase远程分发其他集群
+```
+[root@systemhub511 ~]# scp -r /opt/module/hbase/ systemhub611:/opt/module/hbase/
+[root@systemhub511 ~]# scp -r /opt/module/hbase/ systemhub711:/opt/module/hbase/
+```
+- 启动HBase服务
+- 方式一
+```
+[root@systemhub511 hbase]# bin/hbase-daemon.sh start master
+[root@systemhub511 hbase]# bin/hbase-daemon.sh start regionserver
+```
+- 方式二
+```
+[root@systemhub511 hbase]# bin/start-hbase.sh
+starting master, logging to /opt/module/hbase/bin/../logs/hbase-root-master-systemhub511.out
+systemhub711: starting regionserver, logging to /opt/module/hbase/bin/../logs/hbase-root-regionserver-systemhub711.out
+systemhub611: starting regionserver, logging to /opt/module/hbase/bin/../logs/hbase-root-regionserver-systemhub611.out
+systemhub511: starting regionserver, logging to /opt/module/hbase/bin/../logs/hbase-root-regionserver-systemhub511.out
+```
+- 如果集群之间的节点时间不同步,会导致regionserver无法启动,抛出`ClockOutOfSyncException`异常
+- 方式一:修改集群同步时间服务 - [快速回顾通道](https://geekparkhub.github.io/technical_guide/programing_language/hadoop/hadoop.html#集群时间同步)
+- 方式二:在配置文件中追加 `hbase.master.maxclockskew`属性值为最大值即可
+```
+<property>
+  <name>hbase.master.maxclockskew</name>
+  <value>180000</value>
+  <description>Time difference of regionserver from master</description>
+</property>
+```
+- 启动服务后,查看运行结果
+- 可以通过`host:port`方式访问HBase管理页
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hbase/start_002.jpg)
+
 ## 3. HBase Shell
+### 3.1 基本操作
+#### 3.1.1 进入HBase客户端命令行窗口
+- `bin/hbase shell`
+``` powershell
+[root@systemhub511 hbase]# bin/hbase shell
+hbase(main):001:0> 
+```
+#### 3.1.2 查看帮助命令
+- `help`
+```
+hbase(main):001:0> help
+HBase Shell, version 1.3.1, r930b9a55528fe45d8edce7af42fef2d35e77677a, Thu Apr  6 19:36:54 PDT 2017
+Type 'help "COMMAND"', (e.g. 'help "get"' -- the quotes are necessary) for help on a specific command.
+Commands are grouped. Type 'help "COMMAND_GROUP"', (e.g. 'help "general"') for help on a command group.
+
+COMMAND GROUPS:
+  Group name: general
+  Commands: status, table_help, version, whoami
+
+  Group name: ddl
+  Commands: alter, alter_async, alter_status, create, describe, disable, disable_all, drop, drop_all, enable, enable_all, exists, get_table, is_disabled, is_enabled, list, locate_region, show_filters
+
+The HBase shell is the (J)Ruby IRB with the above HBase-specific commands added.
+For more on the HBase Shell, see http://hbase.apache.org/book.html
+hbase(main):002:0> 
+```
+#### 3.1.3 查看当前数据库中有哪些表
+- `list`
+```
+hbase(main):002:0> list
+TABLE        
+0 row(s) in 0.4020 seconds
+=> []
+hbase(main):003:0>
+```
+
+### 3.2 表操作
+#### 3.2.1 创建表
+- `create '表名','列族名'`
+```
+hbase(main):003:0> create 'test','info'
+0 row(s) in 2.8000 seconds
+
+=> Hbase::Table - test
+hbase(main):004:0>
+```
+#### 3.2.2 插入数据到表
+- `put '表名','主键ID','列族名:列名称','value'`
+```
+hbase(main):004:0> put 'test','0001','info:name','testuser001'
+0 row(s) in 0.3590 seconds
+
+hbase(main):005:0>
+```
+#### 3.2.3 扫描查看表数据
+- `scan '表名'`
+```
+hbase(main):008:0> scan 'test'
+ROW                        COLUMN+CELL                                                                 
+ 0001                      column=info:age, timestamp=1556459945452, value=60                          
+ 0001                      column=info:name, timestamp=1556459442613, value=testuser001                
+ 0002                      column=info:age, timestamp=1556459962770, value=70                          
+ 0002                      column=info:name, timestamp=1556459836540, value=testuser002                
+2 row(s) in 0.0450 seconds
+
+hbase(main):009:0> 
+hbase(main):012:0> scan 'test',{STARTROW => '0001',STOPROW => '0002'}
+ROW                        COLUMN+CELL
+ 0001                      column=info:age, timestamp=1556459945452, value=60                          
+ 0001                      column=info:name, timestamp=1556459442613, value=testuser001                
+1 row(s) in 0.0310 seconds
+
+hbase(main):013:0> 
+```
+#### 3.2.4 查看 指定行或指定列族:列数据
+- `get '表名','主键ID'`
+```
+hbase(main):009:0> get 'test','0001'
+COLUMN                     CELL         
+ info:age                  timestamp=1556459945452, value=60   
+ info:name                 timestamp=1556459442613, value=testuser001
+1 row(s) in 0.0460 seconds
+hbase(main):010:0> get 'test','0001','info:name'
+COLUMN                     CELL                                                                        
+ info:name                 timestamp=1556459442613, value=testuser001
+1 row(s) in 0.0260 seconds
+hbase(main):011:0> 
+```
+#### 3.2.5 查看表结构
+```
+hbase(main):011:0> describe 'test'
+Table test is ENABLED
+test                                                                                                   
+COLUMN FAMILIES DESCRIPTION
+{NAME => 'info', BLOOMFILTER => 'ROW', VERSIONS => '1', IN_MEMORY => 'false', KEEP_DELETED_CELLS => 'FA
+LSE', DATA_BLOCK_ENCODING => 'NONE', TTL => 'FOREVER', COMPRESSION => 'NONE', MIN_VERSIONS => '0', BLOC
+KCACHE => 'true', BLOCKSIZE => '65536', REPLICATION_SCOPE => '0'}                                      
+1 row(s) in 0.1010 seconds
+hbase(main):012:0> 
+```
+#### 3.2.6 变更表信息
+- 将info列族中的数据存放3个版本
+```
+hbase(main):014:0> alter 'test',{NAME=>'info',VERSIONS=>3}
+Updating all regions with the new schema...
+0/1 regions updated.
+1/1 regions updated.
+Done.
+0 row(s) in 3.0960 seconds
+hbase(main):015:0> 
+hbase(main):015:0> get 'test','0001',{COLUMN=>'info:name',VERSIONS=>3}
+COLUMN                     CELL
+ info:name                 timestamp=1556459442613, value=testuser001                                  
+1 row(s) in 0.0260 seconds
+hbase(main):016:0>
+```
+#### 3.2.7 更新指定字段数据
+```
+hbase(main):004:0> put 'test','0001','info:name','testuser003'
+0 row(s) in 0.3590 seconds
+
+hbase(main):005:0>
+```
+#### 3.2.8 统计表数据行数
+```
+hbase(main):016:0> count 'test'
+2 row(s) in 0.1140 seconds
+=> 2
+hbase(main):017:0> 
+```
+#### 3.2.9 删除数据
+- 删除某rowkey某一列数据
+```
+hbase(main):017:0> delete 'test','0002','info:age'
+```
+- 删除某rowkey全部数据
+```
+hbase(main):016:0> deleteall 'test','0001'
+```
+#### 3.2.10 清空表数据
+- 清空表操作顺序为先disable,然后再truncate
+```
+hbase(main):018:0> truncate 'test'
+```
+#### 3.2.11 删除表
+- 需要先让该表为disable状态,然后才能删除表
+- 如果直接drop表,会抛出异常：`Drop the named table. Table must first be disabledERROR: Table test is enabled. Disable it first.`
+```
+hbase(main):019:0> disable 'test'
+```
+```
+hbase(main):020:0> drop 'test'
+```
+
 ## 4. HBase 数据结构
+### 4.1 Row Key
+> 与nosql数据库们一样,`row key`是用来检索记录主键,访问HBASE表中的行,只有三种方式 :
+- 1.通过单个`row key`访问
+- 2.通过`row key`的range(正则)
+- 3.全表扫描
+> `Row key`行键(Row key)可以是任意字符串(最大长度是`64KB`,实际应用中长度一般为10-100bytes),在HBASE内部,`row key`保存为字节数组, 存储时数据按照`Row key`的字典序(byte order)排序存储,设计key时,要充分排序存储这个特性,将经常一起读取的行存储放到一起(位置相关性).
+
+### 4.2 Columns Family
+> 列族 : HBASE表中每个列都归属于某个列族,列族是表的schema的一部分(而列不是),必须在使用表之前定义,列名都以列族作为前缀,例如`courses:history,courses:math`都属于`courses`这个列族.
+
+### 4.3 Cell
+> 由`{row key, columnFamily, version}` 唯一确定单元,cell中数据是没有类型的,全部是字节码形式存贮,关键字 : 无类型/字节码.
+
+### 4.4 Time Stamp
+> HBASE中通过`rowkey`和`columns`确定为一个存贮单元称为cell,每个cell都保存着同一份数据的多个版本,版本通过时间戳来索引,`时间戳类型`是`64位整型`,时间戳可以由HBASE(在数据写入时自动)赋值,此时时间戳是精确到毫秒的当前系统时间,时间戳也可以由开发者显式赋值,如果应用程序要避免数据版本冲突,就必须自己生成具有唯一性的时间戳,每个cell中,不同版本的数据按照时间倒序排序,即最新的数据排在最前面.
+> 
+> 为了避免数据存在过多版本造成管理(包括存贮和索引)负担,HBASE提供了两种数据版本回收方式.
+> 一是保存数据的最后n个版本.
+> 二是保存最近一段时间内的版本(比如最近七天),用户可以针对每个列族进行设置.
+
+### 4.5 命名空间
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hbase/start_003.jpg)
+
+> 1.`Table` : 表 , 所以的表都是命名空间的成员,既表必属于某个命名空间,如果没有指定,则在default默认命名空间中.
+> 
+> 2.`RegionServerGroup` : 一个命名空间包含了默认的RegionServerGroup.
+> 
+> 3.`Permission` : 权限 , 命名空间能够让开发者来定义访问控制表ACL(Access Control List). 例如 : 创建表 / 读取表 / 删除 / 更新等操作. 
+> 
+> 4.`Quota` : 限额 , 可以强制一个命名空间可包含的region数据.
+
+
 ## 5. HBase 原理
+
+### 5.1 HBase 读数据流程
+
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hbase/start_005.jpg)
+- 1.Client先访问Zookeeper,从meta表读取region位置,然后读取meta表中数据,meta中又存储了用户表的region信息.
+- 2.根据namespace、表名和rowkey在meta表中找到对应的region信息.
+- 3.找到region对应的RegionServer.
+- 4.查找对应的region.
+- 5.先从MemStore找数据,如果没有,再到StoreFile上读(为了读取效率).
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hbase/start_008.jpg)
+
+- 查看HBase元数据内容
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hbase/start_004.jpg)
+- 查看Zookeeper存储数据内容
+```
+[zk: localhost:2181(CONNECTED) 0] ls /
+[cluster, controller_epoch, controller, brokers, zookeeper, admin, isr_change_notification, consumers, latest_producer_id_block, config, hbase]
+```
+- 查看Zookeeper存储HBase数据内容
+```
+[zk: localhost:2181(CONNECTED) 1] ls /hbase
+[replication, meta-region-server, rs, splitWAL, backup-masters, table-lock, flush-table-proc, region-in-transition, online-snapshot, switch, master, running, recovering-regions, draining, namespace, hbaseid, table]
+[zk: localhost:2181(CONNECTED) 2] 
+```
+- 查看Zookeeper存储HBase meta-region-server
+```
+[zk: localhost:2181(CONNECTED) 4] get /hbase/meta-region-server
+�regionserver:16020e��;0Z�PBUF
+⎽≤⎽├␊└␤┤␉711�£�����-
+␌Z│␋␍ = 0│1␊00000051
+␌├␋└␊ = M⎺┼ A⎻⎼ 29 01:37:37 CST 2019
+└Z│␋␍ = 0│1␊00000051
+└├␋└␊ = M⎺┼ A⎻⎼ 29 01:37:37 CST 2019
+⎻Z│␋␍ = 0│1␊00000051
+␌┴␊⎼⎽␋⎺┼ = 0
+␍▒├▒V␊⎼⎽␋⎺┼ = 0
+▒␌┌V␊⎼⎽␋⎺┼ = 0
+␊⎻␤␊└␊⎼▒┌O┬┼␊⎼ = 0│0
+␍▒├▒L␊┼±├␤ = 65
+┼┤└C␤␋┌␍⎼␊┼ = 0
+[≥┐: ┌⎺␌▒┌␤⎺⎽├:2181(CONNECTED) 5] 
+```
+- 查看hbase:meta元数据信息表
+```
+hbase(main):002:0> scan 'hbase:meta'
+ROW                        COLUMN+CELL                                                                 
+ hbase:namespace,,15562836 column=info:regioninfo, timestamp=1556473360414, value={ENCODED => d89184e0b
+ 52968.d89184e0b0e8bf9782b 0e8bf9782b86edf991f56d2, NAME => 'hbase:namespace,,1556283652968.d89184e0b0e
+ 86edf991f56d2.            8bf9782b86edf991f56d2.', STARTKEY => '', ENDKEY => ''}                      
+ hbase:namespace,,15562836 column=info:seqnumDuringOpen, timestamp=1556473360414, value=\x00\x00\x00\x0
+ 52968.d89184e0b0e8bf9782b 0\x00\x00\x00\x14                                                           
+ 86edf991f56d2.                                                                                        
+ hbase:namespace,,15562836 column=info:server, timestamp=1556473360414, value=systemhub511:16020       
+ 52968.d89184e0b0e8bf9782b                                                                             
+ 86edf991f56d2.                                                                                        
+ hbase:namespace,,15562836 column=info:serverstartcode, timestamp=1556473360414, value=1556473045363   
+ 52968.d89184e0b0e8bf9782b                                                                             
+ 86edf991f56d2.                                                                                        
+ test,,1556459101215.6b00f column=info:regioninfo, timestamp=1556473359938, value={ENCODED => 6b00fc62a
+ c62ac627c675022a7fafb6fbf c627c675022a7fafb6fbfa0, NAME => 'test,,1556459101215.6b00fc62ac627c675022a7
+ a0.                       fafb6fbfa0.', STARTKEY => '', ENDKEY => ''}                                 
+ test,,1556459101215.6b00f column=info:seqnumDuringOpen, timestamp=1556473359938, value=\x00\x00\x00\x0
+ c62ac627c675022a7fafb6fbf 0\x00\x00\x00\x13                                                           
+ a0.                                                                                                   
+ test,,1556459101215.6b00f column=info:server, timestamp=1556473359938, value=systemhub611:16020       
+ c62ac627c675022a7fafb6fbf                                                                             
+ a0.                                                                                                   
+ test,,1556459101215.6b00f column=info:serverstartcode, timestamp=1556473359938, value=1556473042292   
+ c62ac627c675022a7fafb6fbf                                                                             
+ a0.                                                                                                   
+2 row(s) in 0.0530 seconds
+
+hbase(main):003:0> 
+```
+
+### 5.2 HBase 写数据流程
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hbase/start_007.jpg)
+- 1.Client向HregionServer发送写请求
+- 2.HregionServer将数据写到HLog(write ahead log),为了数据持久化和恢复.
+- 3.HregionServer将数据写到内存(MemStore)
+- 4.反馈Client写入成功.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hbase/start_006.jpg)
+
+### 5.3 HBase 数据Flush过程
+- 1.当MemStore数据达到阈值(默认是128M,老版本是64M),将数据刷到硬盘,将内存中数据删除,同时删除HLog中历史数据.
+- 2.并将数据存储到HDFS中.
+- 3.在HLog中做标记点.
+
+### 5.4 HBase 数据Compact过程
+- 1.当数据块达到4块,Hmaster将数据块加载到本地进行合并.
+- 2.当合并数据超过256M,进行拆分,将拆分后的Region分配给不同的HregionServer管理.
+- 3.当HregionServer宕机后,将HregionServer上的hlog拆分,然后分配给不同HregionServer加载,修改.META
+- 4.注意 : HLog会同步到HDFS.
+
+### 5.5 Hmaster 职责
+- 1.管理用户对Table增、删、改、查操作.
+- 2.记录Region在哪一台HRegion Server服务器上.
+- 3.在Region Split后,负责新Region分配.
+- 4.新机器加入时,管理HRegion Server负载均衡,调整Region分布.
+- 5.在HRegion Server宕机后,负责失效HRegion Server上的Regions迁移.
+
+### 5.6 HRegionServer 职责
+- 1.HRegion Server主要负责响应用户I/O请求.向HDFS文件系统中读写数据.是HBASE中最核心模块.
+- 2.HRegion Server管理了很多table分区,也就是region.
+
+### 5.7 Client 职责
+- 1.HBASE Client使用HBASE的RPC机制与HMaster和RegionServer进行通信.
+- 2.管理类操作 : Client与HMaster进行RPC.
+- 3.数据读写类操作 : Client与HRegionServer进行RPC.
+
 ## 6. HBase API
+
 ## 7. HBase 优化
-
-
 
 
 ## 8. 修仙之道 技术架构迭代 登峰造极之势
