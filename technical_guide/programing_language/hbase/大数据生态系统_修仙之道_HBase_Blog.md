@@ -619,7 +619,364 @@ hbase(main):003:0>
 - 2.管理类操作 : Client与HMaster进行RPC.
 - 3.数据读写类操作 : Client与HRegionServer进行RPC.
 
-## 6. HBase API
+## 6. HBase New API
+### 6.1 环境准备
+- JetBrains IntelliJ IDEA New Maven Project | 此过程省略
+- Add pom.xml
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.geekparkhub.core.hbase.api</groupId>
+    <artifactId>hbase_server</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-server</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-client</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>jdk.tools</groupId>
+            <artifactId>jdk.tools</artifactId>
+            <version>1.8</version>
+            <scope>system</scope>
+            <systemPath>/Library/Java/JavaVirtualMachines/jdk1.8.0_201.jdk/Contents/Home/lib/tools.jar</systemPath>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+### 6.2 判断数据表是否存在
+``` java
+package com.geekparkhub.core.hbase.api.producehub;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * HbaseHub
+ * <p>
+ */
+
+public class HbaseHub {
+
+    private static Admin admin = null;
+
+    /**
+     * Public configuration information
+     * 公共配置信息
+     */
+    static {
+
+        /**
+         * HBase configuration file
+         * HBase 配置文件
+         */
+        Configuration configuration = HBaseConfiguration.create();
+        configuration.set("hbase.zookeeper.quorum", "172.16.168.130");
+        configuration.set("hbase.zookeeper.property.clientPort", "2181");
+
+        try {
+            /**
+             * Get connected
+             * 获取连接
+             */
+            Connection connection = ConnectionFactory.createConnection(configuration);
+
+            /**
+             * Get the HBase administrator object
+             * 获取HBase管理员对象
+             */
+            admin = connection.getAdmin();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Close resource
+     * 关闭资源
+     *
+     * @param conf
+     * @param admin
+     */
+    private void close(Connection conf, Admin admin) {
+        if (conf != null) {
+            try {
+                conf.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (admin != null) {
+            try {
+                admin.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Determine if the data table exists
+     * 判断数据表是否存在
+     *
+     * @param tableName
+     */
+    public static boolean isTableExist(String tableName) throws IOException {
+
+        /**
+         * Execution method
+         * 执行方法
+         */
+        boolean tableExists = admin.tableExists(TableName.valueOf(tableName));
+
+        /**
+         * Close resource
+         * 关闭资源
+         */
+        admin.close();
+
+        return tableExists;
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        /**
+         * isTableExist Result
+         */
+        System.out.printf("test isTableExist Result is = " + String.valueOf(isTableExist("test")) + "\n");
+        System.out.printf("test001 isTableExist Result is = " + String.valueOf(isTableExist("test001")) + "\n");
+        System.out.printf("test002 isTableExist Result is = " + String.valueOf(isTableExist("test002")) + "\n");
+        System.out.printf("test003 isTableExist Result is = " + String.valueOf(isTableExist("test003")) + "\n");
+        
+    }
+}
+```
+- 执行返回结果
+``` prolog
+test isTableExist Result is = true
+test001 isTableExist Result is = true
+test002 isTableExist Result is = false
+test003 isTableExist Result is = false
+```
+
+### 6.3 创建数据表
+``` java
+package com.geekparkhub.core.hbase.api.producehub;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HColumnDescriptor;
+import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Admin;
+import org.apache.hadoop.hbase.client.Connection;
+import org.apache.hadoop.hbase.client.ConnectionFactory;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * HbaseHub
+ * <p>
+ */
+
+public class HbaseHub {
+
+    private static Admin admin = null;
+
+    /**
+     * Public configuration information
+     * 公共配置信息
+     */
+    static {
+
+        /**
+         * HBase configuration file
+         * HBase 配置文件
+         */
+        Configuration configuration = HBaseConfiguration.create();
+        configuration.set("hbase.zookeeper.quorum", "172.16.168.130");
+        configuration.set("hbase.zookeeper.property.clientPort", "2181");
+
+        try {
+            /**
+             * Get connected
+             * 获取连接
+             */
+            Connection connection = ConnectionFactory.createConnection(configuration);
+
+            /**
+             * Get the HBase administrator object
+             * 获取HBase管理员对象
+             */
+            admin = connection.getAdmin();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Close resource
+     * 关闭资源
+     *
+     * @param conf
+     * @param admin
+     */
+    private void close(Connection conf, Admin admin) {
+        if (conf != null) {
+            try {
+                conf.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (admin != null) {
+            try {
+                admin.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Determine if the data table exists
+     * 判断数据表是否存在
+     *
+     * @param tableName
+     */
+    public static boolean isTableExist(String tableName) throws IOException {
+
+        /**
+         * Execution method
+         * 执行方法
+         */
+        boolean tableExists = admin.tableExists(TableName.valueOf(tableName));
+
+        /**
+         * Close resource
+         * 关闭资源
+         */
+        admin.close();
+
+        return tableExists;
+    }
+
+    /**
+     * Create a data table
+     * 创建数据表
+     */
+    private static void createTable(String tableName, String... columnName) throws IOException {
+
+        /**
+         * Verify that the data table exists before creating the data table
+         * 创建数据表前,验证数据表是否存在
+         */
+        if (isTableExist(tableName)) {
+            System.out.printf(tableName + " Data table creation failed , " + tableName + " Data table already exists!" + "\n");
+            return;
+        }
+
+        /**
+         * Instantiation table description information
+         * 实例化 表描述信息
+         */
+        HTableDescriptor tableDescriptor = new HTableDescriptor(TableName.valueOf(tableName));
+
+        /**
+         * Add multiple column families
+         * 添加多个列族
+         */
+        for (String cn : columnName) {
+
+            /**
+             * Instantiation column name description information
+             * 实例化 列名描述信息
+             */
+            HColumnDescriptor columnDescriptor = new HColumnDescriptor(String.valueOf(cn));
+            tableDescriptor.addFamily(columnDescriptor);
+        }
+
+        /**
+         * Execution method
+         * 执行方法
+         */
+        admin.createTable(tableDescriptor);
+
+        System.out.printf(tableName + " Data sheet was created successfully!" + "\n");
+    }
+
+    public static void main(String[] args) throws IOException {
+
+        /**
+         * isTableExist Result
+         */
+        System.out.printf("test isTableExist Result is = " + String.valueOf(isTableExist("test")) + "\n");
+        System.out.printf("test001 isTableExist Result is = " + String.valueOf(isTableExist("test001")) + "\n");
+        System.out.printf("test002 isTableExist Result is = " + String.valueOf(isTableExist("test002")) + "\n");
+        System.out.printf("test003 isTableExist Result is = " + String.valueOf(isTableExist("test003")) + "\n");
+
+
+        /**
+         * createTable Result
+         */
+        createTable("test001", "info");
+        createTable("test_factory", "factorymode", "factoryinfo");
+        System.out.printf("factory TableExist Result is = " + String.valueOf(isTableExist("factory")) + "\n");
+        System.out.printf("test_factory TableExist Result is = " + String.valueOf(isTableExist("test_factory")) + "\n");
+    }
+}
+```
+- 执行返回结果
+``` prolog
+test001 Data sheet was created successfully!
+test_factory Data sheet was created successfully!
+test_factory TableExist Result is = true
+factory TableExist Result is = false
+```
+
+### 6.4 删除数据表
+### 6.5 添加数据
+### 6.6 修改数据
+### 6.7 查询数据
+### 6.8 删除数据
 
 ## 7. HBase 优化
 
