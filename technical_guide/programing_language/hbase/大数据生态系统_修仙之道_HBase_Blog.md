@@ -2074,6 +2074,382 @@ public class HbaseHub {
 Data Deletion is Successful!
 ```
 
+### 6.9 MapReduce
+- 使用MapReduce将数据从本地文件系统导入到HBase的表中,从HBase中读取原始数据后使用MapReduce数据分析.
+
+#### 6.9.1 官方HBase-MapReduce
+- 查看HBase的MapReduce任务执行
+```
+[root@systemhub511 hbase]# bin/hbase mapredcp
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/module/hbase/lib/slf4j-log4j12-1.7.5.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/module/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+/opt/module/hbase/lib/netty-all-4.0.23.Final.jar:/opt/module/hbase/lib/hbase-client-1.3.1.jar:/opt/module/hbase/lib/metrics-core-2.2.0.jar:/opt/module/hbase/lib/zookeeper-3.4.10.jar:/opt/module/hbase/lib/hbase-prefix-tree-1.3.1.jar:/opt/module/hbase/lib/hbase-common-1.3.1.jar:/opt/module/hbase/lib/protobuf-java-2.5.0.jar:/opt/module/hbase/lib/guava-12.0.1.jar:/opt/module/hbase/lib/htrace-core-3.1.0-incubating.jar:/opt/module/hbase/lib/hbase-protocol-1.3.1.jar:/opt/module/hbase/lib/hbase-hadoop-compat-1.3.1.jar:/opt/module/hbase/lib/hbase-server-1.3.1.jar
+[root@systemhub511 hbase]#
+```
+#### 6.9.2 执行环境变量导入
+- 关闭所有Hadoop相关服务
+- vim `/etc/profile`
+```
+## SET HBASE_HOME
+export HBASE_HOME=/opt/module/hbase
+```
+```
+[root@systemhub511 hadoop]# source /etc/profile
+```
+- vim `hadoop-env.sh` / 注意 : 在for语句后追加此配置参数.
+```
+export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:/opt/module/hbase/lib/*
+```
+- 配置文件分发集群
+- 逐一开启相关服务
+
+#### 6.9.3 运行官方MapReduce任务
+- `Demo1` : 统计test表中有多少行数据
+```
+[root@systemhub511 hbase]# /opt/module/hadoop/bin/yarn jar lib/hbase-server-1.3.1.jar rowcounter test
+HBase Counters
+                BYTES_IN_REMOTE_RESULTS=0
+                BYTES_IN_RESULTS=74
+                MILLIS_BETWEEN_NEXTS=549
+                NOT_SERVING_REGION_EXCEPTION=0
+                NUM_SCANNER_RESTARTS=0
+                NUM_SCAN_RESULTS_STALE=0
+                REGIONS_SCANNED=1
+                REMOTE_RPC_CALLS=0
+                REMOTE_RPC_RETRIES=0
+                ROWS_FILTERED=0
+                ROWS_SCANNED=2
+                RPC_CALLS=3
+                RPC_RETRIES=0
+        org.apache.hadoop.hbase.mapreduce.RowCounter$RowCounterMapper$Counters
+                ROWS=2
+        File Input Format Counters 
+                Bytes Read=0
+        File Output Format Counters 
+                Bytes Written=0
+```
+
+- `Demo2` : 使用MapReduce将本地数据导入到HBase
+- 创建后缀为.tsv格式文件
+```
+[root@systemhub511 hbase]# touch test002.tsv
+[root@systemhub511 hbase]# vim test002.tsv
+```
+```
+1001    Test001 Red
+1002    Test002 Yellow
+1003    Test003 Yellow
+```
+- 将文件上传到HDFS
+```
+[root@systemhub511 hbase]# hadoop fs -put test002.tsv /core_flow/test/
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/module/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/module/hbase/lib/slf4j-log4j12-1.7.5.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+[root@systemhub511 hbase]# 
+```
+- 创建HBase表
+```
+hbase(main):001:0> create 'test002','info'
+0 row(s) in 3.1610 seconds
+
+=> Hbase::Table - test002
+hbase(main):002:0> 
+```
+- 执行MapReduce
+```
+[root@systemhub511 hbase]# /opt/module/hadoop/bin/yarn jar ./lib/hbase-server-1.3.1.jar importtsv -Dimporttsv.columns=HBASE_ROW_KEY,info:name,info:color test002 hdfs://systemhub511:9000/core_flow/test/test002.tsv
+Map-Reduce Framework
+                Map input records=3
+                Map output records=3
+                Input split bytes=116
+                Spilled Records=0
+                Failed Shuffles=0
+                Merged Map outputs=0
+                GC time elapsed (ms)=131
+                CPU time spent (ms)=1690
+                Physical memory (bytes) snapshot=108429312
+                Virtual memory (bytes) snapshot=2071105536
+                Total committed heap usage (bytes)=16318464
+
+```
+- 使用scan指令查看导入后结果
+```
+hbase(main):001:0> scan 'test002'
+ROW                        COLUMN+CELL                                                                 
+ 1001                      column=info:color, timestamp=1556886127536, value=Red                       
+ 1001                      column=info:name, timestamp=1556886127536, value=Test001                    
+ 1002                      column=info:color, timestamp=1556886127536, value=Yellow                    
+ 1002                      column=info:name, timestamp=1556886127536, value=Test002                    
+ 1003                      column=info:color, timestamp=1556886127536, value=Yellow                    
+ 1003                      column=info:name, timestamp=1556886127536, value=Test003                    
+3 row(s) in 0.5090 seconds
+hbase(main):002:0> 
+```
+
+#### 6.9.4 自定义 HBase-MapReduce (1)
+- 将test002表中一部分数据,通过MapReduce迁入到test002_mr表中.
+- Create `TestMapper.class` / 用于读取test002表中数据.
+``` java
+package com.geekparkhub.core.hbase.api.mapreduce;
+
+import org.apache.hadoop.hbase.Cell;
+import org.apache.hadoop.hbase.CellUtil;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Result;
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
+import org.apache.hadoop.hbase.mapreduce.TableMapper;
+import org.apache.hadoop.hbase.util.Bytes;
+
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TestMapper
+ * <p>
+ */
+
+public class TestMapper extends TableMapper<ImmutableBytesWritable, Put> {
+
+    @Override
+    protected void map(ImmutableBytesWritable key, Result value, Context context) throws IOException, InterruptedException {
+
+        /**
+         * Instantiate Put object
+         * 实例化 Put对象
+         */
+        Put put = new Put(key.get());
+
+        /**
+         * Traversing rowkey data
+         * 遍历rowkey数据
+         */
+        Cell[] cells = value.rawCells();
+        for (Cell cell : cells) {
+            if ("name".equals(Bytes.toString(CellUtil.cloneQualifier(cell)))) {
+                put.add(cell);
+            }
+        }
+        context.write(key, put);
+    }
+}
+```
+- Create `TestReducer.class` / 用于将读取test002表数据写入到test002_mr表中.
+``` java
+package com.geekparkhub.core.hbase.api.mapreduce;
+
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
+import org.apache.hadoop.hbase.mapreduce.TableReducer;
+import org.apache.hadoop.io.NullWritable;
+
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TestReducer
+ * <p>
+ */
+
+public class TestReducer extends TableReducer<ImmutableBytesWritable, Put, NullWritable> {
+
+    @Override
+    protected void reduce(ImmutableBytesWritable key, Iterable<Put> values, Context context) throws IOException, InterruptedException {
+        for (Put value : values) {
+            context.write(NullWritable.get(), value);
+        }
+    }
+}
+```
+- Create `TestDriver.class` / 用于组装运行Job任务
+``` java
+package com.geekparkhub.core.hbase.api.mapreduce;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.client.Scan;
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
+import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * TestDriver
+ * <p>
+ */
+
+public class TestDriver extends Configuration implements Tool {
+
+    Configuration configuration = null;
+
+    public int run(String[] args) throws Exception {
+
+        /**
+         * 实例化 Job对象
+         */
+        Job job = Job.getInstance(configuration);
+        job.setJarByClass(TestDriver.class);
+
+        TableMapReduceUtil.initTableMapperJob("test002", new Scan(), TestMapper.class, ImmutableBytesWritable.class, Put.class, job);
+
+        TableMapReduceUtil.initTableReducerJob("test002_mr", TestReducer.class, job);
+
+        boolean completion = job.waitForCompletion(true);
+
+        return completion ? 0 : 1;
+    }
+
+    public void setConf(Configuration conf) {
+        this.configuration = conf;
+    }
+
+    public Configuration getConf() {
+        return configuration;
+    }
+
+    public static void main(String[] args) throws Exception {
+        Configuration configuration = HBaseConfiguration.create();
+        int run = ToolRunner.run(configuration, new TestDriver(), args);
+    }
+}
+```
+- 运行任务前,如果待数据导入表不存在,则需要提前创建
+```
+[root@systemhub511 hbase]# bin/hbase shell
+hbase(main):001:0> create 'test002_mr','info'
+0 row(s) in 2.8570 seconds
+=> Hbase::Table - test002_mr
+hbase(main):002:0> 
+```
+- 打包运行任务
+```
+[root@systemhub511 hbase]# /opt/module/hadoop/bin/yarn jar ./hbase_server-1.0.jar com.geekparkhub.core.hbase.api.mapreduce.TestDriver
+ INFO mapreduce.Job: Counters: 62
+        File System Counters
+                FILE: Number of bytes read=195
+                FILE: Number of bytes written=298305
+                FILE: Number of read operations=0
+                FILE: Number of large read operations=0
+                FILE: Number of write operations=0
+                HDFS: Number of bytes read=109
+                HDFS: Number of bytes written=0
+                HDFS: Number of read operations=1
+                HDFS: Number of large read operations=0
+                HDFS: Number of write operations=0
+        Job Counters 
+                Launched map tasks=1
+                Launched reduce tasks=1
+                Rack-local map tasks=1
+                Total time spent by all maps in occupied slots (ms)=21676
+                Total time spent by all reduces in occupied slots (ms)=10110
+                Total time spent by all map tasks (ms)=21676
+                Total time spent by all reduce tasks (ms)=10110
+                Total vcore-milliseconds taken by all map tasks=21676
+                Total vcore-milliseconds taken by all reduce tasks=10110
+                Total megabyte-milliseconds taken by all map tasks=22196224
+                Total megabyte-milliseconds taken by all reduce tasks=10352640
+        Map-Reduce Framework
+                Map input records=3
+                Map output records=3
+                Map output bytes=183
+                Map output materialized bytes=195
+                Input split bytes=109
+                Combine input records=3
+                Combine output records=3
+                Reduce input groups=3
+                Reduce shuffle bytes=195
+                Reduce input records=3
+                Reduce output records=3
+                Spilled Records=6
+                Shuffled Maps =1
+                Failed Shuffles=0
+                Merged Map outputs=1
+                GC time elapsed (ms)=612
+                CPU time spent (ms)=6990
+                Physical memory (bytes) snapshot=333955072
+                Virtual memory (bytes) snapshot=4147179520
+                Total committed heap usage (bytes)=144588800
+        HBase Counters
+                BYTES_IN_REMOTE_RESULTS=0
+                BYTES_IN_RESULTS=255
+                MILLIS_BETWEEN_NEXTS=1667
+                NOT_SERVING_REGION_EXCEPTION=0
+                NUM_SCANNER_RESTARTS=0
+                NUM_SCAN_RESULTS_STALE=0
+                REGIONS_SCANNED=1
+                REMOTE_RPC_CALLS=0
+                REMOTE_RPC_RETRIES=0
+                ROWS_FILTERED=0
+                ROWS_SCANNED=3
+                RPC_CALLS=3
+                RPC_RETRIES=0
+        Shuffle Errors
+                BAD_ID=0
+                CONNECTION=0
+                IO_ERROR=0
+                WRONG_LENGTH=0
+                WRONG_MAP=0
+                WRONG_REDUCE=0
+        File Input Format Counters 
+                Bytes Read=0
+        File Output Format Counters 
+                Bytes Written=0
+[root@systemhub511 hbase]# 
+```
+- 查看执行结果
+```
+hbase(main):002:0> scan 'test002_mr'
+ROW                        COLUMN+CELL                                                                 
+ 1001                      column=info:name, timestamp=1556886127536, value=Test001                    
+ 1002                      column=info:name, timestamp=1556886127536, value=Test002                    
+ 1003                      column=info:name, timestamp=1556886127536, value=Test003                    
+3 row(s) in 0.0290 seconds
+hbase(main):004:0> 
+```
+
+#### 6.9.5 自定义 HBase-MapReduce (2)
+- 实现将HDFS中数据写入到HBase表中.
+
+### 6.10 HBase集成Hive
+
 
 ## 7. HBase 优化
 
