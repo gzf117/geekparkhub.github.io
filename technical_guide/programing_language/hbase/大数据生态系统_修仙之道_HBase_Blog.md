@@ -2447,6 +2447,232 @@ hbase(main):004:0>
 
 #### 6.9.5 自定义 HBase-MapReduce (2)
 - 实现将HDFS中数据写入到HBase表中.
+- Create `HDFSMapper.class` / 用于读取HDFS中文件数据.
+``` java
+package com.geekparkhub.core.hbase.api.hdfs;
+
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.util.Bytes;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * HDFSMapper
+ * <p>
+ */
+
+public class HDFSMapper extends Mapper<LongWritable, Text, NullWritable, Put> {
+
+    @Override
+    protected void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
+
+        /**
+         * 获取一行数据
+         */
+        String line = value.toString();
+
+        /**
+         * 切割数据
+         */
+        String[] split = line.split("\t");
+
+        /**
+         * 封装对象
+         */
+        Put put = new Put(Bytes.toBytes(split[0]));
+        put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("name"), Bytes.toBytes(split[1]));
+        put.addColumn(Bytes.toBytes("info"), Bytes.toBytes("color"), Bytes.toBytes(split[2]));
+
+        /**
+         * 写出数据
+         */
+        context.write(NullWritable.get(), put);
+    }
+}
+```
+- Create `HDFSReducer.class`
+``` java
+package com.geekparkhub.core.hbase.api.hdfs;
+
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
+import org.apache.hadoop.hbase.mapreduce.TableReducer;
+import org.apache.hadoop.io.NullWritable;
+
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * HDFSReducer
+ * <p>
+ */
+
+public class HDFSReducer extends TableReducer<NullWritable, Put, NullWritable> {
+
+    @Override
+    protected void reduce(NullWritable key, Iterable<Put> values, Context context) throws IOException, InterruptedException {
+        for (Put value : values) {
+            context.write(NullWritable.get(), value);
+        }
+    }
+}
+```
+- Create `HDFSDriver.class`
+``` java
+package com.geekparkhub.core.hbase.api.hdfs;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.client.Put;
+import org.apache.hadoop.hbase.mapreduce.TableMapReduceUtil;
+import org.apache.hadoop.io.NullWritable;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * HDFSDriver
+ * <p>
+ */
+
+public class HDFSDriver extends Configuration implements Tool {
+
+    Configuration configuration = null;
+
+    public int run(String[] args) throws Exception {
+        Job job = Job.getInstance(configuration);
+        job.setJarByClass(HDFSDriver.class);
+        job.setMapperClass(HDFSMapper.class);
+        job.setMapOutputKeyClass(NullWritable.class);
+        job.setMapOutputValueClass(Put.class);
+        FileInputFormat.setInputPaths(job, args[0]);
+        TableMapReduceUtil.initTableReducerJob("test003", HDFSReducer.class, job);
+        boolean completion = job.waitForCompletion(true);
+        return completion ? 0 : 1;
+    }
+
+    public void setConf(Configuration conf) {
+        this.configuration = conf;
+    }
+
+    public Configuration getConf() {
+        return configuration;
+    }
+
+    public static void main(String[] args) throws Exception {
+        Configuration configuration = HBaseConfiguration.create();
+        int run = ToolRunner.run(configuration, new HDFSDriver(), args);
+        System.exit(run);
+    }
+}
+```
+
+- 运行任务前,如果待数据导入表不存在,则需要提前创建
+```
+hbase(main):004:0> create 'test003','info'
+0 row(s) in 2.9220 seconds
+
+=> Hbase::Table - test003
+hbase(main):005:0> 
+```
+- 打包运行任务
+```
+[root@systemhub511 hbase]# /opt/module/hadoop/bin/yarn jar ./hbase_server-1.0.jar com.geekparkhub.core.hbase.api.hdfs.HDFSDriver /core_flow/test/test002.tsv
+File System Counters
+                FILE: Number of bytes read=258
+                FILE: Number of bytes written=297461
+                FILE: Number of read operations=0
+                FILE: Number of large read operations=0
+                FILE: Number of write operations=0
+                HDFS: Number of bytes read=173
+                HDFS: Number of bytes written=0
+                HDFS: Number of read operations=2
+                HDFS: Number of large read operations=0
+                HDFS: Number of write operations=0
+        Job Counters 
+                Launched map tasks=1
+                Launched reduce tasks=1
+                Data-local map tasks=1
+                Total time spent by all maps in occupied slots (ms)=4943
+                Total time spent by all reduces in occupied slots (ms)=5307
+                Total time spent by all map tasks (ms)=4943
+                Total time spent by all reduce tasks (ms)=5307
+                Total vcore-milliseconds taken by all map tasks=4943
+                Total vcore-milliseconds taken by all reduce tasks=5307
+                Total megabyte-milliseconds taken by all map tasks=5061632
+                Total megabyte-milliseconds taken by all reduce tasks=5434368
+        Map-Reduce Framework
+                Map input records=3
+                Map output records=3
+                Map output bytes=246
+                Map output materialized bytes=258
+                Input split bytes=116
+                Combine input records=0
+                Combine output records=0
+                Reduce input groups=1
+                Reduce shuffle bytes=258
+                Reduce input records=3
+                Reduce output records=3
+                Spilled Records=6
+                Shuffled Maps =1
+                Failed Shuffles=0
+                Merged Map outputs=1
+                GC time elapsed (ms)=238
+                CPU time spent (ms)=2100
+                Physical memory (bytes) snapshot=316829696
+                Virtual memory (bytes) snapshot=4133519360
+                Total committed heap usage (bytes)=138117120
+```
+- 查看执行结果
+```
+hbase(main):001:0> scan 'test003'
+ROW                        COLUMN+CELL                                                                 
+ 1001                      column=info:color, timestamp=1556952731547, value=Red                       
+ 1001                      column=info:name, timestamp=1556952731547, value=Test001                    
+ 1002                      column=info:color, timestamp=1556952731547, value=Yellow                    
+ 1002                      column=info:name, timestamp=1556952731547, value=Test002                    
+ 1003                      column=info:color, timestamp=1556952731547, value=Yellow                    
+ 1003                      column=info:name, timestamp=1556952731547, value=Test003                    
+3 row(s) in 0.5410 seconds
+hbase(main):002:0> 
+```
 
 ### 6.10 HBase集成Hive
 

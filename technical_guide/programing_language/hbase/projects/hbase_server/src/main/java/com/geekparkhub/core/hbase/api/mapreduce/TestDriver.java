@@ -38,9 +38,9 @@ public class TestDriver extends Configuration implements Tool {
         Job job = Job.getInstance(configuration);
         job.setJarByClass(TestDriver.class);
 
-        TableMapReduceUtil.initTableMapperJob("test002", new Scan(), TestMapper.class, ImmutableBytesWritable.class, Put.class, job);
+        TableMapReduceUtil.initTableMapperJob("test002", new Scan(), ReadMapper.class, ImmutableBytesWritable.class, Put.class, job);
 
-        TableMapReduceUtil.initTableReducerJob("test002_mr", TestReducer.class, job);
+        TableMapReduceUtil.initTableReducerJob("test002_mr", WriteReducer.class, job);
 
         boolean completion = job.waitForCompletion(true);
 
