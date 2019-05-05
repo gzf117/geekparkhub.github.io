@@ -475,6 +475,96 @@ hbase(main):019:0> disable 'test'
 hbase(main):020:0> drop 'test'
 ```
 
+### 3.3 常用Shell操作
+#### 3.3.1 satus
+- 显示服务器状态
+```
+hbase> status 'test'
+```
+
+#### 3.3.2 whoami
+- 显示HBase当前用户
+```
+hbase> whoami
+```
+
+#### 3.3.3 list
+- 显示当前所有数据表
+```
+hbase> list
+```
+
+#### 3.3.4 count
+- 统计指定数据表记录数
+```
+hbase> count 'hbase_book'
+```
+
+#### 3.3.5 describe
+- 展示数据表结构信息
+```
+hbase> describe 'hbase_book'
+```
+
+#### 3.3.6 exist
+- 检查数据表是否存在,适用于数据表量特别多的情况
+```
+hbase> exist 'hbase_book'
+```
+
+#### 3.3.7  is_enabled / is_disabled
+- 检查数据表是否启用或禁用
+```
+hbase> is_enabled 'hbase_book'
+hbase> is_disabled 'hbase_book'
+```
+
+#### 3.3.8 alter
+- 该命令可以改变表和列族模式
+- 为当前表增加列族
+```
+hbase> alter 'hbase_book',NAME => 'CF2',VERSIONS => 2
+```
+- 为当前表删除列族
+```
+hbase> alter 'hbase_book','delete' => 'CF2'
+```
+
+#### 3.3.9 disable
+- 禁用数据表
+```
+hbase> disable 'hbase_book'
+```
+
+#### 3.3.10 drop
+- 删除数据表,在删除表之前必须先禁用数据表
+```
+hbase> disable 'hbase_book'
+```
+
+#### 3.3.11 delete
+- 删除一行中一个单元格值
+```
+hbase> delete 'hbase_book','rowKey','CF:C'
+```
+
+#### 3.3.12 truncate
+- 清空表数据,即禁用表-删除表-创建表
+```
+hbase> truncate 'hbase_book'
+```
+
+#### 3.3.13 create
+- 创建数据表
+```
+hbase> create 'table','cf'
+```
+- 创建多个列族
+```
+hbase> create 't1',{NAME => 'f1'},{NAME => 'f2'},{NAME => 'f3'}
+```
+
+
 ## 4. HBase 数据结构
 ### 4.1 Row Key
 > 与nosql数据库们一样,`row key`是用来检索记录主键,访问HBASE表中的行,只有三种方式 :
@@ -2675,10 +2765,513 @@ hbase(main):002:0>
 ```
 
 ### 6.10 HBase集成Hive
+#### 6.10.1 HBase与Hive对比
+##### 6.10.1.1 Hive (数据仓库)
+- `1. 数据仓库`
+- Hive本质其实就相当于将HDFS中已经存储文件在Mysql中做了一个双射关系,以方便使用HQL管理查询.
+- `2. 用于数据分析/清洗(ETL)`
+- Hive适用于离线的数据分析和清洗,延迟较高.
+- `3. 基于HDFS / MapReduce`
+- Hive存储数据依旧在DataNode上,编写HQL语句终将是转换为MapReduce代码执行.
 
+##### 6.10.1.2 HBase (数据库)
+- `1. 数据库`
+- 一种面向列存储非关系型数据库.
+- `2. 用于存储结构化和非结构化数据`
+- 适用于单表非关系型数据存储,不适合做关联查询,类似JOIN等操作.
+- `3. 基于HDFS`
+- 数据持久化存储体现形式是Hfile,存放于DataNode中,被ResionServer以region形式进行管理.
+- `4.延迟较低 / 接入在线业务使用`
+- 面对大量企业数据,HBase可以直线单表大量数据存储,同时提供了高效数据访问速度.
+
+#### 6.10.2 HBase与Hive集成
+- HBase与Hive集成在最新两个版本中无法兼容,所以重新编译 : `hive-hbase-handler-1.2.2.jar`
+- 环境准备
+- 拷贝Hive所依赖的Jar包(或者使用软连接形式)
+```
+[root@systemhub711 ~]# export HBASE_HOME=/opt/module/hbase/
+[root@systemhub711 ~]# export HIVE_HOME=/opt/module/hive/
+[root@systemhub711 ~]# ln -s $HBASE_HOME/lib/hbase-common-1.3.1.jar $HIVE_HOME/lib/hbase-common-1.3.1.jar
+[root@systemhub711 ~]# ln -s $HBASE_HOME/lib/hbase-server-1.3.1.jar $HIVE_HOME/lib/hbase-server-1.3.1.jar
+[root@systemhub711 ~]# ln -s $HBASE_HOME/lib/hbase-client-1.3.1.jar $HIVE_HOME/lib/hbase-client-1.3.1.jar
+[root@systemhub711 ~]#  ln -s $HBASE_HOME/lib/hbase-protocol-1.3.1.jar $HIVE_HOME/lib/hbase-protocol-1.3.1.jar
+[root@systemhub711 ~]# ln -s $HBASE_HOME/lib/hbase-it-1.3.1.jar $HIVE_HOME/lib/hbase-it-1.3.1.jar
+[root@systemhub711 ~]# ln -s $HBASE_HOME/lib/htrace-core-3.1.0-incubating.jar $HIVE_HOME/lib/htrace-core-3.1.0-incubating.ja
+[root@systemhub711 ~]# ln -s $HBASE_HOME/lib/hbase-hadoop2-compat-1.3.1.jar $HIVE_HOME/lib/hbase-hadoop2-compat-1.3.1.jar
+[root@systemhub711 ~]# ln -s $HBASE_HOME/lib/hbase-hadoop-compat-1.3.1.jar $HIVE_HOME/lib/hbase-hadoop-compat-1.3.1.jar
+```
+- 同时在`hive-site.xml`中修改zookeeper属性
+``` xml
+<property>
+  <name>hive.zookeeper.quorum</name>
+  <value>systemhub511,systemhub611,systemhub711</value>
+  <description>The list of ZooKeeper servers to talk to. This is only needed for read/write locks.</description>
+</property>
+<property>
+  <name>hive.zookeeper.client.port</name>
+  <value>2181</value>
+  <description>The port of ZooKeeper servers to talk to. This is only needed for read/write locks.</description>
+</property>
+```
+- `Demo 1` : 建立Hive表,关联HBase表,插入数据到Hive表同时能够影响HBase表.
+- 1.在Hive中创建表同时关联HBase
+- 创建内部表语句
+```
+CREATE TABLE hive_hbase_emp_table(
+    empno int , 
+    ename string , 
+    job string , 
+    mgr int , 
+    hiredate string , 
+    sal double , 
+    comm double , 
+    deptno int 
+  )
+  STORED BY
+  'org.apache.hadoop.hive.hbase.HBaseStorageHandler' 
+  WITH SERDEPROPERTIES("hbase.columns.mapping" = ":key,info:ename,info:job,info:mgr,info:hiredate,info:sal,info:comm,info:deptno") 
+  TBLPROPERTIES ("hbase.table.name" = "hbase_emp_table");
+```
+- 创建数据表过程
+```
+hive (default)> CREATE TABLE hive_hbase_emp_table(
+              > empno int , 
+              > ename string , 
+              > job string , 
+              > mgr int , 
+              > hiredate string , 
+              > sal double , 
+              > comm double , 
+              > deptno int)
+              > STORED BY
+              > 'org.apache.hadoop.hive.hbase.HBaseStorageHandler' 
+              > WITH SERDEPROPERTIES("hbase.columns.mapping" = ":key,info:ename,info:job,info:mgr,info:hiredate,info:sal,info:comm,info:deptno") 
+              > TBLPROPERTIES ("hbase.table.name" = "hbase_emp_table");
+OK
+Time taken: 5.183 seconds
+```
+- 创建完成之后,可以分别查看Hive和HBase都生成了对应数据表
+- 查看Hive数据表
+```
+hive (default)> show tables;
+OK
+hive_hbase_emp_table
+Time taken: 0.037 seconds, Fetched: 21 row(s)
+hive (default)> 
+```
+- 查看HBase数据表
+```
+hbase(main):002:0> list
+TABLE 
+hbase_emp_table
+6 row(s) in 0.0370 seconds
+=> ["hbase_emp_table", "test", "test001", "test002", "test002_mr", "test003"]
+hbase(main):003:0> 
+```
+- 2.在Hive中创建临时中间表,用于load文件中数据
+```
+CREATE TABLE emp(
+    empno int , 
+    ename string , 
+    job string , 
+    mgr int , 
+    hiredate string , 
+    sal double , 
+    comm double , 
+    deptno int 
+  )row format delimited fields terminated by '\t';
+```
+- 3.通过insert命令将中间表中数据导入到Hive关联HBase数据表
+```
+hive (default)> insert into table hive_hbase_emp_table select * from emp;
+Query ID = root_12735_a9ed65e3-5352-4abc-82b1-00d8ae81f021
+Total jobs = 1
+Launching Job 1 out of 1
+```
+- 4.查看Hive以及关联HBase表中是否已经成功同步插入数据
+- Hive : `select * from hive_hbase_emp_table;`
+```
+hive (default)> select * from hive_hbase_emp_table;
+OK
+hive_hbase_emp_table.empno      hive_hbase_emp_table.ename      hive_hbase_emp_table.job        hive_hbase_emp_table.mgr        hive_hbase_emp_table.hiredate  hive_hbase_emp_table.sal hive_hbase_emp_table.comm       hive_hbase_emp_table.deptno
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.0   20.0    NULL
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+7782    JAMSK   KIHNGSEHN       7769    1991-06-23      1100.0  20.0    NULL
+7788    FOESS   CLAEDFDFD       7698    1994-09-17      950.0   30.0    NULL
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+Time taken: 0.327 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+- HBase : `scan 'hbase_emp_table'`
+```
+hbase(main):003:0> scan 'hbase_emp_table'
+ROW                                       COLUMN+CELL                                                                                                           
+ 7369                                     column=info:comm, timestamp=1557077298959, value=20.0                                                                 
+ 7369                                     column=info:ename, timestamp=1557077298959, value=SMITH                                                               
+ 7369                                     column=info:hiredate, timestamp=1557077298959, value=1980-12-17                                                       
+ 7369                                     column=info:job, timestamp=1557077298959, value=CLERKSKLD                                                             
+ 7369                                     column=info:mgr, timestamp=1557077298959, value=7902                                                                  
+ 7369                                     column=info:sal, timestamp=1557077298959, value=800.0                                                                 
+ 7499                                     column=info:comm, timestamp=1557077298959, value=300.0                                                                
+ 7499                                     column=info:deptno, timestamp=1557077298959, value=30                                                                 
+ 7499                                     column=info:ename, timestamp=1557077298959, value=ALLTE                                                               
+ 7499                                     column=info:hiredate, timestamp=1557077298959, value=1987-02-23                                                       
+ 7499                                     column=info:job, timestamp=1557077298959, value=SALESMANS                                                             
+ 7499                                     column=info:mgr, timestamp=1557077298959, value=7689                                                                  
+ 7499                                     column=info:sal, timestamp=1557077298959, value=1600.0                                                                
+ 7521                                     column=info:comm, timestamp=1557077298959, value=500.0                                                                
+ 7521                                     column=info:deptno, timestamp=1557077298959, value=30                                                                 
+ 7521                                     column=info:ename, timestamp=1557077298959, value=WAROS                                                               
+ 7521                                     column=info:hiredate, timestamp=1557077298959, value=1984-06-12                                                       
+ 7521                                     column=info:job, timestamp=1557077298959, value=SJDHHJDJX                                                             
+ 7521                                     column=info:mgr, timestamp=1557077298959, value=7869                                                                  
+ 7521                                     column=info:sal, timestamp=1557077298959, value=1250.18                                                               
+ 7566                                     column=info:comm, timestamp=1557077298959, value=20.0                                                                 
+ 7566                                     column=info:ename, timestamp=1557077298959, value=JOSSS                                                               
+ 7566                                     column=info:hiredate, timestamp=1557077298959, value=1874-05-15                                                       
+ 7566                                     column=info:job, timestamp=1557077298959, value=JDHYHDSDS                                                             
+ 7566                                     column=info:mgr, timestamp=1557077298959, value=4545                                                                  
+ 7566                                     column=info:sal, timestamp=1557077298959, value=2894.25                                                               
+ 7654                                     column=info:comm, timestamp=1557077298959, value=30.0                                                                 
+ 7654                                     column=info:ename, timestamp=1557077298959, value=SOCTD                                                               
+ 7654                                     column=info:hiredate, timestamp=1557077298959, value=1996-02-14                                                       
+ 7654                                     column=info:job, timestamp=1557077298959, value=MANSJUSSD                                                             
+ 7654                                     column=info:mgr, timestamp=1557077298959, value=4855                                                                  
+ 7654                                     column=info:sal, timestamp=1557077298959, value=2852.3                                                                
+ 7698                                     column=info:comm, timestamp=1557077298959, value=30.0                                                                 
+ 7698                                     column=info:ename, timestamp=1557077298959, value=ADAMS                                                               
+ 7698                                     column=info:hiredate, timestamp=1557077298959, value=1985-05-16                                                       
+ 7698                                     column=info:job, timestamp=1557077298959, value=JUSHHWESD                                                             
+ 7698                                     column=info:mgr, timestamp=1557077298959, value=4552                                                                  
+ 7698                                     column=info:sal, timestamp=1557077298959, value=25524.02                                                              
+ 7782                                     column=info:comm, timestamp=1557077298959, value=20.0                                                                 
+ 7782                                     column=info:ename, timestamp=1557077298959, value=JAMSK                                                               
+ 7782                                     column=info:hiredate, timestamp=1557077298959, value=1991-06-23                                                       
+ 7782                                     column=info:job, timestamp=1557077298959, value=KIHNGSEHN                                                             
+ 7782                                     column=info:mgr, timestamp=1557077298959, value=7769                                                                  
+ 7782                                     column=info:sal, timestamp=1557077298959, value=1100.0                                                                
+ 7788                                     column=info:comm, timestamp=1557077298959, value=30.0                                                                 
+ 7788                                     column=info:ename, timestamp=1557077298959, value=FOESS                                                               
+ 7788                                     column=info:hiredate, timestamp=1557077298959, value=1994-09-17                                                       
+ 7788                                     column=info:job, timestamp=1557077298959, value=CLAEDFDFD                                                             
+ 7788                                     column=info:mgr, timestamp=1557077298959, value=7698                                                                  
+ 7788                                     column=info:sal, timestamp=1557077298959, value=950.0                                                                 
+ 7939                                     column=info:comm, timestamp=1557077298959, value=20.0                                                                 
+ 7939                                     column=info:ename, timestamp=1557077298959, value=KINGS                                                               
+ 7939                                     column=info:hiredate, timestamp=1557077298959, value=1993-07-12                                                       
+ 7939                                     column=info:job, timestamp=1557077298959, value=CLADDJHEW                                                             
+ 7939                                     column=info:mgr, timestamp=1557077298959, value=7566                                                                  
+ 7939                                     column=info:sal, timestamp=1557077298959, value=3000.0                                                                
+9 row(s) in 0.7380 seconds
+hbase(main):004:0> 
+```
+
+- `Demo 2` : 在HBase中已经存储某一张`hbase_emp_table`数据表,然后在Hive中创建一个外部表来关联HBase中`hbase_emp_table`数据表,使之可以借助Hive来分析HBase数据表中的数据.
+- 1.在Hive中创建外部表
+- 创建外部表语句
+```
+CREATE EXTERNAL TABLE relevance_hbase_emp(
+    empno int , 
+    ename string , 
+    job string , 
+    mgr int , 
+    hiredate string , 
+    sal double , 
+    comm double , 
+    deptno int 
+  )
+  STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+  WITH SERDEPROPERTIES("hbase.columns.mapping" = ":key,info:ename,info:job,info:mgr,info:hiredate,info:sal,info:comm,info:deptno") 
+  TBLPROPERTIES ("hbase.table.name" = "hbase_emp_table");
+```
+- 创建数据表过程
+```
+hive (default)> CREATE EXTERNAL TABLE relevance_hbase_emp(
+              >     empno int , 
+              >     ename string , 
+              >     job string , 
+              >     mgr int , 
+              >     hiredate string , 
+              >     sal double , 
+              >     comm double , 
+              >     deptno int 
+              >   )
+              >   STORED BY 'org.apache.hadoop.hive.hbase.HBaseStorageHandler'
+              >   WITH SERDEPROPERTIES("hbase.columns.mapping" = ":key,info:ename,info:job,info:mgr,info:hiredate,info:sal,info:comm,info:deptno") 
+              >   TBLPROPERTIES ("hbase.table.name" = "hbase_emp_table");
+OK
+Time taken: 0.347 seconds
+hive (default)> 
+```
+- 2.关联后,可以使用Hive函数进行数据分析操作
+```
+hive (default)> select * from relevance_hbase_emp;
+OK
+relevance_hbase_emp.empno       relevance_hbase_emp.ename       relevance_hbase_emp.job relevance_hbase_emp.mgr relevance_hbase_emp.hiredate    relevance_hbase_emp.sal relevance_hbase_emp.comm        relevance_hbase_emp.deptno
+7369    SMITH   CLERKSKLD       7902    1980-12-17      800.0   20.0    NULL
+7499    ALLTE   SALESMANS       7689    1987-02-23      1600.0  300.0   30
+7521    WAROS   SJDHHJDJX       7869    1984-06-12      1250.18 500.0   30
+7566    JOSSS   JDHYHDSDS       4545    1874-05-15      2894.25 20.0    NULL
+7654    SOCTD   MANSJUSSD       4855    1996-02-14      2852.3  30.0    NULL
+7698    ADAMS   JUSHHWESD       4552    1985-05-16      25524.02        30.0    NULL
+7782    JAMSK   KIHNGSEHN       7769    1991-06-23      1100.0  20.0    NULL
+7788    FOESS   CLAEDFDFD       7698    1994-09-17      950.0   30.0    NULL
+7939    KINGS   CLADDJHEW       7566    1993-07-12      3000.0  20.0    NULL
+Time taken: 0.208 seconds, Fetched: 9 row(s)
+hive (default)> 
+```
+
+#### 6.10.3 数据备份与恢复
+##### 6.10.3.1 备份
+- 停止HBase服务后,使用`distcp`命令运行MapReduce任务进行备份,将数据备份到另一个地方,可以是同一个集群,也可以是专用的备份集群.
+- 即把数据转移到当前集群的其他目录下(也可以不在同一个集群中),执行该操作.一定要开启Yarn服务.
+```
+bin/hadoop distcp hdfs://systemhub511:8020/hbase hdfs://systemhub511:8020/HbaseBackup/backup
+```
+##### 6.10.3.2 恢复
+- 非常简单,与备份方法一样,将数据整个移动回来即可.
+```
+bin/hadoop distcp hdfs://systemhub511:8020/HbaseBackup/backup hdfs://systemhub511:8020/hbase
+```
+#### 6.10.4 节点管理
+##### 6.10.4.1 服役 (commissioning)
+> 当启动regionserver时,regionserver会向HMaster注册并开始接收本地数据,开始时,新加入的节点不会有任何数据,平衡器开启的情况下,将会有新的region移动到开启RegionServer上,如果启动和停止进程是使用ssh和HBase脚本,那么会将新添加节点的主机名加入到`conf/regionservers`文件中.
+
+##### 6.10.4.2 退役 (decommissioning)
+> 顾名思义,就是从当前HBase集群中删除某个RegionServer,这个过程分为如下几个过程:
+> 1.停止负载平衡器
+```
+hbase> balance_switch false
+```
+> 2.在退役节点上停止RegionServer
+```
+hbase> hbase-daemon.sh stop regionserver
+```
+> 3.RegionServer一旦停止,会关闭维护的所有region
+> 4.Zookeeper上该RegionServer节点消失
+> 5.Master节点检测到该RegionServer下线
+> 6.RegionServer的region服务得到重新分配
+> 该关闭方法比较传统,需要花费一定时间,而且会造成部分region短暂的不可用.
+- 另一种方案 : 
+- 1.RegionServer先卸载所管理的region
+```
+bin/graceful_stop.sh <RegionServer-hostname>
+```
+- 2.自动平衡数据
+- 3.和第一种方案2~6步骤一样
+
+#### 6.10.5 版本确界
+##### 版本下界
+> 默认版本下界是0,即禁用,row版本使用最小数目是与生存时间(TTLTime To Live)结合,并且根据实际需求可以有0或更多版本,使用0,即只有1个版本值写入cell.
+##### 版本上界
+> 之前默认版本上界是3,也就是一个row保留3个副本(基于时间戳插入),该值不要设计过大,一般的业务不会超过100,如果cell中存储数据版本号超过了3个,再次插入数据时,最新值会将最旧值覆盖,(现版本已默认为1).
 
 ## 7. HBase 优化
+### 7.1 高可用
+> 在HBase中Hmaster负责监控RegionServer生命周期,均衡RegionServer负载,如果Hmaster宕机了,那么整个HBase集群将陷入不健康状态,并且此时工作状态并不会维持太久,所以HBase支持对Hmaster的高可用配置.
+- 1.关闭HBase集群 (如果没有开启则跳过此步)
+```
+[root@systemhub511 hbase]# bin/stop-hbase.sh
+stopping hbase......................
+[root@systemhub511 hbase]# 
+```
+- 2.在conf目录下创建backup-masters文件
+```
+[root@systemhub511 hbase]# touch conf/backup-masters
+```
+- 3.在backup-masters文件中配置高可用HMaster节点
+```
+[root@systemhub511 hbase]# echo systemhub611 >> conf/backup-masters
+```
+- 4.将`backup-masters`配置文件分发到其他集群节点
+```
+[root@systemhub511 hbase]# scp -r conf/backup-masters systemhub611:/opt/module/hbase/conf/
+backup-masters 100%   13     0.0KB/s   00:00    
+[root@systemhub511 hbase]# scp -r conf/backup-masters systemhub711:/opt/module/hbase/conf/
+backup-masters 100%   13     0.0KB/s   00:00    
+[root@systemhub511 hbase]# 
+```
+- 5.启动HBase服务并查看测试
+- 启动服务
+```
+[root@systemhub511 hbase]# bin/start-hbase.sh
+starting master, logging to /opt/module/hbase/logs/hbase-root-master-systemhub511.out
+systemhub711: starting regionserver, logging to /opt/module/hbase/bin/../logs/hbase-root-regionserver-systemhub711.out
+systemhub611: starting regionserver, logging to /opt/module/hbase/bin/../logs/hbase-root-regionserver-systemhub611.out
+systemhub511: starting regionserver, logging to /opt/module/hbase/bin/../logs/hbase-root-regionserver-systemhub511.out
+systemhub611: starting master, logging to /opt/module/hbase/bin/../logs/hbase-root-master-systemhub611.out
+[root@systemhub511 hbase]# 
+```
+- 查看进程,发现systemhub511/systemhub611分别启动HMaster节点,从而达到高可用效果
+```
+[root@systemhub511 hbase]# jps.sh
+================        root@systemhub511 All Processes         ===========
+31267 sun.tools.jps.Jps
+5604 org.apache.zookeeper.server.quorum.QuorumPeerMain
+7413 org.apache.hadoop.mapreduce.v2.hs.JobHistoryServer
+28357 org.apache.hadoop.hbase.master.HMaster
+5974 org.apache.hadoop.hdfs.server.namenode.NameNode
+6182 org.apache.hadoop.hdfs.server.datanode.DataNode
+28539 org.apache.hadoop.hbase.regionserver.HRegionServer
+7277 org.apache.hadoop.yarn.server.nodemanager.NodeManager
+================        root@systemhub611 All Processes         ===========
+7603 org.apache.hadoop.yarn.server.nodemanager.NodeManager
+6437 org.apache.hadoop.hdfs.server.datanode.DataNode
+6101 org.apache.zookeeper.server.quorum.QuorumPeerMain
+7450 org.apache.hadoop.yarn.server.resourcemanager.ResourceManager
+27981 org.apache.hadoop.hbase.regionserver.HRegionServer
+28110 org.apache.hadoop.hbase.master.HMaster
+30718 sun.tools.jps.Jps
+================        root@systemhub711 All Processes         ===========
+7665 org.apache.hadoop.yarn.server.nodemanager.NodeManager
+7170 org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode
+6210 org.apache.zookeeper.server.quorum.QuorumPeerMain
+28345 org.apache.hadoop.hbase.regionserver.HRegionServer
+30941 sun.tools.jps.Jps
+6543 org.apache.hadoop.hdfs.server.datanode.DataNode
+[root@systemhub511 hbase]# 
+```
+### 7.2 Hadoop 通用性优化
+> 1.NameNode元数据备份使用SSD.
+> 
+> 2.定时备份NameNode上元数据每小时或者每天备份,如果数据极其重要,可以5~10分钟备份一次,备份可以通过定时任务复制元数据目录即可.
+> 
+> 3.为NameNode指定多个元数据目录使用`dfs.name.dir`或者`dfs.namenode.name.dir`指定,这样可以提供元数据的冗余和健壮性,以免发生故障.
+> 
+> 4.NameNode的dir自恢复设置`dfs.namenode.name.dir.restore`为true,允许尝试恢复之前失败的`dfs.namenode.name.dir`目录,在创建checkpoint时做此尝试,如果设置了多个磁盘,建议允许.
+> 
+> 5.HDFS保证RPC调用会有较多线程数.
+- `hdfs-site.xm`
+```
+属性 : dfs.namenode.handler.count
 
+解释 : 该属性是NameNode服务默认线程数,默认值是10,根据机器可用内存可以调整为50~100
+
+属性 : dfs.datanode.handler.count
+
+解释 : 该属性默认值为10,是DataNode的处理线程数,如果HDFS客户端程序读写请求比较多,可以调高到15~20,
+设置的值越大内存消耗越多,不要调整的过高,一般业务中5~10即可
+```
+> 6.HDFS副本数调整
+- `hdfs-site.xml`
+```
+属性 : dfs.replication
+解释 : 如果数据量巨大,且不是非常之重要可以调整为2~3,如果数据非常之重要可以调整为3~5
+```
+> 7.HDFS文件块大小调整
+- `hdfs-site.xml`
+```
+属性 : dfs.blocksize
+
+解释 : 块大小定义,该属性应该根据存储的大量的单个文件大小来设置,如果大量的单个文件都小于100M,建议设置成64M块大小,
+对于大于100M或者达到GB的情况,建议设置成256M,一般设置范围波动在64M~256M之间
+```
+> 8.MapReduce Job任务服务线程数调整
+- `mapred-site.xml`
+```
+属性 : mapreduce.jobtracker.handler.count
+解释 : 该属性是Job任务线程数,默认值是10,根据机器的可用内存可以调整为50~100
+```
+> 9.Http服务器工作线程数
+- `mapred-site.xml`
+```
+属性 : mapreduce.tasktracker.http.threads
+解释 : 定义HTTP服务器工作线程数,默认值为40,对于大集群可以调整到80~100
+```
+> 10.文件排序合并优化
+- `mapred-site.xml`
+```
+属性 : mapreduce.task.io.sort.factor
+
+解释 : 文件排序时同时合并的数据流的数量,这也定义了同时打开文件的个数,
+默认值为10,如果调高该参数，可以明显减少磁盘IO，即减少文件读取的次数
+```
+> 11.设置任务并发
+- `mapred-site.xml`
+```
+属性 : mapreduce.map.speculative
+
+解释 : 该属性可以设置任务是否可以并发执行,如果任务多而小,
+该属性设置为true可以明显加快任务执行效率,但是对于延迟非常高的任务,建议改为false,这就类似于迅雷下载
+```
+> 12.MR输出数据压缩
+- `mapred-site.xml`
+```
+属性 : 
+mapreduce.map.output.compress
+mapreduce.output.fileoutputformat.compress
+
+解释 : 对于大集群而言,建议设置Map-Reduce输出为压缩数据,而对于小集群,则不需要
+```
+> 13.优化Mapper和Reducer个数
+- `mapred-site.xml`
+```
+属性 :
+mapreduce.tasktracker.map.tasks.maximum
+mapreduce.tasktracker.reduce.tasks.maximum
+
+解释 : 以上两个属性分别为一个单独的Job任务可以同时运行的Map和Reduce的数量.
+设置上面两个参数时,需要考虑CPU核数、磁盘和内存容量,假设一个8核的CPU,业务内容非常消耗CPU,那么可以设置map数量为4,
+如果该业务不是特别消耗CPU类型,那么可以设置map数量为40,reduce数量为20,这些参数的值修改完成之后,一定要观察是否有较长等待的任务,
+如果有的话,可以减少数量以加快任务执行,如果设置一个很大的值,会引起大量的上下文切换,以及内存与磁盘之间的数据交换,这里没有标准的配置数值,
+需要根据业务和硬件配置以及经验来做出选择,在同一时刻不要同时运行太多的MapReduce,这样会消耗过多的内存,任务会执行的非常缓慢,需要根据CPU核数,
+内存容量设置一个MR任务并发的最大值,使固定数据量的任务完全加载到内存中,避免频繁的内存和磁盘数据交换,从而降低磁盘IO,提高性能
+```
+- 估算公式 :
+```
+map=2 +⅔cpu_core
+
+reduce=2 +⅓cpu_core
+```
+### 7.3 Linux优化
+> 1.开启文件系统预读缓存可以提高读取速度
+```
+[root@systemhub511 ~]# sudo blockdev --setra 32768 /dev/sda
+```
+> 2.关闭进程睡眠池
+> 即不允许后台进程进入睡眠状态,如果进程空闲,则直接kill掉释放资源
+```
+[root@systemhub511 ~]# sudo sysctl -w vm.swappiness=0
+vm.swappiness = 0
+[root@systemhub511 ~]# 
+```
+> 3.调整ulimit上限,默认值为比较小数字
+```
+ulimit -n 查看允许最大进程数
+
+ulimit -u 查看允许打开最大文件数
+```
+> 4.开启集群时间同步NTP
+> 集群中某台机器同步网络时间服务器时间,集群中其他机器则同步这台机器的时间
+> 
+> 5.更新系统补丁
+> 更新补丁前,请先测试新版本补丁对集群节点兼容性
+
+### 7.4 Zookeeper优化
+> 1.优化Zookeeper会话超时时间
+- `hbase-site.xml`
+```
+参数 : zookeeper.session.timeout
+
+解释：In hbase-site.xml,set zookeeper.session.timeout to 30 seconds or less to bound failure detection (20-30 seconds is a good start).
+该值会直接关系到master发现服务器宕机的最大周期,默认值为30秒,如果该值过小会在HBase在写入大量数据发生而GC时,导致RegionServer短暂的不可用,从而没有向ZK发送心跳包,最终导致认为从节点shutdown,一般20台左右的集群需要配置5台zookeeper
+```
+
+### 7.5 预分区
+- 每一个region维护着startRow与endRowKey,如果加入数据符合某个region维护rowKey范围,则该数据交给这个region维护,那么依照这个原则,可以将数据索要投放分区提前大致的规划好,以提高HBase性能.
+
+
+### 7.6 RowKey设计
+- 一条数据的唯一标识就是rowkey,那么这条数据存储于哪个分区,取决于rowkey处于哪个一个预分区的区间内,设计rowkey主要目的就是让数据均匀分布于所有的region中,在一定程度上防止数据倾斜.
+
+### 7.7 内存优化
+- HBase操作过程中需要大量的内存开销,毕竟Table是可以缓存在内存中,一般会分配整个可用内存70%给HBase的Java堆,但是不建议分配非常大堆内存,因为GC过程持续太久会导致RegionServer处于长期不可用状态,一般16~48G内存即可,如果因为框架占用内存过高导致系统内存不足,框架一样会被系统服务拖死.
+
+### 7.8 基础优化
 
 ## 8. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
