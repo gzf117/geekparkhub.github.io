@@ -3263,15 +3263,155 @@ ulimit -u 查看允许打开最大文件数
 
 ### 7.5 预分区
 - 每一个region维护着startRow与endRowKey,如果加入数据符合某个region维护rowKey范围,则该数据交给这个region维护,那么依照这个原则,可以将数据索要投放分区提前大致的规划好,以提高HBase性能.
+- 1.手动设定预分区
+```
+hbase(main):001:0> create 'test004','info','partition1',SPLITS => ['1000','2000','3000','4000']
+0 row(s) in 2.8950 seconds
+
+=> Hbase::Table - test004
+hbase(main):002:0> 
+```
+- 2.生成16进制序列预分区
+```
+hbase(main):003:0> create 'test005','info','partition2',{NUMREGIONS => 15, SPLITALGO => 'HexStringSplit'}
+0 row(s) in 2.2910 seconds
+
+=> Hbase::Table - test005
+hbase(main):004:0>
+```
+- 3.按照文件中设置的规则预分区
+- vim `splits.txt`
+```
+AAAA
+BBBB
+CCCC
+DDDD
+```
+- 按照文件预分区
+```
+hbase(main):004:0> create 'test006','partition3',SPLITS_FILE => 'splits.txt'
+0 row(s) in 1.2800 seconds
+
+=> Hbase::Table - test006
+hbase(main):005:0> 
+```
+- 4.使用JavaAPI创建预分区
+```
+// 自定义算法,产生一系列Hash散列值存储在二维数组中
+byte[][] splitKeys = 某个散列值函数
+// 创建HBaseAdmin实例
+HBaseAdmin hAdmin = new HBaseAdmin(HBaseConfiguration.create());
+// 创建HTableDescriptor实例
+HTableDescriptor tableDesc = new HTableDescriptor(tableName);
+// 通过HTableDescriptor实例和散列值二维数组创建带有预分区HBase表
+hAdmin.createTable(tableDesc, splitKeys);
+```
 
 
 ### 7.6 RowKey设计
-- 一条数据的唯一标识就是rowkey,那么这条数据存储于哪个分区,取决于rowkey处于哪个一个预分区的区间内,设计rowkey主要目的就是让数据均匀分布于所有的region中,在一定程度上防止数据倾斜.
+- 一条数据的唯一标识就是rowkey,那么这条数据存储于哪个分区,取决于rowkey处于哪个一个预分区的区间内,设计rowkey主要目的就是让数据均匀分布于所有region中,在一定程度上防止数据倾斜.
+- 1.`生成随机数 / hash / 散列值`
+```
+原rowKey为1001,SHA1后：dd01903921ea24941c26a48f2cec24e0bb0e8cc7
+原rowKey为3001,SHA1后：49042c54de64a1e9bf0b33e00245660ef92dc7bd
+原rowKey为5001,SHA1后：7b61dec07e02c188790670af43e717f0f46e8913
+在做此操作之前,一般会选择从数据集中抽取样本,来决定什么样的rowKey来Hash后作为每个分区的=临界值
+```
+- 2.`字符串反转`
+```
+20100524000001转成10000042507102
+20100524000002转成20000042507102
+```
+- 3.`字符串拼接`
+```
+20100524000001_a12e
+20100524000001_93i7
+```
+
 
 ### 7.7 内存优化
 - HBase操作过程中需要大量的内存开销,毕竟Table是可以缓存在内存中,一般会分配整个可用内存70%给HBase的Java堆,但是不建议分配非常大堆内存,因为GC过程持续太久会导致RegionServer处于长期不可用状态,一般16~48G内存即可,如果因为框架占用内存过高导致系统内存不足,框架一样会被系统服务拖死.
 
+
 ### 7.8 基础优化
+> 1.允许在HDFS的文件中追加内容 | `hdfs-site.xml` / `hbase-site.xml`
+```
+属性 : dfs.support.append
+解释 : 开启HDFS追加同步,可以优秀配合HBase数据同步和持久化,默认值为true
+```
+
+> 2.优化DataNode允许最大文件打开数 | `hdfs-site.xml`
+```
+属性 : dfs.datanode.max.transfer.threads
+解释 : HBase一般都会同一时间操作大量的文件,根据集群数量和规模以及数据动作,设置为4096或者更高,默认值:4096
+```
+> 3.优化延迟高数据操作等待时间 | `hdfs-site.xm`
+```
+属性 : dfs.image.transfer.timeout
+解释 : 如果对于某一次数据操作来讲,延迟非常高,socket需要等待更长时间,
+建议把该值设置为更大的值(默认60000毫秒),以确保socket不会被timeout掉
+```
+
+> 4.优化数据写入效率 | `mapred-site.xml`
+```
+属性 : 
+mapreduce.map.output.compress
+mapreduce.map.output.compress.codec
+
+解释 : 开启这两个数据可以大大提高文件的写入效率,减少写入时间,
+第一个属性值修改为true,第二个属性值修改为:org.apache.hadoop.io.compress.GzipCodec或者其他压缩方式
+```
+> 5.优化DataNode存储
+```
+属性 : dfs.datanode.failed.volumes.tolerated
+解释 : 默认为0,意思是当DataNode中有一个磁盘出现故障,则会认为该DataNodeshutdown了,
+如果修改为1,则一个磁盘出现故障时,数据会被复制到其他正常的DataNode上,当前DataNode继续工作
+```
+> 6.优化HStore文件大小 | `hbase-site.xm`
+```
+属性 : hbase.hregion.max.filesize
+解释 : 默认值10737418240(10GB),如果需要运行HBase的MR任务,可以减小此值,
+因为一个region对应一个map任务,如果单个region过大,会导致map任务执行时间过长,
+该值的意思是,如果HFile大小达到这个数值,则这个region会被切分为两个Hfile
+```
+> 7.优化hbase客户端缓存 | `hbase-site.xml`
+```
+属性 : hbase.client.write.buffer
+解释 : 用于指定HBase客户端缓存,增大该值可以减少RPC调用次数,
+但是会消耗更多内存,反之则反之,一般需要设定一定缓存大小,以达到减少RPC次数的目的
+```
+
+> 8.设置RPC监听数量 | `hbase-site.xml`
+```
+属性 : hbase.regionserver.handler.count
+解释 : 默认值为30,用于指定RPC监听数量,
+可以根据客户端请求数进行调整,读写请求较多时,增加此值
+```
+
+> 9.指定scan.next扫描HBase所获取行数 | `hbase-site.xml`
+```
+属性 : hbase.client.scanner.caching
+解释 : 用于指定scan.next方法获取默认行数,值越大消耗内存越大
+```
+
+> 10.`flush` / `compact` / `split机制`
+> 
+> 当MemStore达到阈值,将Memstore中数据Flush进Storefile,
+> compact机制则是把flush出来的小文件合并成Storefile大文件,
+> split则是当Region达到阈值,会把过大的Region一分为二.
+> 
+> 涉及属性
+> 128M就是Memstore默认阈值
+```
+hbase.hregion.memstore.flush.size：134217728
+```
+> 这个参数作用是当单个HRegion内所有Memstore大小总和超过指定值时,flush该HRegion所有memstore,RegionServer的flush是通过将请求添加一个队列,模拟生产消费模型来异步处理,当队列来不及消费,产生大量积压请求时,可能会导致内存陡增,最坏情况是触发OOM.
+```
+hbase.regionserver.global.memstore.upperLimit：0.4
+hbase.regionserver.global.memstore.lowerLimit：0.38
+```
+> 当MemStore使用内存总量达到`hbase.regionserver.global.memstore.upperLimit`指定值时,将会有多个MemStores  flush到文件中,MemStore  flush 顺序是按照大小降序执行,直到刷新到MemStore使用内存略小于lowerLimit
+
 
 ## 8. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
