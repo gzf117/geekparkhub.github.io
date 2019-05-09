@@ -4,7 +4,7 @@
 
 ##  🐘 Hadoop HA Technology 修仙之道 刻苦修持 🐘
 
-![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/hbase/hbase.jpg)
+![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/ha/ha.jpg)
 
 - **极客实验室是极客国际公园旗下为未来而构建的极客社区;**
 - **我们正在构建一个活跃的小众社区,汇聚众多优秀开发者与设计师;**
@@ -308,6 +308,9 @@ Overview 'systemhub611:8020' (standby)
 
 #### 2.3.2 HDFS-HA 自动故障转移
 ##### 2.3.2.1 HDFS-HA 自动故障转移工作机制
+
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/ha/start_001.jpg)
+
 > 自动故障转移为HDFS部署增加了两个新组件 : ZooKeeper和ZKFailoverController(ZKFC)进程.
 > 
 > ZooKeeper是维护少量协调数据,通知客户端这些数据改变和监视客户端故障的高可用服务,HA自动故障转移依赖于ZooKeeper的以下功能:
@@ -595,7 +598,8 @@ yarn-site.xml                                                                   
 [root@systemhub511 hadoop]# scp -r ./etc/hadoop/yarn-site.xml root@systemhub711:/opt/module/HA/hadoop/etc/hadoop/
 yarn-site.xml 
 ```
-- 启动yarn
+#### 3.2.4 启动Yarn服务
+- 启动Yarn
 ```
 [root@systemhub511 hadoop]# sbin/start-yarn.sh
 starting yarn daemons
@@ -605,13 +609,13 @@ systemhub611: starting nodemanager, logging to /opt/module/HA/hadoop/logs/yarn-r
 systemhub511: starting nodemanager, logging to /opt/module/HA/hadoop/logs/yarn-root-nodemanager-systemhub511.out
 [root@systemhub511 hadoop]# 
 ```
-
+- 启动ResourceManager服务
 ```
 [root@systemhub611 hadoop]# sbin/yarn-daemon.sh start resourcemanager
 starting resourcemanager, logging to /opt/module/HA/hadoop/logs/yarn-root-resourcemanager-systemhub611.out
 [root@systemhub611 hadoop]# 
 ```
-
+- 查看ResourceManager服务状态
 ```
 [root@systemhub511 hadoop]# bin/yarn rmadmin -getServiceState rm1
 SLF4J: Class path contains multiple SLF4J bindings.
@@ -622,8 +626,32 @@ SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
 active
 [root@systemhub511 hadoop]# 
 ```
-## 4. HDFS Federation架构设计
 
+## 4. HDFS Federation 架构设计
+### 4.1 NameNode 架构局限性
+#### 4.1.1 Namespace(命名空间)限制
+- 由于NameNode在内存中存储所有元数据(metadata),因此单个NameNode所能存储对象(文件+块)数目受到NameNode所在JVM的heapSize限制,50G的heap能够存储20亿(200million)个对象,这20亿个对象支持4000个DataNode,12PB存储(假设文件平均大小为40MB),随着数据飞速增长,存储需求也随之增长,单个DataNode从4T增长到36T,集群尺寸增长到8000个DataNode,存储需求从12PB增长到大于100PB.
+#### 4.1.2 隔离问题
+- 由于HDFS仅有一个NameNode,无法隔离各个程序,因此HDFS上一个实验程序就很有可能影响整个HDFS上运行程序.
+
+#### 4.1.3 性能瓶颈
+- 由于是单个NameNode的HDFS架构,因此整个HDFS文件系统吞吐量受限于单个NameNode吞吐量.
+
+### 4.2 HDFS Federation 架构设计
+
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/ha/start_002.jpg)
+
+#### 4.2.1 是否可以有多个NameNode
+
+| NameNode | NameNode |   NameNode   |
+| :--------: | :--------:| :------: |
+| 元数据    |   元数据 |  元数据  |
+| Log | Machine| 电商数据/话单数据 |
+
+### 4.3 HDFS Federation 应用思考
+- 不同应用可以使用不同NameNode进行数据管理
+- 图片业务 / 爬虫业务 / 日志审计业务
+- Hadoop生态系统中,不同框架使用不同NameNode进行管理NameSpace(隔离性）
 
 
 ## 5. 修仙之道 技术架构迭代 登峰造极之势
