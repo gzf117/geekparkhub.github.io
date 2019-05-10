@@ -50,7 +50,7 @@
 ### 1.3 Azkaban 简介
 - Azkaban是由Linkedin公司推出的一个轻量级批量工作流任务调度器.
 - 
-- 主要用于在工作流内以一个特定顺序运行一组工作和流程,配置是通过简单的`<Key/Value>`键值对方式,通过配置中的`depenencies`关键字来设置关系依赖.
+- 主要用于在工作流内以一个特定顺序运行一组工作和流程,配置是通过简单的`<Key/Value>`键值对方式,通过配置中的`dependencies`关键字来设置关系依赖.
 - 
 - Azkaban使用Job配置文件建立任务之间依赖关系,并提供一个易于使用的Web图形化应用来维护和跟踪工作流.
 
@@ -352,22 +352,338 @@ executor.flow.threads=30
 ```
 - 2.jps查看进程
 ```
+[root@systemhub711 ~]# jps
+29392 AzkabanWebServer
+28037 AzkabanExecutorServer
+30040 Jps
+[root@systemhub711 ~]# 
+```
+- 3.启动完成,在浏览器输入`https://hostname:8443`地址,即登录可访问服务.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/azkaban/start_003.gif)
+
+
+## 3. Azkaban 任务调度
+### 3.1 单一Job 任务调度
+- 使用Azkaban调度单一Job程序.
+- 1.在此目录创建core_jobs文件夹.
+```
+[root@systemhub711 ~]# cd /opt/module/azkaban/
+[root@systemhub711 azkaban]# mkdir core_jobs
+```
+- 2.进入core_jobs目录,创建以`.job`为结尾的工作流文件.
+```
+[root@systemhub711 core_jobs]# vim single_workflow.job
+```
+```
+# first job
+type=command
+command=echo 'This is a Single Jobs'
+```
+- 3.将single_workflow.job压缩为以后缀名`.zip`压缩包.
+```
+[root@systemhub711 core_jobs]# zip single_workflow.zip single_workflow.job
+adding: single_workflow.job (deflated 8%)
+[root@systemhub711 core_jobs]# ll
+total 8
+-rw-r--r-- 1 root root  61 May 10 20:54 single_workflow.job
+-rw-r--r-- 1 root root 244 May 10 20:57 single_workflow.zip
+[root@systemhub711 core_jobs]# 
+```
+- 4.将压缩包下载到系统桌面,并创建工作流
+
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/azkaban/start_004.jpg)
+
+- 5.通过Azkaban Web管理平台创建project
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/azkaban/start_005.jpg)
+
+- 6.上传压缩包,并启动执行Job工作流任务
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/azkaban/start_006.gif)
+
+- 7.查看工作流日志信息
+```
+Job Logs
+CST single_workflow INFO - Starting job single_workflow at 1557494992670
+CST single_workflow INFO - Building command job executor. 
+CST single_workflow INFO - 1 commands to execute.
+CST single_workflow INFO - Command: echo 'This is a Single Jobs'
+CST single_workflow INFO - Environment variables: {JOB_OUTPUT_PROP_FILE=/opt/module/azkaban/azkaban-executor/executions/1/single_workflow_output_6225901896375074204_tmp, JOB_PROP_FILE=/opt/module/azkaban/azkaban-executor/executions/1/single_workflow_props_9124304639650346490_tmp, JOB_NAME=single_workflow}
+CST single_workflow INFO - Working directory: /opt/module/azkaban/azkaban-executor/executions/1
+CST single_workflow INFO - This is a Single Jobs
+CST single_workflow INFO - Process completed successfully in 0 seconds.
+CST single_workflow INFO - Finishing job single_workflow at 1557494992835 with status SUCCEEDED
+```
+
+### 3.2 多Job工作流 任务调度
+- 使用`dependencies`关键字来调度多Job程序.
+- 多任务流程 | (1)文件上传至HDFS `->` (2)创建外部表 `->` (3)查询数据表
+- 0.在HDFS创建multitasking目录
+```
+[root@systemhub711 core_jobs]# hadoop fs -mkdir -p /core_flow/azkaban/multitasking
+[root@systemhub711 core_jobs]# 
+```
+- 1.将本地文件上传至HDFS | vim `multitasking_hdfs_workflow.job`
+```
+# Multitasking HSFD WorkFlow
+type=command
+command=/opt/module/hadoop/bin/hadoop fs -put /opt/module/datas/test.txt /core_flow/azkaban/multitasking
+```
+- 2.创建job描述文件与hive脚本.
+- vim `multitasking_hive_workflow.sql`
+``` sql
+use default;
+create external table multitasking_hive_workflow(
+    id int ,
+    name string)
+row format delimited fields terminated by '\t'
+location '/core_flow/azkaban/multitasking';
+```
+- vim `multitasking_hive_workflow.job`
+```
+# Multitasking Hive WorkFlow
+type=command
+command=/opt/module/hive/bin/hive -f /opt/module/azkaban/core_jobs/multitasking_hive_workflow.sql
+dependencies=multitasking_hdfs_workflow
+```
+- 3.创建数据表 | vim `multitasking_select_workflow.job`
+```
+# Multitasking Select WorkFlow
+type=command
+command=/opt/module/hive/bin/hive -e 'select * from multitasking_hive_workflow;'
+dependencies=multitasking_hive_workflow
+```
+- 4.将三个job资源文件压缩为以后缀名`.zip`压缩包.
+- 文件资源详情 : `multitasking_hdfs_workflow.job` | `multitasking_hive_workflow.job` | `multitasking_select_workflow.job`
+```
+[root@systemhub711 core_jobs]# zip multitasking_workflow.zip multitasking_hdfs_workflow.job multitasking_hive_workflow.job multitasking_select_workflow.job
+adding: multitasking_hdfs_workflow.job (deflated 28%)
+adding: multitasking_hive_workflow.job (deflated 35%)
+adding: multitasking_select_workflow.job (deflated 33%)
+[root@systemhub711 core_jobs]#
+```
+- 5.通过Azkaban Web管理平台创建project并上传压缩包,启动执行Job应用.
+- 此步骤与单Job实例一致,Gif演示图已省略 | 如不明确步骤,请回看`单Job实例`Gif演示图
+
+- 6.查看运行结果
+
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/azkaban/start_007.jpg)
 
 ```
-- 3.启动完成,在浏览器输入地址,即可访问服务.
+CST multitasking_select_workflow INFO - multitasking_hive_workflow.id	multitasking_hive_workflow.name
+CST multitasking_select_workflow INFO - 1	TestUser001
+CST multitasking_select_workflow INFO - 2	TestUser002
+CST multitasking_select_workflow INFO - 3	TestUser003
+CST multitasking_select_workflow INFO - 4	TestUser004
+```
 
 
 
-## 3. Azkaban 应用实战
-### 3.1 单一Job
-### 3.2 多Job工作流
-### 3.3 Java任务操作
-### 3.4 HDFS任务操作
-### 3.5 MapReduce任务操作
-### 3.6 Hive脚本任务
+### 3.3 Java 任务调度
+- 使用Azkaban调度java程序.
+- 1.Create AzkabanWorkFlow.class
+```java
+package com.geekparkhub.core.azkaban.api.producehub;
+
+import java.io.FileOutputStream;
+import java.io.IOException;
+
+/**
+ * Geek International Park | 极客国际公园
+ * GeekParkHub | 极客实验室
+ * Website | https://www.geekparkhub.com/
+ * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+ * HackerParkHub | 黑客公园枢纽
+ * Website | https://www.hackerparkhub.com/
+ * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+ * GeekDeveloper : JEEP-711
+ *
+ * @author system
+ * <p>
+ * AzkabanWorkFlow
+ * <p>
+ */
+
+public class AzkabanWorkFlow {
+
+    /**
+     * Core Method
+     *
+     * @throws IOException
+     */
+    public void rum() throws IOException {
+        FileOutputStream fileOutputStream = new FileOutputStream("/opt/module/azkaban/output.txt");
+        fileOutputStream.write("This is a Java Task".getBytes());
+        fileOutputStream.close();
+    }
+
+    public static void main(String[] args) throws IOException {
+        AzkabanWorkFlow workFlow = new AzkabanWorkFlow();
+        workFlow.rum();
+    }
+}
+```
+
+- 2.使用Maven将程序打包成jar包,上传至`/opt/module/azkaban/`目录下
+```
+[root@systemhub711 module]# cd azkaban/
+[root@systemhub711 azkaban]# ll
+total 40
+drwxr-xr-x  2 root root  4096 May 10 16:50 azkaban
+drwxr-xr-x 10 root root  4096 May 10 19:43 azkaban-executor
+drwxr-xr-x  9 root root  4096 May 10 19:43 azkaban-web
+-rw-r--r--  1 root root 21518 May 10 22:02 AzkabanWorkFlow.jar
+drwxr-xr-x  2 root root  4096 May 10 22:10 core_jobs
+[root@systemhub711 azkaban]# 
+```
+- 3.进入core_jobs目录,创建以`.job`为结尾的工作流文件.
+```
+[root@systemhub711 azkaban]# cd core_jobs/
+[root@systemhub711 core_jobs]# vim java_workflow.job
+```
+```
+# java work flow
+type=javaprocess
+java.class=com.geekparkhub.core.azkaban.api.producehub.AzkabanWorkFlow
+classpath=/opt/module/azkaban/AzkabanWorkFlow.jar
+```
+- 4.将java_workflow.job压缩为以后缀名`.zip`压缩包.
+```
+[root@systemhub711 core_jobs]# zip java_workflow.zip java_workflow.job
+adding: java_workflow.job (deflated 25%)
+[root@systemhub711 core_jobs]# 
+```
+- 5.通过Azkaban Web管理平台创建project并上传压缩包,启动执行Job应用.
+- 此步骤与单Job实例一致,Gif演示图已省略 | 如不明确步骤,请回看`单Job实例`Gif演示图
+
+- 6.查看运行结果 | 查看`output.txt`文件
+```
+[root@systemhub711 azkaban]# ll
+total 44
+drwxr-xr-x  2 root root  4096 May 10 16:50 azkaban
+drwxr-xr-x 10 root root  4096 May 10 19:43 azkaban-executor
+drwxr-xr-x  9 root root  4096 May 10 19:43 azkaban-web
+-rw-r--r--  1 root root 21518 May 10 22:02 AzkabanWorkFlow.jar
+drwxr-xr-x  2 root root  4096 May 10 22:23 core_jobs
+-rw-r--r--  1 root root    19 May 10 22:29 output.txt
+[root@systemhub711 azkaban]# cat output.txt
+This is a Java Task
+[root@systemhub711 azkaban]# 
+```
 
 
+### 3.4 HDFS 任务调度
+- 使用Azkaban调度HDFS程序.
+- 1.进入core_jobs目录,创建以`.job`为结尾的工作流文件.
+```
+[root@systemhub711 core_jobs]# vim hdfs_workflow.job
+```
+```
+# hdfs work flow
+type=command
+command=/opt/module/hadoop/bin/hadoop fs -mkdir /core_flow/azkaban
+```
+- 2.将hdfs_workflow.job压缩为以后缀名`.zip`压缩包.
+```
+[root@systemhub711 core_jobs]# zip hdfs_workflow.zip hdfs_workflow.job
+adding: hdfs_workflow.job (deflated 14%)
+[root@systemhub711 core_jobs]#
+```
 
+- 3.通过Azkaban Web管理平台创建project并上传压缩包,启动执行Job应用.
+- 此步骤与单Job实例一致,Gif演示图已省略 | 如不明确步骤,请回看`单Job实例`Gif演示图
+
+- 4.查看运行结果
+```
+[root@systemhub711 azkaban]# hadoop fs -ls /core_flow/
+drwxr-xr-x   - root supergroup /core_flow/azkaban
+drwxr-xr-x   - root supergroup /core_flow/develop
+drwxr-xr-x   - root supergroup /core_flow/test
+[root@systemhub711 azkaban]#
+```
+
+### 3.5 MapReduce 任务调度
+- 使用Azkaban调度MapReduce程序.
+- 1.进入core_jobs目录,创建以`.job`为结尾的工作流文件.
+```
+[root@systemhub711 core_jobs]# vim mapreduce_workflow.job
+```
+```
+# mapreduce work flow
+type=command
+command=/opt/module/hadoop/bin/hadoop jar /opt/module/hadoop/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.7.2.jar wordcount /user/geekparkhub/input /core_flow/azkaban/output
+```
+- 2.将mapreduce_workflow.job压缩为以后缀名`.zip`压缩包.
+```
+[root@systemhub711 core_jobs]# zip mapreduce_workflow.zip mapreduce_workflow.job
+adding: mapreduce_workflow.job (deflated 34%)
+[root@systemhub711 core_jobs]# 
+```
+- 3.通过Azkaban Web管理平台创建project并上传压缩包,启动执行Job应用.
+- 此步骤与单Job实例一致,Gif演示图已省略 | 如不明确步骤,请回看`单Job实例`Gif演示图
+
+- 4.查看运行结果
+```
+[root@systemhub711 core_jobs]# hadoop fs -cat /core_flow/azkaban/output/*
+geek    2
+geekparkhub     1
+hackerparkhub   5
+hadoop  3
+helloworld      2
+test    1
+[root@systemhub711 core_jobs]# 
+```
+
+### 3.6 Hive脚本 任务调度
+- 使用Azkaban调度Hive程序. | 预先启动Hive服务
+- 1.创建job描述文件与hive脚本.
+- Hive脚本 | vim `hive_workflow.sql`
+``` sql
+use default;
+
+create table hive_workflow(
+    id int , 
+    name string 
+  )row format delimited fields terminated   
+by
+  "\t";
+
+load data local inpath "/opt/module/datas/test.txt"   
+into
+  table hive_workflow;
+
+insert overwrite
+    directory '/core_flow/azkaban/hive_workflow' row format delimited fields terminated       
+  by
+    '\t' select
+      *           
+    from
+      hive_workflow;
+```
+- Job描述文件 | vim `hive_workflow.job`
+```
+# hive work flow
+type=command
+command=/opt/module/hive/bin/hive -f /opt/module/azkaban/core_jobs/hive_workflow.sql
+```
+
+- 2.将hive_workflow.job压缩为以后缀名`.zip`压缩包.
+```
+[root@systemhub711 core_jobs]# zip hive_workflow.zip hive_workflow.job
+adding: hive_workflow.job (deflated 22%)
+[root@systemhub711 core_jobs]# 
+```
+
+- 3.通过Azkaban Web管理平台创建project并上传压缩包,启动执行Job应用.
+- 此步骤与单Job实例一致,Gif演示图已省略 | 如不明确步骤,请回看`单Job实例`Gif演示图
+
+- 4.查看运行结果
+```
+[root@systemhub711 core_jobs]# hadoop fs -cat /core_flow/azkaban/hive_workflow/*
+1       TestUser001
+2       TestUser002
+3       TestUser003
+4       TestUser004
+[root@systemhub711 core_jobs]# 
+```
 
 ## 4. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
