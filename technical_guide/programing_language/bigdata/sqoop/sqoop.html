@@ -156,7 +156,8 @@
 <h3 id="31-sqoop-official-download">3.1 Sqoop Official Download</h3>
 
 <ul><li><p>安装Sqoop前提是已经具备Java和Hadoop环境</p></li>
-<li><p><code>官方下载</code> : <a href="http://mirrors.hust.edu.cn/apache/sqoop/1.4.7/" target="_blank">mirrors.hust.edu.cn/apache/sqoop/1.4.7/</a></p></li>
+<li><p><code>官方文档</code> : <a href="http://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html" target="_blank">sqoop.apache.org/docs/1.4.6/</a></p></li>
+<li><p><code>官方下载</code> : <a href="http://archive.apache.org/dist/sqoop/1.4.6/" target="_blank">archive.apache.org/dist/sqoop/1.4.6/</a></p></li>
 </ul>
 
 
@@ -1122,6 +1123,8 @@
 
 <table><tbody><tr style="font-weight:bold">  <td align="center">ID</td>  <td align="center">参数</td>  <td align="center">说明</td></tr><tr>  <td align="center">1</td>  <td align="center"><code>--hive-home&lt;dir&gt;</code></td>  <td align="center">Hive安装目录,可以通过该参数覆盖掉默认Hive目录</td></tr><tr>  <td align="center">2</td>  <td align="center"><code>--hive-overwrite</code></td>  <td align="center">覆盖掉在Hive表中已经存在数据</td></tr><tr>  <td align="center">3</td>  <td align="center"><code>--create-hive-table</code></td>  <td align="center">默认是false,如果目标表已经存在了,那么创建任务会失败</td></tr><tr>  <td align="center">4</td>  <td align="center"><code>--hive-table</code></td>  <td align="center">后面接要创建hive表</td></tr><tr>  <td align="center">5</td>  <td align="center"><code>--table</code></td>  <td align="center">指定关系数据库表名</td></tr></tbody></table>
 
+
+
 <h4 id="529-命令参数-eval">5.2.9 命令&amp;参数 : eval</h4>
 
 <ul><li><p>可以快速使用SQL语句对关系型数据库进行操作,经常用于在import数据之前,了解一下SQL语句是否正确,数据是否正常,并可以将结果显示在控制台.</p></li>
@@ -1143,6 +1146,8 @@
 
 <table><tbody><tr style="font-weight:bold">  <td align="center">ID</td>  <td align="center">参数</td>  <td align="center">说明</td></tr><tr>  <td align="center">1</td>  <td align="center"><code>--query</code>或<code>--e</code></td>  <td align="center">后跟查询SQL语句</td></tr></tbody></table>
 
+
+
 <h4 id="5210-命令参数-import-all-tables">5.2.10 命令&amp;参数 : import-all-tables</h4>
 
 <ul><li><p>可以将RDBMS中所有表导入到HDFS中,每一个表都对应一个HDFS目录</p></li>
@@ -1162,6 +1167,8 @@
 </ul>
 
 <table><tbody><tr style="font-weight:bold">  <td align="center">ID</td>  <td align="center">参数</td>  <td align="center">说明</td></tr><tr>  <td align="center">1</td>  <td align="center"><code>--as-avrodatafile</code></td>  <td align="center">参数含义均和import对应含义一致</td></tr><tr>  <td align="center">2</td>  <td align="center"><code>--as-sequencefile</code></td>  <td align="center">参数含义均和import对应含义一致</td></tr><tr>  <td align="center">3</td>  <td align="center"><code>--as-textfile</code></td>  <td align="center">参数含义均和import对应含义一致</td></tr><tr>  <td align="center">4</td>  <td align="center"><code>--direct</code></td>  <td align="center">参数含义均和import对应含义一致</td></tr><tr>  <td align="center">5</td>  <td align="center"><code>--direct-split-size &lt;n&gt;</code></td>  <td align="center">参数含义均和import对应含义一致</td></tr><tr>  <td align="center">6</td>  <td align="center"><code>--inline-lob-limit &lt;n&gt;</code></td>  <td align="center">参数含义均和import对应含义一致</td></tr><tr>  <td align="center">7</td>  <td align="center"><code>--m</code>或<code>—num-mappers &lt;n&gt;</code></td>  <td align="center">参数含义均和import对应含义一致</td></tr><tr>  <td align="center">8</td>  <td align="center"><code>--warehouse-dir &lt;dir&gt;</code></td>  <td align="center">参数含义均和import对应含义一致</td></tr><tr>  <td align="center">9</td>  <td align="center"><code>-z</code>或<code>--compress</code></td>  <td align="center">参数含义均和import对应含义一致</td></tr><tr>  <td align="center">10</td>  <td align="center"><code>--compression-codec</code></td>  <td align="center">参数含义均和import对应含义一致</td></tr></tbody></table>
+
+
 
 <h4 id="5211-命令参数-job">5.2.11 命令&amp;参数 : job</h4>
 
@@ -1200,12 +1207,16 @@
 <ul><li><p>在执行一个job时,如果需要手动输入数据库密码,可以做如下优化</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-xml hljs"><div class="hljs-line"><span class="hljs-tag">&lt;<span class="hljs-name">property</span>&gt;</span>
 </div><div class="hljs-line">  <span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>sqoop.metastore.client.record.password<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span>
 </div><div class="hljs-line">  <span class="hljs-tag">&lt;<span class="hljs-name">value</span>&gt;</span>true<span class="hljs-tag">&lt;/<span class="hljs-name">value</span>&gt;</span>
 </div><div class="hljs-line">  <span class="hljs-tag">&lt;<span class="hljs-name">description</span>&gt;</span>If true, allow saved passwords in the metastore.<span class="hljs-tag">&lt;/<span class="hljs-name">description</span>&gt;</span>
 </div><div class="hljs-line"><span class="hljs-tag">&lt;/<span class="hljs-name">property</span>&gt;</span>
 </div></code></pre>
+
+
 
 <h4 id="5212-命令参数-list-databases">5.2.12 命令&amp;参数 : list-databases</h4>
 
@@ -1223,10 +1234,14 @@
 <ul><li><p>2.参数与公用参数一样</p></li>
 </ul>
 
+
+
 <h4 id="5213-命令参数-list-tables">5.2.13 命令&amp;参数 : list-tables</h4>
 
 <ul><li><p>1.命令</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="hljs dsconfig"><div class="hljs-line"><span class="hljs-string">bin/</span><span class="hljs-string">sqoop </span><span class="hljs-built_in">list-tables</span> \
 </div><div class="hljs-line"><span class="hljs-built_in">--connect</span> <span class="hljs-string">jdbc:mysql:</span>//<span class="hljs-string">systemhub711:3306/</span><span class="hljs-string">company </span>\
@@ -1237,12 +1252,16 @@
 <ul><li><p>2.参数与公用参数一样</p></li>
 </ul>
 
+
+
 <h4 id="5214-命令参数-merge">5.2.14 命令&amp;参数 : merge</h4>
 
 <ul><li><p>将HDFS中不同目录下面数据合并在一起并放入指定目录中.</p></li>
 <li><p>数据环境 | 数据的列之间的分隔符应该为<code>\t</code>,行与行之间的分割符为<code>\n</code>.</p></li>
 <li><p><code>new_staff</code></p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="hljs basic"><div class="hljs-line"><span class="hljs-symbol">1 </span>  AAA male
 </div><div class="hljs-line"><span class="hljs-symbol">2 </span>  BBB male
@@ -1263,6 +1282,8 @@
 
 <ul><li><p>1.命令 | 创建JavaBean</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="hljs haml"><div class="hljs-line">bin/sqoop codegen \
 </div><div class="hljs-line">-<span class="ruby">-connect <span class="hljs-symbol">jdbc:</span><span class="hljs-symbol">mysql:</span>/<span class="hljs-regexp">/systemhub711:3306/company</span> \</span>
@@ -1305,6 +1326,8 @@
 
 <table><tbody><tr style="font-weight:bold">  <td align="center">ID</td>  <td align="center">参数</td>  <td align="center">说明</td></tr><tr>  <td align="center">1</td>  <td align="center"><code>--new-data &lt;path&gt;</code></td>  <td align="center">HDFS待合并的数据目录,合并后在新数据集中保留</td></tr><tr>  <td align="center">2</td>  <td align="center"><code>--onto &lt;path&gt;</code></td>  <td align="center">HDFS合并后,重复部分在新数据集中被覆盖</td></tr><tr>  <td align="center">3</td>  <td align="center"><code>--merge-key &lt;col&gt;</code></td>  <td align="center">合并键,一般是主键ID</td></tr><tr>  <td align="center">4</td>  <td align="center"><code>--jar-file &lt;file&gt;</code></td>  <td align="center">合并时引入jar包,该jar包是通过Codegen工具生成的jar包</td></tr><tr>  <td align="center">5</td>  <td align="center"><code>--class-name &lt;class&gt;</code></td>  <td align="center">对应表名或对象名,该class类是包含在jar包中</td></tr><tr>  <td align="center">6</td>  <td align="center"><code>--target-dir &lt;path&gt;</code></td>  <td align="center">合并后数据在HDFS里存放目录</td></tr></tbody></table>
 
+
+
 <h4 id="5215-命令参数-metastore">5.2.15 命令&amp;参数 : metastore</h4>
 
 <ul><li><p>记录了Sqoopjob元数据信息,如果不启动该服务,那么默认job元数据存储目录为<code>~/.sqoop</code> , 可在<code>sqoop-site.xml</code>中修改.</p></li>
@@ -1320,6 +1343,8 @@
 </ul>
 
 <table><tbody><tr style="font-weight:bold">  <td align="center">ID</td>  <td align="center">参数</td>  <td align="center">说明</td></tr><tr>  <td align="center">1</td>  <td align="center"><code>--shutdown</code></td>  <td align="center">关闭metastore</td></tr></tbody></table>
+
+
 
 <h2 id="6-修仙之道-技术架构迭代-登峰造极之势">6. 修仙之道 技术架构迭代 登峰造极之势</h2>
 

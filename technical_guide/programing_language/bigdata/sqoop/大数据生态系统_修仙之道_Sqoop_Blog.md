@@ -45,7 +45,8 @@
 ## 3. Sqoop 部署
 ### 3.1 Sqoop Official Download
 - 安装Sqoop前提是已经具备Java和Hadoop环境
-- `官方下载` : [mirrors.hust.edu.cn/apache/sqoop/1.4.7/](http://mirrors.hust.edu.cn/apache/sqoop/1.4.7/)
+- `官方文档` : [sqoop.apache.org/docs/1.4.6/](http://sqoop.apache.org/docs/1.4.6/SqoopUserGuide.html)
+- `官方下载` : [archive.apache.org/dist/sqoop/1.4.6/](http://archive.apache.org/dist/sqoop/1.4.6/)
 
 ### 3.2 部署 Sqoop
 #### 3.2.1 解压
