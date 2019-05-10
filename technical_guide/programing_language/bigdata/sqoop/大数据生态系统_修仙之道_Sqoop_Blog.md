@@ -807,93 +807,196 @@ bin/sqoop codegen \
 | 10    |   `--table<table-name>` |  对应关系数据库中表名,生成Java文件中各个属性与该表的各个字段一一对应  |
 
 #### 5.2.8 命令&参数 : create-hive-table
+- 生成与关系数据库表结构对应hive表结构
+- 1.命令
+```
+bin/sqoop create-hive-table \
+--connect jdbc:mysql://systemhub711:3306/company \
+--username root \
+--password ax0pix \
+--table staff \
+--hive-table hive_staff
+```
+- 2.参数
 | ID      |     参数 |   说明   |
 | :--------: | :--------:| :------: |
-| 1    |   field2 |  field3  |
-| 2    |   field2 |  field3  |
-| 3    |   field2 |  field3  |
-| 4    |   field2 |  field3  |
-| 5    |   field2 |  field3  |
-| 6    |   field2 |  field3  |
-| 7    |   field2 |  field3  |
+| 1    |   `--hive-home<dir>` |  Hive安装目录,可以通过该参数覆盖掉默认Hive目录  |
+| 2    |   `--hive-overwrite` |  覆盖掉在Hive表中已经存在数据  |
+| 3    |   `--create-hive-table` |  默认是false,如果目标表已经存在了,那么创建任务会失败  |
+| 4    |   `--hive-table` |  后面接要创建hive表  |
+| 5    |   `--table` |  指定关系数据库表名  |
+
 
 #### 5.2.9 命令&参数 : eval
+- 可以快速使用SQL语句对关系型数据库进行操作,经常用于在import数据之前,了解一下SQL语句是否正确,数据是否正常,并可以将结果显示在控制台.
+- 1.命令
+```
+bin/sqoop eval \
+--connect jdbc:mysql://systemhub711:3306/company \
+--username root \
+--password ax0pix \
+--table staff \
+--query "SELECT * FROM staff"
+```
+- 2.参数
 | ID      |     参数 |   说明   |
 | :--------: | :--------:| :------: |
-| 1    |   field2 |  field3  |
-| 2    |   field2 |  field3  |
-| 3    |   field2 |  field3  |
-| 4    |   field2 |  field3  |
-| 5    |   field2 |  field3  |
-| 6    |   field2 |  field3  |
-| 7    |   field2 |  field3  |
+| 1    |   `--query`或`--e` |  后跟查询SQL语句  |
+
 
 #### 5.2.10 命令&参数 : import-all-tables
+- 可以将RDBMS中所有表导入到HDFS中,每一个表都对应一个HDFS目录
+- 1.命令
+```
+bin/sqoop import-all-tables \
+--connect jdbc:mysql://systemhub711:3306/company \
+--username root \
+--password ax0pix \
+--warehouse-dir/all_tables
+```
+- 2.参数
 | ID      |     参数 |   说明   |
 | :--------: | :--------:| :------: |
-| 1    |   field2 |  field3  |
-| 2    |   field2 |  field3  |
-| 3    |   field2 |  field3  |
-| 4    |   field2 |  field3  |
-| 5    |   field2 |  field3  |
-| 6    |   field2 |  field3  |
-| 7    |   field2 |  field3  |
+| 1    |   `--as-avrodatafile` |  参数含义均和import对应含义一致  |
+| 2    |   `--as-sequencefile` |  参数含义均和import对应含义一致  |
+| 3    |   `--as-textfile` |  参数含义均和import对应含义一致  |
+| 4    |   `--direct` |  参数含义均和import对应含义一致  |
+| 5    |   `--direct-split-size <n>` |  参数含义均和import对应含义一致  |
+| 6    |   `--inline-lob-limit <n>` |  参数含义均和import对应含义一致  |
+| 7    |   `--m`或`—num-mappers <n>` |  参数含义均和import对应含义一致  |
+| 8    |   `--warehouse-dir <dir>` |  参数含义均和import对应含义一致  |
+| 9    |   `-z`或`--compress` |  参数含义均和import对应含义一致  |
+| 10    |   `--compression-codec` |  参数含义均和import对应含义一致  |
 
 #### 5.2.11 命令&参数 : job
+- 用来生成一个sqoop任务,生成后不会立即执行,需要手动执行.
+- 1.命令
+- 注意import-all-tables和它左边的`--`之间有一个空格
+- 如果需要连接metastore,则`--meta-connect jdbc:hsqldb:hsql://systemhub711:16000/sqoop`
+```
+bin/sqoop job \
+--create myjob--import-all-tables \
+--connect jdbc:mysql://systemhub711:3306/company \
+--username root \
+--password ax0pix
+```
+```
+bin/sqoop job \
+--list
+```
+```
+bin/sqoop job \
+--exec myjob
+```
+- 2.参数
 | ID      |     参数 |   说明   |
 | :--------: | :--------:| :------: |
-| 1    |   field2 |  field3  |
-| 2    |   field2 |  field3  |
-| 3    |   field2 |  field3  |
-| 4    |   field2 |  field3  |
-| 5    |   field2 |  field3  |
-| 6    |   field2 |  field3  |
-| 7    |   field2 |  field3  |
+| 1    |   `--create<job-id>` |  创建job参数  |
+| 2    |   `--delete <job-id>` |  删除job  |
+| 3    |   `--exec <job-id>` |  执行job  |
+| 4    |   `--help` |  显示job帮助  |
+| 5    |   `--list` |  显示job列表  |
+| 6    |   `--meta-connect <jdbc-uri>` |  用来连接metastore服务  |
+| 7    |   `--show <job-id>` |  显示job信息  |
+| 7    |   `--verbose` |  打印命令运行时详细信息  |
+- 在执行一个job时,如果需要手动输入数据库密码,可以做如下优化
+``` xml
+<property>
+  <name>sqoop.metastore.client.record.password</name>
+  <value>true</value>
+  <description>If true, allow saved passwords in the metastore.</description>
+</property>
+```
 
 #### 5.2.12 命令&参数 : list-databases
+- 1.命令
+```
+bin/sqoop list-databases \
+--connect jdbc:mysql://systemhub711:3306/ \
+--username root \
+--password ax0pix
+```
+- 2.参数与公用参数一样
+
+
+#### 5.2.13 命令&参数 : list-tables
+- 1.命令
+```
+bin/sqoop list-tables \
+--connect jdbc:mysql://systemhub711:3306/company \
+--username root \
+--password ax0pix
+```
+- 2.参数与公用参数一样
+
+
+#### 5.2.14 命令&参数 : merge
+- 将HDFS中不同目录下面数据合并在一起并放入指定目录中.
+- 数据环境 | 数据的列之间的分隔符应该为`\t`,行与行之间的分割符为`\n`.
+- `new_staff`
+```
+1	AAA	male
+2	BBB	male
+3	CCC	male
+4	DDD	male
+```
+- `old_staff`
+```
+1	AAA	female
+2	CCC	female
+3	BBB	female
+6	DDD	female
+```
+- 1.命令 | 创建JavaBean
+```
+bin/sqoop codegen \
+--connect jdbc:mysql://systemhub711:3306/company \
+--username root \
+--password ax0pix \
+--table staff \
+--bindir /home/core_flow/code/staff \
+--class-name Staff\
+--fields-terminated-by "\t"
+```
+- 2.开始合并
+```
+bin/sqoop merge \
+--new-data /test/new/ \
+--onto /test/old/ \
+--target-dir /test/merged \
+--jar-file /home/core_flow/code/staff/Staff.jar \
+--class-name Staff \
+--merge-key id
+```
+- 3.查看结果
+```
+1	AAA	male
+2	BBB	male
+3	CCC	male
+4	DDD	male
+6	DDD	female
+```
+- 4.参数
 | ID      |     参数 |   说明   |
 | :--------: | :--------:| :------: |
-| 1    |   field2 |  field3  |
-| 2    |   field2 |  field3  |
-| 3    |   field2 |  field3  |
-| 4    |   field2 |  field3  |
-| 5    |   field2 |  field3  |
-| 6    |   field2 |  field3  |
-| 7    |   field2 |  field3  |
+| 1    |   `--new-data <path>` |  HDFS待合并的数据目录,合并后在新数据集中保留  |
+| 2    |   `--onto <path>` |  HDFS合并后,重复部分在新数据集中被覆盖  |
+| 3    |   `--merge-key <col>` |  合并键,一般是主键ID  |
+| 4    |   `--jar-file <file>` |  合并时引入jar包,该jar包是通过Codegen工具生成的jar包  |
+| 5    |   `--class-name <class>` |  对应表名或对象名,该class类是包含在jar包中  |
+| 6    |   `--target-dir <path>` |  合并后数据在HDFS里存放目录  |
 
-#### 5.2.13 命令&参数 : merge
+
+#### 5.2.15 命令&参数 : metastore
+- 记录了Sqoopjob元数据信息,如果不启动该服务,那么默认job元数据存储目录为`~/.sqoop` , 可在`sqoop-site.xml`中修改.
+- 1.命令 | 启动sqoop的metastore服务
+```
+[root@systemhub711 ~ ]# bin/sqoop metastore
+```
+- 2.参数
 | ID      |     参数 |   说明   |
 | :--------: | :--------:| :------: |
-| 1    |   field2 |  field3  |
-| 2    |   field2 |  field3  |
-| 3    |   field2 |  field3  |
-| 4    |   field2 |  field3  |
-| 5    |   field2 |  field3  |
-| 6    |   field2 |  field3  |
-| 7    |   field2 |  field3  |
-
-#### 5.2.14 命令&参数 : metastore
-| ID      |     参数 |   说明   |
-| :--------: | :--------:| :------: |
-| 1    |   field2 |  field3  |
-| 2    |   field2 |  field3  |
-| 3    |   field2 |  field3  |
-| 4    |   field2 |  field3  |
-| 5    |   field2 |  field3  |
-| 6    |   field2 |  field3  |
-| 7    |   field2 |  field3  |
-
-#### 5.2.15 命令&参数 : 
-| ID      |     参数 |   说明   |
-| :--------: | :--------:| :------: |
-| 1    |   field2 |  field3  |
-| 2    |   field2 |  field3  |
-| 3    |   field2 |  field3  |
-| 4    |   field2 |  field3  |
-| 5    |   field2 |  field3  |
-| 6    |   field2 |  field3  |
-| 7    |   field2 |  field3  |
-
+| 1    |   `--shutdown` |  关闭metastore  |
 
 
 ## 6. 修仙之道 技术架构迭代 登峰造极之势
