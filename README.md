@@ -37,7 +37,7 @@
 * [Sqoop-Html](https://geekparkhub.github.io/technical_guide/programing_language/bigdata/sqoop/sqoop.html) | [Sqoop-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/bigdata/sqoop/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Sqoop_Blog.md)
 * [Azkaban-Html](https://geekparkhub.github.io/technical_guide/programing_language/bigdata/azkaban/azkaban.html) | [Azkaban-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/bigdata/azkaban/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Azkaban_Blog.md)
 * [Oozie-Html](https://geekparkhub.github.io/technical_guide/programing_language/bigdata/oozie/oozie.html) | [Oozie-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/bigdata/oozie/%E5%A4%A7%E6%95%B0%E6%8D%AE%E7%94%9F%E6%80%81%E7%B3%BB%E7%BB%9F_%E4%BF%AE%E4%BB%99%E4%B9%8B%E9%81%93_Oozie_Blog.md)
-* [Scala-Html]() | [Scala-Markdown]() 
+* [Scala-Html](https://geekparkhub.github.io/technical_guide/programing_language/bigdata/scala/scala.html) | [Scala-Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/bigdata/scala/大数据Spark生态系统_修仙之道%20_Scala_Blog.md) 
 * [Spark-Html]() | [Spark-Markdown]()
 * [Flink-Html]() | [Flink-Markdown]()
 ***

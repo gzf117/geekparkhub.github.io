@@ -1,8 +1,8 @@
 # 大数据Spark生态系统 修仙之道 Scala Blog
 
-@(2019-04-23)[ Docs Language:简体中文 & English|Programing Scala|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2019-05-01)[ Docs Language:简体中文 & English|Programing Scala|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
-##  🐘 Scala Technology 修仙之道 内炼金丹 🐘
+##  🐘 Scala Technology 修仙之道 炼精化炁 🐘
 
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/scala/scala.jpg)
 
@@ -198,14 +198,44 @@ scala> :quit
 
 
 ## 6. Scala Quick Start
+- JetBrains IntelliJ IDEA New Maven Project | 此过程省略
+- Create `QuickStartScala.scala`
+``` scala
+package com.geekparkhub.core.scala.quickstart
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.com/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * QuickStartScala
+  * <p>
+  */
+
+object QuickStartScala {
+  def main(args: Array[String]): Unit = {
+    println("Scala ~ Hello World!");
+  }
+}
+```
+- Run main
+```
+Scala ~ Hello World!
+```
+
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/scala/start_002.jpg)
 
 
 
 
-
-
-
-## 4. 修仙之道 技术架构迭代 登峰造极之势
+## 7. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
 
