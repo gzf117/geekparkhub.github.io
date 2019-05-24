@@ -400,6 +400,83 @@ sc.textFile("/opt/module/spark/input/wordcount/wordcount_001.txt").flatMap(_.spl
 - 8.5.8 查看历史服务 | `http://hostname:18080`
 ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_007.jpg)
 
+##### 1.3.2.3 Spark HA 高可用
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_008.jpg)
+
+- 1.停止集群所有服务
+- 2.配置spark-env.sh | vim `spark-env.sh`
+```
+# SPARK_MASTER_HOST=systemhub511
+# SPARK_MASTER_PORT=7077
+export SPARK_DAEMON_JAVA_OPTS="-Dspark.deploy.recoveryMode=ZOOKEEPER -Dspark.deploy.zookeeper.url=systemhub511,systemhub611,systemhub711 -Dspark.deploy.zookeeper.dir=/spark"
+export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=18080 -Dspark.history.retainedApplications=30 -Dspark.history.fs.logDirectory=hdfs://systemhub511:9000/directory"
+```
+- 3.分发至其他节点集群
+```
+[root@systemhub511 module]# scp -r spark/ root@systemhub611:/opt/module/
+[root@systemhub511 module]# scp -r spark/ root@systemhub711:/opt/module/
+```
+- 4.启动Hadoop HDFS
+```
+[root@systemhub511 spark]# /opt/module/hadoop/sbin/start-dfs.sh
+```
+- 5.启动Zookeeper集群
+```
+[root@systemhub511 spark]# /opt/module/zookeeper/bin/zkServer.sh start
+[root@systemhub611 ~]# /opt/module/zookeeper/bin/zkServer.sh start
+[root@systemhub711 ~]# /opt/module/zookeeper/bin/zkServer.sh start
+```
+- 6.在systemhub511启动全部服务节点
+```
+[root@systemhub511 spark]# sbin/start-all.sh
+```
+- 7.在systemhub611单独启动master备份节点
+```
+[root@systemhub611 ~]# /opt/module/spark/sbin/start-master.sh
+```
+- 8.访问SparkHA集群
+```
+[root@systemhub511 spark]# bin/spark-shell --master spark://systemhub511:7077,systemhub611:7077
+```
+`http://systemhub511:8080` | systemhub511节点状态为`ALIVE`
+`http://systemhub611:8080` | systemhub611节点状态为`STANDBY`
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_009.jpg)
+
+- 9.故障转移测试
+- 手动杀死systemhub511服务器Master进程,并查看systemhub511是否将任务转移给systemhub611备份节点作为主节点.
+- 9.1 查看集群节点状态
+```
+[root@systemhub511 spark]# jps.sh
+================        root@systemhub511 All Processes         ===========
+32242 org.apache.hadoop.hdfs.server.namenode.NameNode
+11206 org.apache.spark.deploy.master.Master
+11368 org.apache.spark.deploy.worker.Worker
+9705 org.apache.zookeeper.server.quorum.QuorumPeerMain
+32444 org.apache.hadoop.hdfs.server.datanode.DataNode
+5228 sun.tools.jps.Jps
+================        root@systemhub611 All Processes         ===========
+9157 org.apache.spark.deploy.master.Master
+8901 org.apache.spark.deploy.worker.Worker
+2822 sun.tools.jps.Jps
+30214 org.apache.hadoop.hdfs.server.datanode.DataNode
+7495 org.apache.zookeeper.server.quorum.QuorumPeerMain
+================        root@systemhub711 All Processes         ===========
+5312 org.apache.spark.deploy.worker.Worker
+31568 sun.tools.jps.Jps
+26869 org.apache.hadoop.hdfs.server.namenode.SecondaryNameNode
+26647 org.apache.hadoop.hdfs.server.datanode.DataNode
+4014 org.apache.zookeeper.server.quorum.QuorumPeerMain
+[root@systemhub511 spark]# 
+```
+
+- 9.2 Kill systemhub511 Master主节点
+```
+[root@systemhub511 spark]# kill -9 11206
+```
+- 9.3 systemhub511节点已宕机 | systemhub611备份节点状态已转化为ALIVE主节点
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_010.jpg)
+
+
 #### 💥 1.3.3 Yarn Mode 💥
 ##### 1.3.3.1 Yarn Mode 概述
 
