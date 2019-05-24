@@ -28,10 +28,12 @@
 [TOC]
 
 
-## 1. Spark 基础
+## 🔥 1. Spark 基础 🔥
 
 ### 1.1 Spark 概述
 - Spark是一种基于内存快速 / 通用 / 可扩展大数据分析引擎.
+- Spark在2009年诞生于(UC Berkeley AMP Lab)加州大学伯克利分校AMP实验室,Spark是使用内存计算的开源大数据并行计算框架,可以应对复杂的大数据处理场景,2013年Spark成为Apache基金会旗下顶级项目.
+- Spark内核是由Scala编程语言开发,同时也提供了Java/Python/R语言等开发编程接口.
 
 
 #### 1.1.1 Spark 模块
@@ -41,13 +43,16 @@
 - 3.`Spark Streaming` : 是Spark提供对实时数据进行流式计算的组件,提供了用来操作数据流的API,并且与Spark Core中的RDD API高度对应.
 - 4.`Spark MLlib` : 提供常见的机器学习(ML)功能程序库,包括分类、回归、聚类、协同过滤等,还提供了模型评估、数据导入等额外支持功能.
 - 5.`集群管理器` : Spark设计为可以高效地在一个计算节点到数千个计算节点之间伸缩计算,为了实现这样要求,同时获得最大灵活性,Spark支持在各种集群管理器(Cluster Manager)上运行,包括Hadoop YARN、ApacheMesos,以及Spark自带简易调度器,叫作独立调度器.
-- 6.Spark得到了众多大数据公司的支持,这些公司包括Hortonworks、IBM、Intel、Cloudera、MapR、Pivotal、百度、阿里、腾讯、京东、携程、优酷土豆,当前百度的Spark已应用于大搜索、直达号、百度大数据等业务,阿里利用GraphX构建了大规模图计算和图挖掘系统,实现了很多生产系统的推荐算法,腾讯Spark集群达到8000台规模,是当前已知世界上最大的Spark集群.
 
 #### 1.1.2 Spark 特点
-- 1.`快` : 与Hadoop MapReduce相比,Spark基于内存运算要快100倍以上,基于硬盘运算也要快10倍以上,Spark实现了高效DAG执行引擎,可以通过基于内存来高效处理数据流,计算中间结果是存在于内存中.
+- 1.`快速` : 与Hadoop MapReduce相比,Spark基于内存运算要快100倍以上,基于硬盘运算也要快10倍以上,Spark实现了高效DAG有向无环图执行引擎,可以通过基于内存来高效处理数据流,计算中间结果是存在于内存中.
 - 2.`易用` : Spark支持Java、Python和Scala的API,还支持超过80种高级算法,使开发者可以快速构建不同应用,而且Spark支持交互式的Python和Scala的Shell,可以非常方便地在Shell中使用Spark集群来验证解决问题方法.
-- 3.`通用` : Spark提供了统一解决方案,Spark可以用于批处理 / 交互式查询(SparkSQL) / 实时流处理(SparkStreaming) / 机器学习(SparkMLlib) / 图计算(GraphX),这些不同类型的处理都可以在同一个应用中无缝使用,减少了开发和维护的人力成本和部署平台的物力成本.
+- 3.`通用性强` : Spark提供了统一解决方案,Spark可以用于批处理 / 交互式查询(SparkSQL) / 实时流处理(SparkStreaming) / 机器学习(SparkMLlib) / 图计算(GraphX),这些不同类型的处理都可以在同一个应用中无缝使用,减少了开发和维护的人力成本和部署平台的物力成本.
 - 4.`兼容性` : Spark可以非常方便地与其他的开源产品进行融合,比如Spark可以使用Hadoop YARN和ApacheMesos作为资源管理和调度器,并且可以处理所有Hadoop支持的数据,包括HDFS、HBase等,这对于已经部署Hadoop集群的用户特别重要,因为不需要做任何数据迁移就可以使用Spark强大处理能力.
+
+#### 1.1.3 Spark 应用场景
+- 1.Spark具有丰富组件,可适用于多种复杂应用场景,如SQL查询/机器学习/图形计算/流式计算等,同时Spark可以与Hadoop很好地集成在一起,目前已经有部分主流大数据厂商在发行版Hadoop版本中包含Spark/Cloudera/Hortonworks/MapReduce等.
+- 2.Spark得到了众多大数据公司的支持,这些公司包括Hortonworks、IBM、Intel、Cloudera、MapR、Pivotal、百度、阿里、腾讯、京东、携程、优酷土豆,当前百度的Spark已应用于大搜索、直达号、百度大数据等业务,阿里利用GraphX构建了大规模图计算和图挖掘系统,实现了很多生产系统的推荐算法,腾讯Spark集群达到8000台规模,是当前已知世界上最大的Spark集群.
 
 
 ### 1.2 Spark 部署
@@ -65,7 +70,7 @@
 ```
 
 ### 1.3 Spark 运行模式
-#### 1.3.1 Loacl Mode
+#### 💥1.3.1 Loacl Mode 💥
 ##### 1.3.1.1 Loacl Mode 概述
 - Local模式就是运行在单台本地计算机模式,通常就是用于在本地上练手或测试,它可以通过以下集中方式设置Master.
 - 1.`local` : 所有计算都运行在一个线程当中,没有任何并行计算,通常在本机执行测试代码就用这种模式.
@@ -137,7 +142,7 @@ Type :help for more information.
 
 scala> 
 ```
-- 3.5 通过WebUi查看程序运行 | `http://hostname:4040`
+- 3.5 通过WebUI查看程序运行 | `http://hostname:4040`
 
 ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_002.jpg)
 
@@ -212,7 +217,7 @@ total 4
 ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_004.jpg)
 
 
-#### 1.3.2 Standalone Mode
+#### 💥 1.3.2 Standalone Mode 💥
 ##### 1.3.2.1 Standalone Mode 概述
 - 由`Master`+`Slave`构建而成的Spark集群,Spark运行在集群中.
 - Standalone运行模式
@@ -338,7 +343,7 @@ res0: Array[(String, Int)] = Array((scala,1), (hive,2), (oozie,1), (java,1), (sp
 scala> 
 ```
 
-- 8.4 通过WebUi查看程序运行 | `http://hostname:8088`
+- 8.4 通过WebUI查看程序运行 | `http://hostname:8088`
 ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_006.jpg)
 
 - 8.5 配置历史服务器(JobHistoryServer)
@@ -375,7 +380,7 @@ spark.history.retainedApplications=30 指定保存Application历史记录个数,
 ```
 [root@systemhub511 hadoop]# sbin/start-dfs.sh
 ```
-- 8.5.5 手动创建HDFS目录
+- 8.5.5 手动创建HDFS /directory目录
 ```
 [root@systemhub511 spark]# hadoop fs -mkdir /directory
 ``` 
@@ -393,21 +398,21 @@ spark.history.retainedApplications=30 指定保存Application历史记录个数,
 sc.textFile("/opt/module/spark/input/wordcount/wordcount_001.txt").flatMap(_.split(" ")).map((_,1)).reduceByKey(_+_).collect
 ```
 - 8.5.8 查看历史服务 | `http://hostname:18080`
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_007.jpg)
 
-
-#### 1.3.3 Yarn Mode
+#### 💥 1.3.3 Yarn Mode 💥
 ##### 1.3.3.1 Yarn Mode 概述
 
 
 
 
 
-#### 1.3.4 Mesos Mode
+#### 💥 1.3.4 Mesos Mode 💥
 ##### 1.3.4.1 Mesos Mode 概述
 
 
 
-### 1.3 Spark Core
+### 🔥 1.3 Spark Core 🔥
 #### 1.3.1 RDD 概述
 #### 1.3.2 RDD 编程
 #### 1.3.3 RDD 持久化
@@ -418,7 +423,7 @@ sc.textFile("/opt/module/spark/input/wordcount/wordcount_001.txt").flatMap(_.spl
 #### 1.3.8 Spark Core 实例
 
 
-### 1.4 Spark SQL
+### 🔥 1.4 Spark SQL 🔥
 #### 1.4.1 Spark SQL 概述
 #### 1.4.2 Spark SQL 查询
 #### 1.4.3 DataFrame
@@ -429,7 +434,7 @@ sc.textFile("/opt/module/spark/input/wordcount/wordcount_001.txt").flatMap(_.spl
 #### 1.4.8 Spark SQL 实例
 
 
-### 1.5 Spark Streaming
+### 🔥 1.5 Spark Streaming 🔥
 #### 1.5.1 Spark Streaming 概述
 #### 1.5.2 Spark Streaming Program
 #### 1.5.3 DataStream 概述
@@ -441,7 +446,7 @@ sc.textFile("/opt/module/spark/input/wordcount/wordcount_001.txt").flatMap(_.spl
 
 
 
-## 2. Spark 高阶
+## 🔥 2. Spark 高阶 🔥
 ### 2.1 内核机制
 ### 2.1 性能调优
 
