@@ -479,6 +479,11 @@ export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=18080 -Dspark.history.retaine
 
 #### 💥 1.3.3 Yarn Mode 💥
 ##### 1.3.3.1 Yarn Mode 概述
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_011.jpg)
+- Spark客户端直接连接Yarn,不需要额外构建Spark集群.
+- 两种模式`yarn-client`和`yarn-cluster`,主要区别在于 : Driver程序运行节点
+- `yarn-client` : Driver程序运行在客户端,适用于交互调试,立即看到app输出.
+- `yarn-cluster` : Driver程序运行在由RM(ResourceManager)启动AP(APPMaster)适用于生产环境.
 
 
 
@@ -486,7 +491,7 @@ export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=18080 -Dspark.history.retaine
 
 #### 💥 1.3.4 Mesos Mode 💥
 ##### 1.3.4.1 Mesos Mode 概述
-
+- Spark客户端直接连接Mesos,不需要额外构建Spark集群,国内应用比较少,更多是运用yarn调度.
 
 
 ### 🔥 1.3 Spark Core 🔥
