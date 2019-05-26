@@ -485,13 +485,256 @@ export SPARK_HISTORY_OPTS="-Dspark.history.ui.port=18080 -Dspark.history.retaine
 - `yarn-client` : Driver程序运行在客户端,适用于交互调试,立即看到app输出.
 - `yarn-cluster` : Driver程序运行在由RM(ResourceManager)启动AP(APPMaster)适用于生产环境.
 
+##### 1.3.3.2 YarnMode QuickStart
 
+- 1.配置spark-env.sh | vim `spark-env.sh`
+```
+YARN_CONF_DIR=/opt/module/hadoop/etc/hadoop
+```
+- vim `spark-defaults.conf`
+```
+spark.master                     spark://systemhub511:7077
+spark.eventLog.enabled           true
+spark.eventLog.dir               hdfs://systemhub511:9000/directory
+spark.yarn.historyServer.address=systemhub511:18080
+spark.history.ui.port=18080
+```
+- vim `yarn-site.xml`
+``` xml
+<!--是否启动一个线程检查每个任务正使用的物理内存量,如果任务超出分配值,则直接将其杀掉,默认是true -->
+<property>
+  <name>yarn.nodemanager.pmem-check-enabled</name>
+  <value>false</value>
+</property>
 
+<!--是否启动一个线程检查每个任务正使用的虚拟内存量,如果任务超出分配值,则直接将其杀掉,默认是true-->
+<property>
+  <name>yarn.nodemanager.vmem-check-enabled</name>
+  <value>false</value>
+</property>
+```
 
+- 2.分发至其他节点集群
+```
+[root@systemhub511 module]# scp -r spark/ root@systemhub611:/opt/module/
+[root@systemhub511 module]# scp -r spark/ root@systemhub711:/opt/module/
+```
+
+- 3.提交任务到Yarn执行
+```
+bin/spark-submit \ 
+--class org.apache.spark.examples.SparkPi \ 
+--master yarn \ 
+--deploy-mode client \ 
+./examples/jars/spark-examples_2.11-2.1.1.jar\ 
+100
+```
 
 #### 💥 1.3.4 Mesos Mode 💥
 ##### 1.3.4.1 Mesos Mode 概述
 - Spark客户端直接连接Mesos,不需要额外构建Spark集群,国内应用比较少,更多是运用yarn调度.
+
+
+#### 💥 1.3.5 运行模式对比 💥
+
+| 模式      |     集群数量 |   集群进程   |   所属者   |
+| :--------: | :--------:| :------: | :------: |
+| Loacl Mode    |   1 |  无  |  Spark  |
+| Standalone Mode    |   3 |  Master & Worker  |  Spark  |
+| Yarn Mode    |   1 |  Yarn & HDFS  |  Hadoop  |
+
+#### 💥 1.3.6 WordCount 实例 💥
+- Spark Shell仅在测试和验证程序时使用的较多,在生产环境中通常会在IDE中编制程序,然后打成jar包提交到集群,最常用是创建Maven工程,利用Maven来管理jar包依赖.
+- 1.JetBrains IntelliJ IDEA New Maven Project | 此过程省略
+- 2.父工程配置信息 | pom.xml
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.geekparkhub.core.spark</groupId>
+    <artifactId>spark_server</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <modules>
+        <module>spark-common</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.11</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+    </dependencies>
+
+</project>
+```
+- 3.创建子模块 spark-common | 子模块配置信息 pom.xml
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>spark_server</artifactId>
+        <groupId>com.geekparkhub.core.spark</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>spark-common</artifactId>
+
+    <build>
+        <finalName>WordCount</finalName>
+        <plugins>
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+```
+
+- 4.在`spark-common`子模块中创建scala源码目录 | Create `WordCount.scala`
+``` scala
+package com.geekparkhub.core.spark.application.wordcount
+
+import org.apache.spark.rdd.RDD
+import org.apache.spark.{SparkConf, SparkContext}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * WordCountApplication
+  * <p>
+  */
+
+object WordCount {
+  def main(args: Array[String]): Unit = {
+
+    /**
+      * Create SparkConf
+      * 创建 SparkConf
+      */
+    val sparkConf = new SparkConf().setMaster(args(0)).setAppName("WordCountApplication")
+
+    /**
+      * Create SparkContext
+      * 创建 SparkContext
+      */
+    val sc = new SparkContext()
+
+    /**
+      * Read file
+      * 读取文件
+      */
+    val line: RDD[String] = sc.textFile(args(1))
+
+    /**
+      * To flatten
+      * 压平
+      */
+    val word: RDD[String] = line.flatMap(_.split(" "))
+
+    /**
+      * Word conversion dual group
+      * 单词转换二元组
+      */
+    val wordAndOne: RDD[(String, Int)] = word.map((_, 1))
+
+    /**
+      * Count the total number of words
+      * 统计单词总数
+      */
+    val wordCount: RDD[(String, Int)] = wordAndOne.reduceByKey(_+_)
+
+    /**
+      * Write out the file
+      * 写出文件
+      */
+    wordCount.saveAsTextFile(args(2))
+
+    /**
+      * Close resource
+      * 关闭资源
+      */
+    sc.stop()
+  }
+}
+```
+- 5.将`spark-common`子模块打至成jar包上传至systemhub511服务器
+- 6.启动HDFS | 在HDFS创建多级目录
+```
+[root@systemhub511 ~]# hadoop fs -mkdir -p /core_flow/spark/input/wordcount
+```
+
+- 7.将本地文件上传至HDFS目录
+```
+hadoop fs -put /opt/module/spark/input/wordcount/wordcount_001.txt /core_flow/spark/input/wordcount
+```
+- 8.Yarn执行提交任务至
+```
+bin/spark-submit \
+--class com.geekparkhub.core.spark.application.wordcount.WordCount \
+--master yarn \
+./lib_jar/WordCount.jar yarn \
+/core_flow/spark/input/wordcount/wordcount_001.txt \
+/core_flow/spark/output/wordcount
+```
+- 9.查看任务汇总结果
+- 9.1 `hadoop fs -ls -R`
+```
+[root@systemhub511 spark]# hadoop fs -ls -R /core_flow/spark/output/wordcount/
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+-rw-r--r--   3 root supergroup /core_flow/spark/output/wordcount/_SUCCESS
+-rw-r--r--   3 root supergroup /core_flow/spark/output/wordcount/part-00000
+-rw-r--r--   3 root supergroup /core_flow/spark/output/wordcount/part-00001
+[root@systemhub511 spark]# 
+```
+- 9.2 part-00000
+```
+[root@systemhub511 spark]# hadoop fs -cat /core_flow/spark/output/wordcount/part-00000
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+(scala,1)
+(hive,2)
+(oozie,1)
+(java,1)
+[root@systemhub511 spark]# 
+```
+- 9.3 part-00001
+```
+[root@systemhub511 spark]# hadoop fs -cat /core_flow/spark/output/wordcount/part-00001
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+(spark,2)
+(hadoop,3)
+(flume,1)
+(hbase,1)
+[root@systemhub511 spark]# 
+```
 
 
 ### 🔥 1.3 Spark Core 🔥
