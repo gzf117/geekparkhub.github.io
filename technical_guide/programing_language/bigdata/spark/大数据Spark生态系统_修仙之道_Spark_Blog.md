@@ -739,13 +739,303 @@ SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
 
 ### 🔥 1.3 Spark Core 🔥
 #### 1.3.1 RDD 概述
+##### 1.3.1.1 什么是RDD
+> `RDD` (`Resilient Distributed Dataset`)`弹性分布式数据集`是Spark中最基本数据抽象,代码中是一个抽象类,它代表一个弹性/不可变/可分区/里面的元素可并行计算的集合.
+
+##### 1.3.1.2 RDD 属性
+```
+ * Internally, each RDD is characterized by five main properties:
+ *
+ *  - 1. A list of partitions
+ *  - 2. A function for computing each split
+ *  - 3. A list of dependencies on other RDDs
+ *  - 4. Optionally, a Partitioner for key-value RDDs (e.g. to say that the RDD is hash-partitioned)
+ *  - 5. Optionally, a list of preferred locations to compute each split on (e.g. block locations for an HDFS file)
+```
+> 1.一组分区(Partition),即数据集基本组成单位;
+> 2.一个计算每个分区的函数;
+> 3.RDD之间依赖关系;
+> 4.一个Partitioner,即RDD分片函数;
+> 5.一个列表,存储存取每个Partition的优先位置(preferred location)
+
+##### 1.3.1.3 RDD 特点
+> RDD表示只读分区数据集,对RDD进行改动,只能通过RDD转换操作,由一个RDD得到一个新的RDD,新的RDD包含了从其他RDD衍生所必需的信息,RDDs之间存在依赖,RDD执行是按照血缘关系延时计算,如果血缘关系较长,可以通过持久化RDD来切断血缘关系.
+
+###### 1.3.1.3.1 弹性
+- 存储弹性 : 内存与磁盘的自动切换.
+- 容错弹性 : 数据丢失可以自动恢复.
+- 计算弹性 : 计算出错重试机制.
+- 分片弹性 : 可根据需要重新分片.
+
+
+###### 1.3.1.3.2 分区
+> RDD逻辑上是分区的,每个分区数据是抽象存在的,计算时会通过一个compute函数得到每个分区数据,如果RDD是通过已有文件系统构建,则compute函数是读取指定文件系统中数据,如果RDD是通过其他RDD转换而来,则compute函数是执行转换逻辑将其他RDD数据进行转换.
+
+###### 1.3.1.3.3 只读
+> RDD是只读的,要想改变RDD中数据,只能在现有RDD基础上创建新的RDD.
+> 
+> 由一个RDD转换到另一个RDD,可以通过丰富的操作算子实现,不再像MapReduce那样只能写map和reduce.
+> 
+> RDD操作算子包括两类,一类是`transformations`,它是用来将RDD进行转化,构建RDD的血缘关系,另一类是`actions`,它是用来触发RDD计算得到RDD相关计算结果或者将RDD保存文件系统中.
+
+###### 1.3.1.3.4 依赖
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_012.jpg)
+
+> 如图所示,RDDs通过操作算子进行转换,转换得到新RDD包含了从其他RDDs衍生所必需的信息,RDDs之间维护着这种血缘关系,也称之为依赖.
+> 
+> 依赖包括两种,一种是窄依赖,RDDs之间分区是一一对应,另一种是宽依赖,下游RDD的每个分区与上游RDD(也称之为父RDD)的每个分区都有关,是多对多关系.
+
+###### 1.3.1.3.5 缓存
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_013.jpg)
+
+> 如果在应用程序中多次使用同一个RDD时,可以将该RDD缓存起来,该RDD只有在第一次计算时会根据血缘关系得到分区数据,在后续其他地方用到该RDD时,会直接从缓存处取而不用再根据血缘关系计算,这样就加速后期的重用.
+> 
+> 如图所示,RDD-1经过一系列转换后得到RDD-n并保存到HDFS,RDD-1在这一过程中会有个中间结果,如果将其缓存到内存,那么在随后RDD-1转换到RDD-m这一过程中,就不会计算其之前的RDD-0.
+
+###### 1.3.1.3.6 CheckPoint
+> 虽然RDD血缘关系天然地可以实现容错,当RDD某个分区数据失败或丢失,可以通过血缘关系重建,但是对于长时间迭代型应用来说随着迭代进行,RDDs之间血缘关系会越来越长,一旦在后续迭代过程中出错,则需要通过非常长的血缘关系去重建,势必影响性能.
+> 
+> 为此,RDD支持checkpoint将数据保存到持久化存储中,这样就可以切断之前血缘关系,因为checkpoint后的RDD不需要知道它的父RDDs,它可以从checkpoint处拿到数据.
+
+
 #### 1.3.2 RDD 编程
-#### 1.3.3 RDD 持久化
-#### 1.3.4 RDD 依赖关系
-#### 1.3.5 键值对操作
-#### 1.3.6 数据读取保存
-#### 1.3.7 Spark 进阶
-#### 1.3.8 Spark Core 实例
+##### 1.3.2.1 编程模型
+> 在Spark中,RDD被表示为对象,通过对象方法调用RDD进行转换,经过一系列的`transformations`定义RDD之后,就可以调用`actions`触发RDD计算,`action`可以是向应用程序返回结果(count,collect等),或者是向存储系统保存数据(saveAsTextFile等).
+> 在Spark中,只有遇到`action`才会执行RDD计算(即延迟计算),这样在运行时可以通过管道方式传输多个转换.
+> 使用Spark开发者需要编写一个Driver程序,它被提交到集群以调度运行Worker,Driver中定义了一个或多个RDD.并调用RDD上的action.Worker则执行RDD分区计算任务.
+##### 1.3.2.2 RDD 创建
+- Spark创建RDD创建方式可以分为三种:
+- 1.从集合中创建RDD
+- 2.从外部存储创建RDD
+- 3.从其他RDD创建
+###### 1.3.2.1 集合创建RDD
+- 从集合中创建RDD,Spark主要提供了两种函数 : `parallelize`和`makeRDD`
+- 1.使用`parallelize()`从集合创建RDD
+```
+scala> val rdd = sc.parallelize(Array(511,611,711))
+rdd: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[0] at parallelize at <console>:24
+scala> rdd.collect
+res0: Array[Int] = Array(511, 611, 711)
+scala> 
+```
+- 2.使用`makeRDD()`从集合创建RDD
+```
+scala> val makerdd = sc.makeRDD(Array(511,611,711))
+makerdd: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[1] at makeRDD at <console>:24
+scala> makerdd.collect
+res1: Array[Int] = Array(511, 611, 711)
+scala> 
+```
+###### 1.3.2.2 外部存储系统数据集创建RDD
+- 除了在本地文件系统,还有所有Hadoop支持数据集,比如HDFS/Cassandra/HBase等.
+- 详见 1.3.4 数据读取保存
+```
+scala> sc.textFile("/opt/module/spark/input/wordcount/wordcount_001.txt")
+res2: org.apache.spark.rdd.RDD[String] = /opt/module/spark/input/wordcount/wordcount_001.txt MapPartitionsRDD[3] at textFile at <console>:25
+scala> 
+```
+
+###### 1.3.2.3 从其他创建RDD
+- 详见1.3.2.3 RDD 转换
+
+
+##### 1.3.2.3 RDD 转换
+- RDD整体分为`Value`类型和`Key-Value`类型
+
+##### 1.3.2.3.1 Value 类型
+###### 1.3.2.3.1.1 `map(func)` 案例
+- 作用 : 返回一个新RDD,该RDD由每一个输入元素经过func函数转换后组成.
+- 创建RDD
+```
+scala> val rdd = sc.parallelize(Array(511,611,711))
+rdd: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[0] at parallelize at <console>:24
+scala> rdd.collect
+res0: Array[Int] = Array(511, 611, 711)
+scala> 
+```
+- 打印RDD最终结果
+```
+scala> rdd.map((_,1)).collect
+res4: Array[(Int, Int)] = Array((511,1), (611,1), (711,1))
+scala> 
+```
+- 将所有元素RDD*2,最终结果
+```
+scala> rdd.map((_*2)).collect
+res5: Array[Int] = Array(1022, 1222, 1422)
+scala> 
+```
+###### 1.3.2.3.1.2 `mapPartitions(func)` 案例
+- 作用 : 类似于map,但独立地在RDD每一个分片上运行,因此在类型为T的RDD上运行时,func函数类型必须是Iterator[T] => Iterator[U]
+- 假设有N个元素,有M个分区,那么map函数将被调用N次,而mapPartitions被调用M次,一个函数一次处理所有分区.
+```
+scala> rdd.mapPartitions(_.map(_*2)).collect
+res11: Array[Int] = Array(1022, 1222, 1422)
+scala> 
+```
+
+###### 1.3.2.3.1.3 `mapPartitionsWithIndex(func)` 案例
+- 作用 : 类似于mapPartitions,但func带有一个整数参数表示分片索引值,因此在类型为T的RDD上运行时,func的函数类型必须是(Int, Interator[T]) => Iterator[U];
+```
+scala> rdd.mapPartitionsWithIndex((index,items)=>(items.map((index,_)))).collect
+res13: Array[(Int, Int)] = Array((1,511), (2,611), (3,711))
+scala> 
+```
+
+###### 1.3.2.3.1.4 `flatMap(func)` 案例
+- 作用 : 类似于map,但是每一个输入元素可以被映射为0或多个输出元素(所以func应该返回一个序列,而不是单一元素)
+```
+scala> val text = sc.textFile("/core_flow/spark/input/wordcount/wordcount_001.txt")
+text: org.apache.spark.rdd.RDD[String] = /core_flow/spark/input/wordcount/wordcount_001.txt MapPartitionsRDD[15] at textFile at <console>:24
+scala> text.flatMap(_.split(" ")).collect
+res16: Array[String] = Array(hadoop, spark, hive, hadoop, spark, hadoop, hbase, flume, hive, scala, java, oozie)
+scala> 
+```
+
+###### 1.3.2.3.1.5 `map()`与`mapPartition()`区别
+- 1.map() : 每次处理一条数据
+- 2.mapPartition() : 每次处理一个分区的数据,这个分区的数据处理完后,原RDD中分区的数据才能释放,可能导致OOM.
+- 3.开发指导 : 当内存空间较大的时候建议使用mapPartition(),以提高处理效率.
+
+###### 1.3.2.3.1.6 `glom` 案例
+- 作用 : 将每一个分区形成一个数组,形成新的RDD类型时RDD[Array[T]]
+```
+scala> rdd.glom.collect
+res17: Array[Array[Int]] = Array(Array(), Array(511), Array(611), Array(711))   
+scala> 
+```
+
+###### 1.3.2.3.1.7 `groupBy(func)` 案例
+- 作用 : 分组按照传入函数的返回值进行分组,将相同的key对应的值放入一个迭代器.
+```
+scala> rdd.groupBy(_ % 2).collect
+res18: Array[(Int, Iterable[Int])] = Array((1,CompactBuffer(611, 711, 511)))    
+scala> 
+```
+
+###### 1.3.2.3.1.8 `filter(func)` 案例
+- 作用 : 过滤返回一个新的RDD,该RDD由经过func函数计算后返回值为true的输入元素组成.
+```
+scala> rdd.filter(_%3==0).collect
+res20: Array[Int] = Array(711)
+scala> 
+```
+
+###### 1.3.2.3.1.9 `sample(withReplacement,fraction,seed)` 案例
+- 作用 : 以指定随机种子随机抽样出数量为fraction的数据,withReplacement表示是抽出的数据是否放回,true为有放回的抽样,false为无放回的抽样,seed用于指定随机数生成器种子.
+```
+scala> val rdd = sc.parallelize(1 to 100)
+rdd: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[22] at parallelize at <console>:24
+scala> rdd.sample(false,0.1,3).collect
+res22: Array[Int] = Array(1, 33, 37, 50, 59, 69, 75, 78, 85, 98) 
+scala> 
+```
+
+###### 1.3.2.3.1.10 `distinct([numTasks]))` 案例
+- 作用 : 对源RDD进行去重后返回一个新的RDD,默认情况下,只有8个并行任务来操作,但是可以传入一个可选的numTasks参数改变它.
+- 使用distinct()对其去重操作.
+```
+scala> rdd.distinct(4).collect
+res23: Array[Int] = Array(84, 100, 96, 52, 56, 4, 76, 16, 28, 80, 48, 32, 36, 24, 64, 92, 40, 72, 8, 12, 20, 60, 44, 88, 68, 13, 41, 61, 81, 21, 77, 53, 97, 25, 29, 65, 73, 57, 93, 33, 37, 45, 1, 89, 17, 69, 9, 85, 49, 5, 34, 82, 66, 22, 54, 98, 46, 30, 14, 50, 62, 42, 74, 90, 6, 70, 18, 38, 86, 58, 78, 26, 94, 10, 2, 19, 39, 15, 47, 71, 55, 95, 79, 59, 11, 35, 27, 75, 51, 23, 63, 83, 67, 3, 7, 91, 31, 87, 43, 99)
+scala> 
+```
+###### 1.3.2.3.1.11 `coalesce(numPartitions)` 案例
+- 作用 : 缩减分区数,用于大数据集过滤后,提高小数据集的执行效率.
+- 创建4个分区RDD,对其缩减分区.
+- 创建RDD/查看RDD分区数/对RDD重新分区/查看新RDD分区数
+```
+scala> val rdd = sc.parallelize(1 to 16,4)
+rdd: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[27] at parallelize at <console>:24
+
+scala> rdd.partitions.size
+res24: Int = 4
+
+scala> val coalesceRDD = rdd.coalesce(3)
+coalesceRDD: org.apache.spark.rdd.RDD[Int] = CoalescedRDD[28] at coalesce at <console>:26
+
+scala> coalesceRDD.partitions.size
+res25: Int = 3
+scala> 
+```
+###### 1.3.2.3.1.12 `repartition(numPartitions)` 案例
+- 作用 : 根据分区数,重新通过网络随机洗牌所有数据.
+- 创建4个分区RDD,对其重新分区.
+- 创建RDD/查看RDD分区数/对RDD重新分区/查看新RDD分区数
+```
+scala> val rdd = sc.parallelize(1 to 16,4)
+rdd: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[29] at parallelize at <console>:24
+
+scala> rdd.partitions.size
+res26: Int = 4
+
+scala> val rerdd = rdd.repartition(2)
+rerdd: org.apache.spark.rdd.RDD[Int] = MapPartitionsRDD[33] at repartition at <console>:26
+
+scala> rerdd.partitions.size
+res27: Int = 2
+scala> 
+```
+
+###### 1.3.2.3.1.13 `coalesce`与`repartition`区别
+> 1.`coalesce`重新分区,可以选择是否进行shuffle过程,由参数`shuffle: Boolean = false/true`决定.
+> 
+> 2.`repartition`实际上是调用coalesce,进行shuffle过程,源码演示:
+``` scala
+def repartition(numpartitions: int)(implicit ord: ordering[t] = null): rdd[t] = withscope {
+coalesce(numpartitions, shuffle = true)
+}
+```
+###### 1.3.2.3.1.14 `sortBy(func,[ascending],[numTasks])` 案例
+- 作用 : 使用func先对数据进行处理,按照处理后的数据比较结果排序,默认为正序.
+- 创建RDD,按照不同规则进行排序 | 按照自身大小排序 / 按照与3余数大小排序 / 按照倒序排序
+```
+scala>  val rdd = sc.parallelize(List(2,1,3,4))
+rdd: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[34] at parallelize at <console>:24
+
+scala> rdd.sortBy(x => x).collect()
+res29: Array[Int] = Array(1, 2, 3, 4)
+
+scala> rdd.sortBy(x => x%3).collect()
+res30: Array[Int] = Array(3, 1, 4, 2)
+
+scala> rdd.sortBy(x => x,false).collect()
+res31: Array[Int] = Array(4, 3, 2, 1)
+
+scala> 
+```
+
+###### 1.3.2.3.1.15 `pipe(command,[envVars])` 案例
+- 作用 : 管道针对每个分区,都执行一个shell脚本,返回输出RDD.
+- 创建脚本,使用管道将脚本作用于RDD上
+```
+[root@systemhub511 ~]# vim /opt/module/spark/input/pipe.sh
+[root@systemhub511 ~]# chmod 777 /opt/module/spark/input/pipe.sh
+```
+- vim `pipe.sh`
+``` powershell
+#!/bin/
+shecho"Start"
+while read LINE;do
+	echo ">>>" ${LINE}
+done
+```
+
+##### 1.3.2.3.2 双Value类型交互
+
+##### 1.3.2.3.3 Key-Value 类型
+
+
+##### 1.3.2.4 Action
+
+
+
+#### 1.3.3 Key-Value RDD 数据分区
+#### 1.3.4 数据读取保存
+#### 1.3.5 RDD 编程进阶
+
+
+
+
 
 
 ### 🔥 1.4 Spark SQL 🔥
