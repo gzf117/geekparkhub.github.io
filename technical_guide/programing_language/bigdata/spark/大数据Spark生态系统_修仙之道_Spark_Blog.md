@@ -843,7 +843,7 @@ scala>
 - RDD整体分为`Value`类型和`Key-Value`类型
 
 ##### 1.3.2.3.1 Value 类型
-###### 1.3.2.3.1.1 `map(func)` 案例
+###### 1.3.2.3.1.1 `map(func)` Method
 - 作用 : 返回一个新RDD,该RDD由每一个输入元素经过func函数转换后组成.
 - 创建RDD
 ```
@@ -865,7 +865,7 @@ scala> rdd.map((_*2)).collect
 res5: Array[Int] = Array(1022, 1222, 1422)
 scala> 
 ```
-###### 1.3.2.3.1.2 `mapPartitions(func)` 案例
+###### 1.3.2.3.1.2 `mapPartitions(func)` Method
 - 作用 : 类似于map,但独立地在RDD每一个分片上运行,因此在类型为T的RDD上运行时,func函数类型必须是Iterator[T] => Iterator[U]
 - 假设有N个元素,有M个分区,那么map函数将被调用N次,而mapPartitions被调用M次,一个函数一次处理所有分区.
 ```
@@ -874,7 +874,7 @@ res11: Array[Int] = Array(1022, 1222, 1422)
 scala> 
 ```
 
-###### 1.3.2.3.1.3 `mapPartitionsWithIndex(func)` 案例
+###### 1.3.2.3.1.3 `mapPartitionsWithIndex(func)` Method
 - 作用 : 类似于mapPartitions,但func带有一个整数参数表示分片索引值,因此在类型为T的RDD上运行时,func的函数类型必须是(Int, Interator[T]) => Iterator[U];
 ```
 scala> rdd.mapPartitionsWithIndex((index,items)=>(items.map((index,_)))).collect
@@ -882,7 +882,7 @@ res13: Array[(Int, Int)] = Array((1,511), (2,611), (3,711))
 scala> 
 ```
 
-###### 1.3.2.3.1.4 `flatMap(func)` 案例
+###### 1.3.2.3.1.4 `flatMap(func)` Method
 - 作用 : 类似于map,但是每一个输入元素可以被映射为0或多个输出元素(所以func应该返回一个序列,而不是单一元素)
 ```
 scala> val text = sc.textFile("/core_flow/spark/input/wordcount/wordcount_001.txt")
@@ -897,7 +897,7 @@ scala>
 - 2.mapPartition() : 每次处理一个分区的数据,这个分区的数据处理完后,原RDD中分区的数据才能释放,可能导致OOM.
 - 3.开发指导 : 当内存空间较大的时候建议使用mapPartition(),以提高处理效率.
 
-###### 1.3.2.3.1.6 `glom` 案例
+###### 1.3.2.3.1.6 `glom` Method
 - 作用 : 将每一个分区形成一个数组,形成新的RDD类型时RDD[Array[T]]
 ```
 scala> rdd.glom.collect
@@ -905,7 +905,7 @@ res17: Array[Array[Int]] = Array(Array(), Array(511), Array(611), Array(711))
 scala> 
 ```
 
-###### 1.3.2.3.1.7 `groupBy(func)` 案例
+###### 1.3.2.3.1.7 `groupBy(func)` Method
 - 作用 : 分组按照传入函数的返回值进行分组,将相同的key对应的值放入一个迭代器.
 ```
 scala> rdd.groupBy(_ % 2).collect
@@ -913,7 +913,7 @@ res18: Array[(Int, Iterable[Int])] = Array((1,CompactBuffer(611, 711, 511)))
 scala> 
 ```
 
-###### 1.3.2.3.1.8 `filter(func)` 案例
+###### 1.3.2.3.1.8 `filter(func)` Method
 - 作用 : 过滤返回一个新的RDD,该RDD由经过func函数计算后返回值为true的输入元素组成.
 ```
 scala> rdd.filter(_%3==0).collect
@@ -921,7 +921,7 @@ res20: Array[Int] = Array(711)
 scala> 
 ```
 
-###### 1.3.2.3.1.9 `sample(withReplacement,fraction,seed)` 案例
+###### 1.3.2.3.1.9 `sample(withReplacement,fraction,seed)` Method
 - 作用 : 以指定随机种子随机抽样出数量为fraction的数据,withReplacement表示是抽出的数据是否放回,true为有放回的抽样,false为无放回的抽样,seed用于指定随机数生成器种子.
 ```
 scala> val rdd = sc.parallelize(1 to 100)
@@ -931,7 +931,7 @@ res22: Array[Int] = Array(1, 33, 37, 50, 59, 69, 75, 78, 85, 98)
 scala> 
 ```
 
-###### 1.3.2.3.1.10 `distinct([numTasks]))` 案例
+###### 1.3.2.3.1.10 `distinct([numTasks]))` Method
 - 作用 : 对源RDD进行去重后返回一个新的RDD,默认情况下,只有8个并行任务来操作,但是可以传入一个可选的numTasks参数改变它.
 - 使用distinct()对其去重操作.
 ```
@@ -939,7 +939,7 @@ scala> rdd.distinct(4).collect
 res23: Array[Int] = Array(84, 100, 96, 52, 56, 4, 76, 16, 28, 80, 48, 32, 36, 24, 64, 92, 40, 72, 8, 12, 20, 60, 44, 88, 68, 13, 41, 61, 81, 21, 77, 53, 97, 25, 29, 65, 73, 57, 93, 33, 37, 45, 1, 89, 17, 69, 9, 85, 49, 5, 34, 82, 66, 22, 54, 98, 46, 30, 14, 50, 62, 42, 74, 90, 6, 70, 18, 38, 86, 58, 78, 26, 94, 10, 2, 19, 39, 15, 47, 71, 55, 95, 79, 59, 11, 35, 27, 75, 51, 23, 63, 83, 67, 3, 7, 91, 31, 87, 43, 99)
 scala> 
 ```
-###### 1.3.2.3.1.11 `coalesce(numPartitions)` 案例
+###### 1.3.2.3.1.11 `coalesce(numPartitions)` Method
 - 作用 : 缩减分区数,用于大数据集过滤后,提高小数据集的执行效率.
 - 创建4个分区RDD,对其缩减分区.
 - 创建RDD/查看RDD分区数/对RDD重新分区/查看新RDD分区数
@@ -957,7 +957,7 @@ scala> coalesceRDD.partitions.size
 res25: Int = 3
 scala> 
 ```
-###### 1.3.2.3.1.12 `repartition(numPartitions)` 案例
+###### 1.3.2.3.1.12 `repartition(numPartitions)` Method
 - 作用 : 根据分区数,重新通过网络随机洗牌所有数据.
 - 创建4个分区RDD,对其重新分区.
 - 创建RDD/查看RDD分区数/对RDD重新分区/查看新RDD分区数
@@ -985,7 +985,7 @@ def repartition(numpartitions: int)(implicit ord: ordering[t] = null): rdd[t] = 
 coalesce(numpartitions, shuffle = true)
 }
 ```
-###### 1.3.2.3.1.14 `sortBy(func,[ascending],[numTasks])` 案例
+###### 1.3.2.3.1.14 `sortBy(func,[ascending],[numTasks])` Method
 - 作用 : 使用func先对数据进行处理,按照处理后的数据比较结果排序,默认为正序.
 - 创建RDD,按照不同规则进行排序 | 按照自身大小排序 / 按照与3余数大小排序 / 按照倒序排序
 ```
@@ -1004,7 +1004,7 @@ res31: Array[Int] = Array(4, 3, 2, 1)
 scala> 
 ```
 
-###### 1.3.2.3.1.15 `pipe(command,[envVars])` 案例
+###### 1.3.2.3.1.15 `pipe(command,[envVars])` Method
 - 作用 : 管道针对每个分区,都执行一个shell脚本,返回输出RDD.
 - 创建脚本,使用管道将脚本作用于RDD上
 ```
@@ -1019,6 +1019,8 @@ while read LINE;do
 	echo ">>>" ${LINE}
 done
 ```
+
+## 🔒 尚未解锁 正在学习探索中... 尽情期待 Blog更新! 🔒
 
 ##### 1.3.2.3.2 双Value类型交互
 
