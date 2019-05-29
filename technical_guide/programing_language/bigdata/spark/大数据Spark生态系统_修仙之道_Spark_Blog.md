@@ -1325,26 +1325,648 @@ scala> rdd.foreach(print)
 ##### 1.3.2.5 RDD 函数传递
 > 在实际开发中往往需要开发者定义一些对于RDD操作,那么此时需要主要的是,初始化工作是在Driver端进行,而实际运行程序是在Executor端进行,这就涉及到了跨进程通信,跨进程通信是需要序列化操作.
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ###### 1.3.2.5.1 传递方法
+> 在这个方法中所调用的方法`isMatch()`是定义在Search这个类中,实际上调用的是`this.isMatch()`,`this`表示Search这个类的对象,程序在运行过程中需要将Search对象序列化以后传递到Executor端.
 ###### 1.3.2.5.2 传递属性
+> 在这个方法中所调用的方法`query`是定义在Search这个类中的字段,实际上调用的是`this.query`,this表示Search这个类的对象,程序在运行过程中需要将Search对象序列化以后传递到Executor端.
 
+- Create `Search.scala`
+``` scala
+package com.geekparkhub.core.spark.application.methods
+import org.apache.spark.rdd.RDD
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * Search
+  * <p>
+  */
+
+class Search(query: String) extends Serializable {
+
+  // 过滤出包含字符串数据
+  def isMatch(s: String): Boolean = {
+    s.contains(query)
+  }
+
+  // 过滤出包含字符串RDD
+  def getMatch1(rdd: RDD[String]): RDD[String] = {
+    rdd.filter(isMatch)
+  }
+
+  // 过滤出包含字符串RDD
+  def getMatche2(rdd: RDD[String]): RDD[String] = {
+    rdd.filter(x => x.contains(query))
+  }
+}
+```
+
+- Create `TransFormAction.scala`
+``` scala
+package com.geekparkhub.core.spark.application.methods
+import org.apache.spark.rdd.RDD
+import org.apache.spark.{SparkConf, SparkContext}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * TransFormAction
+  * <p>
+  */
+
+object TransFormAction {
+  def main(args: Array[String]): Unit = {
+
+    // 创建SpakConf
+    val sparkConf: SparkConf = new SparkConf().setMaster("local[*]").setAppName("TransFormAction")
+
+    // 创建SC
+    val sc = new SparkContext(sparkConf)
+
+    // 创建RDD
+    val word: RDD[String] = sc.parallelize(Array("abc", "dcd"))
+
+    // 创建Search对象
+    val search = new Search("a")
+
+    // 调用方法
+    val searched: RDD[String] = search.getMatch1(word)
+
+    // 循环输出
+    searched.collect().foreach(println)
+
+    // 关闭资源
+    sc.stop()
+  }
+}
+```
 
 ##### 1.3.2.6 RDD 依赖关系
 ###### 1.3.2.6.1 Lineage
-###### 1.3.2.6.2 窄依赖
-###### 1.3.2.6.3 宽依赖
-###### 1.3.2.6.4 DAG
-###### 1.3.2.6.5 任务划分(重点)
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_016.jpg)
 
+> RDD只支持粗粒度转换,即在大量记录上执行的单个操作,将创建RDD的一系列Lineage(血统)记录下来,以便恢复丢失的分区,RDD的Lineage会记录RDD的元数据信息和转换行为,当该RDD的部分分区数据丢失时,它可以根据这些信息来重新运算和恢复丢失的数据分区.
+
+- 创建RDD依赖关系
+```
+scala> sc.textFile("/core_flow/spark/input/wordcount/wordcount_001.txt")
+res0: org.apache.spark.rdd.RDD[String] = /core_flow/spark/input/wordcount/wordcount_001.txt MapPartitionsRDD[1] at textFile at <console>:25
+
+scala> res0.flatMap(_.split(" "))
+res2: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[2] at flatMap at <console>:27
+
+scala> res2.map((_,1))
+res3: org.apache.spark.rdd.RDD[(String, Int)] = MapPartitionsRDD[3] at map at <console>:29
+
+scala> res3.reduceByKey(_+_)
+res4: org.apache.spark.rdd.RDD[(String, Int)] = ShuffledRDD[4] at reduceByKey at <console>:31
+
+scala>
+```
+- 分别查看四个RDD依赖关系
+- res0.toDebugString
+```
+scala> res0.toDebugString
+res5: String =
+(2) /core_flow/spark/input/wordcount/wordcount_001.txt MapPartitionsRDD[1] at textFile at <console>:25 []
+ |  /core_flow/spark/input/wordcount/wordcount_001.txt HadoopRDD[0] at textFile at <console>:25 []
+scala> 
+```
+- res2.toDebugString
+```
+scala> res2.toDebugString
+res6: String =
+(2) MapPartitionsRDD[2] at flatMap at <console>:27 []
+ |  /core_flow/spark/input/wordcount/wordcount_001.txt MapPartitionsRDD[1] at textFile at <console>:25 []
+ |  /core_flow/spark/input/wordcount/wordcount_001.txt HadoopRDD[0] at textFile at <console>:25 []
+scala> 
+```
+- res3.toDebugString
+```
+scala> res3.toDebugString
+res7: String =
+(2) MapPartitionsRDD[3] at map at <console>:29 []
+ |  MapPartitionsRDD[2] at flatMap at <console>:27 []
+ |  /core_flow/spark/input/wordcount/wordcount_001.txt MapPartitionsRDD[1] at textFile at <console>:25 []
+ |  /core_flow/spark/input/wordcount/wordcount_001.txt HadoopRDD[0] at textFile at <console>:25 []
+scala> 
+```
+- res4.toDebugString
+```
+scala> res4.toDebugString
+res8: String =
+(2) ShuffledRDD[4] at reduceByKey at <console>:31 []
+ +-(2) MapPartitionsRDD[3] at map at <console>:29 []
+    |  MapPartitionsRDD[2] at flatMap at <console>:27 []
+    |  /core_flow/spark/input/wordcount/wordcount_001.txt MapPartitionsRDD[1] at textFile at <console>:25 []
+    |  /core_flow/spark/input/wordcount/wordcount_001.txt HadoopRDD[0] at textFile at <console>:25 []
+scala> 
+```
+###### 1.3.2.6.2 窄依赖
+- 窄依赖指的是每一个父RDD的Partition最多被子RDD的一个Partition使用.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_017.jpg)
+
+
+###### 1.3.2.6.3 宽依赖
+- 宽依赖指的是多个子RDD的Partition会依赖同一个父RDD的Partition,会引起shuffle过程.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_018.jpg)
+
+###### 1.3.2.6.4 DAG
+- DAG(Directed Acyclic Graph)叫做有向无环图,原始的RDD通过一系列的转换就就形成了DAG,根据RDD之间的依赖关系的不同将DAG划分成不同的Stage.
+- 对于窄依赖,partition的转换处理在Stage中完成计算,对于宽依赖,由于有Shuffle的存在,只能在parent RDD处理完成后,才能开始接下来的计算,因此宽依赖是划分Stage依据.
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_019.jpg)
+
+
+###### 1.3.2.6.5 任务划分(重点)
+- RDD任务切分中间分为 : `Application` / `Job` / `Stage` /  `Task`
+- Application : 初始化一个SparkContext即生成一个Application.
+- Job : 一个Action算子就会生成一个Job.
+- Stage : 根据RDD之间的依赖关系的不同将Job划分成不同的Stage,遇到一个宽依赖则划分一个Stage.
+- Task : Stage是一个TaskSet,将Stage划分的结果发送到不同的Executor执行即为一个Task.
+- Application`->`Job`->`Stage`->`Task 每一层都是1对n的关系
 
 ##### 1.3.2.6.7 RDD缓存
-##### 1.3.2.6.8 RDDCheckPoint	
+- RDD通过persist方法或cache方法可以将前面的计算结果缓存,默认情况下`persist()`会把数据以序列化形式缓存在JVM 的堆空间中.
+- 但是并不是这两个方法被调用时立即缓存,而是触发后面的action时,该RDD将会被缓存在计算节点的内存中,并供后面重用
+- 缓存有可能丢失或者存储存储于内存的数据由于内存不足而被删除,RDD的缓存容错机制保证了即使缓存丢失也能保证计算的正确执行,通过基于RDD的一系列转换,丢失的数据会被重算,由于RDD的各个Partition是相对独立,因此只需要计算丢失的部分即可,并不需要重算全部Partition.
+
+##### 1.3.2.6.8 RDDCheckPoint
+- Spark中对于数据的保存除了持久化操作之外,还提供了一种检查点的机制,检查点(本质是通过将RDD写入Disk做检查点)是为了通过lineage做容错的辅助,lineage过长会造成容错成本过高,这样就不如在中间阶段做检查点容错,如果之后有节点出现问题而丢失分区,从做检查点的RDD开始重做Lineage,就会减少开销,检查点通过将数据写入到HDFS文件系统实现了RDD的检查点功能.
+- 为当前RDD设置检查点,该函数将会创建一个二进制的文件,并存储到checkpoint目录中,该目录是用SparkContext.setCheckpointDir()设置的,在checkpoint的过程中,该RDD所有依赖于父RDD中的信息将全部被移除,对RDD进行checkpoint操作并不会马上被执行,必须执行Action操作才能触发.
+- 设置检查点
+```
+scala> sc.setCheckpointDir("hdfs://systemhub511:9000/core_flow/spark/checkpoint")
+```
+- 创建RDD
+```
+scala>  val rdd = sc.parallelize(Array("systemhub511"))
+rdd: org.apache.spark.rdd.RDD[String] = ParallelCollectionRDD[5] at parallelize at <console>:24
+```
+- 将RDD转换为携带当前时间戳并做checkpoint
+```
+scala> val check = rdd.map(_+System.currentTimeMillis)
+check: org.apache.spark.rdd.RDD[String] = MapPartitionsRDD[6] at map at <console>:26
+scala> 
+```
+- 多次打印结果
+```
+scala> check.collect
+res10: Array[String] = Array(systemhub5111559138263898)
+
+scala> check.collect
+res11: Array[String] = Array(systemhub5111559138266443)
+
+scala> check.collect
+res12: Array[String] = Array(systemhub5111559138267862)
+
+scala> 
+```
 
 #### 1.3.3 Key-Value RDD 数据分区
-#### 1.3.4 数据读取保存
-#### 1.3.5 RDD 编程进阶
+- Spark目前支持Hash分区和Range分区,开发者也可以自定义分区,Hash分区为当前默认分区,Spark中分区器直接决定了RDD中分区的个数、RDD中每条数据经过Shuffle过程属于哪个分区和Reduce的个数.
 
+##### 1.3.3.1 获取RDD 分区
+- 查看RDD分区器
+```
+scala> rdd.partitioner
+res14: Option[org.apache.spark.Partitioner] = None
+```
+##### 1.3.3.2 Hash 分区
+- HashPartitioner分区的原理 : 对于给定的key,计算其hashCode,并除以分区个数取余,如果余数小于0,则用余数+分区的个数,否则加0,最后返回的值就是这个key所属的分区ID.
+- Hash分区实操
+```
+scala> val nopar = sc.parallelize(List((1,3),(1,2),(2,4),(2,3),(3,6),(3,8)),8)
+nopar: org.apache.spark.rdd.RDD[(Int, Int)] = ParallelCollectionRDD[7] at parallelize at <console>:25
+
+scala> nopar.mapPartitionsWithIndex((index,iter)=>{Iterator(index.toString+":"+iter.mkString("|"))}).collect
+res15: Array[String] = Array(0:, 1:(1,3), 2:(1,2), 3:(2,4), 4:, 5:(2,3), 6:(3,6), 7:(3,8))
+
+scala> val hashpar = nopar.partitionBy(new org.apache.spark.HashPartitioner(7))
+hashpar: org.apache.spark.rdd.RDD[(Int, Int)] = ShuffledRDD[9] at partitionBy at <console>:27
+
+scala> hashpar.count
+res20: Long = 6
+
+scala> hashpar.partitioner
+res21: Option[org.apache.spark.Partitioner] = Some(org.apache.spark.HashPartitioner@7)
+
+scala> hashpar.mapPartitions(iter => Iterator(iter.length)).collect()
+res22: Array[Int] = Array(0, 2, 2, 2, 0, 0, 0)
+scala> 
+```
+
+##### 1.3.3.3 Ranger 分区
+- HashPartitioner分区`弊端` : 可能导致每个分区中数据量不均匀,极端情况下会导致某些分区拥有RDD全部数据.
+- RangePartitioner作用 : 将一定范围内数映射到某一个分区内,尽量保证每个分区中数据量均匀,而且分区与分区之间是有序,一个分区中元素肯定都是比另一个分区内元素小或者大,但是分区内元素是不能保证顺序,简单的说就是将一定范围内的数映射到某一个分区内.
+- 实现过程 : 
+- 1.先从整个RDD中抽取出样本数据,将样本数据排序,计算出每个分区最大key值,形成一个`Array[KEY]`类型的数组变量`rangeBounds`.
+- 2.判断key在`rangeBounds`中所处的范围,给出该key值在下一个RDD中分区id下标,该分区器要求RDD中KEY类型必须是可排序.
+
+
+##### 1.3.3.4 自定义 分区
+- 要实现自定义分区器,需要继承`org.apache.spark.Partitioner`类并实现下面三个方法
+- 1.`numPartitions: Int` : 返回创建出来的分区数
+- 2.`getPartition(key: Any): Int` :  返回给定键的分区编号(0到numPartitions-1)
+- 3.`equals()` : Java 判断相等性的标准方法,这个方法的实现非常重要,Spark需要用这个方法来检查分区器对象是否和其他分区器实例相同,这样Spark才可以判断两个RDD的分区方式是否相同.
+- 4.定义自定义分区类 | Create `CustomerPartitioner.scala`
+``` scala
+package com.geekparkhub.core.spark.application.partitioner
+
+import org.apache.spark.Partitioner
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * CustomerPartitioner
+  * <p>
+  */
+
+class CustomerPartitioner(partitions: Int) extends Partitioner {
+  override def numPartitions: Int = partitions
+  override def getPartition(key: Any): Int = {
+    0
+  }
+}
+```
+- Create `PartitionerAction.scala`
+```
+package com.geekparkhub.core.spark.application.partitioner
+
+import org.apache.spark.rdd.RDD
+import org.apache.spark.{SparkConf, SparkContext}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * PartitionerAction
+  * <p>
+  */
+
+object PartitionerAction {
+
+  def main(args: Array[String]): Unit = {
+    // 创建SpakConf
+    val sparkConf: SparkConf = new SparkConf().setMaster("local[*]").setAppName("TransFormAction")
+
+    // 创建SC
+    val sc = new SparkContext(sparkConf)
+
+    // 创建RDD
+    val word: RDD[String] = sc.parallelize(Array("abc", "dcd"))
+
+    // 将元素转换为元祖
+    val wordAndOne: RDD[(String, Int)] = word.map((_, 1))
+
+    // 自定义分区
+    val partitioned: RDD[(String, Int)] = wordAndOne.partitionBy(new CustomerPartitioner(2))
+
+    // 查看分区后分区结果
+    val indexAndData: RDD[(Int, (String, Int))] = partitioned.mapPartitionsWithIndex((i,t)=>t.map((i,_)))
+
+    // 打印数据
+    indexAndData.collect().foreach(println)
+
+    // 关闭资源
+    sc.stop()
+  }
+}
+```
+- Log Println
+```
+(0,(abc,1))
+(0,(dcd,1))
+```
+
+#### 1.3.4 数据读取&保存
+- Spark数据读取及数据保存可以从两个维度来作区分 : 文件格式以及文件系统
+- 文件格式分为 : Text文件 / Json文件 / Csv文件 / Sequence文件以及Object文件
+- 文件系统分为 : 本地文件系统 / HDFS / HBASE以及数据库
+
+##### 1.3.4.1 文件类数据读取&保存
+###### 1.3.4.1 Text File
+- 1.数据读取 : `textFile(String)` 
+```
+scala> sc.textFile("hdfs://systemhub511:9000/core_flow/spark/input/wordcount/wordcount_001.txt")
+res23: org.apache.spark.rdd.RDD[String] = hdfs://systemhub511:9000/core_flow/spark/input/wordcount/wordcount_001.txt MapPartitionsRDD[12] at textFile at <console>:26
+
+scala> res23.toDebugString
+res25: String =
+(2) hdfs://systemhub511:9000/core_flow/spark/input/wordcount/wordcount_001.txt MapPartitionsRDD[12] at textFile at <console>:26 []
+ |  hdfs://systemhub511:9000/core_flow/spark/input/wordcount/wordcount_001.txt HadoopRDD[11] at textFile at <console>:26 []
+scala> 
+```
+- 2.数据保存 : `saveAsTextFile(String)`
+```
+scala> hdfsFile.saveAsTextFile("/core_flow/spark/output/wordcount/")
+```
+
+###### 1.3.4.2 Json File
+- 如果JSON文件中每一行就是一个JSON记录,那么可以通过将JSON文件当做文本文件来读取,然后利用相关的JSON库对每一条数据进行JSON解析.
+- 使用RDD读取JSON文件处理很复杂,同时SparkSQL集成了很好的处理JSON文件方式,所以应用中多是采用SparkSQL处理JSON文件.
+- 1.导入解析json所需包名
+```
+scala> import scala.util.parsing.json.JSON
+import scala.util.parsing.json.JSON
+scala> 
+```
+- 2.在HDFS创建存放JSON目录
+```
+[root@systemhub511 ~]# hadoop fs -mkdir -p /core_flow/spark/json/001
+```
+- 3.上传json文件到HDFS
+```
+[root@systemhub511 ~]# hadoop fs -put /opt/module/spark/examples/src/main/resources/people.json /core_flow/spark/json/001/
+```
+- 4.读取文件
+```
+scala> val json = sc.textFile("hdfs://systemhub511:9000/core_flow/spark/json/001/people.json")
+json: org.apache.spark.rdd.RDD[String] = hdfs://systemhub511:9000/core_flow/spark/json/001/people.json MapPartitionsRDD[14] at textFile at <console>:26
+scala>
+```
+- 5.解析json数据
+```
+scala> val result = json.map(JSON.parseFull)
+result: org.apache.spark.rdd.RDD[Option[Any]] = MapPartitionsRDD[15] at map at <console>:28
+scala>
+```
+- 6.打印解析结果
+```
+scala> result.collect
+res26: Array[Option[Any]] = Array(Some(Map(name -> Michael)), Some(Map(name -> Andy, age -> 30.0)), Some(Map(name -> Justin, age -> 19.0)))
+scala> 
+```
+
+###### 1.3.4.3 Sequence File
+- SequenceFile文件是Hadoop用来存储二进制形式的key-value对而设计一种平面文件(FlatFile).
+- Spark有专门用来读取SequenceFile接口,在SparkContext中,可以调用`sequenceFile[keyClass, valueClass](path)` | SequenceFile文件只针对`PairRDD`
+- 1.创建RDD
+```
+scala>  val rdd = sc.parallelize(Array((1,2),(3,4),(5,6)))
+rdd: org.apache.spark.rdd.RDD[(Int, Int)] = ParallelCollectionRDD[16] at parallelize at <console>:26
+scala> 
+```
+- 2.将RDD保存为Sequence文件
+```
+scala> rdd.saveAsSequenceFile("file:///opt/module/spark/seqFile")
+```
+- 3.查看该文件
+```
+[root@systemhub511 ~]# cd /opt/module/spark/seqFile/
+[root@systemhub511 seqFile]# ll -a
+总用量 28
+drwxr-xr-x.  2 root          root          4096 5月  29 23:57 .
+drwxr-xr-x. 21 geekdeveloper geekdeveloper 4096 5月  30 00:05 ..
+-rw-r--r--.  1 root          root            92 5月  29 23:57 part-00000
+-rw-r--r--.  1 root          root            12 5月  29 23:57 .part-00000.crc
+-rw-r--r--.  1 root          root           108 5月  29 23:57 part-00003
+-rw-r--r--.  1 root          root            12 5月  29 23:57 .part-00003.crc
+-rw-r--r--.  1 root          root             0 5月  29 23:57 _SUCCESS
+-rw-r--r--.  1 root          root             8 5月  29 23:57 ._SUCCESS.crc
+[root@systemhub511 seqFile]# cat part-00000
+SEQ org.apache.hadoop.io.IntWritable org.apache.hadoop.io.IntWritabler[-o���]h�~u���
+[root@systemhub511 seqFile]#
+```
+- 4.读取Sequence文件
+```
+scala>  val seq = sc.sequenceFile[Int,Int]("file:///opt/module/spark/seqFile")
+seq: org.apache.spark.rdd.RDD[(Int, Int)] = MapPartitionsRDD[19] at sequenceFile at <console>:26
+scala>
+```
+- 5.打印读取后的Sequence文件
+```
+scala> seq.collect
+res14: Array[(Int, Int)] = Array((1,2), (3,4), (5,6))
+```
+
+###### 1.3.4.4 ObjectFile
+- 对象文件是将对象序列化后保存文件,采用Java序列化机制,可以通过`objectFile[k,v](path)`函数接收一个路径,读取对象文件,返回对应RDD,也可以通过调用`saveAsObjectFile()`实现对对象文件输出,因为是序列化所以要指定类型.
+- 1.创建RDD
+```
+scala> val rdd = sc.parallelize(Array(1,2,3,4))
+rdd: org.apache.spark.rdd.RDD[Int] = ParallelCollectionRDD[20] at parallelize at <console>:26
+scala> 
+```
+- 2.将RDD保存为Object文件
+```
+scala> rdd.saveAsObjectFile("file:///opt/module/spark/objectFile")
+```
+- 3.查看该文件
+```
+[root@systemhub511 ~]# cd /opt/module/spark/objectFile/
+[root@systemhub511 objectFile]# ll
+总用量 8
+-rw-r--r--. 1 root root 138 5月  30 00:05 part-00000
+-rw-r--r--. 1 root root 138 5月  30 00:05 part-00003
+-rw-r--r--. 1 root root   0 5月  30 00:05 _SUCCESS
+[root@systemhub511 objectFile]# cat part-00000
+SEQ!org.apache.hadoop.io.NullWritable"org.apache.hadoop.io.BytesWritable� �L�h�l:T���#��ur[IM�`&v겥xp
+[root@systemhub511 objectFile]#
+```
+- 4.读取Object文件
+```
+scala> val objFile = sc.objectFile[(Int)]("file:///opt/module/spark/objectFile")
+objFile: org.apache.spark.rdd.RDD[Int] = MapPartitionsRDD[24] at objectFile at <console>:26
+scala>
+```
+- 5.打印读取后的Sequence文件
+```
+objFile.collect
+res19: Array[Int] = Array(1, 2, 3, 4)
+```
+
+##### 1.3.4.2 文件系统数据读取&保存
+
+###### 1.3.4.1 HDFS
+> Spark整个生态系统与Hadoop是完全兼容,所以对于Hadoop所支持的文件类型或者数据库类型,Spark也同样支持.
+> 另外由于Hadoop的API有新旧两个版本,所以Spark为了能够兼容Hadoop所有版本,也提供了两套创建操作接口.
+> 对于外部存储创建操作而言,hadoopRDD和newHadoopRDD是最为抽象的两个函数接口,主要包含以下四个参数  : 
+> 
+> 1.`输入格式(InputFormat)` : 制定数据输入类型,如TextInputFormat等,新旧两个版本所引用版本分别是`org.apache.hadoop.mapred.InputFormat`和`org.apache.hadoop.mapreduce.InputFormat(NewInputFormat)`
+> 2.键类型 : 指定[K,V]键值对中K类型
+> 3.值类型: 指定[K,V]键值对中V类型
+> 4.分区值 : 指定由外部存储生成RDD的partition数量最小值,如果没有指定系统会使用默认值`defaultMinSplits`.
+> 
+> 其他创建操作API接口都是为了方便最终Spark程序开发者而设置的,是这两个接口高效实现版本,例如对于textFile而言,只有path这个指定文件路径参数,其他参数在系统内部指定了默认值.
+> 1.在Hadoop中以压缩形式存储数据,不需要指定解压方式就能够进行读取,因为Hadoop本身有一个解压器会根据压缩文件后缀推断解压算法进行解压.
+> 2.如果用Spark从Hadoop中读取某种类型数据不知道怎么读取的时候,上网查找一个使用map-reduce时候是怎么读取这种这种数据,然后再将对应的读取方式改写成上面的hadoopRDD和newAPIHadoopRDD两个类即可.
+
+
+###### 1.3.4.2 MySQL数据库 连接
+- 支持通过JavaJDBC访问关系型数据库,需要通过JdbcRDD进行
+- 0.添加mysql依赖
+``` xml
+<dependencies>
+ <dependency>
+  <groupId>mysql</groupId>
+  <artifactId>mysql-connector-java</artifactId>
+  <version>8.0.15</version>
+ </dependency>
+</dependencies>
+```
+- 1.Mysql读取 | Create `JDBCConnection.scala`
+```
+package com.geekparkhub.core.spark.application.dataconnections
+
+import java.sql.DriverManager
+
+import org.apache.spark.deploy.worker.DriverWrapper
+import org.apache.spark.rdd.JdbcRDD
+import org.apache.spark.{SparkConf, SparkContext}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * JDBCConnection
+  * <p>
+  */
+
+object JDBCConnection {
+
+  def main(args: Array[String]): Unit = {
+
+    // 创建SpakConf
+    val sparkConf: SparkConf = new SparkConf().setMaster("local[*]").setAppName("JDBCConnection")
+
+    // 创建SC
+    val sc = new SparkContext(sparkConf)
+
+    // 定义JDBC连接属性信息
+    val driver = "com.mysql.jdbc.Driver"
+    val url = "jdbc:mysql://systemhub711:3306/company"
+    val userName = "root"
+    val passWd = "ax04854"
+
+    // 创建JDBC RDD
+    val JdbcRDD = new JdbcRDD[(Int, String)](sc, () => {
+      Class.forName(driver)
+      DriverManager.getConnection(url, userName, passWd)
+    }, "select id,name from staff where ? <= id and id <= ?",
+      1,
+      10,
+      1,
+      x => {
+        (x.getInt(1), x.getString(2))
+      }
+    )
+
+    // 打印JdbcRDD结果
+    JdbcRDD.collect().foreach(println)
+
+    // 关闭资源
+    sc.stop()
+  }
+}
+```
+- 2.Mysql写入 | Create `JBDCinsertData.scala`
+```
+package com.geekparkhub.core.spark.application.dataconnections
+
+import org.apache.spark.{SparkConf, SparkContext}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * JBDCinsertData
+  * <p>
+  */
+
+object JBDCinsertData {
+  def main(args: Array[String]): Unit = {
+
+    // 创建SpakConf
+    val sparkConf: SparkConf = new SparkConf().setMaster("local[*]").setAppName("JBDCRead")
+
+    // 创建SC
+    val sc = new SparkContext(sparkConf)
+
+    // 创建数据
+    val data = sc.parallelize(List("Female", "Male", "Female"))
+
+    // 调用添加数据方法
+    data.foreachPartition(insertData)
+  }
+
+  // 添加数据方法
+  def insertData(iterator: Iterator[String]): Unit = {
+    Class.forName("com.mysql.jdbc.Driver").newInstance()
+    val conn = java.sql.DriverManager.getConnection("jdbc:mysql://systemhub711:3306/company", "root", "000000")
+    iterator.foreach(data => {
+      val ps = conn.prepareStatement("insert into staff(name) values(?)")
+      ps.setString(1, data)
+      ps.executeUpdate()
+    })
+  }
+}
+```
+
+
+###### 1.3.4.3 HBase 数据库
+- 由于`org.apache.hadoop.hbase.mapreduce.TableInputFormat`类的实现,Spark可以通过Hadoop输入格式访问HBase,这个输入格式会返回键值对数据,其中键的类型为`org. apache.hadoop.hbase.io.ImmutableBytesWritable`,而值的类型为`org.apache.hadoop.hbase.client.Result`.
+
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+
+
+#### 1.3.5 RDD 编程进阶
+##### 1.3.5.1 累加器
+###### 1.3.5.1.1 系统累加器
+###### 1.3.5.1.2 自定义累加器
+
+##### 1.3.5.2 广播变量 (调优策略)
 
 ### 🔥 1.4 Spark SQL 🔥
 #### 1.4.1 Spark SQL 概述
@@ -1355,7 +1977,6 @@ scala> rdd.foreach(print)
 #### 1.4.6 Spark SQL 数据源
 #### 1.4.7 OLAP Server
 #### 1.4.8 Spark SQL 实例
-
 
 ### 🔥 1.5 Spark Streaming 🔥
 #### 1.5.1 Spark Streaming 概述
