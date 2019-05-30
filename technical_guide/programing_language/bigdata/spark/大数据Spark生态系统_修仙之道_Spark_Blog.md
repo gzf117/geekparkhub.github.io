@@ -1840,7 +1840,7 @@ res19: Array[Int] = Array(1, 2, 3, 4)
 </dependencies>
 ```
 - 1.Mysql读取 | Create `JDBCConnection.scala`
-```
+``` scala
 package com.geekparkhub.core.spark.application.dataconnections
 
 import java.sql.DriverManager
@@ -1903,7 +1903,7 @@ object JDBCConnection {
 }
 ```
 - 2.Mysql写入 | Create `JBDCinsertData.scala`
-```
+``` scala
 package com.geekparkhub.core.spark.application.dataconnections
 
 import org.apache.spark.{SparkConf, SparkContext}
@@ -1956,27 +1956,394 @@ object JBDCinsertData {
 
 ###### 1.3.4.3 HBase 数据库
 - 由于`org.apache.hadoop.hbase.mapreduce.TableInputFormat`类的实现,Spark可以通过Hadoop输入格式访问HBase,这个输入格式会返回键值对数据,其中键的类型为`org. apache.hadoop.hbase.io.ImmutableBytesWritable`,而值的类型为`org.apache.hadoop.hbase.client.Result`.
+- 0.添加HBASE依赖
+```xml
+<dependency>
+  <groupId>org.apache.hbase</groupId>
+  <artifactId>hbase-server</artifactId>
+  <version>1.3.1</version>
+</dependency>
+<dependency>
+  <groupId>org.apache.hbase</groupId>
+  <artifactId>hbase-client</artifactId>
+  <version>1.3.1</version>
+</dependency>
+```
+- 1.HBase读取数据
+``` scala
+package com.geekparkhub.core.spark.application.dataconnections
 
+import org.apache.hadoop.conf.Configuration
+import org.apache.hadoop.hbase.HBaseConfiguration
+import org.apache.hadoop.hbase.client.Result
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable
+import org.apache.hadoop.hbase.mapreduce.TableInputFormat
+import org.apache.hadoop.hbase.util.Bytes
+import org.apache.spark.rdd.{NewHadoopRDD, RDD}
+import org.apache.spark.{SparkConf, SparkContext}
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * HbaseConnection
+  * <p>
+  */
 
+object HbaseConnection {
+  def main(args: Array[String]): Unit = {
+
+    // 创建SpakConf
+    val sparkConf: SparkConf = new SparkConf().setMaster("local[*]").setAppName("HbaseConnection")
+
+    // 创建SC
+    val sc = new SparkContext(sparkConf)
+
+    //构建HBase配置信息
+    val conf: Configuration = HBaseConfiguration.create()
+    conf.set("hbase.zookeeper.quorum", "systemhub511,systemhub611,systemhub711")
+    conf.set(TableInputFormat.INPUT_TABLE, "test")
+
+    // 读取HBASE数据
+    val hbaseRDD = new NewHadoopRDD(sc, classOf[TableInputFormat], classOf[ImmutableBytesWritable], classOf[Result], conf)
+
+    // 获取RowKey
+    val value: RDD[String] = hbaseRDD.map(x => Bytes.toString(x._2.getRow))
+
+    // 输出数据
+    value.collect().foreach(println)
+
+    // 关闭资源
+    sc.stop()
+  }
+}
+```
+
+- 2.HBase写入数据
+``` scala
+package com.geekparkhub.core.spark.application.dataconnections
+
+import org.apache.hadoop.hbase.client.Put
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable
+import org.apache.hadoop.hbase.mapred.TableOutputFormat
+import org.apache.hadoop.hbase.util.Bytes
+import org.apache.hadoop.mapred.JobConf
+import org.apache.spark.rdd.RDD
+import org.apache.spark.{SparkConf, SparkContext}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * HbaseWrite
+  * <p>
+  */
+
+object HbaseWrite {
+  def main(args: Array[String]): Unit = {
+
+    // 创建SpakConf
+    val sparkConf: SparkConf = new SparkConf().setMaster("local[*]").setAppName("HbaseWrite")
+
+    // 创建SC
+    val sc = new SparkContext(sparkConf)
+
+    // 创建RDD
+    val initialRDD: RDD[(Int, String, Int)] = sc.parallelize(List((1, "apple", 11), (2, "banana", 12), (3, "pear", 13)))
+
+    // 创建JobConf
+    val conf = new JobConf()
+    conf.set("hbase.zookeeper.quorum", "systemhub511,systemhub611,systemhub711")
+    conf.setOutputFormat(classOf[TableOutputFormat[ImmutableBytesWritable]])
+    conf.set(TableOutputFormat.OUTPUT_TABLE, "test")
+
+    // 定义 Hbase 添加数据方法
+    def convert(triple: (Int, String, Int)): (ImmutableBytesWritable, Put) = {
+      val put = new Put(Bytes.toBytes(triple._1))
+      put.addImmutable(Bytes.toBytes("info"), Bytes.toBytes("name"), Bytes.toBytes(triple._2))
+      put.addImmutable(Bytes.toBytes("info"), Bytes.toBytes("price"), Bytes.toBytes(triple._3))(new ImmutableBytesWritable, put)
+    }
+
+    // 转换RDD
+    val writRDD: RDD[(ImmutableBytesWritable, Put)] = initialRDD.map(convert)
+
+    // 写入HBASE
+    writRDD.saveAsHadoopDataset(conf)
+
+    // 关闭资源
+    sc.stop()
+  }
+}
+```
 
 #### 1.3.5 RDD 编程进阶
 ##### 1.3.5.1 累加器
+> 累加器用来对信息进行聚合,通常在向Spark传递函数时,比如使用`map()`函数或者用`filter()`传条件时,可以使用驱动器程序中定义变量,但是集群中运行每个任务都会得到这些变量的一份新副本,更新这些副本的值也不会影响驱动器中的对应变量,如果想实现所有分片处理时更新共享变量的功能,那么累加器可以实现想要的效果.
+
 ###### 1.3.5.1.1 系统累加器
+> 通过在驱动器中调用S`parkContext.accumulator(initialValue`)方法,创建出存有初始值的累加器,返回值为`org.apache.spark.Accumulator[T]`对象,其中T是初始值initialValue的类型,Spark闭包里的执行器代码可以使用累加器的`+=`方法(在Java中是add)增加累加器的值,驱动器程序可以调用累加器的value属性(在Java中使用value()或setValue())来访问累加器的值.
+> 
+> 工作节点上任务不能访问累加器值,从这些任务的角度来看,累加器是一个只写变量.
+> 
+> 对于要在行动操作中使用累加器,Spark只会把每个任务对各累加器的修改应用一次,因此,如果想要一个无论在失败还是重复计算时都绝对可靠的累加器,必须把它放在foreach()这样的行动操作中,转化操作中累加器可能会发生不止一次更新.
+``` scala
+package com.geekparkhub.core.spark.application.methods
+
+import org.apache.spark.rdd.RDD
+import org.apache.spark.util.LongAccumulator
+import org.apache.spark.{SparkConf, SparkContext}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * AccuAction
+  * <p>
+  */
+
+object AccuAction {
+  def main(args: Array[String]): Unit = {
+
+    // 创建SpakConf
+    val sparkConf: SparkConf = new SparkConf().setMaster("local[*]").setAppName("AccuAction")
+
+    // 创建SC
+    val sc = new SparkContext(sparkConf)
+
+    // 累加器
+    val sum: LongAccumulator = sc.longAccumulator("sum")
+
+    // 创建RDD
+    val value: RDD[Int] = sc.parallelize(Array(1, 2, 3, 4))
+
+    val word: RDD[(Int, Int)] = value.map(x => {
+      // 添加累加
+      sum.add(x)
+      (x, 1)
+    })
+
+    word.collect().foreach(println)
+
+    println(sum.value)
+
+    // 关闭资源
+    sc.stop()
+  }
+}
+```
 ###### 1.3.5.1.2 自定义累加器
+> 自定义累加器类型功能在1.X版本中就已经提供,但是使用起来比较麻烦,在2.0版本后,累加器的易用性有了较大改进,而且官方还提供了一个新抽象类 : `AccumulatorV2`来提供更加友好自定义类型累加器的实现方式,实现自定义类型累加器需要继承`AccumulatorV2`并至少覆写下例中出现的方法,
+``` scala
+package com.geekparkhub.core.spark.application.methods
+
+import org.apache.spark.util.AccumulatorV2
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * AccumulatorAction
+  * <p>
+  */
+
+class AccumulatorAction extends AccumulatorV2[Int,Int]{
+
+  var sum  = 0
+
+  // 判断是否为空
+  override def isZero: Boolean = sum == 0
+
+  // 复制方法
+  override def copy(): AccumulatorV2[Int, Int] = {
+    val accumulatorAction = new AccumulatorAction
+    accumulatorAction.sum = this.sum
+    accumulatorAction
+  }
+
+  // 重置方法
+  override def reset(): Unit = 0
+
+  // 累加方法
+  override def add(v: Int): Unit = sum += v
+
+  // 合并方法
+  override def merge(other: AccumulatorV2[Int, Int]): Unit = sum += other.value
+
+  // 返回值
+  override def value: Int = sum
+}
+```
 
 ##### 1.3.5.2 广播变量 (调优策略)
+> 广播变量用来高效分发较大对象,向所有工作节点发送一个较大的只读值,以供一个或多个Spark操作使用.
+> 
+> 比如,如果应用需要向所有节点发送一个较大的只读查询表,甚至是机器学习算法中的一个很大的特征向量,广播变量用起来都很顺手,在多个并行操作中使用同一个变量,但是Spark会为每个任务分别发送.
+> 
+> 使用广播变量过程 : 
+> 1.通过对一个类型T的对象调用`SparkContext.broadcast`创建出`Broadcast[T]`对象,任何可序列化类型都可以这么实现.
+> 2.通过value属性访问该对象值(在Java中为`value()`方法).
+> 3.变量只会被发到各个节点一次,应作为只读值处理(修改这个值不会影响到别的节点).
+```
+scala> val broadcastVar = sc.broadcast(Array(1, 2, 3))
+broadcastVar: org.apache.spark.broadcast.Broadcast[Array[Int]] = Broadcast(0)
+
+scala> broadcastVar.value
+res0: Array[Int] = Array(1, 2, 3)
+
+scala> 
+```
+
 
 ### 🔥 1.4 Spark SQL 🔥
 #### 1.4.1 Spark SQL 概述
-#### 1.4.2 Spark SQL 查询
-#### 1.4.3 DataFrame
-#### 1.4.4 DataSet
-#### 1.4.5 聚合函数
-#### 1.4.6 Spark SQL 数据源
-#### 1.4.7 OLAP Server
-#### 1.4.8 Spark SQL 实例
+##### 1.4.1.1 什么是 Spark SQL
+> Spark SQL是Spark用来处理结构化数据模块,它提供了2个编程抽象 : `DataFrame`和`DataSet`,并且作为分布式SQL查询引擎作用.
+> 
+> 已经学习了Hive,它是将Hive SQL转换成MapReduce然后提交到集群上执行,大大简化了编写MapReduc程序复杂性,由于MapReduce计算模型执行效率比较慢,所以Spark SQL应运而生,它是将Spark SQL转换成RDD,然后提交到集群执行,执行效率非常快.
+
+##### 1.4.1.2 Spark SQL 特点
+- 易整合
+- 统一数据访问方式
+- 兼容Hive
+- 标准数据连接
+
+##### 1.4.1.3 什么是 DataFrame
+> 与RDD类似,DataFrame也是一个分布式数据容器,然而DataFrame更像传统数据库的二维表格,除了数据以外,还记录数据的结构信息,即schema,同时与Hive类似,DataFrame也支持嵌套数据类型(struct / array / map).
+> 
+> 从API易用性角度上看,DataFrame API提供是一套高层的关系操作,比函数式RDD API要更加友好,门槛更低.
+
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_020.jpg)
+> 上图直观地体现了DataFrame和RDD区别,左侧RDD[Person]虽然以Person为类型参数,但Spark框架本身不了解Person类内部结构,而右侧DataFrame却提供了详细的结构信息,使得Spark SQL可以清楚地知道该数据集中包含哪些列,每列名称和类型各是什么,DataFrame是为数据提供了Schema视图,可以把它当做数据库中一张数据表.
+> 
+> DataFrame也是懒执行,性能上比RDD要高要原因 : 优化执行计划,查询计划通过Spark `catalyst optimiser`进行优化.
+
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_021.jpg)
+> 为了说明查询优化,上图展示的人口数据分析示例,图中构造了两个DataFrame,将它们join之后又做了一次filter操作,如果原封不动地执行这个执行计划,最终的执行效率是不高的,因为join是一个代价较大操作,也可能会产生一个较大数据集,如果能将filter下推到join下方,先对DataFrame进行过滤,再join过滤后的较小的结果集,便可以有效缩短执行时间.
+> 而Spark SQL的查询优化器正是这样做的,简而言之逻辑查询计划优化就是一个利用基于关系代数的等价变换,将高成本的操作替换为低成本操作的过程.
+
+##### 1.4.1.4 什么是 DataSet
+> 1.DataSet是DataframeAPI扩展,是SparkSQL最新数据抽象.
+> 
+> 2.友好API风格,既具有类型安全检查也具有Dataframe的查询优化特性.
+> 
+> 3.Dataset支持编解码器,当需要访问非堆上的数据时可以避免反序列化整个对象,提高了效率.
+> 
+> 4.样例类被用来在Dataset中定义数据结构信息,样例类中每个属性的名称直接映射到DataSet中的字段名称.
+> 
+> 5.Dataframe是Dataset的特列,`DataFrame=Dataset[Row]`,所以可以通过as方法将Dataframe转换为Dataset,Row是一个类型,跟Car / Person这些类型一样,所有表结构信息都用Row来表示.
+> 
+> 6.DataSet是强类型,比如可以有`Dataset[Car]`,`Dataset[Person]`.
+> 
+> 7.DataFrame只是知道字段,但是不知道字段类型,所以在执行这些操作时是没办法在编译的时候检查是否类型失败,比如可以对一个String进行减法操作,在执行时才报错,而DataSet不仅仅知道字段,而且知道字段类型,所以有更严格的错误检查,就跟JSON对象和类对象之间的类比.
+
+
+
+#### 1.4.2 Spark SQL 编程
+##### 1.4.2.1 SparkSession 新起始点
+> 在老版本中,SparkSQL提供两种SQL查询起始点 : 
+> SQLContext : 用于Spark提供SQL查询.
+> HiveContext : 用于连接Hive查询.
+> 
+> SparkSession是Spark最新SQL查询起始点,实质上是SQLContext和HiveContext组合,所以在SQLContext和HiveContext上可用API在SparkSession上同样是可以使用,SparkSession内部封装了`sparkContext`,所以计算实际上是由sparkContext完成.
+
+##### 1.4.2.2 DataFrame
+###### 1.4.2.2.1 创建
+> 在SparkSQL中`SparkSession`是创建DataFrame和执行SQL入口.
+> 创建DataFrame有三种方式 : 
+> 1.通过Spark数据源进行创建.
+> 2.从已存在的RDD进行转换.
+> 3.从Hive Table进行查询返回.
+
+- 1.从Spark数据源进行创建
+- 查看Spark数据源进行创建文件格式
+```
+scala> spark.read.
+csv      jdbc   load     options   parquet   table   textFile      
+format   json   option   orc       schema    text 
+scala> spark.read.
+```
+- 2.读取json文件创建DataFrame展示结果
+```
+scala> val jsonflow = spark.read.json("hdfs://systemhub511:9000/core_flow/spark/json/001/people.json")
+jsonflow: org.apache.spark.sql.DataFrame = [age: bigint, name: string]=
+
+scala> jsonflow.show
++----+-------+
+| age|   name|
++----+-------+
+|null|Michael|
+|  30|   Andy|
+|  19| Justin|
++----+-------+
+
+scala> 
+```
+- 3.RDD进行转换 | 详情1.4.2.5
+- 4.Hive Table进行查询返回 | 
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+###### 1.4.2.2.2 SQL风格语法(主要)
+###### 1.4.2.2.3 DSL风格语法(次要)
+###### 1.4.2.2.4 RDD转换为DateFrame
+###### 1.4.2.2.5 DateFrame转换为RDD
+
+
+##### 1.4.2.3 DataSet
+###### 1.4.2.3.1 创建
+###### 1.4.2.3.2 RDD转换为DataSet
+###### 1.4.2.3.3 DataSet转换为RDD
+
+
+##### 1.4.2.4 DataFrame与DataSet相互操作
+##### 1.4.2.5 RDD / DataFrame / DataSet
+##### 1.4.2.6 SparkSQL Application
+##### 1.4.2.7 自定义函数
+
+
+
+#### 1.4.3 Spark SQL 数据源
+#####1.4.3.1 通用加载 / 保存方法
+#####1.4.3.2 JSON文件
+#####1.4.3.3 Parquet文件
+#####1.4.3.4 JDBC
+#####1.4.3.5 Hive DataBase
+
+
+#### 1.4.4 Spark SQL 实例
+
+
 
 ### 🔥 1.5 Spark Streaming 🔥
 #### 1.5.1 Spark Streaming 概述
