@@ -2310,28 +2310,378 @@ scala> jsonflow.show
 
 scala> 
 ```
-- 3.RDD进行转换 | 详情1.4.2.5
+- 3.RDD进行转换 | 轻轻1.4.2.5
 - 4.Hive Table进行查询返回 | 
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ###### 1.4.2.2.2 SQL风格语法(主要)
-###### 1.4.2.2.3 DSL风格语法(次要)
-###### 1.4.2.2.4 RDD转换为DateFrame
-###### 1.4.2.2.5 DateFrame转换为RDD
+- 对DataFrame创建临时表
+- 临时表是Session范围内,Session退出后,表就会失效,如果想应用范围内有效,可以使用全局表,注意使用全局表时需要全路径访问,如 : `global_temp.people`
+```
+scala> jsonflow.createTempView("people")
+```
+- 通过SQL语句实现查询全表结果展示
+```
+scala> val sqlDF = spark.sql("SELECT * FROM people")
+sqlDF: org.apache.spark.sql.DataFrame = [age: bigint, name: string]
 
+scala> sqlDF.show
++----+-------+
+| age|   name|
++----+-------+
+|null|Michael|
+|  30|   Andy|
+|  19| Justin|
++----+-------+
+
+scala> 
+```
+- 对于DataFrame创建全局表
+```
+scala> jsonflow.createGlobalTempView("peoples")
+```
+- 通过SQL语句实现查询全表结果展示
+```
+scala> spark.sql("SELECT * FROM global_temp.peoples").show()
++----+-------+
+| age|   name|
++----+-------+
+|null|Michael|
+|  30|   Andy|
+|  19| Justin|
++----+-------+
+
+scala> spark.newSession().sql("SELECT * FROM global_temp.peoples").show()
++----+-------+
+| age|   name|
++----+-------+
+|null|Michael|
+|  30|   Andy|
+|  19| Justin|
++----+-------+
+
+scala>
+```
+###### 1.4.2.2.3 DSL风格语法(次要)
+- 查看DataFrame Schema信息
+```
+scala> jsonflow.printSchema
+root
+ |-- age: long (nullable = true)
+ |-- name: string (nullable = true)
+
+scala> 
+```
+- 只查看name列数据
+```
+scala> jsonflow.select("name").show
++-------+
+|   name|
++-------+
+|Michael|
+|   Andy|
+| Justin|
++-------+
+
+scala> 
+```
+- 查看name列数据以及age+1数据
+```
+scala> jsonflow.select($"name",$"age" + 1).show()
++-------+---------+
+|   name|(age + 1)|
++-------+---------+
+|Michael|     null|
+|   Andy|       31|
+| Justin|       20|
++-------+---------+
+
+scala>
+```
+- 查看age大于21数据
+```
+scala> jsonflow.filter($"age" > 21).show()
++---+----+
+|age|name|
++---+----+
+| 30|Andy|
++---+----+
+
+scala> 
+```
+- 按照age分组,查看数据条数
+```
+scala> jsonflow.groupBy("age").count().show()
++----+-----+
+| age|count|
++----+-----+
+|  19|    1|
+|null|    1|
+|  30|    1|
++----+-----+
+
+scala> 
+```
+###### 1.4.2.2.4 RDD转换为DateFrame
+> 如果需要RDD与DF或者DS之间操作,需要引入`import spark.implicits._`
+> spark并不是包名,而是sparkSession对象名称.
+
+- 导入隐式转换并创建RDD
+```
+scala> import spark.implicits._
+import spark.implicits._
+
+scala> val peopleRDD = sc.textFile("hdfs://systemhub511:9000/core_flow/spark/input/wordcount/wordcount_001.txt")
+peopleRDD: org.apache.spark.rdd.RDD[String] = hdfs://systemhub511:9000/core_flow/spark/input/wordcount/wordcount_001.txt MapPartitionsRDD[30] at textFile at <console>:27
+
+scala>
+```
+- 1.通过手动转换
+```
+scala> peopleRDD.map{x=>{val split = x.split(",");(split(0),split(1).trim)}}.toDF("name","age")
+res11: org.apache.spark.sql.DataFrame = [name: string, age: string]
+scala> 
+```
+- 2.通过反射转换 (需要用到样例类) 
+- 创建样例类,根据样例类将RDD转换为DataFrame
+```
+scala> case class People(name:String, age:Int)
+defined class People
+
+scala> peopleRDD.map{x=>{val split = x.split(",");People(split(0),split(1).trim.toInt)}}.toDF
+res17: org.apache.spark.sql.DataFrame = [name: string, age: int]
+
+scala> res17.toDF
+res18: org.apache.spark.sql.DataFrame = [name: string, age: int]
+scala> 
+```
+- 3.通过编程方式转换
+- 导入所需类型
+```
+scala> import org.apache.spark.sql.types._
+import org.apache.spark.sql.types._
+scala> 
+```
+- 创建Schema
+```
+scala> val structType: StructType = StructType(StructField("name",StringType) :: StructField("age",IntegerType) :: Nil)
+structType: org.apache.spark.sql.types.StructType = StructType(StructField(name,StringType,true), StructField(age,IntegerType,true))
+scala> 
+```
+- 导入所需类型
+```
+scala> import org.apache.spark.sql.Row
+import org.apache.spark.sql.Row
+scala> 
+```
+- 根据指定类型创建二元组RDD
+```
+scala> val data = peopleRDD.map{x => val para = x.split(",");Row(para(0),para(1).trim.toInt)}
+scala> 
+```
+- 根据数据及指定schema创建DataFrame
+```
+scala> val dataFrame = spark.createDataFrame(data, structType)
+```
+###### 1.4.2.2.5 DateFrame转换为RDD
+- 直接调用rdd即可.
+- 创建DataFrame
+```
+scala> val df = spark.read.json("/core_flow/spark/json/001/people.json")df: org.apache.spark.sql.DataFrame = [age: bigint, name: string]                
+scala> 
+```
+- 将DataFrame转换为RDD
+```
+scala> val dfToRDD = df.rdd
+dfToRDD: org.apache.spark.rdd.RDD[org.apache.spark.sql.Row] = MapPartitionsRDD[6] at rdd at <console>:29
+scala>
+```
+- 打印RDD
+```
+scala> dfToRDD.collect
+res0: Array[org.apache.spark.sql.Row] = Array([null,Michael], [30,Andy], [19,Justin])
+scala>
+```
 
 ##### 1.4.2.3 DataSet
+- Dataset是具有强类型的数据集合,需要提供对应类型信息.
 ###### 1.4.2.3.1 创建
-###### 1.4.2.3.2 RDD转换为DataSet
-###### 1.4.2.3.3 DataSet转换为RDD
+- 创建样例类
+```
+scala> case class Person(name: String, age: Long)
+defined class Person
+scala> 
+```
+- 创建DataSet
+```
+scala> val caseClassDS = Seq(Person("Andy", 32)).toDS()
+caseClassDS: org.apache.spark.sql.Dataset[Person] = [name: string, age: bigint]
+scala> 
+```
+- 查看结果
+```
+scala> caseClassDS.show
++----+---+
+|name|age|
++----+---+
+|Andy| 32|
++----+---+
 
+scala> 
+```
+
+###### 1.4.2.3.2 RDD转换为DataSet
+- SparkSQL能够自动将包含有case类RDD转换成DataFrame,case类定义了table结构,case类属性通过反射变成了表列名,Case类可以包含诸如Seqs或者Array等复杂结构.
+- 创建RDD
+```
+scala> val peopleRDD = sc.textFile("examples/src/main/resources/people.txt")
+peopleRDD: org.apache.spark.rdd.RDD[String] = examples/src/main/resources/people.txt MapPartitionsRDD[8] at textFile at <console>:28
+
+scala>
+```
+- 创建样例类
+```
+scala> case class Person(name: String, age: Long)
+defined class Person
+scala> 
+```
+- 将RDD转化为DataSet
+```
+scala> peopleRDD.map(line => {val para = line.split(",");Person(para(0),para(1).trim.toInt)}).toDS
+res2: org.apache.spark.sql.Dataset[Person] = [name: string, age: bigint]
+scala> 
+```
+
+###### 1.4.2.3.3 DataSet转换为RDD
+- 调用rdd方法即可.
+- 创建一个DataSet
+```
+scala> val DS= Seq(Person("Andy", 32)).toDS()
+DS: org.apache.spark.sql.Dataset[Person] = [name: string, age: bigint]
+scala> 
+```
+- 将DataSet转换为RDD
+```
+scala> DS.rdd
+res3: org.apache.spark.rdd.RDD[Person] = MapPartitionsRDD[12] at rdd at <console>:28
+
+scala> res3.collect
+res4: Array[Person] = Array(Person(Andy,32))
+scala> 
+```
 
 ##### 1.4.2.4 DataFrame与DataSet相互操作
+###### 1.4.2.4.1 DataFrame转Dataset
+- 此方法就是在给出每一列类型后,使用as方法转成Dataset,这在数据类型是DataFrame又需要针对各个字段处理时极为方便,在使用一些特殊的操作时,一定要加上`import spark.implicits._`不然toDF、toDS无法使用.
+- 创建DateFrame
+```
+scala> val df = spark.read.json("./examples/src/main/resources/people.json")
+```
+- 创建样例类
+```
+scala> case class Person(name: String, age: Long)
+defined class Person
+scala> 
+```
+- 将DateFrame转化为DataSet
+```
+scala> df.as[Person]
+res14:  org.apache.spark.sql.Dataset[Person]  =  [age:  bigint,  name: string]
+scala> 
+```
+
+###### 1.4.2.4.2 Dataset转DataFrame
+- 创建样例类
+```
+scala> case class Person(name: String, age: Long)
+defined class Person
+scala>
+```
+- 创建DataSet
+```
+scala> val ds = Seq(Person("Andy", 32)).toDS()
+ds: org.apache.spark.sql.Dataset[Person] = [name: string, age: bigint]
+scala> 
+```
+- 将DataSet转化为DataFrame并展示结果
+```
+scala> val df = ds.toDF
+df: org.apache.spark.sql.DataFrame = [name: string, age: bigint]
+
+scala> df.show
++----+---+
+|name|age|
++----+---+
+|Andy| 32|
++----+---+
+scala> 
+```
+
+
 ##### 1.4.2.5 RDD / DataFrame / DataSet
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_023.jpg)
+> 在SparkSQL中Spark为提供了两个新抽象,分别是`DataFrame`和`DataSet`.
+> 他们和RDD有什么区别? 首先从版本的产生上来看 : 
+```
+RDD (Spark1.0) —> Dataframe(Spark1.3) —> Dataset(Spark1.6)
+```
+> 如果同样数据都给到这三个数据结构,他们分别计算之后,都会给出相同结果,不同是执行效率和执行方式.
+> 在后期Spark版本中,DataSet会逐步取代RDD和DataFrame成为唯一的API接口.
+
+###### 1.4.2.5.1 三者共性
+- 1.RDD / DataFrame / Dataset全都是spark平台下分布式弹性数据集,为处理超大型数据提供便利.
+- 2.三者都有惰性机制,在进行创建 / 转换,如map方法时不会立即执行,只有在遇到Action如foreach时,三者才会开始遍历运算.
+- 3.三者都会根据spark内存情况自动缓存运算,这样即使数据量很大,也不用担心会内存溢出.
+- 4.三者都有partition概念.
+- 5.三者有许多共同函数,如filter,排序等.
+- 6.在对DataFrame和Dataset进行操作许多操作都需要这个包进行支持`importspark.implicits._`
+- 7.DataFrame和Dataset均可使用模式匹配获取各个字段值和类型.
+- DataFrame : 
+```
+DF.map{
+ caseRow(col1:String,col2:Int)=>
+  println(col1);println(col2)
+   col1
+    case_=> ""
+}
+```
+- Dataset : 
+```
+// 定义字段名和类型
+caseclassColtest(col1:String,col2:Int)extendsSerializable
+DS.map{
+ caseColtest(col1:String,col2:Int)=>
+  println(col1);println(col2)
+   col1
+    case_=> ""
+}
+```
+
+###### 1.4.2.5.2 三者区别
+- `1. RDD` :
+- RDD一般和spark mlib同时使用
+- RDD不支持sparksql操作
+- `2. DataFrame`
+- 与RDD和Dataset不同,DataFrame每一行类型固定为Row,每一列的值没法直接访问,只有通过解析才能获取各个字段值.
+```
+DF.foreach{
+ line=>
+  valcol1=line.getAs[String]("col1")
+  valcol2=line.getAs[String]("col2")
+}
+```
+- DataFrame与Dataset一般不与spark mlib同时使用
+- DataFrame与Dataset均支持sparksql操作,比如select,groupby,还能注册临时表/视窗,进行sql语句操作.
+- DataFrame与Dataset支持一些特别方便保存方式,比如保存成csv,可以带上表头,这样每一列字段名一目了然.
+- `3. Dataset`
+- Dataset和DataFrame拥有完全相同的成员函数,区别只是每一行数据类型不同.
+- DataFrame也可以叫`Dataset[Row]`,每一行的类型是Row,不解析每一行究竟有哪些字段,各个字段又是什么类型都无从得知,只能用上面提到`getAS`方法或者共性中的第七条提到的模式匹配拿出特定字段,而Dataset中,每一行是什么类型是不一定,在自定义了case class之后可以很自由获得每一行信息.
+- Dataset在需要访问列中某个字段时是非常方便,然而如果要写一些适配性很强函数时,如果使用Dataset,行类型又不确定,可能是各种case class,无法实现适配,这时候用DataFrame即Dataset[Row]就能比较好解决问题.
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ##### 1.4.2.6 SparkSQL Application
+
+
 ##### 1.4.2.7 自定义函数
-
-
 
 #### 1.4.3 Spark SQL 数据源
 #####1.4.3.1 通用加载 / 保存方法
