@@ -2479,8 +2479,68 @@ scala> val data = peopleRDD.map{x => val para = x.split(",");Row(para(0),para(1)
 scala> 
 ```
 - 根据数据及指定schema创建DataFrame
-```
+``` 
 scala> val dataFrame = spark.createDataFrame(data, structType)
+```
+- Create SqlAction.scala
+``` scala
+package com.geekparkhub.core.spark.application.sparksql
+
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.types.{IntegerType, StructField, StructType}
+import org.apache.spark.{SparkConf, SparkContext}
+import org.apache.spark.sql.{DataFrame, Row, SparkSession}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * SqlAction
+  * <p>
+  */
+
+object SqlAction {
+  def main(args: Array[String]): Unit = {
+
+    // 创建SparkSession
+    val sparkSession: SparkSession = SparkSession
+      .builder().master("local[*]").appName("SqlAction").getOrCreate()
+
+    // 创建SC
+    val sc: SparkContext = sparkSession.sparkContext
+
+    // 创建 RDD
+    val rdd: RDD[Int] = sc.parallelize(Array(1,2,3,4,5))
+
+    // 将Int类型RDD转换为Row类型RDD
+    val rowRDD: RDD[Row] = rdd.map(x => {Row(x)})
+
+    // 数据输出
+    rowRDD.collect().foreach(println)
+
+    // 创建元数据信息
+    val structType = new StructType
+    val structTypes: StructType = structType.add(StructField("id", IntegerType))
+    val dataFrame: DataFrame = sparkSession.createDataFrame(rowRDD,structTypes)
+
+    // 导入隐式转换
+    import sparkSession.implicits._
+
+    // DSL风格 数据查询
+    dataFrame.select("id").show()
+    
+    // 关闭资源
+    sparkSession.stop()
+  }
+}
 ```
 ###### 1.4.2.2.5 DateFrame转换为RDD
 - 直接调用rdd即可.
@@ -2672,16 +2732,217 @@ DF.foreach{
 - DataFrame与Dataset一般不与spark mlib同时使用
 - DataFrame与Dataset均支持sparksql操作,比如select,groupby,还能注册临时表/视窗,进行sql语句操作.
 - DataFrame与Dataset支持一些特别方便保存方式,比如保存成csv,可以带上表头,这样每一列字段名一目了然.
-- `3. Dataset`
+- `3.`Dataset`
 - Dataset和DataFrame拥有完全相同的成员函数,区别只是每一行数据类型不同.
 - DataFrame也可以叫`Dataset[Row]`,每一行的类型是Row,不解析每一行究竟有哪些字段,各个字段又是什么类型都无从得知,只能用上面提到`getAS`方法或者共性中的第七条提到的模式匹配拿出特定字段,而Dataset中,每一行是什么类型是不一定,在自定义了case class之后可以很自由获得每一行信息.
 - Dataset在需要访问列中某个字段时是非常方便,然而如果要写一些适配性很强函数时,如果使用Dataset,行类型又不确定,可能是各种case class,无法实现适配,这时候用DataFrame即Dataset[Row]就能比较好解决问题.
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ##### 1.4.2.6 SparkSQL Application
+- SQL & DSL风格数据查询
+``` scala
+package com.geekparkhub.core.spark.application.sparksql
 
+import org.apache.spark.sql.{DataFrame, SparkSession}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * SqlAction
+  * <p>
+  */
+
+object SqlAction {
+  def main(args: Array[String]): Unit = {
+    // 创建SparkSession
+    val sparkSession: SparkSession = SparkSession
+      .builder().master("local[*]").appName("SqlAction").getOrCreate()
+
+    // 导入隐式转换
+    import sparkSession.implicits._
+
+    // 创建DF
+    val df: DataFrame = sparkSession.read.json("/Volumes/GEEK-SYSTEM/Technical_Framework/spark/projects/spark_server/spark-sql/data/people.json")
+
+    // SQL风格 数据查询 | 创建临时表
+    df.createTempView("PEOPLE")
+    sparkSession.sql("SELECT * FROM PEOPLE").show()
+
+    // DSL风格 数据查询
+    df.select("name").show()
+
+    // 关闭资源
+    sparkSession.stop()
+  }
+}
+```
 
 ##### 1.4.2.7 自定义函数
+- 在Shell窗口中可通过`spark.udf`功能自定义函数.
+
+###### 1.4.2.7.1 自定义UDF函数
+- 创建DF
+```
+scala> val df = spark.read.json("hdfs://systemhub511:9000/core_flow/spark/json/001/people.json")
+df: org.apache.spark.sql.DataFrame = [age: bigint, name: string]
+
+scala> df.show()
++----+-------+
+| age|   name|
++----+-------+
+|null|Michael|
+|  30|   Andy|
+|  19| Justin|
++----+-------+
+
+scala>
+```
+- 注册UDF
+```
+scala> spark.udf.register("addName",(x:String) => "Name:" + x)
+res1: org.apache.spark.sql.expressions.UserDefinedFunction = UserDefinedFunction(<function1>,StringType,Some(List(StringType)))
+
+scala>
+```
+- 创建数据表
+```
+scala> df.createOrReplaceTempView("people")
+```
+- 查询数据表
+```
+scala> spark.sql("Select addName(name),age from people").show()
++-----------------+----+
+|UDF:addName(name)| age|
++-----------------+----+
+|     Name:Michael|null|
+|        Name:Andy|  30|
+|      Name:Justin|  19|
++-----------------+----+
+scala>
+```
+###### 1.4.2.7.2 自定义聚合函数
+- 强类型Dataset和弱类型DataFrame都提供了相关聚合函数,如count(),countDistinct(),avg(),max(),min(),除此之外还可以设定自定义聚合函数.
+- 弱类型自定义聚合函数 : 通过继承`UserDefinedAggregateFunction`来实现自定义聚合函数.
+- 下面展示 求平均工资自定义聚合函数
+- Create `AvgAction.scala`
+``` scala
+package com.geekparkhub.core.spark.application.aggregation
+
+import org.apache.spark.sql.Row
+import org.apache.spark.sql.expressions.{MutableAggregationBuffer, UserDefinedAggregateFunction}
+import org.apache.spark.sql.types.{DataType, DoubleType, LongType, StructField, StructType}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * AvgAction
+  * <p>
+  */
+
+object AvgAction extends UserDefinedAggregateFunction {
+
+  // 定义输入数据类型
+  override def inputSchema: StructType = StructType(StructField("input", LongType) :: Nil)
+
+  // 缓存中间值类型
+  override def bufferSchema: StructType = StructType(StructField("sum", LongType) :: StructField("count", LongType) :: Nil)
+
+  // 定义输出数据类型
+  override def dataType: DataType = DoubleType
+
+  // 函数稳定参数
+  override def deterministic: Boolean = true
+
+  // 初始化缓存数据
+  override def initialize(buffer: MutableAggregationBuffer): Unit = {
+    buffer(0) = 0L
+    buffer(1) = 0L
+  }
+
+  // 在执行器之内更新
+  override def update(buffer: MutableAggregationBuffer, input: Row): Unit = {
+    buffer(0) = buffer.getLong(0) + input.getLong(0)
+    buffer(1) = buffer.getLong(1) + 1L
+  }
+
+  // 在执行器之外合并
+  override def merge(buffer1: MutableAggregationBuffer, buffer2: Row): Unit = {
+    buffer1(0) = buffer1.getLong(0) + buffer2.getLong(0)
+    buffer1(1) = buffer1.getLong(1) + buffer2.getLong(1)
+
+  }
+
+  // 执行数据计算
+  override def evaluate(buffer: Row): Any = buffer.getLong(0).toDouble / buffer.getLong(1)
+}
+```
+- Create `UdafAction.scala`
+```
+package com.geekparkhub.core.spark.application.aggregation
+
+import org.apache.spark.sql.{DataFrame, SparkSession}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * UdafAction
+  * <p>
+  */
+
+object UdafAction {
+  def main(args: Array[String]): Unit = {
+
+    // 创建SparkSession
+    val sparkSession: SparkSession = SparkSession
+      .builder().master("local[*]").appName("UdafAction").getOrCreate()
+
+    // 创建DF
+    val df: DataFrame = sparkSession.read.json("/Volumes/GEEK-SYSTEM/Technical_Framework/spark/projects/spark_server/spark-sql/data/people.json")
+
+    // SQL风格 数据查询 | 创建临时表
+    df.createTempView("PEOPLE")
+
+    // 注册自定义函数
+    sparkSession.udf.register("AvgAction", AvgAction)
+
+    // 使用自定义函数
+    sparkSession.sql("SELECT AvgAction(age) FROM PEOPLE").show()
+
+    // 关闭资源
+    sparkSession.stop()
+  }
+}
+```
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+- 强类型自定义聚合函数 : 通过继承`Aggregator`来实现强类型自定义聚合函数,同样是求平均工资.
+
 
 #### 1.4.3 Spark SQL 数据源
 #####1.4.3.1 通用加载 / 保存方法
