@@ -2940,18 +2940,440 @@ object UdafAction {
 }
 ```
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+
 - 强类型自定义聚合函数 : 通过继承`Aggregator`来实现强类型自定义聚合函数,同样是求平均工资.
 
-
 #### 1.4.3 Spark SQL 数据源
-#####1.4.3.1 通用加载 / 保存方法
+##### 1.4.3.1 通用加载 / 保存方法
+###### 1.4.3.1.1 手动指定选项
+- Spark SQL DataFrame接口支持多种数据源操作,一个DataFrame可以进行RDDs方式操作,也可以被注册为临时表,把DataFrame注册为临时表之后,就可以对该DataFrame执行SQL查询.
+- Spark SQL默认数据源为Parquet格式,数据源为Parquet文件时,Spark SQL可以方便执行所有操作,修改配置项`spark.sql.sources.default`,可修改默认数据源格式 : 
+```
+scala> val df = spark.read.load("examples/src/main/resources/users.parquet") df.select("name","favorite_color").write.save("namesAndFavColors.parquet")
+scala> 
+```
+- 当数据源格式不是parquet格式文件时,需要手动指定数据源格式,数据源格式需要指定全名（例如：`org.apache.spark.sql.parquet`）,如果数据源格式为内置格式,则只需要指定简称定`json`,`parquet`,`jdbc`,`orc`,`libsvm`,`csv`,`text`来指定数据格式
+- 可以通过SparkSession提供的read.load方法用于通用加载数据，使用`write`和`save`保存数据.
+```
+scala> val peopleDF = spark.read.format("json").load("examples/src/main/resources/people.json")
+scala> peopleDF.write.format("parquet").save("hdfs://hadoop102:9000/namesAndAges.parquet")
+scala> 
+```
+- 除此之外,可以直接运行SQL在文件上.
+```
+scala> val sqlDF = spark.sql("SELECT * FROM parquet.`hdfs://systemhub511:9000/namesAndAges.parquet`")
+
+scala> sqlDF.show()
+
+scala> val peopleDF = spark.read.format("json").load("examples/src/main/resources/people.json")peopleDF: org.apache.spark.sql.DataFrame = [age: bigint, name: string]
+
+scala> peopleDF.write.format("parquet").save("hdfs://hadoop102:9000/namesAndAges.parquet")
+
+scala> peopleDF.show()
++----+-------+
+| age|   name|
++----+-------+
+|null|Michael|
+|  30|   Andy|
+|  19| Justin|
++----+-------+
+
+scala> val sqlDF = spark.sql("SELECT * FROM  parquet.`hdfs://systemhub511:9000/namesAndAges.parquet`")
+sqlDF: org.apache.spark.sql.DataFrame = [age: bigint, name: string]
+
+scala> sqlDF.show()
++----+-------+
+| age|   name|
++----+-------+
+|null|Michael|
+|  30|   Andy|
+|  19| Justin|
++----+-------+
+```
+
+
+###### 1.4.3.1.2 文件保存选项
+- 可以采用SaveMode执行存储操作,SaveMode定义了对数据处理模式,需要注意的是,这些保存模式不使用任何锁定,不是原子操作,此外当使用Overwrite方式执行时,在输出新数据之前原数据就已经被删除,SaveMode详细介绍如下表 : 
+
+| Scala / Java      |     Any Language |   Meaning   |
+| :--------: | :--------:| :------: |
+| SaveMode.ErrorIfExists(default)    |   "error"(default) |  如果文件存在,则报错  |
+| SaveMode.Append    |   "append" |  追加  |
+| SaveMode.Overwrite    |   "overwrite" |  覆写  |
+| SaveMode.Ignore    |   "ignore" |  数据存在,则忽略  |
+-  源码出处
+- `org.apache.spark.sql.DataFrameWriter` & `org.apache.spark.sql.SaveMode` 
+```
+/** 
+ * Specifies the behavior when data or table already exists. Options include:
+ *   - `overwrite`: overwrite the existing data.
+ *   - `append`: append the data.
+ *   - `ignore`: ignore the operation (i.e. no-op).
+ *   - `error`: default option, throw an exception at runtime.
+ *   
+ * @since 1.4.0
+ */ 
+def mode(saveMode: String): DataFrameWriter[T] = {
+  this.mode = saveMode.toLowerCase match {
+    case "overwrite" => SaveMode.Overwrite
+    case "append" => SaveMode.Append
+    case "ignore" => SaveMode.Ignore
+    case "error" | "default" => SaveMode.ErrorIfExists
+    case _ => throw new IllegalArgumentException(s"Unknown save mode: $saveMode. " + "Accepted save modes are 'overwrite', 'append', 'ignore', 'error'.")
+ }         
+ this
+}
+```
+
 #####1.4.3.2 JSON文件
+- Spark SQL能够自动推测JSON数据集结构,并将它加载为`Dataset[Row]`,可以通过`SparkSession.read.json()`加载JSON 文件.
+- JSON文件不是一个传统JSON文件,而是每一行都得是一个JSON串.
+```
+scala> import spark.implicits._
+
+scala> val path = "examples/src/main/resources/people.json"
+
+scala> val peopleDF = spark.read.json(path)
+
+scala> peopleDF.createOrReplaceTempView("people")
+
+scala> val teenagerNamesDF = spark.sql("SELECT name FROM people WHERE  age BETWEEN 13 AND 19")
+
+scala> teenagerNamesDF.show()
++------+
+|  name|
++------+
+|Justin|
++------+
+
+scala> val otherPeopleDataset = spark.createDataset("""{"name":"Yin","address":{"city":"Columbus","state":"Ohio"}}""" :: Nil)
+
+scala> val otherPeople = spark.read.json(otherPeopleDataset)
+
+scala> otherPeople.show()
++---------------+----+
+| address 	|  name  |
++---------------+----+
+|[Columbus,Ohio]| Yin|
+```
+
 #####1.4.3.3 Parquet文件
+- Parquet是一种流行列式存储格式,可以高效地存储具有嵌套字段记录,Parquet格式经常在Hadoop生态圈中被使用,它也支持Spark SQL全部数据类型,Spark SQL提供了直接读取和存储Parquet格式文件的方法.
+```
+scala> importing spark.implicits._
+
+scala> import spark.implicits._	
+
+scala> val peopleDF = spark.read.json("examples/src/main/resources/people.json")
+
+scala> peopleDF.write.parquet("hdfs://systemhub511:9000/people.parquet")
+
+scala> val parquetFileDF =         spark.read.parquet("hdfs://systemhub511:9000/people.parquet")
+
+scala> parquetFileDF.createOrReplaceTempView("parquetFile")
+
+scala> val namesDF = spark.sql("SELECT name FROM parquetFile WHERE age BETWEEN 13 AND 19")
+
+scala> namesDF.map(attributes => "Name: " + attributes(0)).show()
+
++------------+
+|       value|
++------------+
+|Name: Justin|
++------------+
+```
+
 #####1.4.3.4 JDBC
+- Spark SQL可以通过JDBC从关系型数据库中读取数据方式创建DataFrame,通过对DataFrame一系列的计算后,还可以将数据再写回关系型数据库中.
+- 注意,需要将相关数据库驱动放到spark类路径下.
+```
+[root@systemhub711 ~]# cp /opt/software/mysql-libs/mysql-connector-java-5.1.27/mysql-connector-java-5.1.27-bin.jar /opt/module/spark/jars/
+```
+```
+scala> val jdbcDF = spark.read.format("jdbc").option("url","jdbc:mysql://systemhub711:3306/company").option("dbtable","staff").option("user","root").option("password","ax01465").load()
+jdbcDF: org.apache.spark.sql.DataFrame = [id: int, name: string ... 1 more field]
+
+scala> jdbcDF.show
+
++---+-------+------+
+| id|   name|   sex|
++---+-------+------+
+|  1|test001|  male|
+|  2|test002|female|
+|  3|test003|female|
+|  4|test004|  male|
+|  5|test005|female|
+|  6|test006|  male|
+|  7|test007|female|
+|  8|test008|female|
+|  9|test009|female|
+| 10|test010|female|
+| 11|test011|female|
+| 12|test012|  male|
+| 13| Female|  null|
+| 14|   Male|  null|
+| 15| Female|  null|
++---+-------+------+
+scala> 
+```
+```
+scala> jdbcDF.write.format("jdbc").option("url", "jdbc:mysql://systemhub711:3306/company").option("dbtable","rddtable2").option("user","root").option("password","ax01465").save()
+```
 #####1.4.3.5 Hive DataBase
+> Apache Hive是Hadoop上SQL引擎,Spark SQL编译时可以包含Hive支持,也可以不包含,包含Hive支持的Spark SQL可以支持Hive表访问、UDF(用户自定义函数)以及Hive查询语言(HiveQL/HQL)等,需要强调的一点是,如果要在Spark SQL中包含Hive库,并不需要事先安装Hive,一般来说,最好还是在编译Spark SQL时引入Hive支持,这样就可以使用这些特性了,如果下载的是二进制版本Spark,它应该已经在编译时添加了Hive支持.
+> 
+> 若要把Spark SQL连接到一个部署好Hive上,你必须把hive-site.xml复制到Spark配置文件目录中`($SPARK_HOME/conf)`,即使没有部署好Hive,Spark SQL也可以运行,需要注意的是,如果没有部署好Hive,Spark SQL会在当前工作目录中创建出Hive元数据仓库,叫作`metastore_db`,此外如果尝试使用HiveQL中的`CREATE TABLE (并非CREATE EXTERNAL TABLE)`语句来创建表,这些表会被放在默认的文件系统中的`/user/hive/warehouse`目录中(如果classpath中有配好的hdfs-site.xml,默认文件系统就是HDFS,否则就是本地文件系统).
 
+###### 1.4.3.5.1 内嵌Hive应用
+- 如果要使用内嵌Hive,什么都不用做,直接用就可以了,`--conf:spark.sql.warehouse.dir=`
+- 如果使用是内部的Hive,在Spark2.0之后,`spark.sql.warehouse.dir`用于指定数据仓库地址,如果需要是用HDFS作为路径,那么需要将`core-site.xml`和`hdfs-site.xml`加入到Spark conf目录,否则只会创建master节点上warehouse目录,查询时会出现文件找不到的问题,这是需要向使用HDFS,则需要将metastore删除,重启集群.
+```
+scala> spark.sql("show tables").show
++--------+---------+-----------+
+|database|tableName|isTemporary|
++--------+---------+-----------+
++--------+---------+-----------+
 
+scala> spark.sql("create table hivetest(id int)")
+19/06/03 02:03:17 WARN metastore.HiveMetaStore: Location: file:/opt/module/spark/spark-warehouse/hivetest specified for non-external table:hivetest
+res5: org.apache.spark.sql.DataFrame = []
+
+scala> spark.sql("show tables").show
++--------+---------+-----------+
+|database|tableName|isTemporary|
++--------+---------+-----------+
+| default| hivetest|      false|
++--------+---------+-----------+
+
+scala> spark.sql("select * from hivetest").show()
++---+
+| id|
++---+
++---+
+scala> 
+```
+
+###### 1.4.3.5.2 外部Hive应用
+- 如果想连接外部已经部署好的Hive,需要通过以下几个步骤 : 
+- 1.启动Hive服务
+```
+[root@systemhub711 spark]# /opt/module/hive/bin/hive
+```
+- 2.将Hive中的`hive-site.xml`拷贝或者软连接到Spark安装目录下conf目录下
+```
+[root@systemhub711 spark]# cp /opt/module/hive/conf/hive-site.xml ./conf/
+```
+- 3.开启spark shell终端 | 显示所有数据表并查看某张数据表数据
+```
+scala> spark.sql("show tables").show
++--------+--------------------+-----------+
+|database|           tableName|isTemporary|
++--------+--------------------+-----------+
+| default|            business|      false|
+| default|                dept|      false|
+| default|      dept_partition|      false|
+| default|                 emp|      false|
+| default|             emp_sex|      false|
+| default|hive_hbase_emp_table|      false|
+| default|       hive_workflow|      false|
+| default|            location|      false|
+| default|          movie_info|      false|
+| default|multitasking_hive...|      false|
+| default|         person_info|      false|
+| default| relevance_hbase_emp|      false|
+| default|               score|      false|
+| default|          staff_hive|      false|
+| default|                test|      false|
+| default|             test001|      false|
+| default|             test002|      false|
+| default|             test003|      false|
+| default|             test004|      false|
+| default|             test005|      false|
++--------+--------------------+-----------+
+only showing top 20 rows
+
+scala> spark.sql("select * from emp").show
++-----+-----+---------+----+----------+--------+-----+------+
+|empno|ename|      job| mgr|  hiredate|     sal| comm|deptno|
++-----+-----+---------+----+----------+--------+-----+------+
+| 7369|SMITH|CLERKSKLD|7902|1980-12-17|   800.0| 20.0|  null|
+| 7499|ALLTE|SALESMANS|7689|1987-02-23|  1600.0|300.0|    30|
+| 7521|WAROS|SJDHHJDJX|7869|1984-06-12| 1250.18|500.0|    30|
+| 7566|JOSSS|JDHYHDSDS|4545|1874-05-15| 2894.25| 20.0|  null|
+| 7654|SOCTD|MANSJUSSD|4855|1996-02-14|  2852.3| 30.0|  null|
+| 7698|ADAMS|JUSHHWESD|4552|1985-05-16|25524.02| 30.0|  null|
+| 7782|JAMSK|KIHNGSEHN|7769|1991-06-23|  1100.0| 20.0|  null|
+| 7788|FOESS|CLAEDFDFD|7698|1994-09-17|   950.0| 30.0|  null|
+| 7939|KINGS|CLADDJHEW|7566|1993-07-12|  3000.0| 20.0|  null|
++-----+-----+---------+----+----------+--------+-----+------+
+scala> 
+```
+
+###### 1.4.3.5.3 运行Spark SQL CLI
+- Spark SQL CLI可以很方便在本地运行Hive元数据服务以及从命令行执行查询任务.
+- 在Spark目录下执行如下命令启动Spark SQL CLI
+```
+[root@systemhub711 spark]# bin/spark-sql
+spark-sql (default)> show tables;
+database        tableName       isTemporary
+default business        false
+default dept    false
+default dept_partition  false
+default emp     false
+default emp_sex false
+default hive_hbase_emp_table    false
+default hive_workflow   false
+default location        false
+default movie_info      false
+default multitasking_hive_workflow      false
+default person_info     false
+default relevance_hbase_emp     false
+default score   false
+default staff_hive      false
+default test    false
+default test001 false
+default test002 false
+default test003 false
+default test004 false
+default test005 false
+default test006 false
+default test007 false
+default test008 false
+default test_buck       false
+default test_bucket     false
+Time taken: 6.2 seconds, Fetched 25 row(s)
+19/06/03 02:17:58 INFO CliDriver: Time taken: 6.2 seconds, Fetched 25 row(s)
+spark-sql (default)> 
+```
+###### 1.4.3.5.4 使用IDEA连接SparkSQL for Hive 
+- pom.xml 公共依赖信息
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.geekparkhub.core.spark</groupId>
+    <artifactId>spark_server</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <modules>
+        <module>spark-common</module>
+        <module>spark-core</module>
+        <module>spark-sql</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.11</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.11</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-hive_2.11</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-exec</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.15</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-server</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-client</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+- Create `SparkHiveAction.scala`
+``` scala
+package com.geekparkhub.core.spark.application.sparksql
+
+import org.apache.spark.sql.SparkSession
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * SparkHiveAction
+  * <p>
+  */
+
+object SparkHiveAction {
+  def main(args: Array[String]): Unit = {
+    // 创建SparkSession
+    val sparkSession: SparkSession = SparkSession
+      .builder()
+      .enableHiveSupport()
+      .master("local[*]")
+      .appName("SparkHiveAction")
+      .getOrCreate()
+
+    // 展示数据表信息
+    sparkSession.sql("show tables").show()
+
+    // 关闭资源
+    sparkSession.stop()
+  }
+}
+```
+- 运行查看结果
+```
++--------+--------------------+-----------+
+|database|           tableName|isTemporary|
++--------+--------------------+-----------+
+| default|            business|      false|
+| default|                dept|      false|
+| default|      dept_partition|      false|
+| default|                 emp|      false|
+| default|             emp_sex|      false|
+| default|hive_hbase_emp_table|      false|
+| default|       hive_workflow|      false|
+| default|            location|      false|
+| default|          movie_info|      false|
+| default|multitasking_hive...|      false|
+| default|         person_info|      false|
+| default| relevance_hbase_emp|      false|
+| default|               score|      false|
+| default|          staff_hive|      false|
+| default|                test|      false|
+| default|             test001|      false|
+| default|             test002|      false|
+| default|             test003|      false|
+| default|             test004|      false|
+| default|             test005|      false|
++--------+--------------------+-----------+
+only showing top 20 rows
+```
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 #### 1.4.4 Spark SQL 实例
 
 
