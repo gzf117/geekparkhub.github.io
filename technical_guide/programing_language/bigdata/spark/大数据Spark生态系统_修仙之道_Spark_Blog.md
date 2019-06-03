@@ -2828,7 +2828,7 @@ scala> spark.sql("Select addName(name),age from people").show()
 +-----------------+----+
 scala>
 ```
-###### 1.4.2.7.2 自定义聚合函数
+###### 1.4.2.7.2 自定义UDAF聚合函数
 - 强类型Dataset和弱类型DataFrame都提供了相关聚合函数,如count(),countDistinct(),avg(),max(),min(),除此之外还可以设定自定义聚合函数.
 - 弱类型自定义聚合函数 : 通过继承`UserDefinedAggregateFunction`来实现自定义聚合函数.
 - 下面展示 求平均工资自定义聚合函数
@@ -3373,30 +3373,611 @@ object SparkHiveAction {
 only showing top 20 rows
 ```
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 #### 1.4.4 Spark SQL 实例
-
-
 
 ### 🔥 1.5 Spark Streaming 🔥
 #### 1.5.1 Spark Streaming 概述
-#### 1.5.2 Spark Streaming Program
-#### 1.5.3 DataStream 概述
-#### 1.5.4 DataStream 输入
-#### 1.5.5 DataStream 转换
-#### 1.5.6 DataStream 输出
-#### 1.5.7 7*24hour运行
-#### 1.5.8 Spark Streaming 实例
+##### 1.5.1.1 Spark Streaming 是什么
+> Spark Streaming用于流式数据处理,Spark Streaming支持数据输入源很多,例如 : Kafka / Flume / Twitter / ZeroMQ和简单TCP套接字等等,数据输入后可以用Spark高度抽象原语如 : map / reduce / join / window等进行运算,而结果也能保存在很多地方,如HDFS,数据库等,另外Spark Streaming也能和MLlib(机器学习)以及Graphx完美融合.
+
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_024.jpg)
+
+> Spark Streaming和Spark基于RDD概念很相似,Spark Streaming使用`离散化流`(`discretized stream`)作为抽象表示,叫作`DStream`,DStream是随时间推移而收到的数据序列,在内部每个时间区间收到数据都作为RDD存在,而DStream是由这些RDD所组成的序列(因此得名“`离散化`”).
+> 
+> DStream可以从各种输入源创建,比如Flume / Kafka或者HDFS,创建出来DStream支持两种操作,一种是转化操作(`transformation`),会生成一个新的DStream,另一种是输出操作(`output operation`),可以把数据写入外部系统中,DStream提供了许多与RDD所支持的操作相类似操作支持,还增加了与时间相关新操作,比如滑动窗口.
+
+##### 1.5.1.2 Spark Streaming 特点
+- 1.易用
+- 2.容错
+- 3.易整合到Spark体系
+
+##### 1.5.1.3 Spark Streaming 架构
+
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_025.jpg)
+
+#### 1.5.2 DataStream 入门
+##### 1.5.2.1 WordCount 案例
+- 1.需求 : 使用`netcat`工具向9999端口不断发送数据,通过SparkStreaming读取端口数据并统计不同单词出现次数.
+- 2.追加依赖信息
+``` xml
+<dependency>
+ <groupId>org.apache.spark</groupId>
+ <artifactId>spark-streaming_2.11</artifactId>
+ <version>2.1.1</version>
+</dependency>
+```
+- 3. Create `StreamWordCounAction.scala`
+``` scala
+package com.geekparkhub.core.spark.application.example
+
+import org.apache.spark.SparkConf
+import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
+import org.apache.spark.streaming.{Seconds, StreamingContext}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * StreamWordCounAction
+  * <p>
+  */
+
+object StreamWordCounAction {
+  def main(args: Array[String]): Unit = {
+
+    // 创建 SparkConf
+    val sc: SparkConf = new SparkConf().setMaster("loacl[*]").setAppName("StreamWordCounAction")
+
+    //创建 StreamingContext
+    val ssc = new StreamingContext(sc, Seconds(3))
+
+    // 创建 DStream
+    val lineDStream: ReceiverInputDStream[String] = ssc.socketTextStream("systemhub511", 9999)
+
+    // 将行数据转换为单词
+    val wordDStream: DStream[String] = lineDStream.flatMap(_.split(" "))
+
+    // 将单词住转换为元祖
+    val wordAndOneDStream: DStream[(String, Int)] = wordDStream.map((_, 1))
+
+    // 统计单词出现个数
+    val DStreamResult: DStream[(String, Int)] = wordAndOneDStream.reduceByKey(_ + _)
+
+    // 输出日志信息
+    DStreamResult.print()
+
+    // 启动流式任务
+    ssc.start()
+    ssc.awaitTermination()
+  }
+}
+```
+
+- 4.启动Hadoop集群服务(包括Spark服务)
+```
+[root@systemhub511 ~]# start-cluster.sh
+[root@systemhub511 spark]# sbin/start-all.sh
+[root@systemhub511 spark]# sbin/start-history-server.sh
+```
+
+- 5.启动程序并通过NetCat发送数据
+```
+[root@systemhub511 spark]# nc -lk 9999
+hello
+spark
+io
+io
+io
+```
+- 6.查看日志信息
+```
+-------------------------------------------
+Time: 1559563323000 ms
+-------------------------------------------
+(hello,1)
+
+-------------------------------------------
+Time: 1559563326000 ms
+-------------------------------------------
+(spark,1)
+
+-------------------------------------------
+Time: 1559563329000 ms
+-------------------------------------------
+
+Time: 1559563341000 ms
+-------------------------------------------
+(io,1)
+
+-------------------------------------------
+Time: 1559563344000 ms
+-------------------------------------------
+(io,2)
+```
+##### 1.5.2.2 WordCount 解析
+> `Discretized Stream`是Spark Streaming基础抽象,代表持续性数据流和经过各种Spark原语操作后的结果数据流,在内部实现上`DStream`是一系列连续的RDD来表示,每个RDD含有一段时间间隔内的数据.
+
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_026.jpg)
+
+> 对数据操作也是按照RDD为单位来进行
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_027.jpg)
+
+> 计算过程由Spark engine来完成
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/spark/start_028.jpg)
+
+#### 1.5.3 DataStream 创建
+> Spark  Streaming原生支持一些不同数据源,一些核心数据源已经被打包到Spark Streaming的Maven工件中,而其他一些则可以通过spark-streaming-kafka等附加工件获取,每个接收器都以Spark执行器程序中一个长期运行的任务形式运行,因此会占据分配给应用CPU核心.
+> 
+> 此外还需要有可用的CPU核心来处理数据,这意味着如果要运行多个接收器,就必须至少有和接收器数目相同的核心数,还要加上用来完成计算所需要的核心数,例如如果想要在流计算应用中运行10个接收器,那么至少需要为应用分配11个CPU核心,所以如果在本地模式运行,不要使用`local`或者`local[1]`
+
+##### 1.5.3.1 文件数据源
+> 文件数据流 : 能够读取所有HDFS API兼容文件系统文件,通过`fileStream`方法进行读取,Spark Streaming将会监控`dataDirectory`目录并不断处理移动进来的文件,但是目前不支持嵌套目录.
+
+###### 1.5.3.1.1 用法及说明
+- 注意事项 : 
+- 1.文件需要有相同数据格式
+- 2.文件进入dataDirectory方式需要通过移动或者重命名来实现
+- 3.一旦文件移动进目录,则不能再修改,即便修改也不会读取新数据
+```
+streamingContext.textFileStream(dataDirectory)
+```
+
+###### 1.5.3.1.2 案例实操
+- 1.在HDFS上创建用于被监听目录
+```
+[root@systemhub511 spark]# hadoop fs -mkdir /core_flow/spark/filestream
+```
+- 2.创建三个文件
+```
+[root@systemhub511 filestream]# vim a.txt
+[root@systemhub511 filestream]# vim b.txt
+[root@systemhub511 filestream]# vim c.txt
+```
+- 3.Create `FileStreamAction.scala`
+``` scala
+package com.geekparkhub.core.spark.application.datastream
+
+import org.apache.spark.SparkConf
+import org.apache.spark.streaming.dstream.DStream
+import org.apache.spark.streaming.{Seconds, StreamingContext}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * FileStreamAction
+  * <p>
+  */
+
+object FileStreamAction {
+  def main(args: Array[String]): Unit = {
+
+    // 创建 SparkConf
+    val sc: SparkConf = new SparkConf().setMaster("local[*]").setAppName("FileStreamAction")
+
+    //创建 StreamingContext
+    val ssc = new StreamingContext(sc, Seconds(3))
+
+    // 监控文件夹 DStream
+    val fileDStream: DStream[String] = ssc.textFileStream("hdfs://systemhub511:9000/core_flow/spark/filestream/")
+
+    // 输出日志信息
+    fileDStream.print()
+
+    // 启动流式任务
+    ssc.start()
+    ssc.awaitTermination()
+  }
+}
+```
+- 4.启动程序
+```
+-------------------------------------------
+Time: 1559566113000 ms
+-------------------------------------------
+
+-------------------------------------------
+Time: 1559566116000 ms
+-------------------------------------------
+
+-------------------------------------------
+Time: 1559566119000 ms
+-------------------------------------------
+```
+
+- 5.上传文件
+```
+[root@systemhub511 spark]# hadoop fs -put /opt/module/datas/spark_flow/filestream/a.txt /core_flow/spark/filestream/
+
+[root@systemhub511 spark]# hadoop fs -put /opt/module/datas/spark_flow/filestream/b.txt /core_flow/spark/filestream/
+
+[root@systemhub511 spark]# hadoop fs -put /opt/module/datas/spark_flow/filestream/c.txt /core_flow/spark/filestream/
+```
+- 6.查看日志信息
+```
+-------------------------------------------
+Time: 1559566146000 ms
+-------------------------------------------
+SparkStreaming
+SparkStreaming
+SparkStream
+DStream
+
+-------------------------------------------
+Time: 1559566155000 ms
+-------------------------------------------
+textFileStream
+textFileStream
+StreamingContext
+
+-------------------------------------------
+Time: 1559566164000 ms
+-------------------------------------------
+awaitTermination
+hadoop
+```
+
+##### 1.5.3.2 RDD 队列
+###### 1.5.3.2.1 用法及说明
+> 测试过程中,可以通过使用`ssc.queueStream(queueOfRDDs)`来创建DStream,每一个推送到这个队列中的RDD,都会作为一个DStream处理.
+###### 1.5.3.2.2 案例实操
+- 1.需求 : 循环创建RDD,将RDD放入队列,通过SparkStream创建Dstream计算WordCoun.
+- 2.Create `QueuStreamAction.scala`
+``` scala
+package com.geekparkhub.core.spark.application.datastream
+
+import org.apache.spark.SparkConf
+import org.apache.spark.rdd.RDD
+import org.apache.spark.streaming.dstream.{DStream, InputDStream}
+import org.apache.spark.streaming.{Seconds, StreamingContext}
+
+import scala.collection.mutable
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * QueuStreamAction
+  * <p>
+  */
+
+object QueuStreamAction {
+  def main(args: Array[String]): Unit = {
+    // 创建 SparkConf
+    val sc: SparkConf = new SparkConf().setMaster("local[*]").setAppName("QueuStreamAction")
+
+    //创建 StreamingContext
+    val ssc = new StreamingContext(sc, Seconds(3))
+
+    // 创建RDD队列
+    val rddQueue = new mutable.Queue[RDD[Int]]()
+
+    // 创建 rddDStream
+    val rddDStream: InputDStream[Int] = ssc.queueStream(rddQueue,false)
+
+    // 统计计算
+    val result: DStream[Int] = rddDStream.reduce(_ + _)
+
+    // 输出日志信息
+    result.print()
+
+    // 启动流式任务
+    ssc.start()
+
+    // 循环创建RDD
+    for (i <- 1 to 5) {
+      rddQueue += ssc.sparkContext.makeRDD(1 to 100, 10)
+      Thread.sleep(2000)
+    }
+    ssc.awaitTermination()
+  }
+}
+```
+ - 3.启动程序 查看日志信息
+```
+ -------------------------------------------
+Time: 1559567436000 ms
+-------------------------------------------
+5050
+
+-------------------------------------------
+Time: 1559567439000 ms
+-------------------------------------------
+10100
+
+-------------------------------------------
+Time: 1559567442000 ms
+-------------------------------------------
+5050
+
+-------------------------------------------
+Time: 1559567445000 ms
+-------------------------------------------
+5050
+```
+
+##### 1.5.3.3 自定义数据源
+###### 1.5.3.3.1 用法及说明
+- 需要继承`Receiver`,并实现`onStart` & `onStop`方法来自定义数据源采集.
+###### 1.5.3.3.2 案例实操	
+- 需求 : 自定义数据源,实现监控某个端口号,获取该端口号内容.
+- 1.Create `CustomizeReceiver.scala`
+``` scala
+package com.geekparkhub.core.spark.application.datastream
+
+import java.io.{BufferedReader, InputStreamReader}
+import java.net.Socket
+import java.nio.charset.StandardCharsets
+
+import org.apache.spark.storage.StorageLevel
+import org.apache.spark.streaming.receiver.Receiver
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * CustomizeReceiver
+  * <p>
+  */
+
+class CustomizeReceiver(hostName: String, port: Int) extends Receiver[String](StorageLevel.MEMORY_ONLY) {
+
+  // 开始读取数据
+  override def onStart(): Unit = {
+    new Thread("receiver") {
+      override def run(): Unit = {
+        receiver()
+      }
+    }.start()
+  }
+
+  // 读取数据
+  def receiver(): Unit = {
+    try {
+      // 创建 Socket
+      val socket = new Socket(hostName, port)
+      // 定义变量,用来接收端口传过来的数据
+      var input: String = null
+      // 创建BufferedReader用于读取端口传来的数据
+      val reader = new BufferedReader(new InputStreamReader(socket.getInputStream, StandardCharsets.UTF_8))
+      // 赋值
+      input = reader.readLine()
+      while (input != null) {
+        store(input)
+        input = reader.readLine()
+      }
+      // 跳出循环则关闭资源
+      reader.close()
+      socket.close()
+
+      // 重启流式任务
+      restart("restart")
+    } catch {
+      case e: Exception => restart("restart")
+    }
+  }
+
+  // 结束读取数据
+  override def onStop(): Unit = {}
+}
+```
+- 2.Create `CustomizeReceiverAction.scala`
+``` scala
+package com.geekparkhub.core.spark.application.datastream
+
+import org.apache.spark.SparkConf
+import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
+import org.apache.spark.streaming.{Seconds, StreamingContext}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * CustomizeReceiverAction
+  * <p>
+  */
+
+object CustomizeReceiverAction {
+  def main(args: Array[String]): Unit = {
+    // 创建 SparkConf
+    val sc: SparkConf = new SparkConf().setMaster("local[*]").setAppName("CustomizeReceiverAction")
+
+    //创建 StreamingContext
+    val ssc = new StreamingContext(sc, Seconds(3))
+
+    val lineDStream: ReceiverInputDStream[String] = ssc.receiverStream(new CustomizeReceiver("systemhub511", 9999))
+
+    // 将行数据转换为单词
+    val wordDStream: DStream[String] = lineDStream.flatMap(_.split(" "))
+
+    // 将单词住转换为元祖
+    val wordAndOneDStream: DStream[(String, Int)] = wordDStream.map((_, 1))
+
+    // 统计单词出现个数
+    val DStreamResult: DStream[(String, Int)] = wordAndOneDStream.reduceByKey(_ + _)
+
+    // 输出日志信息
+    DStreamResult.print()
+
+    // 启动流式任务
+    ssc.start()
+    ssc.awaitTermination()
+  }
+}
+```
+- 3.启动程序并通过NetCat发送数据
+```
+[root@systemhub511 spark]# nc -lk 9999CustomizeReceiverAction
+CustomizeReceiverAction
+CustomizeReceiver      
+CustomizeReceiver      
+CustomizeReceiv
+```
+- 4.查看日志信息
+```
+-------------------------------------------
+Time: 1559570220000 ms
+-------------------------------------------
+
+Time: 1559570226000 ms
+-------------------------------------------
+(CustomizeReceiverAction,1)
+
+-------------------------------------------
+Time: 1559570229000 ms
+-------------------------------------------
+(CustomizeReceiverAction,1)
+(CustomizeReceiver,1)
+
+-------------------------------------------
+Time: 1559570232000 ms
+-------------------------------------------
+(CustomizeReceiver,1)
+
+-------------------------------------------
+Time: 1559570238000 ms
+-------------------------------------------
+(CustomizeReceiv,1)
+```
+
+
+
+##### 1.5.3.4 Kafka数据源
+###### 1.5.3.4.1 用法及说明
+- 在工程中需要引入Maven工件`spark-streaming-kafka_2.10`来使用它,包内提供的KafkaUtils对象可以在StreamingContext和JavaStreamingContext中以Kafka消息创建出DStream.
+- 
+- 由于KafkaUtils可以订阅多个主题,因此它创建出的DStream由成对的主题和消息组成,要创建出一个流数据,需要使用StreamingContext实例、一个由逗号隔开的ZooKeeper主机列表字符串、消费者组的名字(唯一名字),以及一个从主题到针对这个主题的接收器线程数的映射表来调用createStream()方法.
+
+###### 1.5.3.4.2 案例实操
+- 需求 : 通过SparkStreaming从Kafka读取数据,并将读取过来数据做简单计算(WordCount),最终将信息打印至控制台.
+- 1.追加依赖信息
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.geekparkhub.core.spark</groupId>
+    <artifactId>spark_server</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <modules>
+        <module>spark-common</module>
+        <module>spark-core</module>
+        <module>spark-sql</module>
+        <module>spark-streaming</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.11</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.11</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-hive_2.11</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-exec</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.15</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-server</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.hbase</groupId>
+            <artifactId>hbase-client</artifactId>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming_2.11</artifactId>
+            <version>2.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming-kafka_2.11</artifactId>
+            <version>1.6.3</version>
+        </dependency>
+    </dependencies>
+</project>
+```
+- 2. Create `KafkaSparkStreamingAction.scala`
+
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+#### 1.5.4  DataStream 转换
+- DStream上的原语与RDD类似,分为`Transformations(转换)`和`Output Operations()输出)`两种,此外转换操作中还有一些比较特殊原语,如 : `updateStateByKey()`、`transform()`以及各种Window相关原语.
+
+##### 1.5.4.1 无状态转化操作
+##### 1.5.4.2 有状态转化操作
+##### 1.5.4.3 其他重要操作
+
+#### 1.5.5 DataStream 输出
+#### 1.5.5 DataStream Program
+
 
 
 ## 🔥 2. Spark 高阶 🔥
 ### 2.1 内核机制
 ### 2.1 性能调优
-
-
-
-
-
 
 
 ## 3. 修仙之道 技术架构迭代 登峰造极之势
