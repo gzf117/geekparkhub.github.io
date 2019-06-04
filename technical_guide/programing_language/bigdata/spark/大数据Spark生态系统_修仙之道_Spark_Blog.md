@@ -3959,16 +3959,502 @@ Time: 1559570238000 ms
     </dependencies>
 </project>
 ```
-- 2. Create `KafkaSparkStreamingAction.scala`
+- 2.Create `KafkaSparkStreamingAction.scala`
+```
+package com.geekparkhub.core.spark.application.datastream
 
+import kafka.serializer.StringDecoder
+import org.apache.kafka.clients.consumer.ConsumerConfig
+import org.apache.spark.SparkConf
+import org.apache.spark.storage.StorageLevel
+import org.apache.spark.streaming.dstream.ReceiverInputDStream
+import org.apache.spark.streaming.kafka.KafkaUtils
+import org.apache.spark.streaming.{Seconds, StreamingContext}
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * KafkaSparkStreamingAction
+  * <p>
+  */
+
+object KafkaSparkStreamingAction {
+  def main(args: Array[String]): Unit = {
+    // 创建 SparkConf
+    val sc: SparkConf = new SparkConf().setMaster("local[*]").setAppName("KafkaSparkStreamingAction")
+
+    //创建 StreamingContext
+    val ssc = new StreamingContext(sc, Seconds(3))
+
+    // 声明 Kafka参数
+    val zookeeper = "systemhub511:2181,systemhub611:2181,systemhub711:2181"
+    val topic = "topic001"
+    val consumerGroup = "spark"
+
+    // 定义 Kafka参数
+    val kafkaPara: Map[String, String] = Map[String, String](
+      ConsumerConfig.GROUP_ID_CONFIG -> consumerGroup,
+      "zookeeper.connect" -> zookeeper,
+      ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.StringDeserializer",
+      ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG -> "org.apache.kafka.common.serialization.StringDeserializer"
+    )
+
+    // 创建 KafkaDStream
+    val KafkaDStream: ReceiverInputDStream[(String, String)] = KafkaUtils.createStream[String, String, StringDecoder, StringDecoder](ssc, kafkaPara, Map(topic -> 1), StorageLevel.MEMORY_ONLY)
+
+    // 输出日志信息
+    KafkaDStream.print()
+
+    // 启动流式任务
+    ssc.start()
+    ssc.awaitTermination()
+  }
+}
+```
+
+- 3.检索所有 kafka topic
+```
+[root@systemhub511 kafka]# bin/kafka-topics.sh --list --zookeeper systemhub511:2181
+__consumer_offsets
+ct
+topic001
+topic002
+topic003
+topic004
+```
+- 4.开启数据生产者服务
+```
+[root@systemhub511 kafka]# bin/kafka-console-producer.sh --broker-list systemhub511:9092 --topic topic001
+>
+```
+- 5.初次启动程序 | 运行时出现异常
+```
+Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/spark/Logging
+```
+- 5.1 解决方案 : 在项目中创建`org.apache.spark`包,并创建`Logging`实体即可
+```
+package org.apache.spark
+
+import org.apache.log4j.{LogManager, PropertyConfigurator}
+import org.slf4j.{Logger, LoggerFactory}
+import org.slf4j.impl.StaticLoggerBinder
+import org.apache.spark.annotation.DeveloperApi
+import org.apache.spark.util.Utils
+
+/** :: DeveloperApi ::
+  * Utility trait for classes that want to log data. Creates a SLF4J logger for the class and allows
+  * logging messages at different levels using methods that only evaluate parameters lazily if the
+  * log level is enabled.
+  *
+  * NOTE: DO NOT USE this class outside of Spark. It is intended as an internal utility.
+  * This will likely be changed or removed in future releases.
+  */
+@DeveloperApi
+trait Logging {
+  // Make the log field transient so that objects with Logging can
+  // be serialized and used on another machine
+  @transient private var log_ : Logger = null
+
+  // Method to get the logger name for this object
+  protected def logName = {
+    // Ignore trailing $'s in the class names for Scala objects
+    this.getClass.getName.stripSuffix("$")
+  }
+
+  // Method to get or create the logger for this object
+  protected def log: Logger = {
+    if (log_ == null) {
+      initializeIfNecessary()
+      log_ = LoggerFactory.getLogger(logName)
+    }
+    log_
+  }
+
+  // Log methods that take only a String
+  protected def logInfo(msg: => String) {
+    if (log.isInfoEnabled) log.info(msg)
+  }
+
+  protected def logDebug(msg: => String) {
+    if (log.isDebugEnabled) log.debug(msg)
+  }
+
+  protected def logTrace(msg: => String) {
+    if (log.isTraceEnabled) log.trace(msg)
+  }
+
+  protected def logWarning(msg: => String) {
+    if (log.isWarnEnabled) log.warn(msg)
+  }
+
+  protected def logError(msg: => String) {
+    if (log.isErrorEnabled) log.error(msg)
+  }
+
+  // Log methods that take Throwables (Exceptions/Errors) too
+  protected def logInfo(msg: => String, throwable: Throwable) {
+    if (log.isInfoEnabled) log.info(msg, throwable)
+  }
+
+  protected def logDebug(msg: => String, throwable: Throwable) {
+    if (log.isDebugEnabled) log.debug(msg, throwable)
+  }
+
+  protected def logTrace(msg: => String, throwable: Throwable) {
+    if (log.isTraceEnabled) log.trace(msg, throwable)
+  }
+
+  protected def logWarning(msg: => String, throwable: Throwable) {
+    if (log.isWarnEnabled) log.warn(msg, throwable)
+  }
+
+  protected def logError(msg: => String, throwable: Throwable) {
+    if (log.isErrorEnabled) log.error(msg, throwable)
+  }
+
+  protected def isTraceEnabled(): Boolean = {
+    log.isTraceEnabled
+  }
+
+  private def initializeIfNecessary() {
+    if (!Logging.initialized) {
+      Logging.initLock.synchronized {
+        if (!Logging.initialized) {
+          initializeLogging()
+        }
+      }
+    }
+  }
+
+  private def initializeLogging() {
+    // Don't use a logger in here, as this is itself occurring during initialization of a logger
+    // If Log4j 1.2 is being used, but is not initialized, load a default properties file
+    val binderClass = StaticLoggerBinder.getSingleton.getLoggerFactoryClassStr
+    // This distinguishes the log4j 1.2 binding, currently
+    // org.slf4j.impl.Log4jLoggerFactory, from the log4j 2.0 binding, currently
+    // org.apache.logging.slf4j.Log4jLoggerFactory
+    val usingLog4j12 = "org.slf4j.impl.Log4jLoggerFactory".equals(binderClass)
+
+    lazy val isInInterpreter: Boolean = {
+      try {
+        val interpClass = classForName("org.apache.spark.repl.Main")
+        interpClass.getMethod("interp").invoke(null) != null
+      } catch {
+        case _: ClassNotFoundException => false
+      }
+    }
+
+    def classForName(className: String): Class[_] = {
+      Class.forName(className, true, getContextOrSparkClassLoader)
+      // scalastyle:on classforname
+    }
+
+    def getContextOrSparkClassLoader: ClassLoader =
+      Option(Thread.currentThread().getContextClassLoader).getOrElse(getSparkClassLoader)
+
+    def getSparkClassLoader: ClassLoader = getClass.getClassLoader
+
+    if (usingLog4j12) {
+      val log4j12Initialized = LogManager.getRootLogger.getAllAppenders.hasMoreElements
+      if (!log4j12Initialized) {
+        // scalastyle:off println
+        if (isInInterpreter) {
+          val replDefaultLogProps = "org/apache/spark/log4j-defaults-repl.properties"
+          Option(Utils.getSparkClassLoader.getResource(replDefaultLogProps)) match {
+            case Some(url) =>
+              PropertyConfigurator.configure(url)
+              System.err.println(s"Using Spark's repl log4j profile: $replDefaultLogProps")
+              System.err.println("To adjust logging level use sc.setLogLevel(\"INFO\")")
+            case None =>
+              System.err.println(s"Spark was unable to load $replDefaultLogProps")
+          }
+        } else {
+          val defaultLogProps = "org/apache/spark/log4j-defaults.properties"
+          Option(Utils.getSparkClassLoader.getResource(defaultLogProps)) match {
+            case Some(url) =>
+              PropertyConfigurator.configure(url)
+              System.err.println(s"Using Spark's default log4j profile: $defaultLogProps")
+            case None =>
+              System.err.println(s"Spark was unable to load $defaultLogProps")
+          }
+        }
+        // scalastyle:on println
+      }
+    }
+    Logging.initialized = true
+
+    // Force a call into slf4j to initialize it. Avoids this happening from multiple threads
+    // and triggering this: http://mailman.qos.ch/pipermail/slf4j-dev/2010-April/002956.html
+    log
+  }
+}
+
+private object Logging {
+  @volatile private var initialized = false
+  val initLock = new Object()
+  try {
+    // We use reflection here to handle the case where users remove the
+    // slf4j-to-jul bridge order to route their logs to JUL.
+    val bridgeClass = Utils.classForName("org.slf4j.bridge.SLF4JBridgeHandler")
+    bridgeClass.getMethod("removeHandlersForRootLogger").invoke(null)
+    val installed = bridgeClass.getMethod("isInstalled").invoke(null).asInstanceOf[Boolean]
+    if (!installed) {
+      bridgeClass.getMethod("install").invoke(null)
+    }
+  } catch {
+    case e: ClassNotFoundException => // can't log anything yet so just fail silently
+  }
+}
+```
+- 6.再次启动程序
+```
+-------------------------------------------
+Time: 1559624490000 ms
+-------------------------------------------
+```
+- 7.向Kafka数据生产者写入数据
+```
+[root@systemhub511 kafka]# bin/kafka-console-producer.sh --broker-list systemhub511:9092 --topic topic001
+>top001
+>top002
+>top003
+>top004
+>top005
+>top006
+```
+- 8.查看日志信息
+```
+-------------------------------------------
+Time: 1559624499000 ms
+-------------------------------------------
+(null,top001)
+
+-------------------------------------------
+Time: 1559624502000 ms
+-------------------------------------------
+(null,top002)
+
+-------------------------------------------
+Time: 1559624505000 ms
+-------------------------------------------
+(null,top003)
+
+-------------------------------------------
+Time: 1559624508000 ms
+-------------------------------------------
+(null,top004)
+
+-------------------------------------------
+Time: 1559624511000 ms
+-------------------------------------------
+(null,top005)
+
+-------------------------------------------
+Time: 1559624514000 ms
+-------------------------------------------
+(null,top006)
+```
+
 #### 1.5.4  DataStream 转换
 - DStream上的原语与RDD类似,分为`Transformations(转换)`和`Output Operations()输出)`两种,此外转换操作中还有一些比较特殊原语,如 : `updateStateByKey()`、`transform()`以及各种Window相关原语.
 
 ##### 1.5.4.1 无状态转化操作
+> 无状态转化操作就是把简单的RDD转化操作应用到每个批次上,也就是转化DStream中的每一个RDD,部分无状态转化操作列在了下表中,注意针对键值对的DStream转化操作(比如`reduceByKey()`)要添加`import StreamingContext._`才能在Scala中使用.
+
+| 函数名称 |   作用 |   Scala实例 | 用来操作DStream[T]用户自定义函数 函数签名 |
+| :--------: | :--------:| :------: | :------: |
+| map()    |   对DStream中的每个元素应用到给定函数,返回由各个元素输出的元素的DStream. |  ds.map(x => x + 1)  |  f:(T) -> U  |
+| flatMap()    |   对DStream中的每个元素应用给定函数,返回有各个元素输出迭代器组成的DStream. |  ds.flatMap(x => x.split(" "))  |  f: T -> Iterable[U] |
+| filter()    |   返回由给定DStream中通过筛选的元素组成的DStream. |  ds.filter(x => x != 1)  |  f: T -> Boolean  |
+| repartition()    |   改变DStream分区数 |  ds.repartition(10)  |  N/A  |
+| reduceByKey()    |   将每个批次中间相同的记录规约 |  ds.reduceByKey((x,y) => x + y)  |  f:T , T -> T  |
+| groupByKey()    | 将每个批次中的记录根据键分组   | ds.groupByKey()  |  N/A  |
+
+> 需要记住的是,尽管这些函数看起来像作用在整个流上一样,但事实上每个DStream在内部是由许多RDD(批次)组成,且无状态转化操作是分别应用到每个RDD上的,例如`reduceByKey()`会归约每个时间区间中数据,但不会归约不同区间之间数据.
+> 
+> 举个例子,在之前的wordcount程序中,只会统计1秒内接收到的数据单词个数,而不会累加.
+> 
+> 无状态转化操作也能在多个DStream间整合数据,不过也是在各个时间区间内,例如键值对DStream拥有和RDD一样的与连接相关的转化操作,也就是`cogroup()` / `join()` / `leftOuterJoin()`等,可以在DStream上使用这些操作,这样就对每个批次分别执行了对应的RDD操作.
+> 还可以像在常规的Spark中一样使用DStream的`union()`操作将它和另一个DStream 的内容合并起来,也可以使用StreamingContext.union()来合并多个流.
+
 ##### 1.5.4.2 有状态转化操作
+###### 1.5.4.2.1 UpdateStateByKey
+> UpdateStateByKey原语用于记录历史记录,有时需要在DStream中跨批次维护状态(例如流计算中累加wordcount),针对这种情况,`updateStateByKey()`提供了对一个状态变量的访问,用于键值对形式DStream,给定一个由(键,事件)对构成DStream,并传递一个指定如何根据新的事件更新每个键对应状态的函数,它可以构建出一个新的DStream,其内部数据为(键,状态) 对.
+> 
+> `updateStateByKey()`结果会是一个新的DStream,其内部的RDD序列是由每个时间区间对应的(键,状态)对组成.
+> 
+> `updateStateByKey`操作可以在用新信息进行更新时保持任意状态,为使用这个功能，只需要做下面两步 : 
+> 1. 定义状态,状态可以是一个任意数据类型.
+> 2.定义状态更新函数,用此函数阐明如何使用之前状态和来自输入流新值对状态进行更新.
+> 使用`updateStateByKey`需要对检查点目录进行配置,会使用检查点来保存状态.
+> 更新版的wordcount
+
+- 1.定义有状态转化操作 | Create `UpdateStateByKeyWordCounAction.scala`
+``` scala
+package com.geekparkhub.core.spark.application.example
+
+import org.apache.spark.SparkConf
+import org.apache.spark.streaming.{Seconds, StreamingContext}
+import org.apache.spark.streaming.dstream.{DStream, ReceiverInputDStream}
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园枢纽
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * UpdateStateByKeyWordCounAction
+  * <p>
+  */
+
+object UpdateStateByKeyWordCounAction {
+  def main(args: Array[String]): Unit = {
+
+    // 创建 SparkConf
+    val sc: SparkConf = new SparkConf().setMaster("local[*]").setAppName("UpdateStateByKeyWordCounAction")
+
+    //创建 StreamingContext
+    val ssc = new StreamingContext(sc, Seconds(3))
+
+    // 创建缓存目录检查站
+    ssc.checkpoint("./ck")
+
+    // 创建 DStream
+    val lineDStream: ReceiverInputDStream[String] = ssc.socketTextStream("systemhub511", 9999)
+
+    // 将行数据转换为单词
+    val wordDStream: DStream[String] = lineDStream.flatMap(_.split(" "))
+
+    // 将单词住转换为元祖
+    val wordAndOneDStream: DStream[(String, Int)] = wordDStream.map((_, 1))
+
+    /**
+      * 定义更新状态方法
+      * 参数 values为当前批次单词频度
+      * 参数 state为以往批次单词频度
+      */
+    val updateFunc = (values: Seq[Int], state: Option[Int]) => {
+      val count: Int = values.sum
+      val perCount: Int = state.getOrElse(0)
+      Some(count + perCount)
+    }
+
+    // 统计单词出现个数
+    val DStreamResult: DStream[(String, Int)] = wordAndOneDStream.updateStateByKey(updateFunc)
+
+    // 输出日志信息
+    DStreamResult.print()
+
+    // 启动流式任务
+    ssc.start()
+    ssc.awaitTermination()
+  }
+}
+```
+- 2.启动程序并通过NetCat发送数据
+```
+[root@systemhub511 spark]# nc -kl 9999
+hello
+hello
+hello
+geek
+geek
+hello
+hey
+hey
+test
+test
+hello
+```
+- 3.查看日志信息
+```
+-------------------------------------------
+Time: 1559643684000 ms
+-------------------------------------------
+(hello,1)
+
+-------------------------------------------
+Time: 1559643687000 ms
+-------------------------------------------
+(hello,1)
+
+-------------------------------------------
+Time: 1559643690000 ms
+-------------------------------------------
+(hello,3)
+
+-------------------------------------------
+Time: 1559643693000 ms
+-------------------------------------------
+(hello,3)
+(geek,1)
+
+-------------------------------------------
+Time: 1559643696000 ms
+-------------------------------------------
+(hello,3)
+(geek,2)
+
+-------------------------------------------
+Time: 1559643699000 ms
+-------------------------------------------
+(hello,4)
+(geek,2)
+
+-------------------------------------------
+Time: 1559643702000 ms
+-------------------------------------------
+(hello,4)
+(geek,2)
+(hey,1)
+
+-------------------------------------------
+Time: 1559643705000 ms
+-------------------------------------------
+(hello,4)
+(geek,2)
+(hey,2)
+
+-------------------------------------------
+Time: 1559643708000 ms
+-------------------------------------------
+(hello,4)
+(test,2)
+(geek,2)
+(hey,2)
+
+-------------------------------------------
+Time: 1559643711000 ms
+-------------------------------------------
+(hello,5)
+(test,2)
+(geek,2)
+(hey,2)
+```
+
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+###### 1.5.4.2.2 Window Operations
+
 ##### 1.5.4.3 其他重要操作
+###### 1.5.4.3.1 Transform
+###### 1.5.4.3.2 Join
+
 
 #### 1.5.5 DataStream 输出
 #### 1.5.5 DataStream Program
