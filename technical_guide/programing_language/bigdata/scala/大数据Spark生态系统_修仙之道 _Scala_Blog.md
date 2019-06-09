@@ -811,11 +811,687 @@ object DemoTest003 {
 }
 ```
 
+### 6.10 Scala 程序流程控制
+- 在程序中,程序运行的流程控制决定程序是如何执行,是必须掌握的,主要有三大流程控制语句 : 
+- scala语言中控制结构和Java语言中的控制结构基本相同,在不考虑特殊应用场景情况下,代码书写方式以及理解方式都没有太大的区别.
+- 1.顺序控制
+- 2.分支控制
+- 3.循环控制
+
+#### 6.10.1 分支控制 if-else
+- 让程序有选择的执行,分支控制有三种 : 1.单分支 | 2.双分支 | 3.多分支
+
+
+##### 6.10.1.1 单分支
+- `基本语法`
+- 说明 : 当条件表达式为true时,会执行花括号内代码块内容.
+```
+if(条件表达式){
+   执行代码块
+}
+```
+- `单分支实例`
+``` scala
+object DemoTest004 {
+  def main(args: Array[String]): Unit = {
+    println("Please enter age")
+    val age = StdIn.readInt()
+    if (age > 18) {
+      printf("age > " + age)
+    }
+  }
+}
+```
+##### 6.10.1.2 双分支
+- `基本语法`
+- 说明 : 当条件表达式成立,即执行代码块1,否则执行代码块2
+```
+if (条件表达式) {
+    执行代码块1
+} else {
+    执行代码块2
+}
+```
+- `双分支实例`
+``` scala
+object DemoTest004 {
+  def main(args: Array[String]): Unit = {
+    val ages = 17
+    if (ages > 18) {
+      println(ages + " > 17")
+    } else {
+      println(ages + " < 17")
+    }
+  }
+}
+```
+
+##### 6.10.1.3 多分支
+- `基本语法`
+- 说明 : 当条件表达式1成立时,既执行代码块1,如表达式1不成立,才去判断表达式2是否成立,如表达式2成立,就执行代码块2,以此类推,如果所有的表达式偶不成立,则执行else代码块,只能由一个执行入口.
+```
+if (条件表达式1) {
+    执行代码块1
+} else if (条件表达式2) {
+    执行代码块2
+} 
+......
+else {
+执行代码块n
+}
+```
+- `多分支实例`
+``` scala
+object DemoTest005 {
+  def main(args: Array[String]): Unit = {
+    while (true) {
+      println("------------")
+      println("请输入修仙等级")
+      println("------------")
+      val grade = StdIn.readInt()
+      if (grade == 100) {
+        println("+++++++")
+        println("登峰造极")
+      } else if (grade > 80 && grade <= 99) {
+        println("+++++++")
+        println("炉火纯青")
+      } else if (grade >= 60 && grade <= 80) {
+        println("+++++++")
+        println("热化提纯")
+      } else {
+        println("+++++++")
+        println("无名小卒")
+      }
+    }
+  }
+}
+```
+##### 6.10.1.4 分支控制if-else 注意事项
+- 如果大括号{}内的逻辑代码只有一行,大括号可以省略,这点和java规定一样.
+- Scala中任意表达式都是有返回值,也就意味着if else表达式其实是有返回结果,具体返回结果值取决于满足条件代码体的最后一行内容.
+- Scala中是没有三元运算符.
+
+
+#### 6.10.2 嵌套分支
+- 在一个分支结构中又完整的嵌套了另一个完整的分支结构,里面的分支的结构称为内层分支外面的分支结构称为外层分支,嵌套分支不要超过3层.
+- `基本语法`
+```
+if(){
+ if(){
+} else {
+ }
+}
+```
+
+- `嵌套分支实例`
+``` scala
+object DemoTest006 {
+  def main(args: Array[String]): Unit = {
+    println("请输入你的年龄")
+    val age = StdIn.readInt()
+    if (age >= 18) {
+      println("你的年龄大于18岁,请输入你的性别")
+      val sex = StdIn.readChar()
+      if (sex == '男') {
+        println("已进入男子竞技频道")
+      } else {
+        println("已进入女子竞技频道")
+      }
+    } else {
+      println("你的年龄小于18岁,游戏结束")
+    }
+  }
+}
+```
+
+
+#### 6.10.3 switch 分支结构
+- 在scala中没有switch,而是使用模式匹配来处理.
+
+
+#### 6.10.4 for 循环控制
+- Scala也为for循环这一常见的控制结构提供了非常多特性,这些for循环特性被称为for推导式(for comprehension)或for表达式(for expression)
+
+##### 6.10.4.1 范围数据循环方式 1
+- `基本语法`
+- 说明 : i 表示循环变量,<-规定好 to规定
+- i 将会从1-3循环,前后闭合
+``` scala
+for(i <-1 to 3){
+ print(i + " ")
+}
+```
+- `for循环实例`
+``` scala
+object DemoTest007 {
+  def main(args: Array[String]): Unit = {
+    val start = 1
+    val end = 10
+    for (i <- start to end) {
+      println(i + " - hello")
+    }
+  }
+}
+```
+##### 6.10.4.2 范围数据循环方式 2
+- `基本语法`
+- 说明 : 这种方式和前面的区别在于i 是从1 到3-1,前闭合后开的范围,和java的arr.length() 类似
+``` scala
+for(i <-1 until 3) {
+  print(i + " ")
+}
+```
+- `for循环实例`
+``` scala
+object DemoTest007 {
+  def main(args: Array[String]): Unit = {
+    val start = 1
+    val end = 10
+    for (i <- start until end) {
+      println(i + " - hey")
+    }
+  }
+}
+```
+
+##### 6.10.4.3 循环守卫
+- `基本语法`
+- 说明 : 循环守卫,即循环保护式(也称条件判断式,守卫),保护式为true则进入循环体内部,为false则跳过,类似于continue
+``` scala
+for(i <- 1 to 3 if i != 2) {
+ print(i + " ")
+}
+```
+- `循环守卫实例`
+``` scala
+ object DemoTest007 {
+  def main(args: Array[String]): Unit = {
+    for (i <- 1 to 3 if i !=2){
+      println("num is = " + i)
+    }
+  }
+}
+```
+##### 6.10.4.4 引入变量
+- `基本语法`
+- 说明 : 没有关键字,所以范围后一定要通过分号来隔断逻辑
+```scala
+for(i <-1 to 3; j = 4 -i) {
+ print(j + " ")
+}
+```
+- `引入变量实例`
+``` scala
+object DemoTest007 {
+  def main(args: Array[String]): Unit = {
+    for(i <- 1 to 3 ; j = 4 - i){
+      println("num j is = " + j)
+    }
+  }
+}
+```
+
+
+##### 6.10.4.5 嵌套循环
+- `基本语法`
+- 说明 : 没有关键字,所以范围后一定要通过分号来隔断逻辑
+``` scala
+for(i <-1 to 3; j <-1 to 3) {
+ println(" i =" + i + " j = " + j)
+}
+```
+- `嵌套循环实例`
+``` scala
+object DemoTest007 {
+  def main(args: Array[String]): Unit = {
+    for (i <- 1 to 3 ; j <- 1 to 5){
+      println("i is = " + i + " , " + "j is = " + j)
+    }
+  }
+```
+
+##### 6.10.4.6 循环返回值
+- `基本语法`
+- 说明 : 将遍历过程中处理的结果返回到一个新Vector集合中,使用`yield`关键字.
+``` scala
+val res = for(i <-1 to 10) yield i
+println(res)
+```
+- `循环返回值实例`
+``` scala
+object DemoTest007 {
+  def main(args: Array[String]): Unit = {
+    /**
+      * 对1 to 10 进行遍历
+      * yield i 将每次循环得到i放入到集合Vector中,并返回给res
+      */
+    val res = for (i <- 1 to 10) yield {
+      if (i % 2 == 0) {
+        i
+      } else {
+        0
+      }
+    }
+    println(res)
+  }
+}
+```
+
+
+##### 6.10.4.7 使用花括号{}代替小括号()
+- `基本语法`
+- 说明 : {}和()对于for表达式来说都可以使用.
+- for推导式有一个不成文约定 : 当for推导式仅包含单一表达式时使用圆括号,当其包含多个表达式时使用大括号.
+- 当使用{}来换行写表达式时,分号就不用编写.
+``` scala
+for(i <-1 to 3; j = i * 2) {
+ println(" i= " + i + " j= " + j)
+}
+println("------------------------------------")
+for {
+  i <-1 to 3
+  j = i * 2} {
+  println(" i= " + i + " j= " + j)
+}
+```
+
+##### 6.10.4.8 注意事项和细节说明
+- 1.scala的for循环形式和java是较大差异,但是基本原理还是一样.
+- 2.scala的for循环步长如何控制`! [for(i <-Range(1,3,2)]`
+``` scala
+for (i <- Range(1,10,2)){
+  println(i)
+}
+```
+- 3.使用循环守卫控制步长
+``` scala
+for (i <- 1 to 10 if i % 2 == 1) {
+ println(i)
+}
+```
+
+#### 6.10.5 while 循环控制
+- `基本语法`
+- 说明 : 循环条件是返回一个布尔值的表达式.
+- while循环是先判断再执行语句.
+- 与If语句不同，While语句本身没有值，即整个While语句的结果是Unit类型的()
+- 因为while中没有返回值,所以当要用该语句来计算并返回结果时,就不可避免的使用变量，而变量需要声明在while循环的外部，那么就等同于循环的内部对外部的变量造成了影响，所以不推荐使用，而是推荐使用for循环
+``` scala
+while (循环条件) {
+循环体(语句)
+循环变量迭代
+}
+```
+- `while实例`
+``` scala
+var i = 0
+while (i < 10){
+ println(i)
+ i += 1
+}
+```
+
+#### 6.10.6 do..while 循环控制
+- `基本语法`
+- 说明 : 循环条件是返回一个布尔值的表达式.
+- do..while循环是先执行,再判断.
+- 和while 一样,因为do...while中没有返回值,所以当要用该语句来计算并返回结果时,就不可避免的使用变量,而变量需要声明在do...while循环的外部,那么就等同于循环的内部对外部的变量造成了影响,所以不推荐使用,而是推荐使用for循环.
+``` scala
+do{
+循环体(语句)
+循环变量迭代
+} while(循环条件)
+```
+- `do..while实例`
+``` scala
+var is = 0
+do{
+ println(is)
+ is += 1
+} while (is < 10)
+```
+
+#### 6.10.7 多重循环控制
+- 说明 : 
+- 将一个循环放在另一个循环体内,就形成了嵌套循环。其中for/while/do...while均可以作为外层循环和内层循环.(建议一般使用两层,最多不要超过3层)
+- 实质上,嵌套循环就是把内层循环当成外层循环的循环体,当只有内层循环的循环条件为false时,才会完全跳出内层循环,才可结束外层的当次循环,开始下一次循环.
+- 设外层循环次数为m次,内层为n次,则内层循环体实际上需要执行m*n=mn次.
+- `实例`
+``` scala
+for (i <- 1 to 9){
+ for (j <- 1 to i){
+  printf("%d * %d = %d\t",j,i,j*i)
+ }
+  printf("\n")
+}
+```
+
+
+#### 6.10.8 while 循环中断
+- `基本语法`
+- 说明 : Scala内置控制结构特地去掉了break和continue,是为了更好的适应函数化编程,推荐使用函数式的风格解决break和contine的功能,而不是一个关键字.
+- breakable是一个高阶函数 : 可以接收函数的函数就是高阶函数.
+- breakable对break()抛出异常做了处理,代码就继续执行.
+- 当传入的是代码块,scala程序员会将()改成{}
+- Scala内置控制结构特地也去掉了continue,是为了更好的适应函数化编程,可以使用if –else或是循环守卫实现continue效果.
+- `实例`
+``` scala
+    var n = 1
+    breakable {
+      while (n <= 20) {
+        n += 1
+        println ("n=" + n)
+        if (n == 18) {
+          // 使用函数式break函数中断循环
+          break()
+        }
+      }
+    }
+    println("ok")
+```
+
+### 6.11 Scala 函数式编程 基础
+#### 6.11.1 函数式编程内容
+> 函数式编程基础 : 
+> 函数定义/声明
+> 函数运行机制
+> 递归 难点[最短路径,邮差问题,迷宫问题,回溯]
+> 过程
+> 过程
+> 
+> 函数式编程高级 : 
+> 值函数(函数字面量)
+> 高阶函数
+> 闭包
+> 应用函数
+> 柯里化函数 抽象控制
+
+
+#### 6.11.2 函数式编程介绍
+> 在学习Scala中将方法 / 函数 / 函数式编程和面向对象编程需要明确 : 
+> 1.在scala中方法和函数几乎可以等同(比如定义、使用、运行机制都一样),只是函数使用方式更加的灵活多样.
+> 2.函数式编程是从编程方式(范式)角度来谈,可以这样理解 : 函数式编程把函数当做一等公民,充分利用函数、支持的函数多种使用方式.
+> 3.面向对象编程是以对象为基础的编程方式.
+> 4.在scala中函数式编程和面向对象编程融合在一起.
+> 
+> 函数式编程思想
+> 函数式编程是一种"编程范式" (programming paradigm)
+> 它属于"结构化编程"的一种,主要思想是把运算过程尽量写成一系列嵌套函数调用.
+> 函数式编程中,将函数也当做数据类型,因此可以接受函数当作输入(参数)和输出(返回值).
+> 函数式编程中最重要的就是函数.
+
+#### 6.11.3 函数的定义
+- `基本语法`
+- 说明 : 
+- 1.函数声明关键字为def (definition)
+- 2.[参数名: 参数类型], ... 表示函数的输入(就是参数列表),,可以没有,如果有,多个参数使用逗号间隔.
+- 3.函数中的语句 : 表示为了实现某一功能代码块.
+- 4.函数可以有返回值,也可以没有
+- 返回值形式1: 返回值类型 =
+- 返回值形式2:  = 表示返回值类型不确定,使用类型推导完成.
+- 返回值形式3: 表示没有返回值,return不生效.
+- 5.如果没有return,默认以执行到最后一行的结果作为返回值.
+```
+def 函数名([参数名: 参数类型], ...)[[: 返回值类型] =] {
+ 语句...
+ return 返回值
+}
+```
+- `函数实例`
+``` scala
+object DemoTest009 {
+  def main(args: Array[String]): Unit = {
+    val sum: Any = getSum(10, 5, '+')
+    println("res is = " + sum)
+  }
+  
+  // 定义函数/方法
+  def getSum(n1: Int, n2: Int, oper: Char) = {
+    if (oper == '+') {
+      n1 + n2
+    } else if (oper == '-') {
+      n1 - n2
+    } else {
+      null
+    }
+  }
+}
+```
+#### 6.11.4 函数注意事项
+- 1.函数的形参列表可以是多个,如果函数没有形参,调用时可以不带()
+- 2.形参列表和返回值列表的数据类型可以是值类型和引用类型.
+- 3.Scala中的函数可以根据函数体最后一行代码自行推断函数返回值类型,那么在这种情况下,return关键字可以省略.
+- 4.因为Scala可以自行推断,所以在省略return关键字的场合,返回值类型也可以省略.
+- 5.如果函数明确使用return关键字,那么函数返回就不能使用自行推断了,这时要明确写成: 返回类型=,当然如果什么都不写,即使有return返回值为()
+- 6.如果函数明确声明无返回值(声明Unit),那么函数体中即使使用return关键字也不会有返回值.
+- 7.如果明确函数无返回值或不确定返回值类型,那么返回值类型可以省略或声明为Any
+- 8.Scala语法中任何的语法结构都可以嵌套其他语法结构(灵活),即函数中可以再声明/定义函数,类中可以再声明类,方法中可以再声明/定义方法.
+- 9.Scala函数的形参,在声明参数时,直接赋初始值(默认值),这时调用函数时,如果没有指定实参,则会使用默认值,如果指定了实参,则实参会覆盖默认值.
+- 10.如果函数存在多个参数,每一个参数都可以设定默认值,那么传递的参数到底是覆盖默认值,还是赋值给没有默认值的参数,就不确定了(默认按照声明顺序[从左到右]),在这种情况下,可以采用带名参数.
+- 11.递归函数未执行之前是无法推断出来结果类型,在使用时必须有明确的返回值类型
+- 12.Scala函数支持可变参数.
+- 13
+
+
+#### 6.11.5 过程
+- `基本介绍`
+- 将函数的返回值类型为Unit函数称为过程(procedure),如果明确函数没有返回值,那么等号可以省略.
+- `注意事项`
+- 1.注意区分 : 如果函数声明时没有返回值类型,但是有`=`等号,可以进行类型推断最后一行代码,这时这个函数实际是有返回值,该函数并不是过程.
+- 2.开发工具自动代码补全功能,虽然会自动加上Unit,但是考虑到Scala语言简单灵活,最好不加.
+
+
+#### 6.11.6 惰性函数
+- 惰性计算(尽可能延迟表达式求值)是许多函数式编程语言的特性.
+- 惰性集合在需要时提供其元素,无需预先计算它们,这带来了一些好处,首先可以将耗时的计算推迟到绝对需要的时候,其次可以创造无限个集合,只要它们继续收到请求,就会继续提供元素,函数的惰性使用让您能够得到更高效的代码,Java并没有为惰性提供原生支持,而Scala提供惰性函数.
+
+##### 6.11.6.1 Java实现懒加载
+``` java
+public class LazyDemo {
+    private String property;
+
+    // 属性也可能是一个数据库连接,文件等资源
+    public String getProperty() {
+        if (property == null) {
+            // 如果没有初始化过,那么进行初始化
+            property = initProperty();
+        }
+        return property;
+    }
+
+    private String initProperty() {
+        return "property";
+    }
+}
+```
+##### 6.11.6.2 惰性函数介绍
+- 当函数返回值被声明为lazy时,函数的执行将被推迟,直到首次对此取值,该函数才会执行,这种函数称之为惰性函数,在Java的某些框架代码中称之为懒加载(延迟加载).
+- `惰性函数实例`
+```scala
+object DemoTest010 {
+  def main(args: Array[String]): Unit = {
+    lazy val res = sum(10, 20)
+    println("-----------------")
+    println("res=" + res)
+    def sum(n1: Int, n2: Int): Int = {
+      println("sum() 执行..")
+      return n1 + n2
+    }
+  }
+}
+```
+- `注意事项`
+- lazy不能修饰var类型变量.
+- 不但是在调用函数时,加了lazy,会导致函数的执行被推迟,在声明一个变量时,如果给声明了lazy,那么变量值得分配也会推迟.
+
+
+#### 6.11.7 异常
+- Scala提供try和catch块来处理异常.
+- try块用于包含可能出错的代码,catch块用于处理try块中发生的异常,可以根据需要在程序中有任意数量的try...catch块.
+- 语法处理上和Java类似,但是又不尽相同.
+
+##### 6.11.7.1 Java异常处理
+``` java
+public class JavaExceptionDemo01 {
+    public static void main(String[] args) {
+        try {
+            // 可疑代码
+            int i = 0;
+            int b = 10;
+            int c = b / i;
+            // 执行代码时，会抛出ArithmeticException异常
+        } catch (ArithmeticException ex) {
+            ex.printStackTrace();
+        } catch (Exception e) {
+            //java中不可以把返回大的异常写在前，否则报错!!
+            e.printStackTrace();
+        } finally {
+            // 最终要执行的代码
+            System.out.println("java finally");
+        }
+        System.out.println("ok~~~继续执行...");
+    }
+}
+```
+##### 6.11.7.2 Java异常处理注意点
+- java语言按照try—catch-catch...—finally的方式来处理异常.
+- 不管有没有异常捕获,都会执行finally,因此通常可以在finally代码块中释放资源.
+- 可以有多个catch,分别捕获对应的异常,这时需要把范围小的异常类写在前面,把范围大的异常类写在后面,否则编译错误,会提示"`Exception 'java.lang.xxxxxx' has already been caught`"
+
+
+##### 6.11.7.3 Scala异常处理
+``` scala
+object DemoTest011 {
+  def main(args: Array[String]): Unit = {
+    try {
+      val s = 10 / 0
+    } catch {
+      /**
+        * 在scala中只有一个catch
+        * 在catch中有多个case,每个case可以匹配一种异常case ex: ArithmeticException
+        * => 关键符号,表示后面是对该异常的处理代码块
+        * finally是最终执行
+        **/
+      case ex: ArithmeticException => println("Trapping arithmetic exception")
+      case ex: Exception => println("Capture exception")
+    } finally {
+      println("Scala finally")
+    }
+    println("Continue execution")
+  }
+}
+```
+##### 6.11.7.4 Scala异常处理小结
+- 1.将可疑代码封装在try块中,在try块之后使用了一个catch处理程序来捕获异常,如果发生任何异常,catch处理程序将处理它,程序将不会异常终止.
+- 2.Scala异常的工作机制和Java一样,但是Scala没有“checked(编译期)”异常,即Scala没有编译异常概念,异常都是在运行时捕获处理.
+- 3.用throw关键字,抛出一个异常对象,所有异常都是Throwable的子类型,throw表达式是有类型的,就是Nothing,因为Nothing是所有类型的子类型,所以throw表达式可以用在需要类型的地方.
+- 4.在Scala里,借用了模式匹配的思想来做异常的匹配,因此在catch的代码里,是一系列case子句来匹配异常.当匹配上后=> 有多条语句可以换行写,类似java 的switch case x: 代码块
+- 5.异常捕捉的机制与其他语言中一样，如果有异常发生，catch子句是按次序捕捉的。因此，在catch子句中,越具体的异常越要靠前m越普遍的异常越靠后m如果把越普遍的异常写在前m把具体的异常写在后m在scala中也不会报错m但这样是非常不好的编程风格.
+- 6.finally子句用于执行不管是正常处理还是有异常发生时都需要执行的步骤,一般用于对象的清理工作,这点和Java一样.
+- 7.Scala提供了throws关键字来声明异常,可以使用方法定义声明异常,它向调用者函数提供了此方法可能引发此异常的信息,它有助于调用函数处理并将该代码包含在try-catch块中,以避免程序异常终止,在scala中可以使用throws注释来声明异常.
+``` scala
+  def main(args: Array[String]): Unit = {
+    f11()
+  }
+
+  //等同于NumberFormatException.class
+  @throws(classOf[NumberFormatException])
+  def f11() = {
+    "abc".toInt
+  }
+```
+
+### 6.12 Scala 面向对象编程 (基础部分)
+#### 6.12.1 类与对象
+##### 6.12.1.1 Scala语言是面向对象
+- 1.Java是面向对象的编程语言,由于历史原因,Java中还存在着非面向对象的内容:基本类型,null,静态方法等.
+- 2.Scala语言来自于Java,所以天生就是面向对象的语言,而且Scala是纯粹的面向对象的语言,即在Scala中一切皆为对象.
+- 3.在面向对象的学习过程中可以对比着Java语言学习.
+- `面向对象实例`
+``` scala
+object DemoTest013 {
+  def main(args: Array[String]): Unit = {
+    // 创建对象
+    val cat = new CatDemo
+    // 给对象属性赋值
+    cat.name = "kaka"
+    cat.age = 10
+    cat.colour = "black"
+    printf("Info : %s %d %s",cat.name,cat.age,cat.colour)
+  }
+
+  class CatDemo {
+    // 定义声明属性
+    var name: String = ""
+    var age: Int = _
+    var colour: String = ""
+  }
+}
+```
+
+##### 6.12.1.2 类和对象区别和联系
+- 1.类是抽象概念,代表一类事物,比如人类,猫类
+- 2.对象是具体实际,代表一个具体事物
+- 3.类是对象模板,对象是类的一个个体,对应一个实例.
+- 4.Scala中类和对象的区别和联系和Java是一样的.
+
+
+##### 6.12.1.3 如何定义类
+- `基本语法`
+``` scala
+[修饰符] class 类名{
+ 类体
+}
+```
+- `定义类注意事项`
+- 1.scala语法中,类并不声明为public,所有这些类都具有公有可见性(即默认就是public).
+- 2.一个Scala源文件可以包含多个类,而且默认都是public
+
+
+##### 6.12.1.4 属性
+- `基本介绍`
+- 属性是类的一个组成部分,一般是值数据类型,也可是引用类型.
+
+
+##### 6.12.1.5 属性/成员变量
+- `注意事项和细节说明`
+- 1.属性定义语法同变量,示例 : `[访问修饰符] var 属性名称[：类型] = 属性值`
+- 2.属性的定义类型可以为任意类型,包含值类型或引用类型.
+- 3.Scala中声明一个属性,必须显示的初始化,然后根据初始化数据的类型自动推断,属性类型可以省略(这点和Java不同).
+- 4.如果赋值为null,则一定要加类型,因为不加类型,那么该属性的类型就是Null类型.
+- 5.如果在定义属性时,暂时不赋值,也可以使用符号_(下划线),让系统分配默认值.
+
+| 类型      |     _ 对应默认值 |
+| :--------: | :--------:|
+| Byte / Short / Int / Long    |   0 |
+| Float / Double    |   0.0 |
+| String / 引用类型    |   null |
+| Bollean    |   false |
+
+##### 6.12.1.6 属性高级部分
+- `说明`
+- 属性的高级部分和构造器(构造方法/函数)相关.
+
+##### 6.12.1.7 如何创建对象
+- `基本语法`
+- `val | var 对象名[：类型] = new 类型()`
+- 说明
+- 1.如果不希望改变对象引用(即 : 内存地址),应该声明为val性质,否则声明为var,scala设计者推荐使用val,因为一般来说在程序中,只是改变对象属性值,而不是改变对象的引用.
+- 2.scala在声明对象变量时,可以根据创建对象的类型自动推断,所以类型声明可以省略,但当类型和后面new对象类型有继承关系即多态时就必须编写.
+
+
+
+#### 6.12.2 方法
+#### 6.12.3 类与对象应用实例
+#### 6.12.4 构造器
+#### 6.12.5 属性高级
+#### 6.12.6 Scala对象创建流程分析
+
+
+
+
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-### 6.10 Scala 程序流程控制
-### 6.11 Scala 函数式编程 基础
-### 6.12 Scala 面向对象编程 (基础部分)
 ### 6.13 Scala 面向对象编程 (中级部分)
 ### 6.14 Scala 面向对象编程 (高级特性)
 ### 6.15 Scala 隐式转换 & 隐式值
