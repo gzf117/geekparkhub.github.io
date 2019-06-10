@@ -1482,13 +1482,138 @@ object DemoTest013 {
 
 
 #### 6.12.2 方法
-#### 6.12.3 类与对象应用实例
-#### 6.12.4 构造器
-#### 6.12.5 属性高级
-#### 6.12.6 Scala对象创建流程分析
+- Scala中方法其实就是函数,声明规则请参考函数式编程中函数声明.
+- `基本语法`
+``` scala
+def 方法名(参数列表) [：返回值类型] = {
+ 方法体
+}
+```
+
+#### 6.12.3 构造器
+##### 6.12.3.1 Java 构造器
+```
+[修饰符] 方法名(参数列表){
+ 构造方法体
+}
+```
+- `Java构造器特点`
+- 在Java中一个类可以定义多个不同的构造方法,构造方法重载.
+- 如果没有定义构造方法,系统会自动给类生成一个默认无参构造方法(也叫默认构造器).
+- 一旦定义了自己的构造方法(构造器),默认的构造方法就被覆盖,就不能再使用默认无参构造方法.
+
+##### 6.12.3.2 Scala 构造器
+- 和Java一样,Scala构造对象也需要调用构造方法,并且可以有任意多个构造方法(即scala中构造器也支持重载).
+- Scala类的构造器包括 : 主构造器和辅助构造器.
+- `Scala构造器基本语法`
+- 说明 : 辅助构造器函数的名称this,可以有多个,编译器通过不同参数来区分.
+``` scala
+// 主构造器
+class 类名(形参列表) {    
+// 类体
+def this(形参列表) {
+ // 辅助构造器
+}
+
+def this(形参列表) {    
+ // 辅助构造器可以有多个...
+ }
+}
+```
+- `Scala 构造器实例`
+``` scala
+object DemoTest015 {
+  def main(args: Array[String]): Unit = {
+    // 初始化对象
+    val people = new People("tom", 18)
+    println(people)
+  }
+
+  // 创建类
+  class People(inName: String, inAge: Int) {
+    // 定义属性
+    var name: String = inName
+    var age: Int = inAge
+
+    // 重写toString方法
+    override def toString: String = {
+      "name = " + this.name + " , age = " + this.age
+    }
+  }
+}
+```
+
+##### 6.12.3.3 Scala构造器注意事项
+- 1.Scala构造器作用是完成对新对象的初始化,构造器没有返回值.
+- 2.主构造器的声明直接放置于类名之后.
+- 3.主构造器会执行类定义中的所有语句,这里可以体会到Scala函数式编程和面向对象编程融合在一起,即构造器也是方法(函数),传递参数和使用方法和前面的函数部分内容没有区别.
+- 4.如果主构造器无参数,小括号可省略,构建对象时调用的构造方法的小括号也可以省略.
+- 5.辅助构造器名称为this(和Java是不一样),多个辅助构造器通过不同参数列表进行区分,在底层就是构造器重载.
+- 6.如果想让主构造器变成私有,可以在()之前加上private,这样只能通过辅助构造器来构造对象.
+- 7.辅助构造器的声明不能和主构造器的声明一致,会发生错误(即构造器名重复).
+
+#### 6.12.4 属性高级
+##### 6.12.4.1 构造器参数
+- 1.Scala类的主构造器的形参未用任何修饰符修饰,那么这个参数是局部变量.
+- 2.如果参数使用val关键字声明,那么Scala会将参数作为类的私有的只读属性使用.
+- 3.如果参数使用var关键字声明,那么那么Scala会将参数作为类的成员属性使用,并会提供属性对应xxx()[类似getter]/xxx_$eq()[类似setter]方法,即这时的成员属性是私有,但是可读写.
+- `构造器参数实例`
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest016 {
+  def main(args: Array[String]): Unit = {
+
+    val worker = new worker("tom")
+    worker.name
+
+    val worker2 = new worker2("jack")
+    worker2.inName
+
+    val worker3 = new worker3("macs")
+    worker3.inName = "tomcat"
+    println(worker3.inName)
+  }
+
+  class worker(inName: String) {
+    var name = inName
+  }
+
+  // 只读属性
+  class worker2(val inName: String) {
+    var name = inName
+  }
+
+  // 可读写属性
+  class worker3(var inName: String) {
+    var name = inName
+  }
+}
+```
+##### 6.12.4.2 Bean属性
+- JavaBeans规范定义了Java属性是像getXxx()和setXxx()方法.
+- 许多Java工具(框架)都依赖命名习惯,为了Java互操作性,将Scala字段加`@BeanProperty`时,这样会自动生成规范的setXxx/getXxx方法,这时可以使用对象.setXxx()和对象.getXxx()来调用属性.
+- 注意:给某个属性加入`@BeanPropetry`注解后,会生成getXXX和setXXX方法,并且对原来底层自动生成类似xxx(),xxx_$eq()方法,没有冲突,二者可以共存.
+- `Bean属性实例`
+``` scala
+object DemoTest017 {
+  def main(args: Array[String]): Unit = {
+    val car = new Car()
+    car.name = "G500"
+    println(car.name)
+
+    car.setName("G630")
+    println(car.getName)
+  }
+
+  class Car {
+    @BeanProperty var name: String = _
+  }
+}
+```
 
 
-
+#### 6.12.5 Scala对象创建流程分析
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
