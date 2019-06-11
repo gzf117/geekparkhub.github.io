@@ -1614,12 +1614,603 @@ object DemoTest017 {
 
 
 #### 6.12.5 Scala对象创建流程分析
+- 对象创建实例
+``` scala
+class Person {
+ var age: Short = 90
+ var name: String = _
+def this(n: String, a: Int) {
+ this()
+ this.name = n
+ this.age = a
+ }
+}
+var p : Person = new Person("tom",18)
+```
+- 流程分析
+- 1.加载类的信息(属性信息,方法信息)
+- 2.在内存中(堆)开辟空间
+- 3.使用父类构造器(主和辅助)进行初始
+- 4.使用主构造器对属性进行初始化(age:18,name:null)
+- 5.使用辅助构造器对属性进行初始化(age:18,name:tom)
+- 6.将开辟对象的地址赋给p的引用
+
+
+### 6.13 Scala 面向对象编程 (中级部分)
+#### 6.13.1 包
+##### 6.13.1.1 Java包三大作用
+- 1.区分相同名称的类
+- 2.当类很多时,可以很好管理类
+- 3.控制访问范围
+##### 6.13.1.2 Java打包命令
+- 打包基本语法
+```
+package com.geekparkhub.core
+```
+- 打包的本质分析
+- 实际上就是创建不同文件夹来保存类文件
+
+##### 6.13.1.3 Scala包基本介绍
+- 和Java一样,Scala中管理项目可以使用包,但Scala中的包的功能更加强大,使用也相对复杂些.
+##### 6.13.1.4 Scala包快速入门
+- 在不用包下创建相同名称类
+```  scala
+package com.geekparkhub.core.scala.package_flow.test001
+
+class Test {
+
+}
+```
+``` scala
+package com.geekparkhub.core.scala.package_flow.test002
+
+class Test {
+
+}
+```
+- 创建对象
+``` scala
+package com.geekparkhub.core.scala.package_flow
+
+object PackageTest {
+  def main(args: Array[String]): Unit = {
+    val test001 = new com.geekparkhub.core.scala.package_flow.test001.Test
+    val test002 = new com.geekparkhub.core.scala.package_flow.test002.Test
+    println("test001 = " + test001 + "\n" + "test002 = " + test002)
+  }
+}
+```
+- 运行程序查看日志计结果
+```
+test001 = com.geekparkhub.core.scala.package_flow.test001.Test@56cbfb61
+test002 = com.geekparkhub.core.scala.package_flow.test002.Test@1134affc
+```
+##### 6.13.1.5 Scala包特点概述
+- 基本语法
+```
+package 包名
+```
+- Scala包的三大作用(和Java一样)
+- 1.区分相同名称的类
+- 2.当类很多时,可以很好的管理类
+- 3.控制访问范围
+- 4.可以对类的功能进行扩展
+- Scala中包名和源码所在系统文件目录结构要可以不一致,但是编译后的字节码文件路径和包名会保持一致.
+
+##### 6.13.1.6 Scala包命名
+- 命名规则 : 
+- 只能包含数字、字母、下划线、点,但不能以数字开头,也不要使用关键字.
+- 命名规范 : 
+- `com.公司名称.项目名称.业务模块名称`
+
+##### 6.13.1.7 Scala自动引入常用包
+`java.lang.*` / `scala包` / `Predef包`
+
+
+##### 6.13.1.8 Scala包注意事项和使用细节
+- 1.包也可以像嵌套类那样嵌套使用(包中有包),在使用第三种方式时的好处是:可以在同一个文件中,将类(class / object)、trait创建在不同的包中,这样就非常灵活.
+- 包嵌套实例
+``` scala
+package com.geekparkhub.core.scala.package_flow
+
+/**
+  * 创建test003包
+  */
+package test003 {
+  /**
+    * 创建类
+    */
+  class Test {
+    // 定义属性
+    var name: String = _
+
+    // 定义函数
+    def info(name: String): Unit = {
+      println("name")
+    }
+  }
+  /**
+    * 创建对象
+    */
+  object RunTest003 {
+    def main(args: Array[String]): Unit = {
+      // 实例化对象
+      val test003 = new Test()
+      // 调用对象函数
+      test003.info("tomcat")
+      println("test003 is = " + test003)
+    }
+  }
+}
+
+/**
+  * 创建包test004包
+  */
+package test004 {
+  /**
+    * 创建类
+    */
+  class Test {
+    // 定义属性
+    var age: Int = _
+    // 定义函数
+    def infos(age: Int): Unit = {
+      println("age")
+    }
+  }
+  /**
+    * 创建对象
+    */
+  object RunTest004 {
+    def main(args: Array[String]): Unit = {
+      val test004 = new Test()
+      test004.infos(18)
+      println("test004 is = " + test004)
+    }
+  }
+}
+```
+- 2.作用域原则 : 可以直接向上访问,即: Scala中子包中直接访问父包中的内容,大括号体现作用域,(提示:Java中子包使用父包的类,需要import),在子包和父包类重名时,默认采用就近原则,如果希望指定使用某个类,则带上包名即可.
+- 3.父包要访问子包的内容时,需要import对应的类等.
+- 4.可以在同一个.scala文件中,声明多个并列的package(建议嵌套的pakage不要超过3层).
+- 5.包名可以相对也可以绝对,比如访问`BeanProperty`绝对路径是：`_root_. scala.beans.BeanProperty` ,在一般情况下:使用相对路径来引入包,只有当包名冲突时,使用绝对路径来处理.
+
+
+##### 6.13.1.9 包对象
+- 包可以包含类、对象和特质trait,但不能包含函数/方法或变量的定义,这是Java虚拟机的局限,为了弥补这一点不足,scala提供了包对象的概念来解决这个问题.
+- `包对象实例`
+``` scala
+package com.geekparkhub.core.scala.package_flow {
+
+  /**
+    * 创建包对象
+    *
+    * 每一个包都可以有一个包对象
+    * 包对象名称字需要和子包一致
+    * 在包对象中可以定义变量,方法
+    * 在包对象中定义的变量和方法,就可以在对应的包中使用
+    */
+  package object scala {
+    // 定义属性
+    var age: Int = 18
+    // 定义函数
+    def info(): Unit = {
+      println("this info")
+    }
+  }
+
+  /**
+    * 创建包
+    */
+  package scala {
+    // 创建类
+    class Test {
+      var name: String = _
+    }
+    // 创建主函数
+    object RunTest {
+      def main(args: Array[String]): Unit = {
+        // 调用包对象属性
+        println("age = " + age)
+        // 调用包对象函数
+        info()
+      }
+    }
+  }
+}
+```
+##### 6.13.1.9 包对象注意事项
+- 每个包都可以有一个包对象.
+- 包对象名称需要和包名一致.
+
+#### 6.13.2 包可见性问题
+##### 6.13.2.1 Java访问修饰符
+- java提供四种访问控制修饰符号控制方法和变量访问权限(范围):
+- 1.公开级别:用public修饰,对外公开.
+- 2.受保护级别:用protected修饰,对子类和同一个包中的类公开.
+- 3.默认级别:没有修饰符号,向同一个包的类公开.
+- 4.私有级别:用private修饰,只有类本身可以访问,不对外公开.
+
+##### 6.13.2.2 Java访问修饰符使用注意事项
+- 1.修饰符可以用来修饰类中的属性,成员方法以及类.
+- 2.只有默认的和public才能修饰类,并且遵循上述访问权限的特点.
+
+##### 6.13.2.3 Scala 包可见性
+- 在Java中,访问权限分为: public,private,protected和默认.
+- 在Scala中,可以通过类似修饰符达到同样效果,但是使用上有区别.
+- `包可见性实例`
+``` scala
+package com.geekparkhub.core.scala.package_flow
+
+object Visit {
+  def main(args: Array[String]): Unit = {
+    // 实例化对象
+    val test = new Test
+    // 调用info函数
+    test.info()
+    // 调用半生对象函数
+    Test.run(test)
+  }
+
+  // 创建半生类
+  class Test {
+    // 定义属性
+    var name: String = "tomcat"
+    // 定义私有属性
+    private var age: Int = 18
+    // 定义函数
+    def info(): Unit = {
+      println("name is " + name + " , " + "age is " + age)
+    }
+  }
+
+  // 创建半生对象
+  object Test {
+    def run(t: Test) {
+      println("name = " + t.name + " , age = " + t.age)
+    }
+  }
+}
+```
+##### 6.13.2.4 Scala 包可见性和访问修饰符使用
+- 1.当属性访问权限为默认时,从底层看属性是private,但是因为提供了`xxx_$eq()`[类似setter]/xxx()[类似getter]方法,因此从使用效果看是任何地方都可以访问.
+- 2.当方法访问权限为默认时,默认为public访问权限.
+- 3.private为私有权限,只在类内部和伴生对象中可用.
+- 4.protected为受保护权限,scala中受保护权限比Java中更严格,只能子类访问,同包无法访问.
+- 5.在scala中没有public关键字,即不能用public显式修饰属性和方法.
+- 6.包访问权限(表示属性有限制,同时包也有限制),这点和Java不一样,体现出Scala包使用的灵活性.
+- `包访问权限实例`
+```  scala
+package com.geekparkhub.core.scala.package_flow
+
+object Visit {
+  def main(args: Array[String]): Unit = {
+    // 实例化对象
+    val test = new Test
+    // 调用半生类属性
+    println("age is = " + test.age)
+  }
+
+  // 创建半生类
+  class Test {
+    // 定义属性
+    var name: String = "tomcat"
+    // 定义私有属性
+    private[package_flow] var age: Int = 18
+    // 定义函数
+    def info(): Unit = {
+      println("name is " + name + " , " + "age is " + age)
+    }
+  }
+
+  // 创建半生对象
+  object Test {
+    def run(t: Test) {
+      println("name = " + t.name + " , age = " + t.age)
+    }
+  }
+}
+```
+#### 6.13.3 包引入
+##### 6.13.3.1 Scala引入包基本介绍
+- Scala引入包也是使用`import`,基本的原理和机制和Java一样,但是Scala中的import功能更加强大,也更灵活.
+- 因为Scala语言源自于Java,所以java.lang包中的类会自动引入到当前环境中,而Scala中的scala包和Predef包的类也会自动引入到当前环境中,即起其下面的类可以直接使用.
+- 如果想要把其他包中的类引入到当前环境中,需要使用import语言.
+##### 6.13.3.2 Scala引入包细节和注意事项
+- 1.在Scala中,import语句可以出现在任何地方,并不仅限于文件顶部,import语句的作用一直延伸到包含该语句的块末尾,这种语法的好处是:在需要时在引入包,缩小import包的作用范围,提高效率.
+- 2.Java中如果想要导入包中所有的类,可以通过通配符`*`,Scala中采用下划线`_`
+- 3.如果不想要某个包中全部的类,而是其中的几个类,可以采用选取器(大括号).
+- 4.如果引入的多个包中含有相同的类,那么可以将不需要的类进行重命名进行区分,这个就是重命名.
+- 5.如果某个冲突的类根本就不会用到,那么这个类可以直接隐藏掉.
+
+#### 6.13.4 面向对象编程 三大特征
+- 面向对象编程有三大特征 : 封装/继承/多态
+
+#### 6.13.5 面向对象编程方法 - 抽象
+- 实际上就是把一类事物共有的属性和行为提取出来,形成一个物理物理模型,这种方式就称之为抽象.
+
+##### 6.13.5.1 Scala 抽象快速入门案例
+- `抽象实例`
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object AbstractBankDemo {
+  def main(args: Array[String]): Unit = {
+    // 创建 账户类
+    val account = new Account("4693803346873533", 5.0, "123456")
+
+    // 调用 查询余额函数
+    account.check_balances("4693803346873533", "123456")
+
+    // 调用 存款函数
+    account.deposit("4693803346873533","123456",1.1)
+
+    // 调用 取款函数
+    account.withDrawal("4693803346873533","123456",0.6)
+  }
+
+  /**
+    * 创建银行账户类
+    * 共有信息属性
+    * 账户/余额/密码/查询余额/取款/存款
+    */
+  class Account(inAccount: String, inBalance: Double, inPassword: String) {
+    // 定义银行账户属性
+    private val account: String = inAccount
+    // 定义银行余额属性
+    private var balance: Double = inBalance
+    // 定义银行密码属性
+    private var password: String = inPassword
+
+    /**
+      * 定义银行查询余额函数
+      *
+      * @param account
+      * @param password
+      */
+    def check_balances(account: String, password: String): Any = {
+      if (!this.account.equals(account)) {
+        println("Account error, please verify your account!")
+        return
+      }
+      if (!this.password.equals(password: String)) {
+        println("The password is wrong, please try again!")
+        return
+      }
+      printf("Account : %s\nBalance : %.2f\n", this.account, this.balance)
+    }
+
+    /**
+      * 定义银行取款函数
+      *
+      * @param password
+      * @param money
+      */
+    def withDrawal(account: String, password: String, money: Double): Any = {
+      if (!this.account.equals(account)) {
+        println("Account error, please verify your account!")
+        return
+      }
+      if (!this.password.equals(password)) {
+        println("The password is wrong, please try again!")
+        return
+      }
+      if (this.balance < money) {
+        println("Failed withdrawal, insufficient current account balance!")
+        return
+      }
+      this.balance -= money
+      money
+      printf("Account : %s\nBalance : %.2f\n", this.account, this.balance)
+    }
+
+    /**
+      * 定义银行存款函数
+      *
+      * @param account
+      * @param password
+      * @param money
+      */
+    def deposit(account: String, password: String, money: Double): Any = {
+      if (!this.account.equals(account)) {
+        println("Account error, please verify your account!")
+        return
+      }
+      if (!this.password.equals(password)) {
+        println("The password is wrong, please try again!")
+        return
+      }
+      this.balance += money
+      money
+      printf("Account : %s\nBalance : %.2f\n", this.account, this.balance)
+    }
+  }
+}
+```
+
+#### 6.13.6 面向对象编程 - 封装
+##### 6.13.6.1 封装介绍
+- 封装(encapsulation)就是把抽象出的数据和对数据的操作封装在一起,数据被保护在内部,程序的其它部分只有通过被授权的操作(成员方法),才能对数据进行操作.
+
+##### 6.13.6.2 封装理解和好处
+- 1.隐藏实现细节
+- 2.提可以对数据进行验证,保证安全合理
+- 3.同时可以加入业务逻辑
+
+##### 6.13.6.3 如何体现封装
+- 1.对类中的属性进行封装.
+- 2.通过成员方法,包实现封装
+
+##### 6.13.6.4 封装 实现步骤
+- 1.将属性进行私有化.
+- 2.提供一个公共的set方法,用于对属性判断并赋值.
+- 3.提供一个公共的get方法,用于获取属性的值.
+
+##### 6.13.6.5 Scala 封装快速入门案例
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object AccountCore {
+  def main(args: Array[String]): Unit = {
+    val account = new Account_Flow("4693803346873533", "张三丰", 110, "123456")
+    account.setName("初始值")
+    account.setPassword("111111")
+    account.setBalance(100)
+  }
+
+  class Account_Flow(inAccount: String, inName: String, inBalance: Double, inPassword: String) {
+    // 定义银行账户属性
+    private val account: String = inAccount
+    // 定义银行用户名属性
+    private var name: String = ""
+    // 定义银行余额属性
+    private var balance: Double = inBalance
+    // 定义银行密码属性
+    private var password: String = inPassword
+    
+    // 设置用户名限制
+    def setName(name: String): Unit = {
+      if (!this.inName.length.equals(name.length)) {
+        printf("初始化(%s)账户名设置必须大于三位,请重试!\n", this.account)
+        return
+      } else {
+        this.name = name
+        println("账户名设置成功!")
+      }
+    }
+
+    // 设置用户密码限制
+    def setPassword(password: String): Unit = {
+      if (!this.inPassword.length.equals(password.length)) {
+        printf("初始化(%s)账户密码必须设置大于6位数以上,请重试!\n", this.account)
+        return
+      }
+      this.password = password
+      println("账户密码设置成功!")
+    }
+
+    // 设置余额限制
+    def setBalance(balance: Double): Unit = {
+      if (this.inBalance.toDouble < balance) {
+        printf("当前(%s)账户余额不足:%.2f,请及时充值!\n", this.account,this.balance)
+        return
+      }
+      this.balance = balance
+      printf("当前(%s)账户余额%.2f", this.account, this.balance)
+    }
+  }
+}
+```
+
+##### 6.13.6.6 Scala 封装注意事项
+- 1.Scala中为了简化代码的开发,当声明属性var时,本身就自动提供了对应setter/getter方法,如果属性声明为private,那么自动生成的setter/getter方法也是private,如果属性省略访问权限修饰符,那么自动生成的setter/getter方法是public.
+- 2.目前很多新的框架.在进行反射时,也支持对属性的直接反射.
+
+#### 6.13.7 面向对象编程 - 继承
+##### 6.13.7.1 Java继承
+```
+class 子类名extends 父类名{ 类体}
+子类继承父类的属性和方法
+```
+##### 6.13.7.2 继承基本介绍
+- 继承可以解决代码复用,让编程更加靠近人类思维.当多个类存在相同的属性(变量)和方法时,可以从这些类中抽象出父类(比如Student),在父类中定义这些相同的属性和方法,所有的子类不需要重新定义这些属性和方法,只需要通过extends语句来声明继承父类即可.
+- 和Java一样,Scala也支持类的单继承.
+
+##### 6.13.7.3 Scala 继承基本语法
+```
+class 子类名 extends 父类名 { 类体 }
+```
+##### 6.13.7.4 Scala 继承快速入门
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest018 {
+  def main(args: Array[String]): Unit = {
+    val teacher = new Teacher
+    teacher.name = "Tomcat"
+    teacher.work()
+  }
+
+  class Person {
+    var name: String = _
+    var age: Int = _
+    def info(): Unit = {
+      println("info : " + this.name)
+    }
+  }
+
+  class Teacher extends Person {
+    def work(): Unit = {
+      println(this.name + " Working!")
+    }
+  }
+}
+```
+##### 6.13.7.5 Scala继承优势
+- 1.代码复用性提高
+- 2.代码扩展性和维护性提高,当修改父类时,对应的子类就会继承相应的方法和属性.
+##### 6.13.7.6 重写方法
+- scala明确规定,重写一个非抽象方法需要用override修饰符,调用超类的方法使用super关键字.
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest018 {
+  def main(args: Array[String]): Unit = {
+    val teacher = new Teacher
+    teacher.name = "Tomcat"
+    teacher.info()
+    teacher.work()
+  }
+
+  class Person {
+    var name: String = "mac"
+    var age: Int = _
+    def info(): Unit = {
+      println("info : " + this.name)
+    }
+  }
+
+  class Teacher extends Person {
+    override def info() {
+      println("override info : "+ name)
+      super.info()
+    }
+    def work(): Unit = {
+      println(this.name + " Working!")
+    }
+  }
+}
+```
+##### 6.13.7.7 Scala中类型检查和转换
+- 基本介绍
+- 要测试某个对象是否属于某个给定的类,可以用isInstanceOf方法,用asInstanceOf方法将引用转换为子类的引用,classOf获取对象的类名.
+##### 6.13.7.8 Scala超类构造
+##### 6.13.7.9 覆写字段
+##### 6.13.7.10 抽象类
+##### 6.13.7.11 Scala 抽象类使用注意事项
+##### 6.13.7.12 匿名子类
+
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-### 6.13 Scala 面向对象编程 (中级部分)
 ### 6.14 Scala 面向对象编程 (高级特性)
+#### 6.14.1 静态属性和静态方法
+#### 6.14.2 单例对象
+#### 6.14.3 接口
+#### 6.14.4 特质 (trait)
+#### 6.14.5 嵌套类
+
+
+
 ### 6.15 Scala 隐式转换 & 隐式值
+#### 6.15.1 隐式转换
+#### 6.15.2 隐式转换丰富类库功能
+#### 6.15.3 隐式值
+#### 6.15.4 隐式类
+#### 6.15.5 隐式转换时机
+#### 6.15.6 隐式解析机制
+#### 6.15.7 在进行隐式转换时,需要遵守两个基本前提
+
 ### 6.16 Scala 数据结构 (上) - 集合
 ### 6.17 Scala 数据结构 (下) - 集合操作
 ### 6.18 Scala 模式匹配
