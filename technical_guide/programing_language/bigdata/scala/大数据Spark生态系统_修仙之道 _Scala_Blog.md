@@ -2184,24 +2184,253 @@ object DemoTest018 {
 ##### 6.13.7.7 Scala中类型检查和转换
 - 基本介绍
 - 要测试某个对象是否属于某个给定的类,可以用isInstanceOf方法,用asInstanceOf方法将引用转换为子类的引用,classOf获取对象的类名.
-##### 6.13.7.8 Scala超类构造
-##### 6.13.7.9 覆写字段
-##### 6.13.7.10 抽象类
-##### 6.13.7.11 Scala 抽象类使用注意事项
-##### 6.13.7.12 匿名子类
+- `classOf[String]`就如同JavaString.class
+- `obj.isInstanceOf[T]`就如同Java obj instanceof T 判断obj是不是T类型.
+- `obj.asInstanceOf[T]`就如同Java(T)obj 将obj强转成T类型.
+- 类型检查和转换的最大价值在于 : 可以判断传入对象的类型,然后转成对应的子类对象,进行相关操作,这里也体现出多态的特点.
+``` scala
+package com.geekparkhub.core.scala.demo
 
+object DemoTest019 {
+  def main(args: Array[String]): Unit = {
+    // 使用ClassOf得到类名
+    println(classOf[String])
+    var str = "tomcat"
+    println(str.getClass.getName)
+
+    // 将子类引用给父类(向上转型,自动)
+    var base = new Base
+    var teacher = new Teacher
+    base = teacher
+
+    // 将父类的引用重新转成子类引用(多态),即向下转型
+    var teachers = base.asInstanceOf[Teacher]
+    teachers.work()
+  }
+
+  class Base {
+    var name: String = "mac"
+    var age: Int = _
+
+    def info(): Unit = {
+      println("info : " + this.name)
+    }
+  }
+
+  class Teacher extends Base {
+    override def info() {
+      println("override info : " + name)
+      super.info()
+    }
+
+    def work(): Unit = {
+      println(this.name + " Working!")
+    }
+  }
+}
+```
+
+##### 6.13.7.8 Scala超类构造
+- 类有一个主构器和任意数量的辅助构造器,而每个辅助构造器都必须先调用主构造器(也可以是间接调用.)
+- 只有主构造器可以调用父类的构造器,辅助构造器不能直接调用父类的构造器.
+
+##### 6.13.7.9 覆写字段
+- 在Scala中,子类改写父类的字段,称为覆写/重写字段,覆写字段需使用override修饰.
+- `覆写字段注意事项和细节`
+- def只能重写另一个def(即:方法只能重写另一个方法)
+- val只能重写另一个val 属性或重写不带参数的def
+- 抽象属性 : 声明未初始化的变量就是抽象的属性,抽象属性在抽象类
+- 一个属性没有初始化,那么这个属性就是抽象属性.
+- 抽象属性在编译成字节码文件时,属性并不会声明,但是会自动生成抽象方法,所以类必须声明为抽象类.
+- 如果是覆写一个父类的抽象属性,那么override 关键字可省略[原因 : 父类的抽象属性,生成的是抽象方法,因此就不涉及到方法重写的概念,因此override可省略].
+
+##### 6.13.7.10 抽象类
+- 在Scala中,通过abstract关键字标记不能被实例化的类.
+- 方法不用标记abstract,只要省掉方法体即可,抽象类可以拥有抽象字段,抽象字段/属性就是没有初始值的字段.
+- 说明 : 抽象类的价值更多是在于设计,是设计者设计之后,让子类继承并实现抽象类方法.
+- `抽象类实例`
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest022 {
+  def main(args: Array[String]): Unit = {
+    println("abstract")
+  }
+
+  // 抽象类
+  abstract class Base {
+    // 抽象字段
+    var name: String
+    // 抽象字段
+    var age: Int
+    // 普通属性
+    var color: String = "black"
+
+    // 抽象方法,不需要标记abstract
+    def cry()
+  }
+}
+```
+##### 6.13.7.11 Scala 抽象类使用注意事项
+- 1.抽象类不能被实例.
+- 2.抽象类不一定要包含abstract方法,也就是说抽象类可以没有abstract方法.
+- 3.一旦类包含了抽象方法或者抽象属性,则这个类必须声明为abstrac
+- 4.抽象方法不能有主体,不允许使用abstract修饰.
+- 5.如果一个类继承了抽象类,则它必须实现抽象类的所有抽象方法和抽象属性,除非它自己也声明为abstract类.
+- 6.抽象方法和抽象属性不能使用private、final来修饰,因为这些关键字都是和重写/实现相违背.
+- 7.抽象类中可以有实现方法.
+- 8.子类重写抽象方法不需要override
+
+##### 6.13.7.12 匿名子类
+- 和Java一样,可以通过包含带有定义或重写的代码块的方式创建一个匿名的子类.
+- `匿名子类案例`
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest023 {
+  def main(args: Array[String]): Unit = {
+  
+    val base = new Base {
+      override var name: String = "Mac"
+      override def cry(): Unit = {
+        println("Anonymous subclass\t" + name)
+      }
+    }
+    base.cry()
+  }
+
+  abstract class Base {
+    var name: String
+    def cry()
+  }
+}
+```
+##### 6.13.7.13 继承层级
+- 1.在scala中,所有其他类都是AnyRef的子类,类似Java Object
+- 2.AnyVal和AnyRef都扩展自Any类,Any类是根节点.
+- 3.Any中定义了isInstanceOf、asInstanceOf方法,以及哈希方法等.
+- 4.Null类型的唯一实例就是null对象,可以将null赋值给任何引用,但不能赋值给值类型的变量.
+- 5.Nothing类型没有实例,它对于泛型结构是有用处的,举例 : 空列表Nil的类型是List[Nothing],它是List[T]的子类型,T可以是任何类.
+
+
+### 6.14 Scala 面向对象编程 (高级特性)
+#### 6.14.1 静态属性和静态方法
+- Scala中静态概念-伴生对象
+- Scala语言是完全面向对象(万物皆对象)的语言，所以并没有静态的操作(即在Scala中没有静态的概念)。但是为了能够和Java语言交互(因为Java中有静态概念)，就产生了一种特殊的对象来模拟类对象，我们称之为类的伴生对象。这个类的所有静态内容都可以放置在它的伴生对象中声明和调用.
+- `伴生对象快速入门`
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest024 {
+  def main(args: Array[String]): Unit = {
+    println(Base.sex)
+    Base.info()
+  }
+
+  // 半生类
+  class Base{
+    var name : String = _
+  }
+
+  // 半生对象
+  object Base{
+    var sex : Boolean = true
+    def info(): Unit ={
+      println("object ScalaPerson")
+    }
+  }
+}
+```
+- 伴生对象总结
+- Scala中伴生对象采用object关键字声明,伴生对象中声明的全是"静态"内容,可以通过伴生对象名称直接调用.
+- 伴生对象对应的类称之为伴生类,伴生对象的名称应该和伴生类名一致.
+- 伴生对象中的属性和方法都可以通过伴生对象名(类名)直接调用访问.
+- 从语法角度来讲,所谓的伴生对象其实就是类的静态方法和成员的集合.
+- 从技术角度来讲,scala还是没有生成静态的内容,只不过是将伴生对象生成了一个新的类,实现属性和方法的调用.
+- 从底层原理看伴生对象实现静态特性是依赖于`public static final MODULE$`实现.
+
+#### 6.14.2 接口
+##### 6.14.2.1 Java 接口
+- interface 接口名
+- class 类名implements 接口名1,接口2
+- java接口使用
+- 在Java中,一个类可以实现多个接口.
+- 在Java中,接口之间支持多继承.
+- 接口中属性都是常量
+- 接口中的方法都是抽象
+
+##### 6.14.2.2 Scala 接口
+- 从面向对象来看,接口并不属于面向对象的范畴,Scala是纯面向对象的语言,在Scala中,没有接口.
+- Scala语言中,采用特质trait(特征)来代替接口的概念,也就是说多个类具有相同的特征(特征)时,就可以将这个特质(特征)独立出来,采用关键字trait声明,理解trait等价于(interface + abstract class)
+
+#### 6.14.3 特质 (trait)
+##### 6.14.3.1 trait声明语法
+- 说明 : 
+- trait命名一般首字母大写
+```
+trait 特质名{
+ trait体
+}
+```
+##### 6.14.3.2 Scala trait使用
+- 一个类具有某种特质(特征),就意味着这个类满足了这个特质(特征)所有要素,所以在使用时也采用了extends关键字,如果有多个特质或存在父类,那么需要采用with关键字连接.
+```
+没有父类
+class   类名extends     特质1      with       特质2      with     特质3...
+
+有父类
+class   类名extends     父类with   特质1      with     特质2      with 特质3
+```
+##### 6.14.3.3 特质快速入门
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest025 {
+  def main(args: Array[String]): Unit = {
+    val c  = new C()
+    c.getConnect()
+    val f = new F()
+    f.getConnect()
+  }
+
+  // 定义特质
+  trait Base {
+    def getConnect()
+  }
+
+  // A类
+  class A {}
+
+  // B类
+  class B extends A {}
+
+  // C类
+  class C extends A with Base {
+    override def getConnect(): Unit = {
+      println("Connect to a new network")
+    }
+  }
+
+  // D类
+  class D {}
+
+  // E类
+  class E extends D {}
+
+  // F类
+  class F extends D with Base {
+    override def getConnect(): Unit = {
+      println("Connect to a new database")
+    }
+  }
+}
+```
+
+
+#### 6.14.4 嵌套类
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-### 6.14 Scala 面向对象编程 (高级特性)
-#### 6.14.1 静态属性和静态方法
-#### 6.14.2 单例对象
-#### 6.14.3 接口
-#### 6.14.4 特质 (trait)
-#### 6.14.5 嵌套类
-
-
-
 ### 6.15 Scala 隐式转换 & 隐式值
 #### 6.15.1 隐式转换
 #### 6.15.2 隐式转换丰富类库功能
