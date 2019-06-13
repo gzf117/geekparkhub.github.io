@@ -2426,9 +2426,224 @@ object DemoTest025 {
 }
 ```
 
+##### 6.14.3.3 特质trait说明
+- Scala提供了特质(trait),特质可以同时拥有抽象方法和具体方法,一个类可以实现/继承多个特质.
+- 特质中没有实现的方法就是抽象方法,类通过extends继承特质,通过with可以继承多个特质.
+- 所有java接口都可以当做Scala特质使用.
+
+##### 6.14.3.4 特质对象 动态混入
+- 1.除了可以在类声明时继承特质以外,还可以在构建对象时混入特质,扩展目标类的功能.
+- 2.此种方式也可以应用于对抽象类功能进行扩展.
+- 3.态混入是Scala特有的方式(java没有动态混入),可在不修改类声明/定义的情况下,扩展类的功能,非常的灵活,耦合性低.
+- 4.动态混入可以在不影响原有的继承关系的基础上,给指定的类扩展功能.
+- `动态混入实例`
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest026 {
+  def main(args: Array[String]): Unit = {
+    val t1 = new T1 with Base
+    val t2 = new T2 with Base
+    val t1_ : T1_ with Base = new T1_ with Base {
+      override def t1(): Unit = {
+        println("The is t1")
+      }
+    }
+    t1_.t1()
+    t1.select(0)
+    t2.select(1)
+  }
+
+  trait Base {
+    def select(id: Int): Unit = {
+      println("id is = " + id)
+    }
+  }
+
+  abstract class T1 {}
+
+  abstract class T1_ {
+    def t1()
+  }
+
+  class T2 {}
+}
+```
+
+##### 6.14.3.5 叠加特质
+- 构建对象的同时如果混入多个特质，称之为叠加特质，那么特质声明顺序从左到右，方法执行顺序从右到左.
+- `叠加特质实例`
+- 说明 : 分析叠加特质时,对象构建顺序,和执行方法顺序.
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest027 {
+  def main(args: Array[String]): Unit = {
+    val base = new Base4 with Base2 with Base3
+    println(base)
+    base.info(1)
+  }
+
+  // 特质 Base类
+  trait Base {
+    println("Base")
+    def info(id: Int)
+  }
+
+  // 特质Base1继承Base
+  trait Base1 extends Base {
+    println("Base1")
+    def info(id: Int): Unit = {
+      println("insert = " + id)
+    }
+  }
+
+  // Base2继承Base1
+  trait Base2 extends Base1 {
+    println("Base2")
+    override def info(id: Int): Unit = {
+      println("-Base2-")
+      super.info(id)
+    }
+  }
+
+  trait Base3 extends Base2{
+    println("Base3")
+    override def info(id: Int): Unit = {
+      println("-Base3-")
+      super.info(id)
+    }
+  }
+
+  class Base4{}
+}
+```
+- 叠加特质注意事项和细节
+- 1.特质声明顺序从左到右.
+- 2.Scala在执行叠加对象的方法时,会首先从后面的特质(从右向左)开始执行.
+- 3.Scala中特质中如果调用super,并不是表示调用父特质的方法,而是向前面(左边)继续查找特质,如果找不到才会去父特质查找.
+- 4.如果想要调用具体特质的方法,可以指定: `super[特质].xxx(...)`其中的泛型必须是该特质的直接超类类型.
+- `在特质中重写抽象方法实例`
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest028 {
+  def main(args: Array[String]): Unit = {
+    val b3 = new B3 with B2 with B1
+    b3.info(1)
+  }
+
+  trait Base {
+    def info(id: Int)
+  }
+
+  trait B1 extends Base {
+    abstract override def info(id: Int): Unit = {
+      println("B1")
+      super.info(id)
+    }
+  }
+
+  trait B2 extends Base {
+    def info(id: Int): Unit = {
+      println("B2")
+    }
+  }
+
+  class B3 {}
+}
+```
+
+##### 6.14.3.6 富接口
+- 富接口 : 即该特质中既有抽象方法,又有非抽象方法
+``` scala
+  trait Operate {
+    def insert(id: Int)
+    def pageQuery(pageno: Int, pagesize: Int): Unit = {
+      println("Query")
+    }
+  }
+```
+
+##### 6.14.3.7 特质中具体字段
+- 特质中可以定义具体字段,如果初始化了就是具体字段,如果不初始化就是抽象字段,混入该特质的类就具有了该字段,字段不是继承,而是直接加入类,成为自己的字段.
+
+
+##### 6.14.3.8 特质中抽象字段
+- 特质中未被初始化的字段在具体的子类中必须被重写
+
+##### 6.14.3.9 特质构造顺序
+- 特质也是有构造器,构造器中的内容由“字段的初始化”和一些其他语句构成,具体实现请参考特质叠加.
+- `第一种特质构造顺序(声明类的同时混入特质)`
+- 1.调用当前类的超类构造器
+- 2.第一个特质的父特质构造器
+- 3.第一个特质构造器
+- 4.第二个特质构造器的父特质构造器, 如果已经执行过,就不再执行
+- 5.第二个特质构造器
+- 6.重复4,5步骤(如果有第3个,第4个特质)
+- 7.当前类构造器
+- `第二种特质构造顺序(在构建对象时,动态混入特质)`
+- 1.调用当前类的超类构造器
+- 2.当前类构造器
+- 3.第一个特质构造器的父特质构造器
+- 4.第一个特质构造器
+- 5.第二个特质构造器的父特质构造器,如果已经执行过,就不再执行
+- 6.第二个特质构造器
+- 7.重复5,6的步骤(如果有第3个,第4个特质)
+- 8.当前类构造器
+- `分析两种方式对构造顺序的影响`
+- 第1种方式实际是构建类对象,在混入特质时,该对象还没有创建.
+- 第2种方式实际是构造匿名子类,可以理解成在混入特质时,对象已经创建.
+
+##### 6.14.3.10 扩展类特质
+- 特质可以继承类,以用来拓展该特质的一些功能
+``` scala
+  // 特质扩展类
+  trait LoggedException extends Exception {
+    def log(): Unit = {
+      // 方法来自于Exception类
+      println(getMessage())
+    }
+  }
+```
+- 所有混入该特质的类,会自动成为特质所继承的超类的子类
+``` scala
+  // 特质扩展类
+  trait LoggedException extends Exception {
+    def log(): Unit = {
+      // 方法来自于Exception类
+      println(getMessage())
+    }
+  }
+
+  /**
+    * 已经是Exception的子类了，所以可以重写方法
+    * 如果混入该特质的类,已经继承了另一个类(A类),则要求A类是特质超类的子类
+    * 否则就会出现了多继承现象,发生错误.
+    * @return
+    */
+  class UnhappyException extends LoggedException {
+    override def getMessage = "错误消息!"
+  }
+```
+- 如果混入该特质的类,已经继承了另一个类(A类),则要求A类是特质超类的子类,否则就会出现了多继承现象,发生错误.
+
+##### 6.14.3.11 自身类型
+- 自身类型 : 主要是为了解决特质的循环依赖问题,同时可以确保特质在不扩展某个类的情况下,依然可以做到限制混入该特质的类的类型.
+``` scala
+  trait Logger {
+    // 明确告诉编译器,,如果不是Exception就无法调用getMessage
+    this: Exception =>
+    def log(): Unit = {
+      println(getMessage)
+    }
+  }
+
+  class Console extends Exception with Logger {}
+```
 
 #### 6.14.4 嵌套类
-
+- 在Scala中,可以在任何语法结构中内嵌任何语法结构,如在类中可以再定义一个类,这样就是嵌套类,嵌套类类似Java中内部类.
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 6.15 Scala 隐式转换 & 隐式值
