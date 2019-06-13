@@ -2364,7 +2364,13 @@ object DemoTest024 {
 - Scala语言中,采用特质trait(特征)来代替接口的概念,也就是说多个类具有相同的特征(特征)时,就可以将这个特质(特征)独立出来,采用关键字trait声明,理解trait等价于(interface + abstract class)
 
 #### 6.14.3 特质 (trait)
-##### 6.14.3.1 trait声明语法
+##### 6.14.3.0 Scala 创建对象时有四种方式
+- 1.new Object
+- 2.apply 创建
+- 3.匿名子类 创建
+- 4.动态混入
+
+##### 6.14.3.1 trait 声明语法
 - 说明 : 
 - trait命名一般首字母大写
 ```
@@ -2372,7 +2378,7 @@ trait 特质名{
  trait体
 }
 ```
-##### 6.14.3.2 Scala trait使用
+##### 6.14.3.2 Scala trait 使用
 - 一个类具有某种特质(特征),就意味着这个类满足了这个特质(特征)所有要素,所以在使用时也采用了extends关键字,如果有多个特质或存在父类,那么需要采用with关键字连接.
 ```
 没有父类
@@ -2645,17 +2651,367 @@ object DemoTest028 {
 #### 6.14.4 嵌套类
 - 在Scala中,可以在任何语法结构中内嵌任何语法结构,如在类中可以再定义一个类,这样就是嵌套类,嵌套类类似Java中内部类.
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-### 6.15 Scala 隐式转换 & 隐式值
-#### 6.15.1 隐式转换
-#### 6.15.2 隐式转换丰富类库功能
-#### 6.15.3 隐式值
-#### 6.15.4 隐式类
-#### 6.15.5 隐式转换时机
-#### 6.15.6 隐式解析机制
-#### 6.15.7 在进行隐式转换时,需要遵守两个基本前提
+##### 6.14.4.1 Scala 嵌套类使用 一
+- 定义Scala成员内部类和静态内部类,并创建相应的对象实例.
+``` scala
+package com.geekparkhub.core.scala.demo
+import com.geekparkhub.core.scala
 
+object DemoTest029 {
+  def main(args: Array[String]): Unit = {
+    val test01: Test01 = new Test01
+    val test02: Test01 = new Test01
+
+    // 创建内部类
+    val test00 = new test01.Test002
+    val test001 = new test02.Test002
+
+    // 创建静态内部类实例
+    val static = new scala.demo.DemoTest029.Test01.Test004
+  }
+
+  // 外部类
+  class Test01 {
+    // 成员内部类
+    class Test002 {}
+  }
+
+  // 半生对象
+  object Test01 {
+    // 静态内部类
+    class Test004 {}
+  }
+}
+```
+##### 6.14.4.2 Scala 嵌套类使用 二
+- 在内部类中访问外部类的属性
+- `方式 1` : 内部类如果想要访问外部类的属性,可以通过外部类对象访问.
+- 访问方式 : 外部类名.this.属性名
+``` scala
+package com.geekparkhub.core.scala.demo
+import com.geekparkhub.core.scala
+
+object DemoTest029 {
+  def main(args: Array[String]): Unit = {
+    val test01: Test01 = new Test01
+    val test02: Test01 = new Test01
+
+    // 创建内部类
+    val test00 = new test01.Test002
+    val test001 = new test02.Test002
+
+    test00.info()
+
+    // 创建静态内部类实例
+    val static = new scala.demo.DemoTest029.Test01.Test004
+  }
+
+  // 外部类
+  class Test01 {
+
+    // 定义属性
+    var user = "root"
+    private var password = 78542
+
+    // 成员内部类
+    class Test002 {
+      def info() = {
+        // 访问方式 : 外部类名.this.属性名
+        println("user = " + Test01.this.user + "\npassword = " + Test01.this.password)
+      }
+    }
+  }
+
+  // 半生对象
+  object Test01 {
+    // 静态内部类
+    class Test004 {}
+
+  }
+}
+```
+- `方式 2` : 内部类如果想要访问外部类的属性,也可以通过外部类别名访问.
+- 访问方式 : 外部类别名.属性名
+``` scala
+package com.geekparkhub.core.scala.demo
+import com.geekparkhub.core.scala
+
+object DemoTest029 {
+  def main(args: Array[String]): Unit = {
+    val test01: Test01 = new Test01
+    val test02: Test01 = new Test01
+
+    // 创建内部类
+    val test00 = new test01.Test002
+    val test001 = new test02.Test002
+
+    test00.info()
+
+    // 创建静态内部类实例
+    val static = new scala.demo.DemoTest029.Test01.Test004
+  }
+
+  // 外部类
+  class Test01 {
+    // 外部类别名
+    alias =>
+    // 成员内部类
+    class Test002 {
+      def info() = {
+        // 访问方式 : 外部类名.this.属性名
+        println("user = " + alias.user + "\npassword = " + alias.password)
+      }
+    }
+    // 定义属性
+    var user = "root"
+    private var password = 78542
+  }
+
+  // 半生对象
+  object Test01 {
+    // 静态内部类
+    class Test004 {}
+  }
+}
+```
+
+##### 6.14.4.3 类型投影
+- 解决方式-使用类型投影
+- 类型投影是指 : 在方法声明上,如果使用外部类#内部类的方式,表示忽略内部类的对象关系,等同于Java中内部类的语法操作,将这种方式称之为类型投影(即 : 忽略对象的创建方式,只考虑类型).
+``` scala
+package com.geekparkhub.core.scala.demo
+
+import com.geekparkhub.core.scala
+
+object DemoTest029 {
+  def main(args: Array[String]): Unit = {
+    val test01: Test01 = new Test01
+    val test02: Test01 = new Test01
+
+    // 创建内部类
+    val test00 = new test01.Test002
+    val test001 = new test02.Test002
+
+    test00.info()
+
+    // 类型投影
+    test00.test(test00)
+    test00.test(test001)
+    test001.test(test00)
+    test001.test(test001)
+
+    // 创建静态内部类实例
+    val static = new scala.demo.DemoTest029.Test01.Test004
+  }
+
+  // 外部类
+  class Test01 {
+    // 外部类别名
+    alias =>
+
+    // 成员内部类
+    class Test002 {
+      def info() = {
+        // 访问方式 : 外部类名.this.属性名
+        println("user = " + alias.user + "\npassword = " + alias.password)
+      }
+      // 接受Test002实例
+      // 类型投影的作用就是屏蔽外部对象对内部类对象的影响
+      def test(ic: Test01#Test002): Unit = {
+        System.out.println("使用类型投影 " + ic)
+      }
+    }
+
+    // 定义属性
+    var user = "root"
+    private var password = 78542
+  }
+
+  // 半生对象
+  object Test01 {
+    // 静态内部类
+    class Test004 {}
+  }
+}
+```
+
+### 6.15 Scala 隐式转换 & 隐式值
+- 隐式转换函数是以`implicit`关键字声明的带有单个参数的函数。这种函数将会自动应用，将值从一种类型转换为另一种类型.
+
+#### 6.15.1 隐式函数快速入门
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest030 {
+  def main(args: Array[String]): Unit = {
+    // 定义隐式函数
+    implicit def d(d: Double): Int = {
+      d.toInt
+    }
+    val num: Int = 1.5
+    println("num = " + num)
+  }
+}
+```
+- 隐式转换的注意事项和细节
+- 1.隐式转换函数的函数名可以是任意,隐式转换与函数名称无关,只与函数签名(函数参数类型和返回值类型)有关.
+- 2.隐式函数可以有多个(即 : 隐式函数列表),但是需要保证在当前环境下,只有一个隐式函数能被识别.
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest030 {
+  def main(args: Array[String]): Unit = {
+    // 定义隐式函数
+    implicit def d(d: Double): Int = {
+      d.toInt
+    }
+    val num: Int = 1.5
+    println("num = " + num)
+    
+    // 定义隐式函数
+    implicit def f(f: Float): Int = {
+      f.toInt
+    }
+    val num1: Int = 2.5f
+    println("num1 = " + num1)
+  }
+}
+```
+
+#### 6.15.2 隐式转换丰富类库功能
+- 如果需要一个类增加一个方法,可以通过隐式转换来实现,(动态增加功能).
+- 快速入门案例 | 使用隐式转换方式动态给类增加delete方法.
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest031 {
+  def main(args: Array[String]): Unit = {
+    val base = new BaseDB
+    base.select()
+    base.delete()
+  }
+
+  class BaseDB {
+    def select(): Unit = {
+      println("select")
+    }
+  }
+
+  class DB {
+    def delete(): Unit = {
+      println("delete")
+    }
+  }
+  // 隐式转换
+  implicit def addDelete(baseDB: BaseDB): DB = {
+    new DB
+  }
+}
+```
+
+
+#### 6.15.3 隐式值
+- 隐式值也叫隐式变量,将某个形参变量标记为`implicit`,所以编译器会在方法省略隐式参数的情况下去搜索作用域内的隐式值作为缺省参数.
+- 编译器的优先级为 传值 > 隐式值 > 默认值
+- `隐式值实例`
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest032 {
+  def main(args: Array[String]): Unit = {
+    // 隐式值
+    implicit var name: String = "mac"
+
+    // 函数
+    def info(implicit name: String): Unit = {
+      println(name + "\tWorking!")
+    }
+    info
+  }
+}
+```
+#### 6.15.4 隐式类
+- 在scala2.10后提供了隐式类,可以使用`implicit`声明类,隐式类非常强大,同样可以扩展类的功能,比前面使用隐式转换丰富类库功能更加的方便,在集合中隐式类会发挥重要作用.
+- `隐式类实例`
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest033 {
+  def main(args: Array[String]): Unit = {
+
+    // 隐式类
+    implicit class DB(baseDB: BaseDB) {
+      def add(): String = {
+        baseDB + "DB"
+      }
+    }
+    val baseDB = new BaseDB
+    baseDB.select()
+    baseDB.add()
+  }
+}
+
+// 半生类
+class BaseDB {
+  def select(): Unit = {
+    println("select")
+  }
+}
+```
+
+
+##### 6.15.4.1 隐式类使用特点
+- 1.其所带的构造参数有且只能有一个
+- 2.隐式类必须被定义在“类”或“伴生对象”或“包对象”里,即隐式类不能是顶级的(top-level objects)
+- 3.隐式类不能是case class(case class 在后续介绍样例类)
+- 4.作用域内不能有与之相同名称的标识符.
+
+
+#### 6.15.5 隐式转换时机
+- 1.当方法中的参数的类型与目标类型不一致时,或者是赋值时
+- 2.当对象调用所在类中不存在的方法或成员时,编译器会自动将对象进行隐式转换(根据类型)
+
+#### 6.15.6 隐式解析机制
+> 即编译器是如何查找到缺失信息的,解析具有以下两种规则 : 
+> 
+> 1.首先会在当前代码作用域下查找隐式实体(隐式方法、隐式类、隐式对象).
+> 
+> 2.如果第一条规则查找隐式实体失败,会继续在隐式参数的类型的作用域里查找,类型的作用域是指与该类型相关联的全部伴生模块,一个隐式实体的类型T它的查找范围如下(第二种情况范围广且复杂在使用时,应当尽量避免出现).
+> 
+> 3.如果T被定义为T with A with B with C,那么A,B,C都是T的部分,在T的隐式解析过程中,它们的半生对象都会被搜索.
+> 
+> 4.如果T是参数化类型,那么类型参数和与类型参数相关联的部分都算作T的部分,比如List[String]的隐式搜索会搜索List的半生对象和String的半生对象.
+> 
+> 5.如果T是一个单例类型p.T,即T是属于某个p对象内,那么这个p对象也会被搜索.
+> 
+> 6.如果T是个类型注入S#T,那么S和T都会被搜索.
+
+
+#### 6.15.7 隐式转换使用陷阱
+- 1.不能存在二义性.
+- 2.隐式操作不能嵌套使用.
+``` scala
+package com.geekparkhub.core.scala.demo
+
+object DemoTest034 {
+  def main(args: Array[String]): Unit = {
+    // 隐式函数
+    implicit def test(d: Double): Int = {
+      d.toInt
+      // 错误示范 : 隐式操作递归调用,不能嵌套使用
+      val num: Int = 1.9
+    }
+
+    // 正确示范
+    val num: Int = 2.0
+  }
+}
+```
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 6.16 Scala 数据结构 (上) - 集合
+#### 6.16.1 数据结构特点
+
 ### 6.17 Scala 数据结构 (下) - 集合操作
 ### 6.18 Scala 模式匹配
 ### 6.19 Scala 函数式编程 高级
