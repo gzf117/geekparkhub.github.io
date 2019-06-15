@@ -3008,10 +3008,600 @@ object DemoTest034 {
 }
 ```
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 6.16 Scala 数据结构 (上) - 集合
 #### 6.16.1 数据结构特点
+##### 6.16.1 Scala集合基本介绍
+> 1.Scala同时支持不可变集合和可变集合,不可变集合可以安全的并发访问.
+> 不可变集合：`scala.collection.immutable`
+> 可变集合：`scala.collection.mutable`
+> 
+> 2.Scala默认采用不可变集合,对于几乎所有的集合类,Scala都同时提供了可变(mutable)和不可变(immutable)的版本.
+> 
+> 3.Scala的集合有三大类 : 序列Seq(有序,Linear Seq)、集Set、映射Map[key->value],所有的集合都扩展自Iterable特质,在Scala中集合有可变(mutable)和不可变(immutable)两种类型.
+> 
+> ![enter image description here](https://docs.scala-lang.org/resources/images/tour/collections-diagram.svg)
+##### 6.16.2 可变集合和不可变集合
+> 1.不可变集合 : Scala不可变集合就是这个集合本身不能动态变化,(类似java的数组,是不可以动态增长).
+> 
+> 2.可变集合:可变集合就是这个集合本身可以动态变化,(比如:ArrayList,是可以动态增长).
 
+#### 6.16.2 不可变集合
+- scala.collection.immutable中的所有集合类
+![enter image description here](https://docs.scala-lang.org/resources/images/tour/collections-immutable-diagram.svg)
+- IndexSeq和LinearSeq区别
+- [IndexSeq是通过索引来查找和定位,因此速度快,比如String就是一个索引集合,通过索引即可定位] 
+-  [LineaSeq是线型的,即有头尾的概念,这种数据结构一般是通过遍历来查找] 
+
+	
+#### 6.16.3 可变集合
+- scala.collection.mutable中的所有集合类
+![enter image description here](https://docs.scala-lang.org/resources/images/tour/collections-mutable-diagram.svg)
+- 在可变集合中比不可变集合更加丰富
+- 在Seq集合中,增加了Buffer集合
+- 如果涉及到线程安全可以选择使用syn.. 开头集合
+
+#### 6.16.4 数组-定长数组(声明泛型)
+##### 6.16.4.1 第一种方式定义数组
+- 数组等同于Java中的数组,中括号的类型就是数组的类型
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow001 {
+  def main(args: Array[String]): Unit = {
+    // 创建Array对象
+    val array001 = new Array[Int](4)
+    println("array001 数组长度 = "+ array001.length)
+    array001(0) = 10
+    array001(3) = 11
+    for (index <- 0 until array001.length) {
+      printf("array001[%d] = %s", index, array001(index) + "\n")
+    }
+  }
+}
+```
+
+##### 6.16.4.2 第二种方式定义数组
+- 在定义数组时,直接赋值,使用apply方法创建数组对象
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow002 {
+  def main(args: Array[String]): Unit = {
+    val array002 = Array(1, 3, "xyz")
+    println("array002 数组长度 = " + array002.length)
+    array002(0) = "tz"
+    array002(1) = "zz"
+    for (index <- 0 until array002.length) {
+      printf("array002[%d] = %s", index, array002(index) + "\n")
+    }
+  }
+}
+```
+#### 6.16.5 数组-变长数组(声明泛型)
+- 对数组进行追加/修改/删除/查询
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable.ArrayBuffer
+
+object CollectionFlow003 {
+  def main(args: Array[String]): Unit = {
+
+    // Create ArrayBuffer
+    val array003 = ArrayBuffer[Int](2, 4, 6)
+
+    // array003 下标1元素数值
+    println("array003(1) = " + array003(1))
+
+    // 循环遍历array003所有下标元素数值
+    for (i <- array003) {
+      println("array003 所有下标元素数值 = " + i)
+    }
+
+    // array003数组长度以及array003哈希值
+    println("array003数组长度 = " + array003.length)
+    println("array003.hashCode() = " + array003.hashCode())
+
+    // 追加元素array003及array003哈希值
+    array003.append(1, 3, 5)
+    println("array003.hashCode() = " + array003.hashCode())
+
+    // 修改array003 下标1元素数值
+    array003(1) = 87
+    for (i <- array003) {
+      println("array003 修改后所有下标元素数值 = " + i)
+    }
+
+    // 删除array003 下标0元素数值
+    array003.remove(0)
+    for (i <- array003) {
+      println("array003 删除后所有下标元素数值 = " + i)
+    }
+    println("array003删除后数组长度 = " + array003.length)
+
+  }
+}
+```
+##### 6.16.5.1 变长数组分析总结
+> ArrayBuffer是变长数组,类似java的ArrayList
+> `val arr2 = ArrayBuffer[Int]()`也是使用的apply方法构建对象.
+> `def append(elems: A*) { appendAll(elems) }` 接收的是可变参数.
+> 每append一次,arr在底层会重新分配空间,进行扩容,arr2的内存地址会发生变化,也就成为新的ArrayBuffer.
+
+##### 6.16.5.2 定长数组与变长数组 转换
+- `xxx.toBuffer` 定长数组转可变数组.
+- `xxx.toArray` 可变数组转定长数组
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable.ArrayBuffer
+
+object CollectionFlow004 {
+  def main(args: Array[String]): Unit = {
+    // Create ArrayBuffer
+    val array004 = ArrayBuffer[Int]()
+    array004.append(1, 3, 5)
+    println(array004)
+
+    // 可变数组转定长数组
+    val newArray = array004.toArray
+    println("newArray = " + newArray)
+
+    // 定长数组转可变数组
+    val newArray2 = newArray.toBuffer
+    newArray2.append(246)
+    println("newArray2 = " + newArray2)
+  }
+}
+```
+
+##### 6.16.5.3 多维数组定义和使用
+- 定义
+``` scala
+// 二维数组中有三个一维数组,每个一维数组中有四个元素,可以理解为三行四列
+Array.ofDim[Double](3,4)
+``` 
+- `多维数组实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow005 {
+  def main(args: Array[String]): Unit = {
+    // 创建二维数组
+    val array005 = Array.ofDim[Int](3, 4)
+
+    // 双层循环遍历二维数组元素
+    // 遍历一维数组元素
+    for (i <- array005) {
+      // 对一维数组元素结果遍历二维数组元素
+      for (j <- i) {
+        printf(j + "\t")
+      }
+      println()
+    }
+
+    // 指定访问二维数字元素
+    println("array005(1)(1) = " + array005(1)(1))
+
+    // 修改二维数字元素
+    array005(1)(1) = 100
+    for (i <- array005) {
+      // 对一维数组元素结果遍历二维数组元素
+      for (j <- i) {
+        printf(j + "\t")
+      }
+      println()
+    }
+
+    for (i <- 0 to array005.length - 1) {
+      for (j <- 0 to array005(i).length - 1) {
+        printf("array005[%d][%d]=%d\t", i, j, array005(i)(j))
+      }
+      println()
+    }
+  }
+}
+```
+
+
+#### 6.16.6 数组-Scala数组与JavaList互转
+##### 6.16.6.1 Scala数组转JavaList
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable.ArrayBuffer
+
+object CollectionFlow006 {
+  def main(args: Array[String]): Unit = {
+    var array006 = ArrayBuffer("2", "4", "6")
+    import scala.collection.JavaConversions.bufferAsJavaList
+    val builder = new ProcessBuilder(array006)
+    val list = builder.command()
+    println(list)
+  }
+}
+```
+##### 6.16.6.2 JavaList转Scala数组(mutable.Buffer)
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable.ArrayBuffer
+
+object CollectionFlow006 {
+  def main(args: Array[String]): Unit = {
+    var array006 = ArrayBuffer("2", "4", "6")
+    import scala.collection.JavaConversions.bufferAsJavaList
+    val builder = new ProcessBuilder(array006)
+    val list = builder.command()
+    println(list)
+
+    println("=====================")
+
+    import scala.collection.JavaConversions.asScalaBuffer
+    import scala.collection.mutable
+    val scalaArray: mutable.Buffer[String] = list
+    scalaArray.append("mac")
+    scalaArray.remove(0)
+    println(scalaArray)
+  }
+}
+```
+
+
+#### 6.16.7 元组Tuple-元组
+##### 6.16.7.1 基本介绍
+> 元组也是可以理解为一个容器,可以存放各种相同或不同类型数据.
+> 
+> 元组中最大只能有22个元素,简单的说就是将多个无关数据封装为一个整体称为元组,最多特点灵活,对数据没有过多约束.
+
+##### 6.16.7.2 元组创建
+- 说明
+- 为了高效的操作元组,编译器根据元素的个数不同,对应不同的元组类型
+- tuple1类型是Tuple5类是scala特有类型
+- tuple1类型取决于tuple1后面有多少个元素,有对应关系比如4个元素=>Tuple4
+- 元组中最大只能有22个元素即`Tuple1...Tuple22`
+- `创建元组实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow007 {
+  def main(args: Array[String]): Unit = {
+    // 创建 元祖
+    val tuple1 = (2, 4, 6, "mac", 8)
+    println("tuple1 = " + tuple1)
+  }
+}
+```
+- `反编译源码实例`
+``` java
+package com.geekparkhub.core.scala.collection;
+
+public final class CollectionFlow007$
+{
+  public static final CollectionFlow007$ MODULE$;
+  
+  private CollectionFlow007$() { MODULE$ = this; }
+  
+  static  {
+  
+  }
+  
+  public void main(String[] args) { // Byte code:
+    //   0: new scala/Tuple5
+    //   3: dup
+    //   4: iconst_2
+    //   5: invokestatic boxToInteger : (I)Ljava/lang/Integer;
+    //   8: iconst_4
+    //   9: invokestatic boxToInteger : (I)Ljava/lang/Integer;
+    //   12: bipush #6
+    //   14: invokestatic boxToInteger : (I)Ljava/lang/Integer;
+    //   17: ldc 'mac'
+    //   19: bipush #8
+    //   21: invokestatic boxToInteger : (I)Ljava/lang/Integer;
+    //   24: invokespecial <init> : (Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)V
+    //   27: astore_2
+    //   28: getstatic scala/Predef$.MODULE$ : Lscala/Predef$;
+    //   31: aload_2
+    //   32: invokevirtual println : (Ljava/lang/Object;)V
+    //   35: return
+    // Line number table:
+    //   Java source line number -> byte code offset
+    //   #6	-> 0
+    //   #7	-> 28
+    // Local variable table:
+    //   start	length	slot	name	descriptor
+    //   0	36	0	this	Lcom/geekparkhub/core/scala/collection/CollectionFlow007$;
+    //   0	36	1	args	[Ljava/lang/String;
+    //   28	7	2	tuple1	Lscala/Tuple5; }
+}
+```
+#### 6.16.8 元组Tuple-元组数据访问
+- 访问元组中数据,可以采用顺序号(_顺序号),也可以通过索引(productElement)访问.
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow007 {
+  def main(args: Array[String]): Unit = {
+    // 创建 元祖
+    val tuple1 = (2, 4, 6, "mac", 8)
+    println("tuple1 = " + tuple1)
+
+    // 访问元祖第一个元素,从_1开始
+    println("tuple1._1  = " + tuple1._1)
+    // 访问元祖第一个元素,从0开始
+    println("tuple1.productElement(0) = " + tuple1.productElement(0))
+  }
+}
+```
+#### 6.16.9 元组Tuple-元组数据遍历
+- Tuple是一个整体,遍历需要调其迭代器
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow007 {
+  def main(args: Array[String]): Unit = {
+    // 创建 元祖
+    val tuple1 = (2, 4, 6, "mac", 8)
+    println("tuple1 = " + tuple1)
+
+    // 遍历元祖
+    for (i <- tuple1.productIterator){
+      println("tuple1 = " + i)
+    }
+  }
+}
+```
+
+#### 6.16.10 列表List-创建List
+- Scala中的List和Java List不一样,在Java中List是一个接口,真正存放数据是ArrayList,而Scala的List可以直接存放数据,就是一个object,默认情况下Scala的List是不可变,List属于序列Seq.
+- `创建List实例`
+- 说明 : 
+- 1.List默认为不可变的集合.
+- 2.List在scala包对象声明的,因此不需要引入其它包也可以使用.
+- 3.List 中可以放任何数据类型,比如arr1类型为List[Any]
+- 4.如果希望得到一个空列表,可以使用Nil对象,在scala包对象声明,因此不需要引入其它包也可以使用.
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow008 {
+  def main(args: Array[String]): Unit = {
+    // 创建List集合
+    val list001 = List(1, 3, 5)
+    println("list001 = " + list001)
+    // 创建List空集合
+    val list002 = Nil
+    println("list002 = " + list002)
+  }
+}
+```
+
+#### 6.16.11 列表List-访问List元素
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow008 {
+  def main(args: Array[String]): Unit = {
+    // 创建List集合
+    val list001 = List(1, 3, 5)
+    println("list001 = " + list001)
+
+    // 创建List空集合
+    val list002 = Nil
+    println("list002 = " + list002)
+
+    // 访问List集合
+    val value0: Int = list001(0)
+    val value1: Int = list001(1)
+    val value2: Int = list001(2)
+    println("value0 = " + value0 + "\n" + "value1 = " + value1 + "\n" + "value2 = " + value2)
+  }
+}
+```
+
+#### 6.16.12 列表List-元素追加
+- 向列表中增加元素,会返回新的列表/集合对象.
+- 注意 : Scala中List元素追加形式非常独特,和Java不一样.
+
+##### 6.16.12.1 方式1-在列表最后增加数据
+- 说明 : 使用`:+`运算符追加数据
+- `追加数据实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow008 {
+  def main(args: Array[String]): Unit = {
+    // 创建List集合
+    val list001 = List(1, 3, 5)
+    println("list001 = " + list001)
+
+    // 访问List集合
+    val value0: Int = list001(0)
+    val value1: Int = list001(1)
+    val value2: Int = list001(2)
+    println("value0 = " + value0 + "\n" + "value1 = " + value1 + "\n" + "value2 = " + value2)
+
+    /**
+      * 在List集合后追加数据
+      * :+ 运算符表示在列表最后增加数据
+      */
+    val list003 = list001 :+ 9
+    println("list001 = " + list001)
+    println("list003 = " + list003)
+  }
+}
+```
+
+
+##### 6.16.12.2 方式2-在列表最前面增加数据
+- 说明 : 使用`+:`运算符追加数据
+- `追加数据实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow008 {
+  def main(args: Array[String]): Unit = {
+    // 创建List集合
+    val list001 = List(1, 3, 5)
+    println("list001 = " + list001)
+
+    // 访问List集合
+    val value0: Int = list001(0)
+    val value1: Int = list001(1)
+    val value2: Int = list001(2)
+    println("value0 = " + value0 + "\n" + "value1 = " + value1 + "\n" + "value2 = " + value2)
+
+    /**
+      * 在List集合前追加数据
+      * +: 运算符表示在列表最前增加数据
+      */
+    val list004 = 0 +: list001
+    println("list001 = " + list001)
+    println("list004 = " + list004)
+  }
+}
+```
+
+##### 6.16.12.3 方式3-在列表最后增加数据
+- 符号`::`表示向集合中新建集合添加元素.
+- 符号`:::`运算符是将集合中每一个元素加入到集合中.
+- 运算规则,从右向左.
+- 运算时,集合对象一定要放置在最右边.
+- `追加数据实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow008 {
+  def main(args: Array[String]): Unit = {
+    // 创建List集合
+    val list001 = List(1, 3, 5)
+    println("list001 = " + list001)
+
+    // 访问List集合
+    val value0: Int = list001(0)
+    val value1: Int = list001(1)
+    val value2: Int = list001(2)
+    println("value0 = " + value0 + "\n" + "value1 = " + value1 + "\n" + "value2 = " + value2)
+
+    /**
+      * 在List集合后追加数据
+      * :: 运算符,向集合中新建集合添加元素
+      */
+    val list005 = List(1, 2, 3, "mac")
+    val list006 = 4 :: 5 :: 6 :: list005 :: Nil
+    println("list006 = " + list006)
+
+    /**
+      * 在List集合后追加数据
+      * ::: 运算符,将集合中每一个元素加入到集合中
+      */
+    val list007 = List(1, 2, 3, "mac")
+    val list008 = 4 :: 5 :: 6 :: list005 ::: Nil
+    println("list008 = " + list008)
+  }
+}
+```
+##### 6.16.12.3 List集合测试题
+- 简述集合函数001/002/003/004 输出结果
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow009 {
+  def main(args: Array[String]): Unit = {
+    val testFlow = new TestFlow
+    testFlow.collectionFunction001()
+    testFlow.collectionFunction002()
+    testFlow.collectionFunction003()
+    testFlow.collectionFunction004()
+  }
+
+  // 创建半生类
+  class TestFlow {
+
+    // 集合函数001
+    def collectionFunction001(): Unit = {
+      val list001 = List(1, 2, 3, "tomcat")
+      val list002 = 4 :: 5 :: list001
+      println("list002 = " + list002)
+    }
+
+    // 集合函数002
+    def collectionFunction002(): Unit = {
+      val list001 = List(1, 2, 3, "tomcat")
+       // 程序错误,9不是集合对象,最右侧应该存放集合对象
+      val list002 = 4 :: 5 :: list001 :: 9
+      println("list002 = " + list002)
+    }
+
+    // 集合函数003
+    def collectionFunction003(): Unit = {
+      val list001 = List(1, 2, 3, "tomcat")
+      // 程序错误,运行顺序从右向左执行,6不是集合类型
+      val list002 = 4 :: 5 :: 6 ::: list001 ::: Nil
+      println("list002 = " + list002)
+    }
+
+    // 集合函数004
+    def collectionFunction004(): Unit = {
+      val list001 = List(1, 2, 3, "tomcat")
+      val list002 = 4 :: 5 :: list001 ::: list001 ::: Nil
+      println("list002 = " + list002)
+    }
+
+  }
+}
+```
+
+#### 6.16.13 列表ListBuffer
+- ListBuffer是可变list集合,可以添加,删除元素,ListBuffer属于序列.
+- `ListBuffer实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable.ListBuffer
+
+object CollectionFlow010 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建listBuffer
+    val listBuffer001 = ListBuffer[Int](1, 2, 3)
+    println("listBuffer001(2) = " + listBuffer001(2))
+    for (i <- listBuffer001) {
+      println("i = " + i)
+    }
+
+    // 创建listBuffer
+    val listBuffer002 = new ListBuffer[Int]
+    // 添加单个元素
+    listBuffer002 += 4
+    listBuffer002.append(5)
+    println("listBuffer002 = " + listBuffer002)
+
+    // 将listBuffer002集合元素(4,5,)添加到另一个listBuffer001集合元素(1,2,3)
+    listBuffer001 ++= listBuffer002
+    println("listBuffer001 = " + listBuffer001)
+
+    //将listBuffer001集合元素与listBuffer002集合元素相加
+    val listBuffer003 = listBuffer001 ++ listBuffer002
+    println("listBuffer003 = " + listBuffer003)
+
+    // 在listBuffer001集合追加元素
+    val listBuffer004 = listBuffer001 :+ 6
+    println("listBuffer004 = " + listBuffer004)
+
+    // 指定删除集合元素
+    println("listBuffer002 = " + listBuffer002)
+    // 删除将下标为1的元素
+    listBuffer002.remove(1)
+    for (i <- listBuffer002) {
+      println("i = " + i)
+    }
+  }
+}
+```
+
+#### 6.16.14 队列Queue
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 6.17 Scala 数据结构 (下) - 集合操作
 ### 6.18 Scala 模式匹配
 ### 6.19 Scala 函数式编程 高级
