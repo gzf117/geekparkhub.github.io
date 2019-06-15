@@ -3976,17 +3976,140 @@ object CollectionFlow012 {
 > 
 > 3.如果只是简单希望得到一个值,则使用map.getOrElse("ip","127.0.0.1")即可.
 
+
 #### 6.16.22 映射Map-对Map修改/添加/删除
 ##### 6.16.22.1 更新map元素
 - 说明 : 
 - 1.map为可变时才能修改,否则抛出异常
 - 2.如果key存在 : 则修改对应值,key不存在等价于添加一个key-val
+- `更新map元素实例`
 ``` scala
+package com.geekparkhub.core.scala.collection
 
+import scala.collection.mutable
 
+object CollectionFlow012 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建可变Map对象
+    val map2 = mutable.Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map2 = " + map2)
+
+    // 更新map元素
+    map2("Flink") = 5
+    println("map2 = "+ map2)
+    map2("Storm") = 6
+    println("map2 = "+ map2)
+
+  }
+}
 ```
 ##### 6.16.22.2 添加map元素
+- 当增加一个key-value,如果key存在就是更新,如果不存在就是添加
+###### 6.16.22.2.1 添加单个map元素
+- `添加单个map元素实例`
+``` scala
+package com.geekparkhub.core.scala.collection
 
+import scala.collection.mutable
+
+object CollectionFlow012 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建可变Map对象
+    val map2 = mutable.Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map2 = " + map2)
+
+    // 添加单个map元素
+    map2 += ("Hive" -> 7)
+    map2 += ("Flume" -> 8)
+    println("map2 = " + map2)
+    
+  }
+}
+```
+###### 6.16.22.2.1 添加多个map元素
+- `添加多个map元素实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow012 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建可变Map对象
+    val map2 = mutable.Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map2 = " + map2)
+
+    // 添加多个map元素
+    map2 += ("Kafka" -> 9, "Sqoop" -> 10)
+    println("map2 = " + map2)
+    val map5 = map2 + ("Oozie" -> 11, "Hbase" -> 12)
+    println("map5 = " + map5)
+  }
+}
+```
+##### 6.16.22.3 删除map元素
+- 说明 : 
+- "key","key"就是要删除的key,可以写多个key.
+- 如果key存在就删除,如果key不存在也不会抛异常.
+- `删除map元素实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow012 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建可变Map对象
+    val map2 = mutable.Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map2 = " + map2)
+
+    // 删除map元素
+    map2 -= ("Hadoop","Scala","HashMap")
+    println("map2 = " + map2)
+
+  }
+}
+```
+
+#### 6.16.23 映射Map-map遍历
+> 说明 :
+> 每遍历一次,返回元素是Tuple2,取出时可以按照元组方式来取值.
+>  
+> 对map元素(元组Tuple2对象)进行遍历方式很多种 : 方式如下 
+> 
+> `map遍历实例` 
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow012 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建可变Map对象
+    val map2 = mutable.Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map2 = " + map2)
+
+    // map遍历
+    println("--------------------------------------")
+    for ((key, value) <- map2) println(key + " is Mapped To " + value)
+    println("--------------------------------------")
+
+    for (value <- map2.keys) println("keys = " + value)
+    println("--------------------------------------")
+
+    for (value <- map2.values) println("values = " + value)
+    println("--------------------------------------")
+
+    for (value <- map2) println(value + " | key = " + value._1 + " | value = " + value._2)
+    println("--------------------------------------")
+  }
+}
+```
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 6.17 Scala 数据结构 (下) - 集合操作
