@@ -3600,6 +3600,393 @@ object CollectionFlow010 {
 ```
 
 #### 6.16.14 队列Queue
+##### 6.16.14.1 队列说明
+- 1.队列是一个有序列表,在底层可以用数组或是链表来实现.
+- 2.其输入和输出要遵循先入先出原则,即先存入队列数据要先取出,后存入的数据要后取.
+- 3.在Scala中由设计者直接提供队列类型Queue使用.
+- 4.在Scala中,有`scala.collection.mutable.Queue`和`scala.collection.immutable.Queue`一般来说在开发中通常使用可变集合队列.
+
+#### 6.16.15 队列Queue-队列创建
+- 引入`scala.collection.mutable`包,即可创建可变集合队列.
+- `队列创建实例` 
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow011 {
+  def main(args: Array[String]): Unit = {
+    // 创建Queue队列对象
+    val queue = new mutable.Queue[Int]()
+    println("queue = " + queue)
+  }
+}
+```
+#### 6.16.16 队列Queue-队列元素追加数据
+- 向队列追加单个元素和List
+- `队列创建实例` 
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow011 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建Queue队列对象
+    val queue = new mutable.Queue[Any]()
+    println("queue = " + queue)
+
+    // 向Queue队列追加元素
+    queue += 1
+    println("queue = " + queue)
+
+    // 元素数值默认添加到Queue队列后
+    queue ++= List(3, 5, 7)
+    println("queue = " + queue)
+
+    // 将list集合作为一个元素追加到Queue队列,且类Queue队列类型必须设置为Any类型
+    queue += List(9, 11, 13)
+    println("queue = " + queue)
+  }
+}
+```
+
+#### 6.16.17 队列Queue-删除和加入队列元素
+- 在队列中严格的遵守,入队列的数据放在队位,出队列的数据是队列的头部取出.
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow011 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建Queue队列对象
+    val queue = new mutable.Queue[Any]()
+    println("queue = " + queue)
+
+    // 向Queue队列追加元素
+    queue += 1
+    println("queue = " + queue)
+
+    // 元素数值默认添加到Queue队列后
+    queue ++= List(3, 5, 7)
+    println("queue = " + queue)
+
+    // 将list集合作为一个元素追加到Queue队列,且Queue队列类型必须设置为Any类型
+    queue += List(9, 11, 13)
+    println("queue = " + queue)
+
+    // 出队列,从队列头部中删除元素
+    val queueElement = queue.dequeue()
+    println("queueElement = " + queueElement + " | queue = "+queue)
+
+    // 入队列,默认在队列尾部加入元素
+    queue.enqueue(15,17,19)
+    println("queue = " + queue)
+  }
+}
+```
+
+
+#### 6.16.18 队列Queue-返回队列元素
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow011 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建Queue队列对象
+    val queue = new mutable.Queue[Any]()
+    println("queue = " + queue)
+
+    // 向Queue队列追加元素
+    queue += 1
+    println("queue = " + queue)
+
+    // 元素数值默认添加到Queue队列后
+    queue ++= List(3, 5, 7)
+    println("queue = " + queue)
+
+    // 将list集合作为一个元素追加到Queue队列,且Queue队列类型必须设置为Any类型
+    queue += List(9, 11, 13)
+    println("queue = " + queue)
+
+    // 出队列,从队列头部中删除元素
+    val queueElement = queue.dequeue()
+    println("queueElement = " + queueElement + " | queue = " + queue)
+
+    // 入队列,默认在队列尾部加入元素
+    queue.enqueue(15, 17, 19)
+    println("queue = " + queue)
+
+    /**
+      * 返回Queue队列元素
+      */
+    // 获取队列第一个元素
+    println("head = " + queue.head)
+
+    // 获取队列最后一个元素
+    println("last = " + queue.last)
+
+    // 取出队尾数据,返回除了第一个以外剩余元素,可以级联使用
+    println("tail = " + queue.tail)
+    println("tail.tail.tail = " + queue.tail.tail.tail)
+  }
+}
+```
+
+#### 6.16.19 映射Map
+##### 6.16.19.1 Java Map
+- HashMap是一个散列表(数组+链表),它存储内容是键值对(key-value)映射,Java中的HashMap是无序,key不能重复.
+- `Java Map实例`
+``` java
+package com.geekparkhub.core.scala.collection;
+import java.util.HashMap;
+
+public class JavaHashMap {
+    public static void main(String[] args) {
+        HashMap<String, Integer> hm = new HashMap();
+        hm.put("node1", 100);
+        hm.put("node2", 200);
+        hm.put("node3", 300);
+        hm.put("node4", 400);
+        hm.put("node1", 500);
+        System.out.println(hm);
+        System.out.println(hm.get("node2"));
+    }
+}
+```
+##### 6.16.19.2 Scala Map
+- 说明 : 
+- Scala中的Map和Java类似,也是一个散列表,它存储的内容也是键值对(key-value)映射,Scala中不可变的Map是有序的,可变的Map是无序.
+- Scala中有可变Map(`scala.collection.mutable.Map`)和不可变Map(`scala.collection.immutable.Map`)
+
+
+#### 6.16.20 映射Map-四种Map构建方式
+##### 6.16.20.1 方式1-构造不可变映射
+- Scala中的不可变Map是有序,构建Map中元素底层是Tuple2类型.
+- 不可变map输出顺序和声明顺序是一致
+- `创建不可变Map实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow012 {
+  def main(args: Array[String]): Unit = {
+    // 创建不可变Map对象
+    val map = Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map = " + map)
+  }
+}
+```
+
+##### 6.16.20.2 方式2-构造可变映射
+- 可变map输出顺序和声明顺序不会一致
+- `创建可变Map实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow012 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建不可变Map对象
+    val map = Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map = " + map)
+
+    // 创建可变Map对象
+    val map2 = mutable.Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map2 = " + map2)
+  }
+}
+```
+##### 6.16.20.3 方式3-创建空Map映射
+- `创建空Map实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow012 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建不可变Map对象
+    val map = Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map = " + map)
+
+    // 创建可变Map对象
+    val map2 = mutable.Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map2 = " + map2)
+
+    // 创建空Map对象
+    val map3 = new mutable.HashMap[String, Int]
+    println("map3 = " + map3)
+  }
+}
+```
+
+##### 6.16.20.4 方式4-对偶元组
+- 说明 : 
+- 即创建包含键值对的二元组,和第一种方式等价,只是形式上不同而已.
+- 只含有两个数据的元组就称之为对偶元组.
+- `对偶元组实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow012 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建不可变Map对象
+    val map = Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map = " + map)
+
+    // 创建可变Map对象
+    val map2 = mutable.Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map2 = " + map2)
+
+    // 创建空Map对象
+    val map3 = new mutable.HashMap[String, Int]
+    println("map3 = " + map3)
+
+    // 创建对偶元组
+    val map4 = mutable.Map(("Hadoop", 1), ("Scala", 2), ("Spark", 3), ("Flink", 4))
+    println("map4 = " + map4)
+  }
+}
+```
+
+
+#### 6.16.21 映射Map-四种Map取值方式
+##### 6.16.21.1 方式1-使用map(key)
+- 说明 : 
+- 1.如果key存在,则返回对应值.
+- 2.如果key不存在,则抛出异常`[java.util.NoSuchElementException]`
+- 3.在Java中,如果key不存在则返回null
+- `map(key)取值实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow012 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建可变Map对象
+    val map2 = mutable.Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map2 = " + map2)
+
+    // map(key)取值
+    println("map2(\"Hadoop\") = " + map2("Hadoop"))
+  }
+}
+```
+
+##### 6.16.21.2 方式2-使用`contains`方法检查key是否存在
+- 说明 : 
+- 使用`containts`先判断在取值,可以防止异常,并加入相应处理逻辑.
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow012 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建可变Map对象
+    val map2 = mutable.Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map2 = " + map2)
+
+    // 使用contains方法检查key是否存在
+    if (map2.contains("Sparks")) {
+      println("Key exists , Value = " + map2("Sparks"))
+    } else {
+      println("Key does not exist :)")
+    }
+
+  }
+}
+```
+
+##### 6.16.21.3 方式3-使用map.get(key).get取值
+- 说明 : 
+- 1.通过映射.get(键)调用返回一个Option对象,要么是Some,要么是None
+- 2.map.get方法会将数据进行包装.
+- 3.如果map.get(key) key存在返回some,如果key不存在,则返回None
+- 4.如果map.get(key).getkey存在则返回key对应的值,否则抛出异常`java.util.NoSuchElementException: None.get`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow012 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建可变Map对象
+    val map2 = mutable.Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map2 = " + map2)
+
+    /**
+      * 使用map.get(key).get取值
+      * 如果key存在,则就会返回Some(value),通过Some(value).get取出元素
+      * 如果key不存在,则就会返回None
+      */
+    println("map2.get(\"Spark\") = " + map2.get("Spark"))
+    println("map2.get(\"Spark\").get = " + map2.get("Spark").get)
+    println("map2.get(\"Sparks\").get = " + map2.get("Sparks").get)
+
+  }
+}
+```
+
+##### 6.16.21.4 使用map.getOrElse()取值
+- 说明 : 
+- 1.getOrElse方法 : `def getOrElse[V1 >: V](key: K, default: => V1)`
+- 2.如果key存在,返回key对应值.
+- 3.如果key不存在返回默认值,在java中底层有很多类似操作.
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow012 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建可变Map对象
+    val map2 = mutable.Map("Hadoop" -> 1, "Scala" -> 2, "Spark" -> 3, "Flink" -> 4)
+    println("map2 = " + map2)
+
+    // 使用map.getOrElse()取值
+    println("map2.getOrElse = " + map2.getOrElse("Spark", "Defaults"))
+    println("map2.getOrElse = " + map2.getOrElse("Sparks", "Defaults = 5"))
+
+  }
+}
+```
+
+##### 6.16.21.5 如何选择取值方式
+> 1.如果确定map有key时,则应当使用map(key),因为取值速度快.
+> 
+> 2.如果不能确定map是否有key时,而且有不同业务逻辑,则使用`map.contains()`先判断在加入逻辑.
+> 
+> 3.如果只是简单希望得到一个值,则使用map.getOrElse("ip","127.0.0.1")即可.
+
+#### 6.16.22 映射Map-对Map修改/添加/删除
+##### 6.16.22.1 更新map元素
+- 说明 : 
+- 1.map为可变时才能修改,否则抛出异常
+- 2.如果key存在 : 则修改对应值,key不存在等价于添加一个key-val
+``` scala
+
+
+```
+##### 6.16.22.2 添加map元素
+
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 6.17 Scala 数据结构 (下) - 集合操作
