@@ -4230,8 +4230,190 @@ object CollectionFlow013 {
 
 
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 6.17 Scala 数据结构 (下) - 集合操作
+#### 6.17.1 集合元素映射-map映射操作
+> 请将List(3,5,7)中所有元素*2,将其结果放到一个新集合中返回,即返回一个新的List(6,10,14),请编写程序实现.
+
+##### 6.17.1.0 map映射操作
+> 在Scala中可以通过map映射操作来解决,将集合每一个元素通过指定函数映射转换成为新的结果集合.
+> 
+> 所谓将函数作为参数传递给另一个函数,这既是函数式编程特点.
+
+
+##### 6.17.1.1 使用常规方法
+- 分析常规方法优缺点
+- 优点 : 处理方法比较直接,易于理解
+- 缺点 : 代码不够简洁高效 / 没有体现函数式编程特点 / 不利于处理复杂数据处理业务
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow014 {
+  def main(args: Array[String]): Unit = {
+    // 创建集合
+    var list001 = List(3, 5, 7)
+    var list002 = List[Int]()
+    for (i <- list001) {
+      list002 = list002 :+ i * 2
+    }
+    println("list002 = " + list002)
+  }
+}
+```
+
+##### 6.17.1.2 高阶函数应用实例一
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow015 {
+  def main(args: Array[String]): Unit = {
+    // 指定function001函数
+    val res: Double = function001(function002,4.0)
+    println("res = " + res)
+  }
+
+  /**
+    * function001表示为高阶函数
+    * f: Double => Double表示一个函数,该函数可以接受一个Double,返回Double类型
+    * n1: Double 普通参数
+    * f(n1) 在function001函数中,执行传入函数
+    * @param f
+    * @param n1
+    * @return
+    */
+  def function001(f: Double => Double, n1: Double) = {
+    f(n1)
+  }
+
+  /**
+    * function002表示为普通函数
+    * 可以接受一个Double,返回Double
+    * @param d
+    * @return
+    */
+  def function002(d: Double): Double = {
+    println("function002 被调用")
+    d + d
+  }
+}
+```
+
+
+##### 6.17.1.3 高阶函数应用实例二
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow016 {
+  def main(args: Array[String]): Unit = {
+    function003(test001)
+//    function003(test002)
+  }
+
+  // 定义function003高阶函数,可以接受一个没有输入,返回为Unit函数
+  def function003(f: () => Unit): Unit = {
+    f()
+  }
+
+  def test001(): Unit = {
+    println("test001")
+  }
+
+  def test002(n: Int => Int): Unit = {
+    println("test002")
+  }
+
+}
+```
+
+##### 6.17.1.4 使用map映射函数解决问题
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow017 {
+  def main(args: Array[String]): Unit = {
+    // 创建集合
+    var list001 = List(3, 5, 7)
+
+    /**
+      * 调用map函数
+      *
+      * map函数执行机制
+      * 1.将list集合元素依次遍历
+      * 2.将各个元素传递给multiple 函数=> 新Int
+      * 3.将得到新Int,放入到一个新集合并返回
+      * 4.因此multiple函数被调用3次
+      */
+    val res: List[Int] = list001.map(function004)
+    println("res = " + res)
+  }
+
+  // 创建function004函数并将集合元素*2
+  def function004(n: Int): Int = {
+    2 * n
+  }
+}
+```
+
+##### 6.17.1.5 深刻理解map映射函数机制-模拟实现
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow017 {
+  def main(args: Array[String]): Unit = {
+    // 创建集合
+    var list001 = List(3, 5, 7)
+
+    /**
+      * 调用map函数
+      *
+      * map函数执行过程
+      * 1.将list集合元素依次遍历
+      * 2.将各个元素传递给multiple 函数=> 新Int
+      * 3.将得到新Int,放入到一个新集合并返回
+      * 4.因此multiple函数被调用3次
+      */
+    val res: List[Int] = list001.map(function004)
+    println("res = " + res)
+  }
+
+  // 创建function004函数并将集合元素*2
+  def function004(n: Int): Int = {
+    2 * n
+  }
+  
+  val mapMode = MapMode()
+  // 调用maps函数
+  val res001: List[Int] = mapMode.maps(function004)
+  println("mapMode = " + res001)
+}
+
+
+/**
+  * 模拟实现map映射函数机制
+  * 创建半生类
+  */
+class MapMode {
+  // 创建集合
+  var list002 = List(3, 5, 7)
+  var list003 = List[Int]()
+
+  // 构建map函数
+  def maps(n: Int => Int): List[Int] = {
+    // 依次遍历List集合元素
+    for (item <- this.list002) {
+      list003 = list003 :+ n(item)
+    }
+    list003
+  }
+}
+
+// 创建半生对象
+object MapMode {
+  def apply(): MapMode = new MapMode()
+}
+```
+
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 6.18 Scala 模式匹配
 ### 6.19 Scala 函数式编程 高级
 ### 6.20 Scala 使用递归方式去思考编程
