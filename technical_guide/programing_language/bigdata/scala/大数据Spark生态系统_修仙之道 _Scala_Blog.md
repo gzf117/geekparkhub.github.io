@@ -4111,6 +4111,125 @@ object CollectionFlow012 {
 }
 ```
 
+#### 6.16.24 集合Set
+- 集是不重复元素的结合,集不保留顺序,默认是以哈希集实现.
+- Java中Set回顾
+- java中HashSet是实现`Set<E>`接口的一个实体类,数据是以哈希表的形式存放,里面的不能包含重复数据,Set接口是一种不包含重复元素的collection,HashSet中的数据也是没有顺序.
+##### 6.16.24.1 集合Set-创建
+- `Scala 创建Set实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow013 {
+  def main(args: Array[String]): Unit = {
+    // 创建不可变Set对象
+    val set01 = Set(2, 4, 6)
+    println("set01 = " + set01)
+    // 创建可变Set对象
+    val set02 = mutable.Set(1, 3, 5, "mac")
+    println("set02 = " + set02)
+  }
+}
+```
+
+##### 6.16.24.2 集合Set-可变集合元素添加/删除
+###### 6.16.24.2.1 可变集合元素添加
+- `添加元素实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow013 {
+  def main(args: Array[String]): Unit = {
+    // 创建不可变Set对象
+    val set01 = Set(2, 4, 6)
+    println("set01 = " + set01)
+    // 创建可变Set对象
+    val set02 = mutable.Set(1, 3, 5, "mac")
+    println("set02 = " + set02)
+
+    // 添加元素
+    set02.add(7)
+    set02 += 9
+    set02.+=("pro")
+    println("set02 = " + set02)
+
+  }
+}
+```
+
+###### 6.16.24.2.2 可变集合元素删除
+- `删除元素实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow013 {
+  def main(args: Array[String]): Unit = {
+    // 创建不可变Set对象
+    val set01 = Set(2, 4, 6)
+    println("set01 = " + set01)
+    // 创建可变Set对象
+    val set02 = mutable.Set(1, 3, 5, "mac")
+    println("set02 = " + set02)
+
+    // 添加元素
+    set02.add(7)
+    set02 += 9
+    set02.+=("pro")
+    println("set02 = " + set02)
+
+    // 删除元素
+    set02.-= ("pro")
+    set02.remove(9)
+    println("set02 = " + set02)
+    
+  }
+}
+```
+
+
+##### 6.16.24.3 集合Set-集合遍历
+- `遍历集合实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+import scala.collection.mutable
+
+object CollectionFlow013 {
+  def main(args: Array[String]): Unit = {
+    // 创建不可变Set对象
+    val set01 = Set(2, 4, 6)
+    println("set01 = " + set01)
+    // 创建可变Set对象
+    val set02 = mutable.Set(1, 3, 5, "mac")
+    println("set02 = " + set02)
+
+    // 添加元素
+    set02.add(7)
+    set02 += 9
+    set02.+=("pro")
+    println("set02 = " + set02)
+
+    // 删除元素
+    set02.-=("pro")
+    set02.remove(9)
+    println("set02 = " + set02)
+
+    // 遍历集合
+    for (i <- set02) {
+      println("for set002 = " + i)
+    }
+  }
+}
+```
+
+
+
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 6.17 Scala 数据结构 (下) - 集合操作
 ### 6.18 Scala 模式匹配
