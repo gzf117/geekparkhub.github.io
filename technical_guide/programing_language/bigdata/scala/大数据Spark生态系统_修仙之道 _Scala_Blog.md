@@ -4467,7 +4467,7 @@ object CollectionFlow020 {
 - 1.`def reduceLeft[B >: A](@deprecatedName('f) op: (B, A) => B): B`
 - 2.`reduceLeft(f) 接收函数需要的形式为op: (B, A) => B): B`
 - 3.`educeleft(f) 运行规则是从左边开始执行将得到的结果返回给第一个参数`
-- `reduceLeft实例`
+- 4.`reduceLeft实例`
 ``` scala
 package com.geekparkhub.core.scala.collection
 
@@ -4488,6 +4488,95 @@ object CollectionFlow021 {
   }
 }
 ```
+
+##### 6.17.1.9 fold 折叠
+- 1.fold函数将上一步返回值作为函数的第一个参数继续传递参与运算,直到list中所有元素被遍历.
+- 2.可以把reduceLeft看做简化版foldLeft.
+- 3.fold相关函数 : fold / foldLeft / foldRight,可以参考reduce相关方法理解.
+- 4.`fold实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow023 {
+  def main(args: Array[String]): Unit = {
+    // 折叠理解和化简的运行机制几乎一样
+    val list = List(1, 3, 5, 7, 9)
+    // 调用左折叠函数
+    val left = list.foldLeft(11)(function010)
+    // 调用右折叠函数
+    val right = list.foldRight(11)(function010)
+
+    println("left = " + left)
+    println("right = " + right)
+  }
+
+  def function010(n1: Int, n2: Int): Int = {
+    n1 - n2
+  }
+}
+```
+###### 6.17.1.9.1 foldLeft和foldRight缩写
+- 1.`/:`表示foldLeft缩写方式
+- 2.`:\`表示foldRight缩写方式
+- 3.`缩写实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow024 {
+  def main(args: Array[String]): Unit = {
+
+    val list = List(2, 4, 6, 8)
+
+    /**
+      * /: 表示foldLeft缩写方式
+      * :\ 表示foldRight缩写方式
+      */
+
+    // (10 /: list) (function011) 等价于 list.foldLeft(10)(function011)
+    val res001 = (10 /: list) (function011)
+
+    // (list :\ 10) (function011) 等价于 list.foldRight(10)(function011)
+    val res002 = (list :\ 10) (function011)
+
+    println("res001 = " + res001)
+    println("res002 = " + res002)
+  }
+
+  def function011(n1: Int, n2: Int): Int = {
+    n1 - n2
+  }
+}
+```
+
+
+##### 6.17.1.10 扫描
+- 1.扫描即对某个集合所有元素做fold操作,但是会把产生的所有中间结果放置于一个集合中保存.
+- 2.`扫描实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow025 {
+  def main(args: Array[String]): Unit = {
+
+    val left = (1 to 5).scanLeft(6)(function012)
+    val right = (1 to 5).scanRight(6)(function013)
+    println("left = " + left)
+    println("right = " + right)
+  }
+
+  def function012(n1: Int, n2: Int): Int = {
+    n1 - n2
+  }
+
+  def function013(n1: Int, n2: Int): Int = {
+    n1 + n2
+  }
+}
+```
+
+
+
+##### 6.17.1.11 扩展-拉链(合并)
 
 
 
