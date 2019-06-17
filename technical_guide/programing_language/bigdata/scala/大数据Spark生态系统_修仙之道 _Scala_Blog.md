@@ -4411,6 +4411,85 @@ object MapMode {
   def apply(): MapMode = new MapMode()
 }
 ```
+##### 6.17.1.6 flatmap 扁平化映射
+- flatmap : flat即压扁压平,扁平化效果就是将集合中每个元素的子元素映射到某个函数并返回新的集合.
+- `flatmap实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow019 {
+  def main(args: Array[String]): Unit = {
+  
+    /**
+      * 将所有单词全部转换字母大写,返回到新List集合
+      */
+    val names = List("Alice", "Bob", "Nick")
+    // 调用flatMap函数,将集合所有元素扁平化操作
+    val list: List[Char] = names.flatMap(function006)
+    println("list = " + list)
+  }
+
+  // 构建function006函数 转化字母大写
+  def function006(v: String): String = {
+    v.toUpperCase
+  }
+}
+```
+
+
+##### 6.17.1.7 filter 集合元素过滤
+- filter : 将符合要求的数据(筛选)放置到新的集合.
+- `filter实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow020 {
+  def main(args: Array[String]): Unit = {
+    /**
+      * 将所有单词全部转换字母大写,返回到新List集合
+      */
+    val names = List("Alice", "Bob", "Nick")
+    // 调用filter函数将首字母为'A'的元素筛选到新的集合
+    val list: List[String] = names.filter(function007)
+    println("list = " + list)
+  }
+
+  // 构建function007函数 筛选母为'A'的元素
+  def function007(v: String): Boolean = {
+    v.startsWith("A")
+  }
+}
+```
+##### 6.17.1.8 化简
+###### 6.17.1.8.1 reduceLeft
+- 化简 : 将二元函数引用于集合中的函数.
+- `reduceLeft 运行机制说明`
+- 1.`def reduceLeft[B >: A](@deprecatedName('f) op: (B, A) => B): B`
+- 2.`reduceLeft(f) 接收函数需要的形式为op: (B, A) => B): B`
+- 3.`educeleft(f) 运行规则是从左边开始执行将得到的结果返回给第一个参数`
+- `reduceLeft实例`
+``` scala
+package com.geekparkhub.core.scala.collection
+
+object CollectionFlow021 {
+  def main(args: Array[String]): Unit = {
+
+    // 使用化简方式来计算list集合之和
+    val list = List(1, 3, 5, 7, 9)
+
+    // 调用reduceLeft函数 计算集合之和
+    val res: Int = list.reduceLeft(sum)
+    println("sum = " + res)
+  }
+
+  // 集合元素相加
+  def sum(n1: Int, n2: Int): Int = {
+    n1 + n2
+  }
+}
+```
+
+
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
