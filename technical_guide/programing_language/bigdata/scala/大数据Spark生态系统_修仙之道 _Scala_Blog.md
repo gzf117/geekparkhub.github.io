@@ -4910,11 +4910,12 @@ package scala.com.geekparkhub.core.scala.matching
 
 object PatternMatchingFloat006 {
   def main(args: Array[String]): Unit = {
-    val arrays = Array((0, 1), Array(1, 0), Array(1, 1), Array(2, 3, 8))
+    val arrays = Array((0, 1), (55, 33), (1, 0), (1, 1), (2, 3, 8))
     for (i <- arrays) {
       val res = i match {
         case (0, _) => "0 ..."
         case (y, 0) => y
+        case (x, y) => (y, x)
         case _ => "Other"
       }
       println("res = " + res)
