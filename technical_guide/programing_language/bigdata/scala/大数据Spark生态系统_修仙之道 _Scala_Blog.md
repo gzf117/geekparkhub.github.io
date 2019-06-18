@@ -4620,8 +4620,110 @@ object CollectionFlow028 {
 ```
 
 
+##### 6.17.1.13 扩展-流 Stream
+- stream是一个集合,可以用于存放无穷多个元素,但是这无穷个元素并不会一次性生产,而是需要用到多大的区间就会动态生产,末尾元素遵循lazy规则.
+- 说明 : 
+- Stream集合存放的数据类型是BigInt
+- numsForm是自定义函数,函数名是有开发者指定.
+- 创建的集合的第一个元素是n,后续元素生成规则是n + 1
+- 后续元素生成的规则是可以开发者指定.
+- `创建Stream对象实例`
+``` scala
+package scala.com.geekparkhub.core.scala.collection
+
+object CollectionFlow029 {
+  def main(args: Array[String]): Unit = {
+    // 创建Stream
+    def dataflow(n: BigInt): Stream[BigInt] = n #:: dataflow(n + 1)
+    val stream: Stream[BigInt] = dataflow(1)
+  }
+}
+```
+- `Stream实例`
+``` scala
+package scala.com.geekparkhub.core.scala.collection
+
+object CollectionFlow029 {
+  def main(args: Array[String]): Unit = {
+    // 创建Stream
+    def dataflow(n: BigInt): Stream[BigInt] = n #:: dataflow(n + 1)
+
+    val stream: Stream[BigInt] = dataflow(5).map(function014)
+    println("stream = " + stream)
+
+    // 取出第一个元素
+    println("stream head = " + stream.head)
+    // 当对流执行tail操作时会生成一个新的数据
+    println("stream tail = " + stream.tail)
+  }
+
+  def function014(n1: BigInt): BigInt = {
+    n1 * n1
+  }
+}
+```
 
 
+##### 6.17.1.14 扩展-视图View
+- Stream懒加载特性,也可以对其他集合应用view方法来得到类似效果,具有如下特点 : 
+- view方法产出一个总是被懒执行集合.
+- view不会缓存数据,每次都要重新计算,比如遍历View时.
+- `View实例`
+``` scala
+package scala.com.geekparkhub.core.scala.collection
+
+object CollectionFlow030 {
+  def main(args: Array[String]): Unit = {
+    val view001 = (1 to 10).filter(eq)
+    val view002 = (1 to 10).view.filter(eq)
+    println("view001 = " + view001)
+    println("view002 = " + view002)
+    for (i <- view001) {
+      println("res = " + i)
+    }
+  }
+
+  def eq(n: Int): Boolean = {
+    n.toString.equals(n.toString.reverse)
+  }
+
+  def function015(n2: Int): Int = {
+    n2
+  }
+}
+```
+
+##### 6.17.1.15 扩展-线程安全集合
+- 所有线程安全集合都是以`Synchronized`开头的集合.
+- `SynchronizedBuffer` / `SynchronizedMap` / `SynchronizedPriorityQueue` / `SynchronizedQueue` / `SynchronizedSet` / `SynchronizedStack`
+
+##### 6.17.1.15 扩展-并行集合
+- Scala为了充分使用多核CPU,提供了并行集合(有别于前面的串行集合),用于多核环境的并行计算.
+- 并行机制算法 : 
+- Divide and conquer : 分治算法,Scala通过splitters(分解器),combiners（组合器）等抽象层来实现,主要原理是将计算工作分解很多任务,分发给一些处理器去完成,并将它们处理结果合并返回.
+- Work stealin算法 : 主要用于任务调度负载均衡（load-balancing）.
+- `查看并行集合中元素访问的线程实例`
+``` scala
+package scala.com.geekparkhub.core.scala.collection
+
+object CollectionFlow031 {
+  def main(args: Array[String]): Unit = {
+
+    // 非并行
+    var res = (1 to 10).map {
+      case _ => Thread.currentThread.getName
+    }.distinct
+
+    // 并行
+    var res02 = (1 to 10).par.map {
+      case _ => Thread.currentThread.getName
+    }.distinct
+
+    println("res = " + res)
+    println("res02 = " + res02)
+  }
+}
+```
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
