@@ -4779,19 +4779,135 @@ object PatternMatchingFloat {
 - 如果想要表达匹配某个范围的数据,就需要在模式匹配中增加条件守卫.
 - `守卫实例`
 ``` scala
+package scala.com.geekparkhub.core.scala.matching
 
+object PatternMatchingFloat001 {
+  def main(args: Array[String]): Unit = {
+
+    for (i <- "+-3!") {
+      var start = 0
+      var end = 0
+      i match {
+        case '+' => start = 1
+        case '-' => end = -1
+        case _ if i.toString.equals("3") => start = 3
+        case _ if i > 1100 => printf("i > 1100")
+        case _ => end = 2
+      }
+      println(i + "," + start + "," + end)
+    }
+
+  }
+}
+```
+
+#### 6.18.3 模式变量
+- 如果在case关键字后跟变量名,那么match前表达式的值会赋给那个变量.
+- `模式变量实例`
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat002 {
+  def main(args: Array[String]): Unit = {
+    var i = "S"
+    var res = i match {
+      case "+" => println("+")
+      case variable => variable
+      case _ => println("error")
+    }
+    println("res = " + res)
+  }
+}
 ```
 
 
 
-
-#### 6.18.3 模式变量
 #### 6.18.4 类型匹配
+- 可以匹配对象的任意类型,这样做避免使用isInstanceOf和asInstanceOf方法.
+- `类型匹配注意事项`
+- 1.`Map[String, Int]` 和`Map[Int, String]`是两种不同类型,其它类推.
+- 2.在进行类型匹配时,编译器会预先检测是否有可能的匹配,如果没有则报错.
+- 3.如果case _ 出现在match中间,则表示隐藏变量名,即不使用,而不是表示默认匹配.
+- 4.`类型匹配实例`
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat003 {
+  def main(args: Array[String]): Unit = {
+
+    val num = 4
+    var objects = if (num == 1) 1
+    else if (num == 2) "2"
+    else if (num == 3) BigInt(3)
+    else if (num == 4) Map("map" -> 1)
+    else if (num == 5) Map(1 -> "map")
+    else if (num == 6) Array(1, 2, 3)
+    else if (num == 7) Array("array", 1)
+    else if (num == 8) Array("array")
+
+    val res = objects match {
+      case a: Int => a
+      case b: Map[String, Int] => "字符串-数字Map集合"
+      case c: Map[Int, String] => "数字-字符串Map集合"
+      case d: Array[String] => "字符串数组"
+      case e: Array[Int] => "数字数组"
+      case f: BigInt => Int.MaxValue
+      case _ => "Defaults"
+    }
+    println("res = " + res)
+  }
+}
+```
+
 #### 6.18.5 匹配数组
+- 1.Array(0) 匹配只有一个元素且为0的数组.
+- 2.Array(x,y)匹配数组有两个元素,并将两个元素赋值为x和y,当然可以依次类推Array(x,y,z)匹配数组有3个元素.
+- 3.Array(0,_*) 匹配数组以0开始.
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat004 {
+  def main(args: Array[String]): Unit = {
+
+    var arrays = Array(Array(0), Array(1, 0), Array(0, 1, 0), Array(1, 1, 0), Array(1, 1, 0, 1))
+    for (i <- arrays) {
+      val res = i match {
+        case Array(0) => "0"
+        case Array(x, y) => x + " = " + y
+        case Array(0, _*) => "以0开头数组"
+        case _ => "Defaults"
+      }
+      println("res = " + res)
+    }
+  }
+}
+```
+
 #### 6.18.6 匹配列表
+- `匹配列表实例`
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat005 {
+  def main(args: Array[String]): Unit = {
+    var arrays = Array(List(0), List(1, 0), List(0, 1, 0), List(1, 1, 0), List(1, 1, 0, 1))
+    for (i <- arrays) {
+      val res = i match {
+        case 0 :: Nil => 0
+        case x :: y :: Nil => x + " = " + y
+        case 0 :: tail => "0..."
+        case _ => "Defaults"
+      }
+      println("res = " + res)
+    }
+  }
+}
+```
+
+
 #### 6.18.7 匹配元组
 #### 6.18.8 对象匹配
-#### 6.18.9 变量声明的模式
+#### 6.18.9 变量声明模式
 #### 6.18.10 for 表达式模式
 #### 6.18.11 样例(模板)类
 #### 6.18.12 case语句中置(缀)表达式
