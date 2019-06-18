@@ -4740,14 +4740,51 @@ object CollectionFlow031 {
 - 1.Scala中模式匹配类似于Java中的switch语法,但是更加强大.
 - 2.模式匹配语法中,采用`match`关键字声明,每个分支采用`case`关键字进行声明.
 - 3.当需要匹配时,会从第一个case分支开始,如果匹配成功,那么执行对应的逻辑代码,如果匹配不成功,继续执行下一个分支进行判断,如果所有case都不匹配,那么会执行case _ 分支,类似于Java中default语句.
-- 4.`match实例`
+- 4.`match细节说明` : 
+- 如果所有case都不匹配,那么会执行case _ 分支,类似于Java中default语句.
+- 如果所有case都不匹配,又没有写case _ 分支,那么会抛出MatchError.
+- 每个case中不用break语句,自动中断case.
+- 可以在match中使用其它类型,而不仅仅是字符.
+- `=>` 等价于java swtich,`=>`后面的代码块到下一个case是作为一个整体执行,可以使用{}扩起来,也可以不扩.
+- 5.`match实例`
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat {
+  def main(args: Array[String]): Unit = {
+    val parameter = "~"
+    val n1 = 5
+    val n2 = 5
+    var res = 0
+
+    /**
+      * match (类似java switch) 和case 关键字
+      * 匹配的顺序是从上到下,匹配到一个就执行对应的代码
+      * 如果匹配成功,则执行=> 后代码块
+      * 如果一个都没有匹配到,则执行case _ 后代码块
+      */
+    parameter match {
+      case "+" => res = n1 + n2
+      case "-" => res = n1 - n2
+      case "*" => res = n1 * n2
+      case "/" => res = n1 / n2
+      case _ => println("error")
+    }
+    println("res = " + res)
+  }
+}
+```
+
+#### 6.18.2 守卫
+- 如果想要表达匹配某个范围的数据,就需要在模式匹配中增加条件守卫.
+- `守卫实例`
 ``` scala
 
 ```
 
 
 
-#### 6.18.2 守卫
+
 #### 6.18.3 模式变量
 #### 6.18.4 类型匹配
 #### 6.18.5 匹配数组
