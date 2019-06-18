@@ -4574,9 +4574,52 @@ object CollectionFlow025 {
 }
 ```
 
-
-
 ##### 6.17.1.11 扩展-拉链(合并)
+- 将两个集合进行对偶元组合并,可以使用拉链.
+- `拉链实例`
+``` scala
+package scala.com.geekparkhub.core.scala.collection
+
+object CollectionFlow027 {
+  def main(args: Array[String]): Unit = {
+    val list1 = List(1, 2, 3)
+    val list2 = List(4, 5, 6)
+    val res = list1.zip(list2)
+    println("res = " + res)
+  }
+}
+```
+- `拉链使用注意事项`
+- 拉链的本质就是两个集合合并操作,合并后每个元素是一个对偶元组.
+- 如果两个集合个数不对应,会造成数据丢失.
+- 集合不限于List,也可以是其它集合比如Array
+- 如果要取出合并后的各个对偶元组数据,可以遍历
+
+
+##### 6.17.1.12 扩展-迭代器
+- 通过iterator方法从集合获得一个迭代器，通过while循环和for表达式对集合进行遍历.
+- 说明 : 
+- iterator构建实际是AbstractIterator的一个匿名子类.
+- 该AbstractIterator子类提供了hasNext next等方法.
+- 可以使用while的方式,使用hasNext next方法变量.
+- `迭代器实例`
+``` scala
+package scala.com.geekparkhub.core.scala.collection
+
+object CollectionFlow028 {
+  def main(args: Array[String]): Unit = {
+    val list = List(1, 2, 3).iterator
+    while (list.hasNext){
+      println(list.next())
+    }
+    for (i <- list){
+      println(i)
+    }
+  }
+}
+```
+
+
 
 
 
