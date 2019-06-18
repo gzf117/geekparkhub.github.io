@@ -4904,8 +4904,27 @@ object PatternMatchingFloat005 {
 }
 ```
 
-
 #### 6.18.7 匹配元组
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat006 {
+  def main(args: Array[String]): Unit = {
+    val arrays = Array((0, 1), Array(1, 0), Array(1, 1), Array(2, 3, 8))
+    for (i <- arrays) {
+      val res = i match {
+        case (0, _) => "0 ..."
+        case (y, 0) => y
+        case _ => "Other"
+      }
+      println("res = " + res)
+    }
+  }
+}
+```
+
+
+
 #### 6.18.8 对象匹配
 #### 6.18.9 变量声明模式
 #### 6.18.10 for 表达式模式
