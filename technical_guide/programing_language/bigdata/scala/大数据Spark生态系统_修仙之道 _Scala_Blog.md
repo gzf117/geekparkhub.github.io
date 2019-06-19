@@ -5221,6 +5221,51 @@ case class Bundle(description: String, discount: Double, item: Item*) extends It
 
 
 #### 6.18.14 密封类
+- 如果想让case类的所有子类必须在声明该类的相同的源文件中定义,可以将样例类的通用超类声明为`sealed`,这种超类称之为密封类.
+- 密封就是不能在其他子类定义子类.
+- `密封类实例`
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat016 {
+  def main(args: Array[String]): Unit = {
+
+  }
+}
+
+/**
+  * 定义非密封抽象类
+  */
+abstract class Seals01
+
+case class Subclass01(name: String) extends Seals01
+
+case class Subclass02(age: Int) extends Seals01
+
+
+/**
+  * 定义密封抽象类
+  */
+abstract sealed class Seals02
+
+case class Subclass03(name: String) extends Seals02
+
+case class Subclass04(age: Int) extends Seals02
+```
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat017 {
+  def main(args: Array[String]): Unit = {
+  }
+
+  // 可以继承Seals01
+  class Tests extends Seals01
+
+  // 不可以继承Seals02,因为Seals02声明为sealed密封类
+  class Tests extends Seals02
+}
+```
 
 
 
