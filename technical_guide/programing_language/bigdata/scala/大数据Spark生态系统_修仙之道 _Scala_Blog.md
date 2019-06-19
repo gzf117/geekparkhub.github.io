@@ -5163,7 +5163,61 @@ object PatternMatchingFloat014 {
 ```
 
 #### 6.18.13 匹配嵌套结构
+- 操作原理类似于正则表达式
+- `匹配嵌套结构实例`
+- 现在有一些商品,使用Scala设计相关的样例类,完成商品可以捆绑打折出售.
+- 商品捆绑可以是单个商品,也可以是多个商品.
+- 统计出所有捆绑商品打折后的最终价格
+``` scala
+package scala.com.geekparkhub.core.scala.matching
 
+object PatternMatchingFloat015 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建匹配嵌套结构
+    val sale = Bundle("Books", 10, Book("沉浮", 40), Bundle("修真", 20, Book("《雪中悍刀行》", 80), Book("《四月围城》", 30),Book("《天龙八部》", 200)))
+
+    // 1.使用case语句得到"漫画",使用`_`忽略即可,`_*`表示忽略所有
+    val res001 = sale match {
+      case Bundle(_, _, Book(description, _), _*) => description
+    }
+    println("res001 = " + res001)
+
+    // 2.通过`@`表示法将嵌套的值绑定到变量,`_*`绑定剩余Item绑定到res3
+    val res002 = sale match {
+      case Bundle(_, _, res2@Book(_, _), res3@_*) => (res2, res3)
+    }
+    println("res002 = " + res002)
+
+    // 3.不使用`_*`绑定,剩余Item绑定到res5
+    val res003 = sale match {
+      case Bundle(_, _, res4@Book(_, _), res5) => (res4, res5)
+    }
+    println("res003 = " + res003)
+
+    println("process(sale) = " + process(sale))
+  }
+
+  // 定义处理函数
+  def process(it: Item): Double = {
+    it match {
+      case Book(_, res6) => res6
+      case Bundle(_, discount, res7@_*) => res7.map(process).sum - discount
+    }
+  }
+}
+
+/**
+  * 创建样例类
+  */
+abstract class Item
+
+// 创建 书籍样例类
+case class Book(description: String, price: Double) extends Item
+
+// 创建 书籍套餐样例类
+case class Bundle(description: String, discount: Double, item: Item*) extends Item
+```
 
 
 #### 6.18.14 密封类
