@@ -4925,8 +4925,62 @@ object PatternMatchingFloat006 {
 ```
 
 
-
 #### 6.18.8 对象匹配
+- 对象匹配,case中对象的unapply方法(对象提取器)返回Some集合则为匹配成功.
+- 返回None集合则为匹配失败
+- `对象匹配实例`
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat007 {
+  def main(args: Array[String]): Unit = {
+    val num = 36.0
+    num match {
+      case Square(n) => println("n  = " + n)
+      case _ => println("Object matching loss败")
+    }
+  }
+}
+
+object Square {
+  // unapply方法是对象提取器
+  def unapply(z: Double): Option[Double] = {
+    Some(math.sqrt(z))
+    None
+  }
+  def apply(z: Double): Double = z * z
+}
+```
+- 构建对象时apply方法会被调用.
+- 当Square(n)写在case后时会默认调用unapply方法(对象提取器)
+
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat008 {
+  def main(args: Array[String]): Unit = {
+    val v = "A,B,C"
+    v match {
+      case Values(v1, v2, v3) => {
+        println(s"$v1 + $v2 + $v3")
+      }
+      case _ => println("Nothing Matched")
+    }
+  }
+}
+
+object Values {
+  // 当构造器是多个参数时,会触发对象提取器
+  def unapplySeq(vs: String): Option[Seq[String]] = {
+    if (vs.contains(",")) Some(vs.split(","))
+    else None
+  }
+}
+```
+
+
+
+
 #### 6.18.9 变量声明模式
 #### 6.18.10 for 表达式模式
 #### 6.18.11 样例(模板)类
