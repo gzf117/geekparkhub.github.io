@@ -5480,9 +5480,128 @@ object FunctionFlow006 {
 }
 ```
 
-
 #### 6.19.4 高阶函数
+- 能够接受函数作为参数的函数叫做高阶函数(higher-order function),可使应用程序更加健壮.
+- `高阶函数快速实例`
+``` scala
+package scala.com.geekparkhub.core.scala.functionflow
+
+object FunctionFlow007 {
+  def main(args: Array[String]): Unit = {
+
+    def test(f: Double => Double, f2: Double => Int, d: Double) = {
+      f(f2(d))
+    }
+
+    // sum
+    def sum(n1: Double): Double = {
+      n1 + n1
+    }
+
+    // mod
+    def mod(n2: Double): Int = {
+      n2.toInt % 2
+    }
+
+    val res = test(sum, mod, 6.0)
+    println("res = " + res)
+    
+  }
+}
+```
+- 高阶函数可以返回函数类型
+``` scala
+package scala.com.geekparkhub.core.scala.functionflow
+
+object FunctionFlow008 {
+  def main(args: Array[String]): Unit = {
+
+    // 创建高阶函数
+    def test(n: Int) = {
+
+    /**
+      * 创建匿名函数
+      * 返回的匿名函数 (m: Int) => n - m`
+      * 返回的匿名函数可以使用变量接收
+      **/
+      (m: Int) => n - m
+    }
+
+    // 常规风格
+    val res01 = test(30)
+    println("res01 type = " + res01)
+    println("res01 = " + res01(10))
+    println("res01 = " + res01(20))
+
+    // 柯里化风格
+    val res02 = test(20)(10)
+    println("res02 = " + res02)
+    
+  }
+}
+```
+
 #### 6.19.5 参数(类型)推断
+- 参数推断省去类型信息(在某些情况下需要有应用场景,参数类型是可以推断出来,如list=(1,2,3),list.map(),map中函数参数类型是可以推断),同时也可以进行相应简写.
+- `参数类型推断写法说明` :
+- 参数类型是可以推断时,可以省略参数类型.
+- 当传入的函数,只有单个参数时可以省去括号.
+- 如果变量只在`=>`右边只出现一次可以用`_`下划线来代替.
+- `参数(类型)推断实例`
+- `参数(类型)推断知识点` : 
+- 1.map是一个高阶函数,因此可以直接传入一个匿名函数.
+- 2.当遍历list时参数类型可以推断出来,因此可以省略数据类型.
+- 3.当传入函数,只有单个参数时,可以省略括号.
+- 4.如果变量只在=>右边出现一次时,可以使用`_`下划线来代替.
+``` scala
+package scala.com.geekparkhub.core.scala.functionflow
+
+object FunctionFlow009 {
+  def main(args: Array[String]): Unit = {
+
+    val list = List(1, 3, 5, 7, 9)
+
+    /**
+      * 创建匿名函数
+      */
+
+    // 参数类型未简写状态
+    val anonymous01 = list.map((x: Int) => x + 1)
+    // 通过类型推断,参数类型可以简写
+    val anonymous02 = list.map((x) => x + 1)
+    // 可以继续简写
+    val anonymous03 = list.map(x => x + 1)
+    // 还可以继续简写,最终简写为`_+1`
+    val anonymous04 = list.map(_ + 1)
+    println("anonymous01 = " + anonymous01)
+    println("anonymous02 = " + anonymous02)
+    println("anonymous03 = " + anonymous03)
+    println("anonymous04 = " + anonymous04)
+
+
+    // 常规调用f1函数
+    val res01 = list.reduce(f1)
+    // 参数类型未简写状态
+    val res02 = list.reduce((n1: Int, n2: Int) => n1 + n2)
+    // 通过类型推断,参数类型可以简写
+    val res03 = list.reduce((n1, n2) => n1 + n2)
+    // 可以继续简写,最终以简写为`_+_`
+    val res04 = list.reduce(_ + _)
+    println("res01 = " + res01)
+    println("res02 = " + res02)
+    println("res03 = " + res03)
+    println("res04 = " + res04)
+  }
+
+  // 创建高阶函数
+  def f1(n1: Int, n2: Int): Int = {
+    n1 + n2
+  }
+}
+```
+
+
+
 #### 6.19.6 闭包(closure)
 #### 6.19.7 函数柯里化(curry)
 #### 6.19.8 控制抽象
