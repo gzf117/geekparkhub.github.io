@@ -5418,12 +5418,69 @@ object FunctionFlow004 {
 }
 ```
 
-
-
-
-
 #### 6.19.2 作为参数函数
+- 函数作为一个变量传入到了另一个函数中,那么该作为参数的函数的类型是 : function1,即 : (参数类型) => 返回类型.
+- 说明 : 
+- `map(plus(_))` 中`plus(_)` 就是将plus这个函数当做一个参数传给了map,`_`这里代表从集合中遍历出来一个元素.
+- plus(_)也可以写成plus表示对Array(1, 3, 5, 7)遍历,将每次遍历元素传给plus的n变量.
+- 进行3 + n 运算后,返回新的Int,并加入到新的集合.
+- `def map[B, That](f: A => B)` 声明中的f: A => B 一个函数
+- `参数函数实例`
+``` scala
+package scala.com.geekparkhub.core.scala.functionflow
+
+object FunctionFlow005 {
+  def main(args: Array[String]): Unit = {
+
+    def puls(n: Int): Int = 3 + n
+
+    val list = Array(1, 3, 5, 7).map(puls(_))
+    println(list.mkString(","))
+
+    println("puls函数类型 = " + (puls _))
+  }
+}
+```
+
+
 #### 6.19.3 匿名函数
+- 没有名字的函数就是匿名函数,可以通过函数表达式来设置匿名函数.
+- `匿名函数说明` : 
+- 1.不需要写def 函数名.
+- 2.不需要写返回类型,则使用类型推导.
+- 3.`=` 变成 `=>`
+- 4.如果有多行,则使用{}包括
+- 5.`匿名函数实例`
+``` scala
+package scala.com.geekparkhub.core.scala.functionflow
+
+object FunctionFlow006 {
+  def main(args: Array[String]): Unit = {
+
+    /**
+      * 创建匿名函数
+      * `(d: Double) => d * 3` 既是匿名函数
+      * `(d: Double)` 既表示形参列表
+      * `=>` 既表示规定语法后面是函数体
+      * `d * 3` 既是表示函数体,如果有多个逻辑,可以使用{}将逻辑写在换括号内
+      * `anonymous_function` 既表示指向匿名函数的变量
+      */
+    val anonymous_function = (d: Double) => d * 3
+    println("anonymous function type = " + anonymous_function)
+    println("anonymous function = " + anonymous_function(3))
+
+    /**
+      * 编写一个匿名函数,可以返回2个整数之和,并输出该匿名函数类型
+      */
+    val sum = (n1: Int, n2: Int) => n1 + n2
+    println("sum type = " + sum)
+    println("sum = " + sum(10, 20))
+    
+  }
+}
+```
+
+
 #### 6.19.4 高阶函数
 #### 6.19.5 参数(类型)推断
 #### 6.19.6 闭包(closure)
