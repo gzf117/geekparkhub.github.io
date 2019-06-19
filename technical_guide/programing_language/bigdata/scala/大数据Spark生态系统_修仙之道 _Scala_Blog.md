@@ -5388,8 +5388,34 @@ object FunctionFlow003 {
 > 6.List集合中collect函数支持偏函数.
 > 
 > 7.`偏函数简写实例`
+> 声明偏函数,需要重写特质中的方法,有时会略显繁琐,而Scala提供简单的实现方法.
 ``` scala
+package scala.com.geekparkhub.core.scala.functionflow
 
+object FunctionFlow004 {
+  def main(args: Array[String]): Unit = {
+
+    val list = List(1, 2, 3, 4, 2.6, 5.6, "abc")
+
+    // 定义隐式转换,将Double类型隐式转换为Int类型
+    implicit def typeconversion(value: Double): Int = {
+      value.toInt
+    }
+
+    // 偏函数简化形式 一
+    def pf1: PartialFunction[Any, Int] = {
+      case x: Int => x + 1
+      case d: Double => d * 2
+    }
+    
+    val res01 = list.collect(pf1)
+    println("res01 = " + res01)
+
+    // 偏函数简化形式 二
+    val res02 = list.collect { case x: Int => x + 1 }
+    println("res02 = " + res02)
+  }
+}
 ```
 
 
