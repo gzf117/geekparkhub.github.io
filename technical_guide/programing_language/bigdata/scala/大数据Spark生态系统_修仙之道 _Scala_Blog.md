@@ -5014,13 +5014,158 @@ object PatternMatchingFloat009 {
 - for循环也可以进行模式匹配.
 - `for循环表达式模式实例`
 ``` scala
+package scala.com.geekparkhub.core.scala.matching
 
+object PatternMatchingFloat010 {
+  def main(args: Array[String]): Unit = {
+
+    val map = Map("A" -> 1, "B" -> 2, "C" -> 3, "D" -> 0)
+
+    // 循环方式一 : 遍历所有Map元素
+    for ((k, v) <- map) {
+      println("k = " + k + " -> " + "v = " + v)
+    }
+    println("----------------------")
+
+    // 循环方式二 : 只遍历value=0的key-value,其它元素过滤
+    for ((k, 0) <- map) {
+      println("k = " + k + " -> " + "v = " + 0)
+    }
+    println("----------------------")
+
+    // 循环方式三 : 加入判断,用法更加灵活强大
+    for ((k, v) <- map if v >= 1 && v  >= 0) {
+      println("k = " + k + " -> " + "v = " + v)
+    }
+    println("----------------------")
+  }
+}
 ```
 
-
 #### 6.18.11 样例(模板)类
+- 1.说明 : 
+- 样例类仍然是类.
+- 样例类用case关键字进行声明.
+- 样例类是为模式匹配而优化的类.
+- 构造器中的每一个参数都成为val —— 除非它被显式地声明为var
+- 在样例类对应的伴生对象中提供apply方法,不用new关键字就能构造出相应的对象.
+- 提供unapply方法让模式匹配可以工作.
+- 将自动生成toString、equals、hashCode和copy方法(有点类似模板类,直接给生成使用).
+- 样例类和其他类完全一样,还可以添加方法和字段扩展它们.
+- 2.`样例类快速入门实例1`
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat011 {
+  def main(args: Array[String]): Unit = {
+    println("test")
+  }
+}
+
+abstract class Test
+
+// 创建样例类
+case class Test001(value: Double) extends Test
+
+// 创建样例类
+case class Test002(value: Double, unit: String) extends Test
+
+// 创建样例类
+case object Test003 extends Test
+```
+- 3.`样例类快速入门实例2`
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+/**
+  * 使用样例类方式进行对象匹配简洁性
+  */
+object PatternMatchingFloat012 {
+  def main(args: Array[String]): Unit = {
+
+    val arrays = Array(Test004(111.1), Test005(123.5, "CD"), Test006)
+
+    for (i <- arrays) {
+      val res = i match {
+        case Test004(v) => "$ " + v
+        case Test005(q, a) => q + " " + a
+        case Test006 => "/"
+      }
+      println("res = " + res)
+    }
+
+  }
+}
+
+abstract class Tests
+
+// 创建样例类
+case class Test004(value: Double) extends Tests
+
+// 创建样例类
+case class Test005(value: Double, unit: String) extends Tests
+
+// 创建样例类
+case object Test006 extends Tests
+```
+
+- 4.`样例类快速入门实例3`
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat013 {
+  def main(args: Array[String]): Unit = {
+    
+    /**
+      * 样例类 copy方法和带名参数
+      * copy创建一个与现有对象值相同的新对象,并可以通过带名参数来修改某些属性
+      */
+    val test008 = new Test008(1000.3, "PX")
+    
+    val test009 = test008.copy()
+    val test010: Test008 = test008.copy(value = 999.1)
+    val test011: Test008 = test008.copy(unit = "CS")
+
+    println("test009 = " + test009)
+    println("test009.value = " + test009.value + " , test009.unit = " + test009.unit)
+    println("test010.value = " + test010.value)
+    println("test011.unit = " + test011.unit)
+  }
+}
+
+
+abstract class Testse
+
+// 创建样例类
+case class Test007(value: Double) extends Testse
+
+// 创建样例类
+case class Test008(value: Double, unit: String) extends Testse
+
+// 创建样例类
+case object Test009 extends Testse
+```
+
 #### 6.18.12 case语句中置(缀)表达式
+- 什么是中置表达式? 1  +  2,这就是一个中置表达式.
+- 如果unapply方法产出一个元组,可以在case语句中使用中置表示法,比如可以匹配一个List序列.
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat014 {
+  def main(args: Array[String]): Unit = {
+    List(1,3,5,1) match {
+      case first :: second :: res => println("first = " + first + " , second = " + second + ", res.length = " + res.length + " , res = " + res)
+      case _ => println("Match failed")
+    }
+  }
+}
+```
+
 #### 6.18.13 匹配嵌套结构
+
+
+
 #### 6.18.14 密封类
 
 
