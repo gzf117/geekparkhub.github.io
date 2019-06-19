@@ -5276,10 +5276,124 @@ object PatternMatchingFloat017 {
 > 
 > 将集合list中的所有数字+1,并返回一个新的集合,要求忽略掉非数字的元素,即返回的新的集合形式为(2, 3, 4, 5)
 > 
-> 解决方式 : filter+map+模式匹配返回新的集合,引出偏函数.
+> 解决方式1 : filter+map+返回新的集合,引出偏函数.
+> 虽然可以解决问题,但还是过于繁琐.
+``` scala
+package scala.com.geekparkhub.core.scala.functionflow
+
+object FunctionFlow001 {
+  def main(args: Array[String]): Unit = {
+    val list = List(1, 2, 3, 4, "abc")
+    // 先过滤后汇总
+    val ints: List[Int] = list.filter(f1).map(f2).map(f3)
+    println("ints = " + ints)
+  }
+
+  // 接收int类型
+  def f1(n: Any): Boolean = {
+    n.isInstanceOf[Int]
+  }
+
+  // 将Any类型转换为int
+  def f2(n: Any): Int = {
+    n.asInstanceOf[Int]
+  }
+
+  // 将元素+1
+  def f3(n: Int): Int = {
+    n + 1
+  }
+}
+```
+
+> 解决方式2 : 模式匹配
+> 虽然使用模式匹配比较简单,但还是不够完美,因此引出了偏函数
+``` scala
+package scala.com.geekparkhub.core.scala.functionflow
+
+object FunctionFlow002 {
+  def main(args: Array[String]): Unit = {
+    val list = List(1, 2, 3, 4, "abc")
+    val res = list.map(f1)
+    println("res = " + res)
+  }
+
+  // 模式匹配
+  def f1(n: Any): Any = {
+    n match {
+      case x: Int => x + 1
+      case _ =>
+    }
+  }
+}
+```
+
+> 解决方式3 : 偏函数
+> 在对符合某个条件,而不是所有情况进行逻辑操作时,使用偏函数是一个不错的选择.
+> 
+> 将包裹在大括号内的一组case语句封装为函数称之为偏函数,它只会对作用于指定类型的参数或范围值实施计算,如超出范围的值会忽略.
+> 
+> 偏函数在Scala中是一个特质PartialFunction.
+> 
+> `偏函数快速入门实例`
+``` scala
+package scala.com.geekparkhub.core.scala.functionflow
+
+object FunctionFlow003 {
+  def main(args: Array[String]): Unit = {
+    // 使用偏函数
+    val list = List(1, 2, 3, 4, "abc")
+
+    /**
+      * 定义偏函数
+      * PartialFunction[Any,Int] 即表示偏函数接收输入类型是Any类型,返回类型是Int类型
+      *
+      */
+    val res = new PartialFunction[Any, Int] {
+
+      /**
+        * isDefinedAt(x: Any)
+        * 如果结果返回true,则会调用apply函数去构建一个对象实例,反言之如果结果返回false,则不会调用apply函数.
+        *
+        * @param x
+        * @return
+        */
+      override def isDefinedAt(x: Any): Boolean = if (x.isInstanceOf[Int]) true else false
+
+      // 构造器,对传入的参数+1并返回新的集合结果
+      override def apply(v1: Any): Int = {
+        v1.asInstanceOf[Int] + 1
+      }
+    }
+
+    // 调用偏函数
+    val listres = list.collect(res)
+    println("listres = " + listres)
+
+  }
+}
+```
+> 偏函数说明 : 
+> 
+> 1.使用构建特质的实现类(使用的方式是PartialFunction的匿名子类).
+> 
+> 2.构建偏函数时,参数形式[Any, Int]是泛型,第一个表示参数类型,第二个表示返回参数.
+> 
+> 3.当使用偏函数时会遍历集合的所有元素,编译器执行流程时先执行`isDefinedAt()`如果为true,就会执行apply,构建一个新的Int对象返回.
+> 
+> 4.执行isDefinedAt()为false就过滤掉此元素,即不构建新的Int对象.
+> 
+> 5.map函数不支持偏函数,因为map底层机制就是所有循环遍历,无法过滤处理原来集合的元素.
+> 
+> 6.List集合中collect函数支持偏函数.
+> 
+> 7.`偏函数简写实例`
 ``` scala
 
 ```
+
+
+
 
 
 #### 6.19.2 作为参数函数
