@@ -4928,6 +4928,8 @@ object PatternMatchingFloat006 {
 #### 6.18.8 对象匹配
 - 对象匹配,case中对象的unapply方法(对象提取器)返回Some集合则为匹配成功.
 - 返回None集合则为匹配失败
+- 构建对象时apply方法会被调用.
+- 当Square(n)写在case后时会默认调用unapply方法(对象提取器)
 - `对象匹配实例`
 ``` scala
 package scala.com.geekparkhub.core.scala.matching
@@ -4951,9 +4953,11 @@ object Square {
   def apply(z: Double): Double = z * z
 }
 ```
-- 构建对象时apply方法会被调用.
-- 当Square(n)写在case后时会默认调用unapply方法(对象提取器)
 
+
+- 当case后面的对象提取器方法的参数为多个,则会默认调用def unapplySeq()方法.
+- 如果unapplySeq返回是Some,获取其中的值,判断得到的sequence中的元素的个数是否是三个如果是三个,则把三个元素分别取出赋值给v1, v2, v3
+- 其它的规则不变
 ``` scala
 package scala.com.geekparkhub.core.scala.matching
 
@@ -4978,11 +4982,42 @@ object Values {
 }
 ```
 
-
-
-
 #### 6.18.9 变量声明模式
-#### 6.18.10 for 表达式模式
+- match中每一个case都可以单独提取出来.
+- `变量声明实例`
+``` scala
+package scala.com.geekparkhub.core.scala.matching
+
+object PatternMatchingFloat009 {
+  def main(args: Array[String]): Unit = {
+
+    /**
+      * 变量的快速简写
+      * val (x, y, z) = (1, 2, "max") 既是 val x = 1 , val y = 2 , val z = "max" 这种形式的简写
+      */
+    val (x, y, z) = (1, 2, "max")
+    println("x = " + x + " , y = " + y + " , z = " + z)
+
+    // 10除3结果以及10对3取余结果各自交给变量
+    val (w, e) = BigInt(10) /% 3
+    println("w = " + w + " , e = " + e)
+
+    // 过去数组前两个元素
+    val array = Array(1, 3, 5, 7, 9)
+    val Array(first, second, _*) = array
+    println("array = " + first, second)
+  }
+}
+```
+
+#### 6.18.10 for循环表达式模式
+- for循环也可以进行模式匹配.
+- `for循环表达式模式实例`
+``` scala
+
+```
+
+
 #### 6.18.11 样例(模板)类
 #### 6.18.12 case语句中置(缀)表达式
 #### 6.18.13 匹配嵌套结构
