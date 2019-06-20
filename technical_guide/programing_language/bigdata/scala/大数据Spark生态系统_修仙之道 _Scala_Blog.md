@@ -5712,10 +5712,36 @@ object FunctionFlow012 {
 }
 ```
 
-
 #### 6.19.8 控制抽象
+- 控制抽象是满足如下条件
+- 1.参数是函数.
+- 2.函数参数没有输入值也没有返回值.
+- `实现类似while until函数实例`
+``` scala
+package scala.com.geekparkhub.core.scala.functionflow
 
+object FunctionFlow013 {
+  def main(args: Array[String]): Unit = {
+    var x = 10
 
+    // 函数名为until,实现了类似while循环效果
+    until(x > 0) {
+      x -= 1
+      println("until x = " + x)
+    }
+  }
+
+  // v: => Boolean 是后一个没有输入值,返回Boolean类型函数
+  // block: => Unit 没有输入值,也没有返回值函数
+  def until(v: => Boolean)(block: => Unit): Unit = {
+    // 类似while循环,递归
+    if (v) {
+      block
+      until(v)(block)
+    }
+  }
+}
+```
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 
