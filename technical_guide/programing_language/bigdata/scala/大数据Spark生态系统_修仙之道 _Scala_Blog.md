@@ -5603,7 +5603,61 @@ object FunctionFlow009 {
 
 
 #### 6.19.6 闭包(closure)
+- 闭包就是一个函数和与其相关引用环境组合的一个整体(实体).
+``` scala
+// 1.用等价理解方式改写 2.对象属性理解
+def minusxy(x: Int) = (y: Int) => x -y
+// 3.f函数就是闭包
+val f = minusxy(20)
+println("f(1)=" + f(1))
+println("f(2)=" + f(2))
+```
+- `(y: Int) => x –y`
+- 返回的是一个匿名函数,因为该函数引用到到函数外的x,那么该函数和x整体形成一个闭包如 : 这里`val f = minusxy(20)` 的f函数就是闭包.
+- 可以理解为返回函数是一个对象,而x就是该对象的一个字段,它们共同形成一个闭包.
+- 当多次调用f时(可以理解多次调用闭包),发现使用的是同一个x,所以x不变.
+- 在使用闭包时,主要搞清楚返回函数引用了函数外的哪些变量,因为它们会组合成一个整体(实体),形成一个闭包.
+- `闭包实例`
+``` scala
+package scala.com.geekparkhub.core.scala.functionflow
+
+object FunctionFlow010 {
+  def main(args: Array[String]): Unit = {
+
+    /**
+      * 编写函数makeSuffix(suffix: String)
+      * 可以接收一个文件后缀名(比如.jpg)]并返回一个闭包.
+      * 调用闭包可以传入一个文件名,如果该文件名没有指定的后缀(比如.jpg)
+      * 则返回文件名.jpg, 如果已经有.jpg后缀,则返回原文件名.
+      * 要求使用闭包的方式完成
+      */
+    val f = makeSuffix(".jpg")
+    println("f(\"1\") = " + f("1"))
+    println("f(\"2.png\") = " + f("2.png"))
+    println("f(\"3.jpg\") = " + f("3.jpg"))
+  }
+
+  //创建处理函数
+  def makeSuffix(suffix: String) = {
+    // 创建匿名函数
+    (filename: String) => {
+      // 如果文件后缀名等于.jpg,则返回原文件名
+      if (filename.endsWith(suffix)) {
+        filename
+      } else {
+        // 否则文件名+后缀名
+        filename + suffix
+      }
+    }
+  }
+}
+```
+
+
 #### 6.19.7 函数柯里化(curry)
+- 函数编程中,接受多个参数的函数都可以转化为接受单个参数的函数,这个转化过程就叫柯里化
+
+
 #### 6.19.8 控制抽象
 
 
