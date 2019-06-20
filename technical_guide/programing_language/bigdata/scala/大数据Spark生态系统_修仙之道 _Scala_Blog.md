@@ -5655,7 +5655,62 @@ object FunctionFlow010 {
 
 
 #### 6.19.7 函数柯里化(curry)
-- 函数编程中,接受多个参数的函数都可以转化为接受单个参数的函数,这个转化过程就叫柯里化
+- 函数编程中,接受多个参数的函数都可以转化为接受单个参数的函数,这个转化过程就叫柯里化.
+- 柯里化就是证明了函数只需要一个参数而已.
+- 不用设立柯里化存在的意义这样的命题,柯里化就是以函数为主体这种思想发展必然产生的结果,(即 :  柯里化是面向函数思想的必然产生结果).
+- `函数柯里化快速入门实例`
+- 编写一个函数,接收两个整数,返回两个数的乘积.
+``` scala
+package scala.com.geekparkhub.core.scala.functionflow
+
+object FunctionFlow011 {
+  def main(args: Array[String]): Unit = {
+
+    // 使用常规方式
+    def product01(x: Int, y: Int) = x * y
+    println("product01 = " + product01(2, 5))
+
+    // 使用闭包方式
+    def product02(x: Int) = (y: Int) => x * y
+    println("product02 = " + product02(2)(5))
+
+    // 使用函数柯里化方式
+    def product03(x: Int)(y: Int) = x * y
+    println("product03 = " + product03(2)(5))
+
+  }
+}
+```
+- `函数柯里化应用实例`
+- 使用函数柯里化方式,比较两个字符串在忽略大小写的情况下是否相等.
+``` scala
+package scala.com.geekparkhub.core.scala.functionflow
+
+object FunctionFlow012 {
+  def main(args: Array[String]): Unit = {
+
+    // 定义函数接收字符串是否相等
+    def eq(s1: String, s2: String): Boolean = {
+      s1.equals(s2)
+    }
+
+    // 定义隐式类
+    implicit class Eq(s: String) {
+      // 定义函数
+      def core(s3: String)(f: (String, String) => Boolean): Boolean = {
+        // core函数完转换大小写
+        // f函数完成比较任务
+        f(s.toLowerCase, s3.toLowerCase)
+      }
+    }
+
+    val string = "scala"
+    val res = string.core("Scala")(eq)
+    println("res = " + res)
+
+  }
+}
+```
 
 
 #### 6.19.8 控制抽象
