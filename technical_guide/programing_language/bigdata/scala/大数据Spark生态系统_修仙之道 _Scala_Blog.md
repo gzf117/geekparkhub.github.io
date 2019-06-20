@@ -5747,11 +5747,222 @@ object FunctionFlow013 {
 
 ### 6.20 使用递归方式去思考Scala编程
 #### 6.20.1 基本介绍
+> Scala是运行在Java虚拟机(Java Virtual Machine)之上,因此具有如下特点 : 
+> 
+> 轻松实现和丰富的Java类库互联互通.
+> 
+> 它既支持面向对象的编程方式,又支持函数式编程.
+> 
+> 它写出的程序像动态语言一样简洁,但事实上它确是严格意义上的静态语言.
+> 
+> Scala就像一位武林中的集大成者,将过去几十年计算机语言发展历史中的精萃集于一身,化繁为简,为程序员们提供了一种新的选择.
+> 
+> 设计者马丁·奥得斯基希望程序员们将编程作为简洁,高效,令人愉快的工作,同时也让程序员们进行关于编程思想的新的思考.
+
 #### 6.20.2 Scala提倡函数式编程(递归思想)
+> 编程范式 : 
+> 
+> 在所有编程范式中,面向对象编程(Object-Oriented Programming)无疑是最大赢家.
+> 
+> 但其实面向对象编程并不是一种严格意义上编程范式.
+> 
+> 严格意义上编程范式分为 : 
+> 
+> 命令式编程 (Imperative Programming)
+> 函数式编程 (Functional Programming)
+> 逻辑式编程 (Logic Programming)
+> 
+> 面向对象编程只是上述几种范式一个交叉产物,更多的还是继承了命令式编程的基因.
+> 
+> 在传统的语言设计中,只有命令式编程得到了强调,那就是程序员要告诉计算机应该怎么做,而递归则通过灵巧的函数定义,告诉计算机做什么.
+> 
+> 因此在使用命令式编程思维的程序中,是现在多数程序采用的编程方式,递归出镜的几率很少,而在函数式编程中,可以随处见到递归方式.
+
+
 #### 6.20.3 应用实例 一
+> scala中循环不建议使用while和do...while,而建议使用递归.
+
+##### 6.20.3.1 常规方式循环计算
+``` scala
+package scala.com.geekparkhub.core.scala.instance
+
+import java.text.SimpleDateFormat
+import java.util.Date
+
+object InstanceFlow {
+  def main(args: Array[String]): Unit = {
+
+    // 使用常规方式循环计算
+    var num = BigInt(1)
+    var res = BigInt(0)
+    var max = BigInt(99999999l)
+
+    /**
+      * 执行开始时间
+      */
+    val now: Date = new Date()
+    val dateFormat: SimpleDateFormat = new SimpleDateFormat("ss")
+    val time1 = dateFormat.format(now)
+    println("执行开始时间 = " + time1 + ".s")
+
+
+    while (num <= max) {
+      res += num
+      num += 1
+    }
+    println("res = " + res)
+
+    /**
+      * 执行结束时间
+      */
+    val now2: Date = new Date()
+    val time2 = dateFormat.format(now2)
+    println("执行结束时间 = " + time2 + ".s")
+
+  }
+}
+```
+##### 6.20.3.1 使用函数式编程方式-递归
+- 函数式编程重要思想就是尽量不要产生额外的影响,上面的常规方式就不符合函数式编程思想.
+``` scala
+package scala.com.geekparkhub.core.scala.instance
+
+import java.text.SimpleDateFormat
+import java.util.Date
+
+object InstanceFlow002 {
+  def main(args: Array[String]): Unit = {
+
+    // 使用递归方式循环计算
+    var num = BigInt(1)
+    var sum = BigInt(0)
+    var max = BigInt(99999999l)
+
+    /**
+      * 执行开始时间
+      */
+    val now: Date = new Date()
+    val dateFormat: SimpleDateFormat = new SimpleDateFormat("ss")
+    val time1 = dateFormat.format(now)
+    println("执行开始时间 = " + time1 + ".s")
+
+    var res = mx(num, sum)
+    println("res = " + res)
+
+    /**
+      * 执行结束时间
+      */
+    val now2: Date = new Date()
+    val time2 = dateFormat.format(now2)
+    println("执行结束时间 = " + time2 + ".s")
+  }
+
+  // 定义递归函数
+  def mx(num: BigInt, sum: BigInt): BigInt = {
+    if (num <= 99999999l) return mx(num + 1, sum + num)
+    else return sum
+  }
+}
+```
+
+
 #### 6.20.4 应用实例 二
+- 求最大值最小值
+``` scala
+package scala.com.geekparkhub.core.scala.instance
+
+object InstanceFlow003 {
+  def main(args: Array[String]): Unit = {
+    // 定义集合
+    var maxs = max(List(1, 3, 5, 7, 9, 11, 13, 15, 17,100))
+    var mins = min(List(1, 3, 5, 7, 9, 11, 13, 15, 17,100))
+    println("max is = " + maxs)
+    println("min is = " + mins)
+  }
+
+  /**
+    * 定义递归函数
+    * @param n
+    * @return
+    */
+  def max(n: List[Int]): Int = {
+    // 如果集合元素为空,则抛出异常
+    if (n.isEmpty)
+      throw new java.util.NoSuchElementException
+    // 如果集合元素为一个元素,则返回本身
+    if (n.size == 1)
+      n.head
+    // 如果集合头部元素大于集合末尾元素,则返回集合头部元素
+    else if (n.head > max(n.tail)) n.head
+    // 否则返回集合末尾元素
+    else max(n.tail)
+  }
+
+  /**
+    * 定义递归函数
+    * @param n
+    * @return
+    */
+  def min(n: List[Int]): Int = {
+    // 如果集合元素为空,则抛出异常
+    if (n.isEmpty)
+      throw new java.util.NoSuchElementException
+    // 如果集合元素为一个元素,则返回本身
+    if (n.size == 1)
+      n.head
+    // 如果集合头部元素大小于集合末尾元素,则返回集合头部元素
+    else if (n.head < max(n.tail)) n.head
+    // 否则返回集合末尾元素
+    else max(n.tail)
+  }
+}
+```
+
+
 #### 6.20.5 使用函数式编程方式-字符串翻转
+``` scala
+package scala.com.geekparkhub.core.scala.instance
+
+object InstanceFlow004 {
+  def main(args: Array[String]): Unit = {
+    var res = reverse("scala")
+    println("res = " + res)
+  }
+
+  /**
+    * 定义递归函数
+    */
+  def reverse(v: String): String = {
+    // 如果字符串长度等于1,则返回字符串本身
+    if (v.length == 1) v
+    // 否则调用自身递归函数,将字符串尾部反转到头部在与头部相加,即实现字符串反转
+    else reverse(v.tail) + v.head
+  }
+}
+```
+
 #### 6.20.6 使用递归-求阶乘
+``` scala
+package scala.com.geekparkhub.core.scala.instance
+
+object InstanceFlow005 {
+  def main(args: Array[String]): Unit = {
+    var res = factorial(4)
+    println("res = " + res)
+  }
+
+  /**
+    * 定义递归函数
+    */
+  def factorial(n: Int): Int = {
+    // 如果接收参数为0,则返回1
+    if (n == 0) 1
+    // 否则接收参数的乘以自身递归函数
+    else n * factorial(n - 1)
+  }
+}
+```
+
 
 
 
