@@ -5966,6 +5966,13 @@ object InstanceFlow005 {
 
 ### 6.21 并发编程模型 Akka
 #### 6.21.1 Akka 介绍
+![enter image description here](https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=2537727085,4267953402&fm=26&gp)
+> Akka官方地址 : [https://akka.io/](https://akka.io/)
+> 
+> Akka官方文档 : [https://akka.io/docs/](https://akka.io/docs/)
+> 
+>  Scala版本 Akka官方文档 : [doc.akka.io/docs/akka/language=scala](https://doc.akka.io/docs/akka/current/guide/introduction.html?language=scala)
+> 
 > Akka是JAVA 虚拟机JVM平台上构建高并发、分布式和容错应用的工具包和运行时,可以理解成Akka是编写并发程序框架.
 > 
 > Akka是基于Scala编程语言构建而成,同时提供了Scala和JAVA的开发接口.
@@ -5981,7 +5988,7 @@ object InstanceFlow005 {
 
 
 #### 6.21.3 Akka Actor模型
-##### 6.21.3.1 Actor模型及其说明
+##### 6.21.3.1 Actor模型 说明
 ![enter image description here](https://image-static.segmentfault.com/352/265/3522656644-5907d984e8b76_articlex)
 > 1.Akka处理并发的方法基于Actor模型.
 > 
@@ -6001,11 +6008,110 @@ object InstanceFlow005 {
 > 
 > 9.Actor模型是轻量级事件处理(1GB内存可容纳百万级别个Actor),因此处理大并发性能高.
 
-##### 6.21.3.2 Actor模型工作机制
+##### 6.21.3.2 Actor模型 工作机制
+> 1.ActorySystem创建Actor.
+> 
+> 2.ActorRef:可以理解成是Actor的代理或者引用,消息是通过ActorRef来发送,而不能通过Actor发送消息,通过哪个ActorRef发消息,就表示把该消息发给哪个Actor.
+> 
+> 3.消息发送到Dispatcher Message (消息分发器),它得到消息后会将消息进行分发到对应的MailBox,(注: Dispatcher Message可以理解成是一个线程池,MailBox可以理解成是消息队列,可以缓冲多个消息遵守FIFO).
+> 
+> 4.Actor可以通过receive方法来获取消息然后进行处理.
 
+
+##### 6.21.3.3 Actor模型 消息机制
+![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/scala/start_005.jpg)
+
+> 1.每一个消息就是一个Message对象,Message继承Runable,因为Message就是线程类.
+> 
+> 2.从Actor模型工作机制看上去很麻烦,但是程序员编程时只需要编写Actor就可以,其它的交给Actor模型完成即可.
+> 
+> 3.`A Actor`要给`B Actor`发送消息,那么`A Actor`要先拿到(也称为持有)`B Actor`代理对象ActorRef才能发送消息.
 
 
 #### 6.21.4 Actor模型 快速入门
+- 创建Actor可以给自身发送消息.
+- 在Maven项目中创建子模块 | 此过程省略
+- 在子模块中向`pom.xml`追加相关依赖信息.
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.geekparkhub.core.scala</groupId>
+    <artifactId>scala_server</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0-SNAPSHOT</version>
+
+    <!-- 定义版本常量 -->
+    <properties>
+        <encoding>UTF-8</encoding>
+        <scala.version>2.11.8</scala.version>
+        <scala.compat.version>2.11</scala.compat.version>
+        <akka.version>2.4.18</akka.version>
+    </properties>
+
+    <dependencies>
+        <!-- 添加scala依赖 -->
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>${scala.version}</version>
+        </dependency>
+
+        <!-- 添加akka actor依赖 -->
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-actor_${scala.compat.version}</artifactId>
+            <version>${akka.version}</version>
+        </dependency>
+
+        <!-- 多进程之间Actor通信 -->
+        <dependency>
+            <groupId>com.typesafe.akka</groupId>
+            <artifactId>akka-remote_${scala.compat.version}</artifactId>
+            <version>${akka.version}</version>
+        </dependency>
+    </dependencies>
+
+    <!-- 指定插件-->
+    <build>
+        <!-- 指定源码包&测试包位置 -->
+        <sourceDirectory>src/main/scala</sourceDirectory>
+        <testSourceDirectory>src/test/scala</testSourceDirectory>
+        <plugins>
+            <!-- 指定编译scala插件 -->
+            <plugin>
+                <groupId>net.alchim31.maven</groupId>
+                <artifactId>scala-maven-plugin</artifactId>
+                <version>3.2.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <args>
+                                <arg>-dependencyfile</arg>
+                                <arg>${project.build.directory}/.scala_dependencies</arg>
+                            </args>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <modules>
+        <module>akka-flow</module>
+    </modules>
+</project>
+```
+
+
+
 #### 6.21.5 Actor模型应用实例 - Actor通讯
 #### 6.21.6 Akka 网络编程
 
