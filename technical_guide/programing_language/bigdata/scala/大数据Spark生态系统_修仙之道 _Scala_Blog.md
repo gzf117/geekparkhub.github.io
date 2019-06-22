@@ -6109,7 +6109,67 @@ object InstanceFlow005 {
     </modules>
 </project>
 ```
+- `创建Actor实例`
+``` scala
+package com.geekparkhub.core.scala.akka.actor
 
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+
+/**
+  * 创建AkkaActorFlow并继承Actor
+  */
+class AkkaActorFlow extends Actor {
+  
+  /**
+    * 重写Actor receive方法.
+    * receive方法会被该ActorMailBox调用.
+    * 当该ActorMailBox接收到消息,就会调用receive方法
+    * @return
+    */
+  override def receive: Receive = {
+    case "Hello Actor!" => println("Hey Mac!")
+    case "I am eating fried chicken in the square." => println("Cool, I am drinking red wine in the cafe.")
+    case "Goodbye" => {
+      println("Goodbye 👋👋,See you tomorrow!")
+      // 停止邮箱服务
+      context.stop(self)
+      // 停止ActorSystem服务
+      context.system.terminate()
+    }
+    case _ => println("⚠️ : Message match failed!")
+  }
+}
+
+
+object AkkaActorFlowRun {
+
+  /**
+    * 创建ActorSystem
+    * ActorSystem负责创建Actor
+    */
+  val actorServer = ActorSystem("ActorServer")
+
+  /**
+    * 创建Actor同时并返回ActorRef
+    * Props[AkkaActorFlow] 既表示使用反射创建AkkaActorFlow实例.
+    * "AkkaActorFlow" 既表示为actor取名.
+    * akkaActorFlowRef: ActorRef 既是Props[AkkaActorFlow]的ActorRef.
+    * 创建AkkaActorFlow实例由ActorSystem接管
+    */
+  val akkaActorFlowRef: ActorRef = actorServer.actorOf(Props[AkkaActorFlow], "AkkaActorFlow")
+
+  def main(args: Array[String]): Unit = {
+
+    // 向发送消息
+    akkaActorFlowRef ! "Hello Actor!"
+    akkaActorFlowRef ! "I am eating fried chicken in the square."
+    akkaActorFlowRef ! "follow me!"
+
+    // 退出ActorSystem
+    akkaActorFlowRef ! "Goodbye"
+  }
+}
+```
 
 
 #### 6.21.5 Actor模型应用实例 - Actor通讯
