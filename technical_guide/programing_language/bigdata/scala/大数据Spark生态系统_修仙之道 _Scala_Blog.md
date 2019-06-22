@@ -6140,7 +6140,6 @@ class AkkaActorFlow extends Actor {
   }
 }
 
-
 object AkkaActorFlowRun {
 
   /**
@@ -6173,6 +6172,171 @@ object AkkaActorFlowRun {
 
 
 #### 6.21.5 Actor模型应用实例 - Actor通讯
+- 创建2个Actor,分别是AActor和BActor.
+- AActor和BActor之间可以相互发送消息.
+- `Actor通讯实例`
+- 1.创建AActor
+``` scala
+package com.geekparkhub.core.scala.akka.actors
+
+import akka.actor.{Actor, ActorRef}
+
+/**
+  * AActor
+  * @param actorRef
+  */
+class AActor(actorRef: ActorRef) extends Actor {
+
+  val bActorRef: ActorRef = actorRef
+
+  override def receive: Receive = {
+    // 开始建立消息
+    case "Start Message" => {
+      println("AActor 开始建立消息会话")
+      self ! "Message001"
+    }
+    // A向B发送第一条消息
+    case "Message001" => {
+      println("AActor (Tomcat) : ✌️")
+      Thread.sleep(1000)
+      bActorRef ! "Message001"
+    }
+    // A向B发送第二条消息
+    case "Message002" => {
+      println("AActor (Tomcat) : 🐒")
+      Thread.sleep(1000)
+      bActorRef ! "Message002"
+    }
+    // A向B发送第三条消息
+    case "Message003" => {
+      println("AActor (Tomcat) : 🌛")
+      Thread.sleep(1000)
+      bActorRef ! "Message003"
+    }
+    // A向B发送第四条消息
+    case "Message004" => {
+      println("AActor (Tomcat) : 😎")
+      Thread.sleep(1000)
+      bActorRef ! "Message004"
+    }
+    // A向B发送第五条消息结束会话
+    case "Stop Message" => {
+      bActorRef ! "Stop"
+      stopserver()
+    }
+  }
+
+  /**
+    * 停止服务函数
+    * @return
+    */
+  def stopserver() = {
+    println("AActor (Tomcat) : Goodbye")
+    Thread.sleep(1000)
+    // 停止邮箱服务
+    context.stop(self)
+    context.stop(bActorRef)
+    // 停止ActorSystem服务
+    context.system.terminate()
+  }
+}
+```
+
+- 2.创建BActor
+``` scala
+package com.geekparkhub.core.scala.akka.actors
+
+import akka.actor.{Actor}
+
+/**
+  * BActor
+  */
+class BActor extends Actor {
+
+  override def receive: Receive = {
+    // 通过sender向AActor回复第一条消息
+    case "Message001" => println("\t\t\t\t\t\tBActor (Mac) : ✋")
+      Thread.sleep(1500)
+      sender() ! "Message002"
+    // 通过sender向AActor回复第二条消息
+    case "Message002" => println("\t\t\t\t\t\tBActor (Mac) : 🐵")
+      Thread.sleep(1500)
+      sender() ! "Message003"
+    // 通过sender向AActor回复第三条消息
+    case "Message003" => println("\t\t\t\t\t\tBActor (Mac) : ✨")
+      Thread.sleep(1500)
+      sender() ! "Message004"
+    // 通过sender向AActor回复第四条消息
+    case "Message004" => println("\t\t\t\t\t\tBActor (Mac) : 😀")
+      Thread.sleep(1500)
+      sender() ! "Message004"
+    case "Stop" => println("\t\t\t\t\t\tBActor (Mac) : Goodbye 👋👋,See you tomorrow!")
+      sender() ! "Stop"
+  }
+}
+```
+
+- 3.创建ActorFlow
+``` scala
+package com.geekparkhub.core.scala.akka.actors
+
+import akka.actor.{ActorRef, ActorSystem, Props}
+
+/**
+  * ActorFlow
+  */
+object ActorFlow extends App {
+
+  /**
+    * 创建ActorSystem
+    * ActorSystem负责创建Actor
+    */
+  val actorServer = ActorSystem("ActorServer")
+
+  // 创建BActor代理
+  val bActorRef: ActorRef = actorServer.actorOf(Props[BActor], "BActor")
+
+  // 创建AActor代理
+  val aActorRef: ActorRef = actorServer.actorOf(Props(new AActor(bActorRef)), "AActor")
+
+  // 开始消息
+  aActorRef ! "Start Message"
+  // 结束消息
+  aActorRef ! {
+    Thread.sleep(10000)
+    "Stop Message"
+  }
+}
+```
+
+- 4.运行程序,查看执行结果
+``` 
+AActor 开始建立消息会话
+AActor (Tomcat) : ✌️
+						BActor (Mac) : ✋
+AActor (Tomcat) : 🐒
+						BActor (Mac) : 🐵
+AActor (Tomcat) : 🌛
+						BActor (Mac) : ✨
+AActor (Tomcat) : 😎
+						BActor (Mac) : 😀
+AActor (Tomcat) : Goodbye
+					BActor (Mac) : Goodbye 👋👋,See you tomorrow!
+```
+
+
+- `Actor通讯实例总结`
+- 1.两个Actor通讯机制和自身Actor自身发送消息机制基本一样.
+- 2.如果A Actor在需要给B Actor发送消息,则需要持有B Actor中的ActorRef,可以通过创建时,传入B Actor(代理对象/ActorRef).
+- 3.当B ActorRef在receive()方法中接收到消息,需要回复时,可以通过sender()方法获取到发送A Actor代理对象.
+- `如何理解Actor receive()方法被调用?`
+- 每一个Actor都有对应的MailBox邮箱.
+- MailBox实现了Runnable接口,处于运行状态.
+- 当有消息时,就会到达MailBox并调用Actor receive()方法,将消息推送给receive
+
+
+
+
 #### 6.21.6 Akka 网络编程
 
 
