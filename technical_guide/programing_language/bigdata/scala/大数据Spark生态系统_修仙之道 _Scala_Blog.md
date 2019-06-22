@@ -6335,9 +6335,208 @@ AActor (Tomcat) : Goodbye
 - 当有消息时,就会到达MailBox并调用Actor receive()方法,将消息推送给receive
 
 
-
-
 #### 6.21.6 Akka 网络编程
+> Akka支持面向大并发后端服务程序,网络通信是服务端程序重要的一部分.
+> 
+> 网络编程有两种 : 
+> 
+> 1.`TCP socket编程`,是网络编程主流,之所以叫Tcp socket编程,是因为底层是基于Tcp/ip协议,比如:QQ聊天.
+> 
+> 2.`B/S结构Http编程`,使用浏览器去访问服务器时,使用的就是http协议,而http底层依旧是用tcp socket实现,比如:京东商城.
+> 
+> 端口(port)
+> 所指端口不是指物理意义上的端口,而是特指TCP/IP协议中端口,是逻辑意义上的端口.
+> 如果把IP地址比作一间房子,端口就是出入这间房子的门,真正的房子只有几个门,但是一个IP地址的端口可以有65535（即：256×256-1）个之多！端口是通过端口号来标记,(端口号0：Reserved).
+> 
+> 端口(port)-分类
+> 0号是保留端口.
+> 1-1024是固定端口,又叫有名端口,即被某些程序固定使用,一般不使用.
+> 22: SSH远程登录协议 / 23: telnet使用 / 21: ftp使用
+> 25: smtp服务使用 / 80: iis使用 / 7: echo服务
+> 1025-65535是动态端口,这些端口可以使用.
+
+#### 6.21.7 Akka网络编程 - 服务端与客户端交互
+- 1.创建服务端
+``` scala
+package com.geekparkhub.core.scala.akka.workflow.server
+
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import com.geekparkhub.core.scala.akka.workflow.common.{ClientMessageFlow, ServerMessageFlow}
+import com.typesafe.config.ConfigFactory
+
+class ServerFlow extends Actor {
+  // 复写receive()方法
+  override def receive: Receive = {
+    case "ServerStart" => println("---- Server Start ----")
+    // 服务端接收ClientMessageFlow(mes)
+    case ClientMessageFlow(mes) => {
+      // 模式匹配分解客户端信息关键字
+      mes match {
+        case "Hello" => sender() ! ServerMessageFlow("Hey ✋✋")
+        case "🐒" => sender() ! ServerMessageFlow("这是一只程序员!")
+        case "🌛" => sender() ! ServerMessageFlow("你问我爱你有多深,月亮代表我的心!")
+        case "😎" => sender() ! ServerMessageFlow("你酷帅到极致!")
+        case "Goodbye" => sender() ! ServerMessageFlow("Goodbye 👋👋,See you tomorrow!")
+        case _ => sender() ! ServerMessageFlow("❓❓❓")
+      }
+    }
+  }
+}
+
+object ServerFlowRun extends App {
+
+  //定义服务端ip和端口
+  val serverHost = "127.0.0.1"
+  val serverPort = 9088
+
+  /**
+    * 使用ConfigFactory parseString()方法解析字符串,指定客户端IP和端口
+    */
+  val config = ConfigFactory.parseString(
+    s"""
+       |akka.actor.provider="akka.remote.RemoteActorRefProvider"
+       |akka.remote.netty.tcp.hostname=$serverHost
+       |akka.remote.netty.tcp.port=$serverPort
+        """.stripMargin)
+
+  // 创建ActorSystem
+  val server = ActorSystem("server", config)
+  // 创建serverFlowRef
+  val serverFlowRef: ActorRef = server.actorOf(Props[ServerFlow], "ServerFlow")
+  // 启动serverFlowRef,指向自身服务端mailbox -> receive()方法
+  serverFlowRef ! "ServerStart"
+}
+```
+
+- 2.创建客户端
+``` scala
+package com.geekparkhub.core.scala.akka.workflow.client
+
+import akka.actor.{Actor, ActorRef, ActorSelection, ActorSystem, Props}
+import com.geekparkhub.core.scala.akka.workflow.common.{ClientMessageFlow, ServerMessageFlow}
+import com.typesafe.config.ConfigFactory
+
+import scala.io.StdIn
+
+class ClientFlow(serverHost: String, serverPort: Int) extends Actor {
+
+  // 定义服务端serverFlowRef
+  var serverFlowRef: ActorSelection = _
+
+  /**
+    * 重写初始化方法
+    * 在Akka开发中,通常将初始化工作交给preStart()方法
+    * 因为preStart()方法会在运行前执行
+    */
+  override def preStart(): Unit = {
+
+    serverFlowRef = context.actorSelection(s"akka.tcp://server@${serverHost}:${serverPort}/user/ServerFlow")
+    // Println Test
+    //    println("preStart() Method has been executed !")
+    //    println("serverFlowRef IP = " + serverFlowRef)
+  }
+
+  // 复写receive()方法
+  override def receive: Receive = {
+    case "ClientStart" => println("---- Client Start ----")
+    // 将接收到的客户端信息转发给服务端
+    case mes: String => serverFlowRef ! ClientMessageFlow(mes)
+    // 将服务端信息转发给客户端
+    case ServerMessageFlow(mes) => println(s"(ServerFlow Mac) : $mes")
+  }
+}
+
+object ClientFlowRun extends App {
+
+  // 定义客户端IP和端口 & 指定服务端IP和端口
+  val (clientHost, clientPort, serverHost, serverPort) = ("127.0.0.1", 9089, "127.0.0.1", 9088)
+
+  /**
+    * 使用ConfigFactory parseString()方法解析字符串,指定客户端IP和端口
+    */
+  val config = ConfigFactory.parseString(
+    s"""
+       |akka.actor.provider="akka.remote.RemoteActorRefProvider"
+       |akka.remote.netty.tcp.hostname=$clientHost
+       |akka.remote.netty.tcp.port=$clientPort
+        """.stripMargin)
+
+  // 创建ActorSystem
+  val client = ActorSystem("client", config)
+  // 创建serverFlowRef
+  val clientFlowRef: ActorRef = client.actorOf(Props(new ClientFlow(serverHost, serverPort)), "ClientFlow")
+  // 启动clientFlowRef,指向自身客户端mailbox -> receive()方法
+  clientFlowRef ! "ClientStart"
+
+  // 客户端向服务端发送消息
+  while (true) {
+    Thread.sleep(1000)
+    println(s" 正在与$serverHost:$serverPort 建立连接,开始你的心灵探索吧!")
+    // 接收客户端输入内容
+    var mes = StdIn.readLine("(ClientFlow User) : ")
+    clientFlowRef ! mes
+  }
+}
+```
+
+- 3.创建信息协议
+``` scala
+package com.geekparkhub.core.scala.akka.workflow.common
+
+/**
+  * 使用样例类模板 (自动实现序列化功能)
+  * 创建信息协议
+  */
+
+// 定义客户端与服务端(信息序列化)交互协议
+case class ClientMessageFlow(mes: String)
+
+// 定义服务端与客户端(信息序列化)交互协议
+case class ServerMessageFlow(mes: String)
+```
+
+- 4.查看9088服务端口是否启动
+```
+systemhub:~ system$ netstat -anb | grep 9088
+tcp4       0      0  127.0.0.1.9088   *.*  LISTEN  0  0
+systemhub:~ system$ 
+```
+- 5.查看9089客户端口是否启动
+```
+systemhub:~ system$ netstat -anb | grep 9089
+tcp4       0      0  127.0.0.1.9089    *.* LISTEN  0  0
+systemhub:~ system$
+```
+
+- 6.启动应用顺序 : 先启动服务端程序,依次启动客户端程序.
+- 客户端向服务端发送信息,并查看消息结果.
+```
+---- Client Start ----
+ 正在与127.0.0.1:9088 建立连接,开始你的心灵探索吧!
+(ClientFlow User) : Hello
+(ServerFlow Mac) : Hey ✋✋
+
+ 正在与127.0.0.1:9088 建立连接,开始你的心灵探索吧!
+(ClientFlow User) : 🐒
+(ServerFlow Mac) : 这是一只程序员!
+
+ 正在与127.0.0.1:9088 建立连接,开始你的心灵探索吧!
+(ClientFlow User) : 🌛
+(ServerFlow Mac) : 你问我爱你有多深,月亮代表我的心!
+
+ 正在与127.0.0.1:9088 建立连接,开始你的心灵探索吧!
+(ClientFlow User) : 😎
+(ServerFlow Mac) : 你酷帅到极致!
+
+ 正在与127.0.0.1:9088 建立连接,开始你的心灵探索吧!
+(ClientFlow User) : nice
+(ServerFlow Mac) : ❓❓❓
+
+ 正在与127.0.0.1:9088 建立连接,开始你的心灵探索吧!
+(ClientFlow User) : Goodbye
+(ServerFlow Mac) : Goodbye 👋👋,See you tomorrow!
+```
+
 
 
 
