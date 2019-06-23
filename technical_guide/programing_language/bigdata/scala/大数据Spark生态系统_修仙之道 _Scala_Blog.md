@@ -6537,6 +6537,295 @@ systemhub:~ system$
 (ServerFlow Mac) : Goodbye 👋👋,See you tomorrow!
 ```
 
+#### 6.21.6 Spark Master Worker 进程通讯
+- `说明`
+- 深入理解Spark的Master和Worker通讯机制.
+- 加深对主从服务心跳检测机制(HeartBeat)的理解,方便以后spark源码二次开发
+- `实例分析`
+- 1.worker注册到Master,Master完成注册,并回复worker注册成功.
+- 2.worker定时发送心跳,并在Master接收心跳状态.
+- 3.Master接收到worker心跳后,要更新该worker最近一次发送心跳时间.
+- 4.给Master启动定时任务,定时检测注册的worker有哪些没有更新心跳,并将其从hashmap中删除.
+- 5.master worker进行分布式部署
+
+- 创建Master
+``` scala
+package com.geekparkhub.core.scala.akka.sparkflow.master
+
+import akka.actor.{Actor, ActorRef, ActorSystem, Props}
+import com.geekparkhub.core.scala.akka.sparkflow.commonflow.{HearBeat, RegisteredWorkerFlowInfo, RegisteredWorkerFlowInfos, RemoveTimeOutWorker, StartTimeOutWorke, WorkerFlowInfo}
+import com.typesafe.config.ConfigFactory
+
+import scala.collection.mutable
+import scala.concurrent.duration._
+
+class MasterFlow extends Actor {
+  // 定义HashMap用于管理WorkerFlowInfo
+  val workers = mutable.Map[String, WorkerFlowInfo]()
+
+  // 复写receive()方法
+  override def receive: Receive = {
+    case "MasterFlowStart" => {
+      println("---- MasterFlow Start ----")
+      self ! StartTimeOutWorke
+    }
+    // 接收WorkerFlow注册信息
+    case RegisteredWorkerFlowInfo(id, cpu, ram) => {
+      // 判断WorkerFlow注册信息是否已注册,如果未注册,则执行以下逻辑
+      if (!workers.contains(id)) {
+        // 创建workerFlowInfo对象
+        val workerFlowInfo = new WorkerFlowInfo(id, cpu, ram)
+        // 将workerFlowInfo追加到HashMap中
+        workers += ((id, workerFlowInfo))
+        println("All Workers = " + workers)
+        // 追加完毕后,MasterFlow应回复WorkerFlow注册成功
+        sender() ! RegisteredWorkerFlowInfos
+      }
+    }
+
+    // master收到worker的心跳消息之后，更新woker的上一次心跳时间
+    case HearBeat(id) => {
+      val info: WorkerFlowInfo = workers(id)
+      // 更改心跳时间
+      info.lastHeartBeatTime = System.currentTimeMillis()
+      println("master更新Worker心跳 ID = " + id)
+    }
+    case StartTimeOutWorke => {
+      println("开启定时检测Worker心跳任务")
+      // 使用调度器时候必须导入dispatcher,因为该包涉及到隐式转换
+      import context.dispatcher
+      /**
+        * worker通过"context.system.scheduler.schedule"启动一个定时器，定时向master 发送心跳信息，需要指定
+        * 四个参数：
+        * 第一个参数是需要指定延时时间，此处指定的间隔时间为0毫秒；
+        * 第二个参数是间隔时间，即指定定时器的周期性执行时间，我们这里指定为9秒；
+        * 第三个参数是发送消息给谁，我们这里指定发送消息给自己，使用变量self即可；
+        * 第四个参数是指发送消息的具体内容；
+        * 注意：由于我们将消息周期性的发送给自己，因此我们自己需要接受消息并处理，也就是需要定义下面的RemoveTimeOutWorker
+        */
+      context.system.scheduler.schedule(0 millis, 9000 millis, self, RemoveTimeOutWorker)
+    }
+    case RemoveTimeOutWorker => {
+      val workerInfos: Iterable[WorkerFlowInfo] = workers.values
+      val nowTime: Long = System.currentTimeMillis()
+      // //过滤超时worker,将过滤超时的worker删除
+      workerInfos.filter(workerFlowInfo => (nowTime - workerFlowInfo.lastHeartBeatTime) > 6000).foreach(workerFlowInfo => workers.remove(workerFlowInfo.id))
+      println(s"====== 存活Worker ${workers.size}  ======")
+    }
+  }
+}
+
+object MasterFlowRun {
+  def main(args: Array[String]): Unit = {
+    if (args.length != 3) {
+      println("Please enter the following parameters <masterHost masterPort MasterActorName>")
+      sys.exit()
+    }
+
+    // 定义Master服务端ip和端口
+    val masterHost = args(0)
+    val masterPort = args(1)
+    val MasterActorName = args(2)
+
+    //    val masterHost = "127.0.0.1"
+    //    val masterPort = 10001
+
+    /**
+      * 使用ConfigFactory parseString()方法解析字符串,指定客户端IP和端口
+      */
+    val config = ConfigFactory.parseString(
+      s"""
+         |akka.actor.provider="akka.remote.RemoteActorRefProvider"
+         |akka.remote.netty.tcp.hostname=${masterHost}
+         |akka.remote.netty.tcp.port=${masterPort}
+        """.stripMargin)
+
+    // 创建 ActorSystem
+    val master = ActorSystem("master", config)
+    // 创建 masterFlowRef
+    val masterFlowRef: ActorRef = master.actorOf(Props[MasterFlow], s"${MasterActorName}")
+    // 启动masterFlowRef,指向自身服务端mailbox -> receive()方法
+    masterFlowRef ! "MasterFlowStart"
+  }
+}
+```
+- 创建 InformationProtocol
+``` scala
+package com.geekparkhub.core.scala.akka.sparkflow.commonflow
+
+/**
+  * 使用样例类模板 (自动实现序列化功能)
+  * 创建信息协议
+  */
+
+// 定义WorkerFlow与MasterFlow(注册信息序列化)交互协议
+case class RegisteredWorkerFlowInfo(id: String, cpu: Int, ram: Int)
+
+
+/**
+  * 定义WorkerFlowInfo
+  * 将WorkerFlowInfo保存在MasterFlow HashMap中
+  * HashMap将管理与扩展WorkerFlow
+  *
+  * @param id
+  * @param cpu
+  * @param ram
+  */
+class WorkerFlowInfo(val id: String, val cpu: Int, val ram: Int){
+  // 定义最后一次心跳时间
+  var lastHeartBeatTime: Long = System.currentTimeMillis()
+}
+
+// worker给master发送心跳信息
+case class HearBeat(id: String)
+
+// 当WorkerFlow注册成功,MasterFlow将返回RegisteredWorkerFlowInfo实例对象
+case object RegisteredWorkerFlowInfos
+
+// worker定时向master发送心跳消息
+case object SendHeartBeat
+
+// master给自己发送一个触发检查超时worker的信息
+case object StartTimeOutWorke
+
+// master自己给自己发送一个检查超时worker的信息,并启动一个调度器，周期新检测删除超时worker
+case object CheckTimeOutWorker
+
+// master发送给自己的消息，删除超时的worker
+case object RemoveTimeOutWorker
+```
+- 创建Worker
+``` scala
+package com.geekparkhub.core.scala.akka.sparkflow.workerflow
+
+import akka.actor.{Actor, ActorRef, ActorSelection, ActorSystem, Props}
+import com.geekparkhub.core.scala.akka.sparkflow.commonflow.{HearBeat, RegisteredWorkerFlowInfo, RegisteredWorkerFlowInfos, SendHeartBeat}
+import com.typesafe.config.ConfigFactory
+
+import scala.language.postfixOps
+import scala.concurrent.duration._
+
+class WorkerFlow(masterHost: String, masterPort: Int, MasterActorName: String) extends Actor {
+
+  // 定义master(代理对象) masterRef
+  var masterProxy: ActorSelection = _
+  val id = java.util.UUID.randomUUID().toString
+
+  /**
+    * 重写初始化方法
+    * 在Akka开发中,通常将初始化工作交给preStart()方法
+    * 因为preStart()方法会在运行前执行
+    */
+  override def preStart(): Unit = {
+    // 初始化 master(代理对象)
+    masterProxy = context.actorSelection(s"akka.tcp://master@${masterHost}:${masterPort}/user/${MasterActorName}")
+    // PrintlnTest
+    println("preStart() Method has been executed !")
+    println("masterProxy = " + masterProxy)
+  }
+
+  // 复写receive()方法
+  override def receive: Receive = {
+    case "WorkerFlowStart" => {
+      println("---- WorkerFlow Start ----")
+      // 向MasterFlow_01发送注册请求
+      masterProxy ! RegisteredWorkerFlowInfo(id, 32, 32 * 1024)
+    }
+
+    // 如WorkerFlow注册成功,则输出WorkerFlow状态信息
+    case RegisteredWorkerFlowInfos => {
+      println("WorkerFlow ID = " + id + " , Registration Success!")
+
+      // 使用调度器时候必须导入dispatcher,因为该包涉及到隐式转换
+      import context.dispatcher
+      /**
+        * worker通过"context.system.scheduler.schedule"启动一个定时器，定时向master 发送心跳信息，需要指定
+        * 四个参数：
+        * 第一个参数是需要指定延时时间，此处指定的间隔时间为0毫秒；
+        * 第二个参数是间隔时间，即指定定时器的周期性执行时间，我们这里指定为3秒；
+        * 第三个参数是发送消息给谁，我们这里指定发送消息给自己，使用变量self即可；
+        * 第四个参数是指发送消息的具体内容；
+        * 注意：由于我们将消息周期性的发送给自己，因此我们自己需要接受消息并处理，也就是需要定义下面的SendHeartBeat
+        */
+      context.system.scheduler.schedule(0 millis, 3000 millis, self, SendHeartBeat)
+    }
+
+    case SendHeartBeat => {
+      // 开始向master发送心跳
+      println(s"------- WorkerFlow = $id 发送心跳 -------")
+      masterProxy ! HearBeat(id)
+    }
+  }
+}
+
+object WorkerFlowRun {
+  def main(args: Array[String]): Unit = {
+
+    if (args.length != 6) {
+      println("Please enter the following parameters <workerHost workerPort WorkerActorName masterHost masterPort MasterActorName>")
+      sys.exit()
+    }
+
+    // 定义workerIP和端口 & 指定masterIP和端口
+    val workerHost = args(0)
+    val workerPort = args(1)
+    val WorkerActorName = args(2)
+    val masterHost = args(3)
+    val masterPort = args(4)
+    val MasterActorName = args(5)
+
+    //  val (workerHost, workerPort, masterHost, masterPort) = ("127.0.0.1", 10002, "127.0.0.1", 10001)
+
+    /**
+      * 使用ConfigFactory parseString()方法解析字符串,指定客户端IP和端口
+      */
+    val config = ConfigFactory.parseString(
+      s"""
+         |akka.actor.provider="akka.remote.RemoteActorRefProvider"
+         |akka.remote.netty.tcp.hostname=${workerHost}
+         |akka.remote.netty.tcp.port=${workerPort}
+        """.stripMargin)
+
+    // 创建ActorSystem
+    val worker = ActorSystem("worker", config)
+    // 创建 workerFlowRef
+    val workerFlowRef: ActorRef = worker.actorOf(Props(new WorkerFlow(masterHost, masterPort.toInt, MasterActorName)), s"${WorkerActorName}")
+    // 启动workerFlowRef,指向自身服务端mailbox -> receive()方法
+    workerFlowRef ! "WorkerFlowStart"
+  }
+}
+```
+- 运行顺序 : `1.启动1个MasterFlow` | `2.依次启动5个WorkerFlow` | `3.查看运行状态` | `4.依次停止WorkerFlow并查看MasterFlow心跳检测`
+
+- `1.MasterFlow Log`
+```
+---- MasterFlow Start ----
+开启定时检测Worker心跳任务
+====== 存活Worker 0  ======
+====== 存活Worker 0  ======
+====== 存活Worker 0  ======
+====== 存活Worker 1  ======
+master更新Worker心跳 ID = 20bc4940-4f37-4271-9bda-8a9f0eeddc0c
+master更新Worker心跳 ID = 20bc4940-4f37-4271-9bda-8a9f0eeddc0c
+master更新Worker心跳 ID = 20bc4940-4f37-4271-9bda-8a9f0eeddc0c
+====== 存活Worker 5  ======
+master更新Worker心跳 ID = 20bc4940-4f37-4271-9bda-8a9f0eeddc0c
+master更新Worker心跳 ID = 6e48fb10-7594-4947-b4cf-80b6828ba774
+master更新Worker心跳 ID = a419c032-b89a-4804-8c39-5546f38280da
+```
+- `2.WorkerFlow Log`
+```
+---- WorkerFlow Start ----
+WorkerFlow ID = 20bc4940-4f37-4271-9bda-8a9f0eeddc0c , Registration Success!
+------- WorkerFlow = 20bc4940-4f37-4271-9bda-8a9f0eeddc0c 发送心跳 -------
+------- WorkerFlow = 20bc4940-4f37-4271-9bda-8a9f0eeddc0c 发送心跳 -------
+---- WorkerFlow Start ----
+WorkerFlow ID = df2ca4fe-440f-4067-b77a-bcb146e3ba0c , Registration Success!
+------- WorkerFlow = df2ca4fe-440f-4067-b77a-bcb146e3ba0c 发送心跳 -------
+WorkerFlow ID = 6e48fb10-7594-4947-b4cf-80b6828ba774 , Registration Success!
+------- WorkerFlow = 6e48fb10-7594-4947-b4cf-80b6828ba774 发送心跳 -------
+------- WorkerFlow = 6e48fb10-7594-4947-b4cf-80b6828ba774 发送心跳 -------
+```
 
 
 
