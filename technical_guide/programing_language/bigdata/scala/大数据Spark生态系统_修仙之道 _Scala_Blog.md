@@ -6828,8 +6828,72 @@ WorkerFlow ID = 6e48fb10-7594-4947-b4cf-80b6828ba774 , Registration Success!
 ```
 
 
+#### 6.21.7 使用Scala方式 解决经典Wordcount实例
+``` scala
+package com.geekparkhub.core.scala.collection
 
+object CollectionFlow032 {
+  def main(args: Array[String]): Unit = {
 
+    /**
+      * val lines = List("hello hadoop", "hive scala spark flink storm scala flume")
+      * 使用映射集合,list中各个单词出现的次数,并按出现次数排序
+      */
+    val lines = List("hello hadoop", "hive scala spark flink storm scala flume")
+
+    /**
+      * 分步骤编写
+      *
+      * 1. res001 = 单词扁平化 常规方式
+      * 1. res01 = 单词扁平化 简写方式
+      */
+    val res001 = lines.flatMap((s: String) => s.split(" "))
+    val res01 = lines.flatMap(_.split(" "))
+    println("res01 = " + res01)
+
+    /**
+      * 2. res002 = 转换lits对偶 常规方式
+      * 2. res02 = 转换lits对偶 简写方式
+      */
+    val res002 = res01.map((s: String) => (s, 1))
+    val res02 = res01.map((_, 1))
+    println("res02 = " + res02)
+
+    /**
+      * 3. res003 = 分组 常规方式
+      * 3. res03 = 分组 简写方式
+      */
+    val res003 = res02.groupBy((x: (String, Int)) => x._1)
+    val res03 = res02.groupBy(_._1)
+    println("res03 = " + res03)
+
+    /**
+      * 4. res004 = 统计大小 常规方式
+      * 4. res04 = 统计大小 简写方式
+      */
+    val res004 = res03.map((x: (String, List[(String, Int)])) => (x._1, x._2.size))
+    val res04 = res03.map(x => (x._1, x._2.size))
+    println("res04 = " + res04)
+
+    /**
+      * 5. res005 = 排序 常规方式
+      * 5. res05 = 排序 简写方式
+      * 5. res06 = 排序 简写方式 倒序排序
+      */
+    val res005 = res04.toList.sortBy((x: (String, Int)) => x._2)
+    val res05 = res04.toList.sortBy(_._2)
+    val res06 = res04.toList.sortBy(_._2).reverse
+    println("res05 = " + res05)
+    println("res06 = " + res06)
+
+    /**
+      * 将函数串联合并方式 计算结果
+      */
+    println("res07 = " + lines.flatMap(_.split(" ")).map((_, 1)).groupBy(_._1).map(x => (x._1, x._2.size)).toList.sortBy(_._2))
+
+  }
+}
+```
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ## 7. 修仙之道 技术架构迭代 登峰造极之势
