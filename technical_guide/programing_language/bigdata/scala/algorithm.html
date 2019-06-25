@@ -55,6 +55,7 @@
 </li>
 <li><a href="#153-工厂方法模式">1.5.3 工厂方法模式</a></li>
 <li><a href="#154-抽象工厂模式">1.5.4 抽象工厂模式</a></li>
+<li><a href="#155-单例模式">1.5.5 单例模式</a></li>
 </ul>
 </li>
 </ul>
@@ -691,7 +692,183 @@
   <p>4.将工厂抽象成两层,AbsFactory(抽象工厂)和具体实现的工厂子类,可以根据创建对象类型使用对应的工厂子类,这样将单个简单工厂类变成了工厂簇,更利于代码维护和扩展.</p>
   
   <p>5.抽象工厂模式实例</p>
-</blockquote>
+  
+  <ul><li><p>1.创建Pizza</p></li>
+  </ul>
+  
+  </blockquote>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d03.t001
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">abstract</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Pizza</span> </span>{
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-keyword">var</span> name: <span class="hljs-type">String</span> = _
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">//假定每种pizza准备原材料不同,因此做为抽象函数</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">prepare</span></span>() <span class="hljs-comment">//抽象方法</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cut</span></span>(): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    println(<span class="hljs-keyword">this</span>.name + <span class="hljs-string">" cutting .."</span>)
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">bake</span></span>(): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    println(<span class="hljs-keyword">this</span>.name + <span class="hljs-string">" baking .."</span>)
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">box</span></span>(): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    println(<span class="hljs-keyword">this</span>.name + <span class="hljs-string">" boxing .."</span>)
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>2.创建AmericanCheesePizza</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d03.t001
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 美式奶酪披萨</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AmericanCheesePizza</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Pizza</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-comment">// 复写prepare方法</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">prepare</span></span>(): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.name = <span class="hljs-string">"AmericanCheesePizza"</span>
+</div><div class="hljs-line">    println(<span class="hljs-keyword">this</span>.name + <span class="hljs-string">" prepare"</span>)
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>3.创建AmericanPepperPizza</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d03.t001
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 美式胡椒披萨</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AmericanPepperPizza</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Pizza</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-comment">// 复写prepare方法</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">prepare</span></span>(): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.name = <span class="hljs-string">"AmericanPepperPizza"</span>
+</div><div class="hljs-line">    println(<span class="hljs-keyword">this</span>.name + <span class="hljs-string">" prepare"</span>)
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>4.创建AbsFactory</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d03.t002
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d03.t001.<span class="hljs-type">Pizza</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 抽象工厂</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">AbsFactory</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义创建披萨 抽象方法</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">createPizza</span></span>(names: <span class="hljs-type">String</span>): <span class="hljs-type">Pizza</span>
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>5.创建AmericanFactory</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d03.t002
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d03.t001.{<span class="hljs-type">AmericanCheesePizza</span>, <span class="hljs-type">AmericanPepperPizza</span>, <span class="hljs-type">Pizza</span>}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 美式披萨子工厂 实现类</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AmericanFactory</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">AbsFactory</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">createPizza</span></span>(names: <span class="hljs-type">String</span>): <span class="hljs-type">Pizza</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">var</span> pizza: <span class="hljs-type">Pizza</span> = <span class="hljs-literal">null</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (names.equals(<span class="hljs-string">"AmericanCheesePizza"</span>)) {
+</div><div class="hljs-line">      pizza = <span class="hljs-keyword">new</span> <span class="hljs-type">AmericanCheesePizza</span>
+</div><div class="hljs-line">    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (names.equals(<span class="hljs-string">"AmericanPepperPizza"</span>)) {
+</div><div class="hljs-line">      pizza = <span class="hljs-keyword">new</span> <span class="hljs-type">AmericanPepperPizza</span>
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> pizza
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>6.创建OtherPizza</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d03.t002
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d03.t001.<span class="hljs-type">Pizza</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> scala.io.<span class="hljs-type">StdIn</span>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> scala.util.control.<span class="hljs-type">Breaks</span>._
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 其他披萨 抽象类</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OtherPizza</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">var</span> orderType: <span class="hljs-type">String</span> = <span class="hljs-literal">null</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">var</span> pizza: <span class="hljs-type">Pizza</span> = <span class="hljs-literal">null</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">var</span> absFactory: <span class="hljs-type">AbsFactory</span> = _
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">this</span></span>(absFactory: <span class="hljs-type">AbsFactory</span>) {
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>
+</div><div class="hljs-line">    breakable {
+</div><div class="hljs-line">      do {
+</div><div class="hljs-line">        println()
+</div><div class="hljs-line">        println(<span class="hljs-string">"&lt;使用抽象工厂模式 构建披萨&gt; - 请输入pizza类型"</span>)
+</div><div class="hljs-line">        orderType = <span class="hljs-type">StdIn</span>.readLine()
+</div><div class="hljs-line">        pizza = absFactory.createPizza(orderType)
+</div><div class="hljs-line">        <span class="hljs-keyword">if</span> (pizza == <span class="hljs-literal">null</span>) {
+</div><div class="hljs-line">          <span class="hljs-keyword">break</span>()
+</div><div class="hljs-line">        }
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.pizza.prepare()
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.pizza.bake()
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.pizza.cut()
+</div><div class="hljs-line">        <span class="hljs-keyword">this</span>.pizza.box()
+</div><div class="hljs-line">      } <span class="hljs-keyword">while</span> (<span class="hljs-literal">true</span>)
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">// 半生对象</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">PizzaFlow</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">new</span> <span class="hljs-type">OtherPizza</span>(<span class="hljs-keyword">new</span> <span class="hljs-type">AmericanFactory</span>)
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>-7.运行程序查看结果</p>
+
+<pre class="prettyprint hljs-dark"><code class="hljs gams"><div class="hljs-line">&lt;使用抽象工厂模式 构建披萨&gt; - 请输入pizza类型
+</div><div class="hljs-line">AmericanPepperPizza
+</div><div class="hljs-line">AmericanPepperPizza prepare
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-title">AmericanPepperPizza</span></span> baking ..
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-title">AmericanPepperPizza</span></span> cutting ..
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-title">AmericanPepperPizza</span></span> boxing ..
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">&lt;使用抽象工厂模式 构建披萨&gt; - 请输入pizza类型
+</div><div class="hljs-line">AmericanCheesePizza
+</div><div class="hljs-line">AmericanCheesePizza prepare
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-title">AmericanCheesePizza</span></span> baking ..
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-title">AmericanCheesePizza</span></span> cutting ..
+</div><div class="hljs-line"><span class="hljs-function"><span class="hljs-title">AmericanCheesePizza</span></span> boxing ..
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">&lt;使用抽象工厂模式 构建披萨&gt; - 请输入pizza类型
+</div><div class="hljs-line">none
+</div></code></pre>
+
+<ul><li><p>8.工厂模式总总结</p></li>
+<li><p>1.工厂模式的意义将实例化对象的代码提取出来,放到一个类中统一管理和维护,达到和主项目的依赖关系解耦,从而提高项目的扩展和维护性.</p></li>
+<li><p>2.三种工厂模式,设计模式的依赖抽象原则.</p></li>
+<li><p>3.创建对象实例时,不要直接new类,而是把new类的动作放在一个工厂的方法中并返回,变量不要直接持有具体类的引用.</p></li>
+<li><p>4.不要让类继承具体类,而是继承抽象类或者是trait接口.</p></li>
+<li><p>5.不要覆盖基类中已经实现的方法.</p></li>
+</ul>
+
+<h4 id="155-单例模式">1.5.5 单例模式</h4>
 
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 

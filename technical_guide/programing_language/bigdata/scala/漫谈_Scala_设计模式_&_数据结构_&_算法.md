@@ -558,6 +558,187 @@ none
 > 4.将工厂抽象成两层,AbsFactory(抽象工厂)和具体实现的工厂子类,可以根据创建对象类型使用对应的工厂子类,这样将单个简单工厂类变成了工厂簇,更利于代码维护和扩展.
 > 
 > 5.抽象工厂模式实例
+- 1.创建Pizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d03.t001
+
+abstract class Pizza {
+
+  var name: String = _
+
+  //假定每种pizza准备原材料不同,因此做为抽象函数
+  def prepare() //抽象方法
+
+  def cut(): Unit = {
+    println(this.name + " cutting ..")
+  }
+
+  def bake(): Unit = {
+    println(this.name + " baking ..")
+  }
+
+  def box(): Unit = {
+    println(this.name + " boxing ..")
+  }
+}
+```
+
+- 2.创建AmericanCheesePizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d03.t001
+
+/**
+  * 美式奶酪披萨
+  */
+class AmericanCheesePizza extends Pizza {
+  // 复写prepare方法
+  override def prepare(): Unit = {
+    this.name = "AmericanCheesePizza"
+    println(this.name + " prepare")
+  }
+}
+```
+
+- 3.创建AmericanPepperPizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d03.t001
+
+/**
+  * 美式胡椒披萨
+  */
+class AmericanPepperPizza extends Pizza {
+  // 复写prepare方法
+  override def prepare(): Unit = {
+    this.name = "AmericanPepperPizza"
+    println(this.name + " prepare")
+  }
+}
+```
+
+- 4.创建AbsFactory
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d03.t002
+
+import com.geekparkhub.core.scala.designpatterns.d03.t001.Pizza
+
+/**
+  * 抽象工厂
+  */
+trait AbsFactory {
+  // 定义创建披萨 抽象方法
+  def createPizza(names: String): Pizza
+}
+```
+
+- 5.创建AmericanFactory
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d03.t002
+
+import com.geekparkhub.core.scala.designpatterns.d03.t001.{AmericanCheesePizza, AmericanPepperPizza, Pizza}
+
+/**
+  * 美式披萨子工厂 实现类
+  */
+class AmericanFactory extends AbsFactory {
+  override def createPizza(names: String): Pizza = {
+    var pizza: Pizza = null
+    if (names.equals("AmericanCheesePizza")) {
+      pizza = new AmericanCheesePizza
+    } else if (names.equals("AmericanPepperPizza")) {
+      pizza = new AmericanPepperPizza
+    }
+    return pizza
+  }
+}
+```
+
+- 6.创建OtherPizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d03.t002
+
+import com.geekparkhub.core.scala.designpatterns.d03.t001.Pizza
+
+import scala.io.StdIn
+import scala.util.control.Breaks._
+
+/**
+  * 其他披萨 抽象类
+  */
+class OtherPizza {
+  var orderType: String = null
+  var pizza: Pizza = null
+  var absFactory: AbsFactory = _
+
+  def this(absFactory: AbsFactory) {
+    this
+    breakable {
+      do {
+        println()
+        println("<使用抽象工厂模式 构建披萨> - 请输入pizza类型")
+        orderType = StdIn.readLine()
+        pizza = absFactory.createPizza(orderType)
+        if (pizza == null) {
+          break()
+        }
+        this.pizza.prepare()
+        this.pizza.bake()
+        this.pizza.cut()
+        this.pizza.box()
+      } while (true)
+    }
+  }
+}
+
+// 半生对象
+object PizzaFlow {
+  def main(args: Array[String]): Unit = {
+    new OtherPizza(new AmericanFactory)
+  }
+}
+```
+
+-7.运行程序查看结果
+```
+<使用抽象工厂模式 构建披萨> - 请输入pizza类型
+AmericanPepperPizza
+AmericanPepperPizza prepare
+AmericanPepperPizza baking ..
+AmericanPepperPizza cutting ..
+AmericanPepperPizza boxing ..
+
+<使用抽象工厂模式 构建披萨> - 请输入pizza类型
+AmericanCheesePizza
+AmericanCheesePizza prepare
+AmericanCheesePizza baking ..
+AmericanCheesePizza cutting ..
+AmericanCheesePizza boxing ..
+
+<使用抽象工厂模式 构建披萨> - 请输入pizza类型
+none
+```
+- 8.工厂模式总总结
+- 1.工厂模式的意义将实例化对象的代码提取出来,放到一个类中统一管理和维护,达到和主项目的依赖关系解耦,从而提高项目的扩展和维护性.
+- 2.三种工厂模式,设计模式的依赖抽象原则.
+- 3.创建对象实例时,不要直接new类,而是把new类的动作放在一个工厂的方法中并返回,变量不要直接持有具体类的引用.
+- 4.不要让类继承具体类,而是继承抽象类或者是trait接口.
+- 5.不要覆盖基类中已经实现的方法.
+
+
+
+
+#### 1.5.5 单例模式
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
