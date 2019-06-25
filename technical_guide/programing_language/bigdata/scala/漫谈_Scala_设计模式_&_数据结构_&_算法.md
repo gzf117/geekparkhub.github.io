@@ -1311,6 +1311,14 @@ object WeatherDataRunFlow {
 *** ThirdParty Today mPressure: 160.0 ***
 *** ThirdParty Today mHumidity: 35.0 ***
 ```
+- 8.Java内置观察者模式
+- `java.util.Observable`
+- 1.Observable作用和地位等价于Subject
+- 2.Observable是类,并不是接口,其已实现核心 注册/移除/通知方法
+- 3.Observable和Observer使用方法和Scala观察者模式实例基本一样,只是Observable是类,通过继承来实现观察者模式.
+
+
+### 1.9 代理模式
 
 
 
