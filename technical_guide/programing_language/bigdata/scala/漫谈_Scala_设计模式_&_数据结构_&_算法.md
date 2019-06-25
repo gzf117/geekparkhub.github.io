@@ -73,7 +73,7 @@
 > 3.`行为型模式` : 模版方法模式 / 命令模式 / 迭代器模式 / 观察者模式 / 中介者模式 / 备忘录模式 / 解释器模式 (Interpreter模式) / 状态模式 / 策略模式 / 职责链模式(责任链模式) / 访问者模式
 
 
-### 1.5 简单工厂
+### 1.5 🏷️ 简单工厂 🏷️
 #### 1.5.1 基本介绍
 > 1.简单工厂模式是属于创建型模式,但不属于23种GOF设计模式之一,简单工厂模式是由一个工厂对象决定创建出哪一种产品类的实例,简单工厂模式是工厂模式家族中最简单实用的模式.
 > 
@@ -724,7 +724,7 @@ none
 - 5.不要覆盖基类中已经实现的方法.
 
 
-### 1.6 单例模式
+### 1.6 🏷️ 单例模式 🏷️
 > 1.单例模式是指 : 保证在整个软件系统中,某个类只能存在一个对象实例.
 > 
 > 2.单例模式的应用场景
@@ -796,7 +796,7 @@ object SingleTons {
 }
 ```
 
-### 1.7 装饰者模式
+### 1.7 🏷️ 装饰者模式 🏷️
 > 1.实例需求 : 
 > 咖啡馆订单系统项目
 > 咖啡种类 - 单品咖啡 : 意大利浓咖啡、暗黑系咖啡、美式咖啡、无糖咖啡
@@ -1070,7 +1070,7 @@ CoffeeDescription01 = <American Coffee | 美式咖啡> 价格: 45.6 | CoffeeCost
 CoffeeDescription02 = <Chocolate | 巧克力> 价格: 15.6 && <Chocolate | 巧克力> 价格: 15.6 && <Milk | 牛奶> 价格: 5.6 && <Dark Coffee | 暗黑系咖啡> 价格: 110.6 | CoffeeCost02 = 147.40001
 ```
 
-### 1.8 观察者模式
+### 1.8 🏷️ 观察者模式 🏷️
 > 1.实例需求 : 气象站
 > 气象站可以将每天测量到温度/湿度/气压等等以公告的形式发布.
 > 需要设计开放型API,便于其他第三方接入气象站获取数据.
@@ -1318,7 +1318,437 @@ object WeatherDataRunFlow {
 - 3.Observable和Observer使用方法和Scala观察者模式实例基本一样,只是Observable是类,通过继承来实现观察者模式.
 
 
-### 1.9 代理模式
+### 1.9 🏷️ 代理模式 🏷️
+> 代理模式 : 为一个对象提供一个替身,以控制对这个对象的访问.
+> 
+> 被代理的对象可以是远程对象、创建开销大的对象或需要安全控制的对象.
+> 
+> 代理模式有不同形式(比如远程代理/静态代理/动态代理)都是为了控制与管理对象访问.
+
+#### 1.9.1 本地监控实例
+> 对本地机器状态和销售情况进行监控
+- 1.创建State
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07
+
+/**
+  * 定义 机器状态 接口
+  */
+trait State extends Serializable {
+  def insertCoin() //插入硬币
+  def returnCoin() //返回硬币
+  def turnCrank() // 转动曲柄
+  def printstate() // 输出状态
+  def getstatename(): String //返回状态名字
+  def dispense() //分配状态,如卖出一块糖后,查看当前机器应进入哪个状态
+}
+```
+
+- 2.创建CandyMachine
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07
+
+/**
+  * 糖果机状态
+  */
+class CandyMachine {
+
+  var mSoldOutState: State = _
+  var mOnReadyState: State = _
+  var mHasCoin: State = _
+  var mSoldState: State = _
+  var mWinnerState: State = _
+  private var location = ""
+  private var state: State = _
+  private var count = 0
+
+  def this(location: String, count: Int) {
+    this
+    this.location = location
+    this.count = count
+    mSoldOutState = new SoldOutState(this);
+    mOnReadyState = new OnReadyState(this);
+    mHasCoin = new HasCoin(this);
+    mSoldState = new SoldState(this);
+    mWinnerState = new WinnerState(this);
+    if (count > 0) {
+      state = mOnReadyState;
+    } else {
+      state = mSoldOutState;
+    }
+  }
+
+  //给糖果机设置状态
+  def setState(state: State) = {
+    this.state = state
+  }
+
+  def getLocation(): String = {
+    location
+  }
+  
+  def insertCoin() = {
+    state.insertCoin()
+  }
+
+  def returnCoin() = {
+    state.returnCoin()
+  }
+
+  def turnCrank() = {
+    state.turnCrank()
+    state.dispense()
+  }
+
+  def releaseCandy() = {
+    if (count > 0) {
+      count = count - 1
+      println("a candy rolling out!");
+    }
+  }
+
+  def getCount(): Int = {
+    count
+  }
+
+  def printstate() = {
+    state.printstate()
+  }
+
+  def getstate(): State = {
+    state
+  }
+}
+```
+
+- 3.创建HasCoin
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07
+
+/**
+  * 用户投币状态
+  */
+class HasCoin extends State {
+  //说明:@transient注解将字段标记为瞬态的,即表示一个域不是该对象串行化的一部分
+  @transient private var mCandyMachine: CandyMachine = _
+
+  //观察的是这个 mCandyMachine糖果机
+  def this(mCandyMachine: CandyMachine) {
+    this
+    this.mCandyMachine = mCandyMachine
+  }
+
+  override def getstatename(): String = {
+    "HasCoin State"
+  }
+
+  //根据当前状态，insertCoin有不同的业务逻辑
+  override def insertCoin(): Unit = {
+    println("you can't insert another coin!")
+  }
+
+  override def printstate(): Unit = {
+    println("***HasCoin***")
+  }
+
+  override def returnCoin(): Unit = {
+    println("coin return!")
+    //如果在有Coin的状态下，执行了returnCoin,那么糖果机又进入到redayState
+    mCandyMachine.setState(mCandyMachine.mOnReadyState);
+  }
+
+  //转动手柄
+  override def turnCrank(): Unit = {
+    println("crank turn...!");
+    val ranwinner = new java.util.Random()
+    //设置一个抽奖随机数,如果返回一个0,就再奖励一块糖
+    var winner = ranwinner.nextInt(10)
+    if (winner == 0) {
+      mCandyMachine.setState(mCandyMachine.mWinnerState)
+
+    } else {
+      mCandyMachine.setState(mCandyMachine.mSoldState)
+    }
+  }
+  //没有逻辑
+  override def dispense(): Unit = {}
+}
+```
+
+- 4.创建WinnerState 
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07
+
+class WinnerState extends State {
+  //说明:@transient注解将字段标记为瞬态的,即表示一个域不是该对象串行化的一部分
+  @transient private var mCandyMachine: CandyMachine = _
+
+  def this(mCandyMachine: CandyMachine) {
+    this
+    this.mCandyMachine = mCandyMachine
+  }
+
+  override def getstatename(): String = {
+    "WinnerState"
+  }
+
+  //根据当前状态，我们的insertCoin有不同的业务逻辑
+  override def insertCoin(): Unit = {
+    println("please wait!we are giving you a candy!")
+  }
+
+  override def printstate(): Unit = {
+    println("***WinnerState***")
+  }
+
+  override def returnCoin(): Unit = {
+    println("you haven't inserted a coin yet!")
+
+  }
+
+  override def turnCrank(): Unit = {
+    println("we are giving you a candy,turning another get nothing,!");
+
+  }
+
+  override def dispense(): Unit = {
+    mCandyMachine.releaseCandy()
+    if (mCandyMachine.getCount() == 0) {
+      mCandyMachine.setState(mCandyMachine.mSoldOutState);
+    } else {
+      println("you are a winner!you get another candy!")
+      mCandyMachine.releaseCandy()
+      if (mCandyMachine.getCount() > 0) {
+        mCandyMachine.setState(mCandyMachine.mOnReadyState);
+      } else {
+        println("Oo,out of candies");
+        mCandyMachine.setState(mCandyMachine.mSoldOutState);
+      }
+    }
+  }
+}
+```
+
+- 5.创建SoldState 
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07
+
+/**
+  * 处于销售状态[正在出商品...]
+  */
+class SoldState extends State {
+  //说明:@transient注解将字段标记为瞬态的,即表示一个域不是该对象串行化的一部分
+  @transient private var mCandyMachine: CandyMachine = _
+
+  def this(mCandyMachine: CandyMachine) {
+    this
+    this.mCandyMachine = mCandyMachine
+  }
+
+  override def getstatename(): String = {
+    "SoldState"
+  }
+
+  //根据当前状态，我们的insertCoin有不同的业务逻辑
+  //其它的方法同样存在这样的处理
+  override def insertCoin(): Unit = {
+    println("please wait!we are giving you a candy!")
+  }
+
+  override def printstate(): Unit = {
+    println("******SoldState******")
+  }
+
+  override def returnCoin(): Unit = {
+    println("you haven't inserted a coin yet!")
+
+  }
+
+  override def turnCrank(): Unit = {
+    println("we are giving you a candy,turning another get nothing!")
+  }
+
+  override def dispense(): Unit = {
+    // TODO Auto-generated method stub
+
+    mCandyMachine.releaseCandy() //数量减去
+    if (mCandyMachine.getCount() > 0) { //如果还有糖，则进入readystate
+      mCandyMachine.setState(mCandyMachine.mOnReadyState);
+    } else { // 没有糖，则进入soleoutstate
+      println("Oo,out of candies");
+      mCandyMachine.setState(mCandyMachine.mSoldOutState);
+    }
+  }
+}
+```
+
+- 6.创建OnReadyState 
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07
+
+/**
+  * 准备状态
+  */
+class OnReadyState extends State {
+  //说明:@transient注解将字段标记为瞬态的,即表示一个域不是该对象串行化的一部分
+  @transient private var mCandyMachine: CandyMachine = _
+
+  def this(mCandyMachine: CandyMachine) {
+    this
+    this.mCandyMachine = mCandyMachine
+  }
+
+  override def getstatename(): String = {
+    "OnReadyState"
+  }
+
+  override def insertCoin(): Unit = {
+    println("you have inserted a coin,next,please turn crank!")
+    //同时给糖果机设置，有硬币的状态
+    this.mCandyMachine.setState(mCandyMachine.mHasCoin)
+  }
+
+  override def printstate(): Unit = {
+    println("***OnReadyState***")
+  }
+
+  override def returnCoin(): Unit = {
+    println("you haven't inserted a coin yet!")
+  }
+
+  override def turnCrank(): Unit = {
+    println("you turned,but you haven't inserted a coin!")
+  }
+
+  //在此状态下dispense没有业务逻辑
+  override def dispense(): Unit = {}
+}
+```
+
+- 7.创建SoldOutState
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07
+
+/**
+  * 销售完成状态
+  */
+class SoldOutState extends State {
+  //说明:@transient注解将字段标记为瞬态的,即表示一个域不是该对象串行化的一部分
+  @transient private var mCandyMachine: CandyMachine = _
+
+  def this(mCandyMachine: CandyMachine) {
+    this
+    this.mCandyMachine = mCandyMachine
+  }
+
+  override def getstatename(): String = {
+    "SoldOutState"
+  }
+
+  override def insertCoin(): Unit = {
+    println("you can't insert coin,the machine sold out!")
+  }
+
+  override def printstate(): Unit = {
+    println("***SoldOutState***")
+  }
+
+  override def returnCoin(): Unit = {
+    println("you can't return,you haven't inserted a coin yet!")
+  }
+
+  override def turnCrank(): Unit = {
+    println("you turned,but there are no candies!")
+  }
+
+  //没有业务逻辑
+  override def dispense(): Unit = {}
+}
+```
+
+- 8.创建Monitor
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07
+
+import scala.collection.mutable.ListBuffer
+
+/**
+  * 监控机器
+  */
+class Monitor {
+
+  // 监控多台机器
+  private val candyMachinelst: ListBuffer[CandyMachine] = ListBuffer()
+
+  // 给监控器增加一台机器
+  def addMachine(mCandyMachine: CandyMachine) = {
+    candyMachinelst.append(mCandyMachine)
+  }
+
+  // 输出该监控器管理的各个机器信息
+  def report() = {
+    //var mCandyMachine:CandyMachine = null
+    for (mCandyMachine <- this.candyMachinelst) {
+      println("----------------------------------------")
+      println("Machine Loc:" + mCandyMachine.getLocation())
+      println("Machine Candy count:" + mCandyMachine.getCount())
+      println("Machine State:" + mCandyMachine.getstate().getstatename())
+    }
+  }
+}
+```
+
+- 9.创建CanyMachineRunFlow
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07
+
+object CanyMachineRunFlow {
+  def main(args: Array[String]): Unit = {
+    //创建一个监控器
+    val mMonitor = new Monitor()
+
+    //XXX-AAA地区 糖果机有6颗糖
+    var mCandyMachine = new CandyMachine("XXX-AAA", 6)
+    //将糖果机加入监控器
+    mMonitor.addMachine(mCandyMachine)
+
+    mCandyMachine = new CandyMachine("XXX-BBB", 4)
+    mCandyMachine.insertCoin()
+    mMonitor.addMachine(mCandyMachine)
+
+    mCandyMachine = new CandyMachine("XXX-CCC", 14);
+    //修改XXX-CCC状态
+    mCandyMachine.insertCoin()
+    mCandyMachine.turnCrank() //转动曲柄出糖
+    mMonitor.addMachine(mCandyMachine)
+    //输出监控器管理的所有糖果机情况
+    mMonitor.report()
+  }
+}
+```
+-10.运行查看结果
+```
+you have inserted a coin,next,please turn crank!
+you have inserted a coin,next,please turn crank!
+crank turn...!
+a candy rolling out!
+----------------------------------------
+Machine Loc:XXX-AAA
+Machine Candy count:6
+Machine State:OnReadyState
+----------------------------------------
+Machine Loc:XXX-BBB
+Machine Candy count:4
+Machine State:HasCoin State
+----------------------------------------
+Machine Loc:XXX-CCC
+Machine Candy count:13
+Machine State:OnReadyState
+```
+
+
+
+
 
 
 
