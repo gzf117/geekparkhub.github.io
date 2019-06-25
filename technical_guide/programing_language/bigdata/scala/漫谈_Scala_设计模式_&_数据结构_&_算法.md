@@ -724,16 +724,77 @@ none
 - 5.不要覆盖基类中已经实现的方法.
 
 
-
-
 #### 1.5.5 单例模式
+> 1.单例模式是指 : 保证在整个软件系统中,某个类只能存在一个对象实例.
+> 
+> 2.单例模式的应用场景
+> 
+> 比如Hibernate的SessionFactory,它充当数据存储源的代理,并负责创建Session对象,SessionFactory并不是轻量级,一般情况下一个项目通常只需要一个SessionFactory就够,这是使用到单例模式应用场景.
+> 
+> 3.单例模式实例
+> Scala中没有静态的概念,所以为了实现Java中单例模式的功能,可以直接采用类对象(即伴生对象)方式构建单例对象.
+- 1.创建单例模式 - 懒汉式
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d04
 
+/**
+  * 单例模式 - 懒汉式
+  */
+object SingleTonFlow {
+  def main(args: Array[String]): Unit = {
+    val insance01: SingleTon = SingleTon.getInsance
+    val insance02: SingleTon = SingleTon.getInsance
 
+    if (insance01 == insance02) {
+      println("value equal")
+    }
+  }
+}
 
+// SingleTon 构造方法私有化
+class SingleTon private() {}
 
+// 懒汉式
+object SingleTon {
+  private var s: SingleTon = null
 
+  def getInsance = {
+    if (s == null) {
+      s = new SingleTon
+    }
+    s
+  }
+}
+```
 
+- 2.创建单例模式 - 饿汉模式
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d04
 
+/**
+  * 单例模式 - 饿汉式
+  */
+object SingleTonFlows {
+  def main(args: Array[String]): Unit = {
+    val insance01: SingleTons = SingleTons.getInsance
+    val insance02: SingleTons = SingleTons.getInsance
+    if (insance01 == insance02) {
+      println("value equal")
+    }
+  }
+}
+
+// SingleTons 构造方法私有化
+class SingleTons private() {}
+
+// 饿汉式
+object SingleTons {
+  private val s: SingleTons = new SingleTons
+  def getInsance = {
+    s
+  }
+}
+```
 
 
 

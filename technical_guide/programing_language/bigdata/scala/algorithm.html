@@ -870,6 +870,82 @@
 
 <h4 id="155-单例模式">1.5.5 单例模式</h4>
 
+<blockquote>
+  <p>1.单例模式是指 : 保证在整个软件系统中,某个类只能存在一个对象实例.</p>
+  
+  <p>2.单例模式的应用场景</p>
+  
+  <p>比如Hibernate的SessionFactory,它充当数据存储源的代理,并负责创建Session对象,SessionFactory并不是轻量级,一般情况下一个项目通常只需要一个SessionFactory就够,这是使用到单例模式应用场景.</p>
+  
+  <p>3.单例模式实例 <br>
+  Scala中没有静态的概念,所以为了实现Java中单例模式的功能,可以直接采用类对象(即伴生对象)方式构建单例对象.</p>
+  
+  <ul><li><p>1.创建单例模式 - 懒汉式</p></li>
+  </ul>
+</blockquote>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d04
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 单例模式 - 懒汉式</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">SingleTonFlow</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">val</span> insance01: <span class="hljs-type">SingleTon</span> = <span class="hljs-type">SingleTon</span>.getInsance
+</div><div class="hljs-line">    <span class="hljs-keyword">val</span> insance02: <span class="hljs-type">SingleTon</span> = <span class="hljs-type">SingleTon</span>.getInsance
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (insance01 == insance02) {
+</div><div class="hljs-line">      println(<span class="hljs-string">"value equal"</span>)
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">// SingleTon 构造方法私有化</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SingleTon</span> <span class="hljs-title">private</span>(<span class="hljs-params"></span>) </span>{}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">// 懒汉式</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">SingleTon</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> s: <span class="hljs-type">SingleTon</span> = <span class="hljs-literal">null</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getInsance</span> </span>= {
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (s == <span class="hljs-literal">null</span>) {
+</div><div class="hljs-line">      s = <span class="hljs-keyword">new</span> <span class="hljs-type">SingleTon</span>
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    s
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>2.创建单例模式 - 饿汉模式</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d04
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 单例模式 - 饿汉式</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">SingleTonFlows</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">val</span> insance01: <span class="hljs-type">SingleTons</span> = <span class="hljs-type">SingleTons</span>.getInsance
+</div><div class="hljs-line">    <span class="hljs-keyword">val</span> insance02: <span class="hljs-type">SingleTons</span> = <span class="hljs-type">SingleTons</span>.getInsance
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (insance01 == insance02) {
+</div><div class="hljs-line">      println(<span class="hljs-string">"value equal"</span>)
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">// SingleTons 构造方法私有化</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SingleTons</span> <span class="hljs-title">private</span>(<span class="hljs-params"></span>) </span>{}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">// 饿汉式</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">SingleTons</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-keyword">private</span> <span class="hljs-keyword">val</span> s: <span class="hljs-type">SingleTons</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">SingleTons</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getInsance</span> </span>= {
+</div><div class="hljs-line">    s
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 
 
