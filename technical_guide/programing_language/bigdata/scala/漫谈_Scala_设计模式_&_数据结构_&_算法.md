@@ -387,6 +387,176 @@ GreenTeaMustardPizza boxing ..
 none
 ```
 
+
+#### 1.5.3 工厂方法模式
+> 实例需求 : 披萨项目新的需求,客户在点披萨时,可以点不同口味的披萨,比如欧式奶酪pizza、欧式胡椒pizza或者是美式奶酪pizza、美式胡椒pizza.
+> 
+> 思路1 : 使用简单工厂模式,创建不同的简单工厂类,比如XXXPizzaSimpleFactory、XXXPizzaSimpleFactory等等.
+> 
+> 思路2 : 使用工厂方法模式
+
+##### 1.5.3.1 工厂方法模式介绍
+> 工厂方法模式设计方案 : 将披萨项目的实例化功能抽象成抽象方法,在不同口味披萨子类中具体实现.
+> 
+> 工厂方法模式 : 定义创建对象抽象方法,由子类决定要实例化的类,工厂方法模式将对象的实例化推迟到子类.
+> 
+> 工厂方法模式实例
+- 1.创建抽象Pizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d02.t001
+
+abstract class Pizza {
+
+  var name: String = _
+
+  //假定每种pizza准备原材料不同,因此做为抽象函数
+  def prepare() //抽象方法
+
+  def cut(): Unit = {
+    println(this.name + " cutting ..")
+  }
+
+  def bake(): Unit = {
+    println(this.name + " baking ..")
+  }
+
+  def box(): Unit = {
+    println(this.name + " boxing ..")
+  }
+}
+```
+
+- 2.创建AmericanCheesePizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d02.t001
+
+/**
+  * 美式奶酪披萨
+  */
+class AmericanCheesePizza extends Pizza {
+  // 复写prepare方法
+  override def prepare(): Unit = {
+    this.name = "AmericanCheesePizza"
+    println(this.name + " prepare")
+  }
+}
+```
+
+- 3.创建AmericanPepperPizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d02.t001
+
+/**
+  * 美式胡椒披萨
+  */
+class AmericanPepperPizza extends Pizza {
+  // 复写prepare方法
+  override def prepare(): Unit = {
+    this.name = "AmericanPepperPizza"
+    println(this.name + " prepare")
+  }
+}
+```
+
+- 4.创建OtherPizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d02.t002
+
+import com.geekparkhub.core.scala.designpatterns.d02.t001
+import com.geekparkhub.core.scala.designpatterns.d02.t001.Pizza
+
+import scala.io.StdIn
+import scala.util.control.Breaks._
+
+/**
+  * 其他披萨 抽象类
+  */
+abstract class OtherPizza {
+  var orderType: String = null
+  var pizza: t001.Pizza = null
+  breakable {
+    do {
+      println()
+      println("<使用工厂方法模式 构建披萨> - 请输入pizza类型")
+      orderType = StdIn.readLine()
+      pizza = createPizza(orderType)
+      if (pizza == null) {
+        break()
+      }
+      this.pizza.prepare()
+      this.pizza.bake()
+      this.pizza.cut()
+      this.pizza.box()
+    } while (true)
+  }
+
+  // 定义抽象方法,让子类实现创建披萨的抽象方法
+  def createPizza(pame: String): Pizza
+}
+
+// 半生对象
+object PizzaFlow {
+  def main(args: Array[String]): Unit = {
+    new AmericanOtherPizza
+  }
+}
+```
+
+- 5.创建AmericanOtherPizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d02.t002
+
+import com.geekparkhub.core.scala.designpatterns.d02.t001.{AmericanCheesePizza, AmericanPepperPizza, Pizza}
+
+/**
+  * 美式披萨实现类
+  */
+class AmericanOtherPizza extends OtherPizza {
+  // 子类具体实现OtherPizza方法
+  override def createPizza(pame: String): Pizza = {
+    var pizza: Pizza = null
+    if (pame.equals("AmericanCheesePizza")) {
+      // 如果相等则创建AmericanCheesePizza
+      pizza = new AmericanCheesePizza
+    } else if (pame.equals("AmericanPepperPizza")) {
+      // 如果相等则创建AmericanPepperPizza
+      pizza = new AmericanPepperPizza
+    }
+    return pizza
+  }
+}
+```
+
+- 6.运行程序查看结果
+```
+<使用简单工厂模式 构建披萨> - 请输入pizza类型
+AmericanPepperPizza
+AmericanPepperPizza prepare
+AmericanPepperPizza baking ..
+AmericanPepperPizza cutting ..
+AmericanPepperPizza boxing ..
+
+<使用简单工厂模式 构建披萨> - 请输入pizza类型
+AmericanCheesePizza
+AmericanCheesePizza prepare
+AmericanCheesePizza baking ..
+AmericanCheesePizza cutting ..
+AmericanCheesePizza boxing ..
+
+<使用简单工厂模式 构建披萨> - 请输入pizza类型
+none
+```
+
+
+
+
+
+
+
+
+
+
+
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ## 2. 📖 算法 📖
 ### 2.1 🔖  数据结构介绍 🔖 
