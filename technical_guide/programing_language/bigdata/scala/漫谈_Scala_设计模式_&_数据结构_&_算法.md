@@ -219,7 +219,173 @@ none
 ##### 1.5.2.2 使用简单工厂模式
 > 简单工厂模式设计方案 : 定义一个实例化Pizaa对象的类.封装创建对象的代码.
 
+- 1.创建Pizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.t001
 
+abstract class Pizza {
+
+  var name: String = _
+
+  //假定每种pizza准备原材料不同,因此做为抽象函数
+  def prepare() //抽象方法
+
+  def cut(): Unit = {
+    println(this.name + " cutting ..")
+  }
+
+  def bake(): Unit = {
+    println(this.name + " baking ..")
+  }
+
+  def box(): Unit = {
+    println(this.name + " boxing ..")
+  }
+}
+```
+
+- 2.创建DurianPizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.t001
+
+/**
+  * 榴莲披萨
+  */
+class DurianPizza extends Pizza {
+  // 复写prepare方法
+  override def prepare(): Unit = {
+    this.name = "DurianPizza"
+    println(this.name + " prepare")
+  }
+}
+```
+
+- 3.创建GreenTeaMustardPizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.t001
+
+/**
+  * 绿茶芥末披萨
+  */
+class GreenTeaMustardPizza extends Pizza {
+
+  // 复写prepare方法
+  override def prepare(): Unit = {
+    this.name = "GreenTeaMustardPizza"
+    println(this.name + " prepare")
+  }
+}
+```
+
+- 4.创建MexicanPizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.t001
+
+/**
+  * 墨西哥披萨
+  */
+class MexicanPizza extends Pizza {
+  // 复写prepare方法
+  override def prepare(): Unit = {
+    this.name = "MexicanPizza"
+    println(this.name + "prepare")
+  }
+}
+```
+
+- 5.创建SimpleFactory
+``` scala
+package com.geekparkhub.core.scala.designpatterns.t002
+
+import com.geekparkhub.core.scala.designpatterns.t001.{DurianPizza, GreenTeaMustardPizza, MexicanPizza, Pizza}
+
+/**
+  * 简单工厂
+  */
+object SimpleFactory {
+  // 定义 创建披萨函数
+  def createPizza(pame: String): Pizza = {
+    var pizza: Pizza = null
+    if (pame.equals("GreenTeaMustardPizza")) {
+      // 如果相等则创建 GreenTeaMustardPizza
+      pizza = new GreenTeaMustardPizza
+    } else if (pame.equals("DurianPizza")) {
+      // 如果相等则创建 DurianPizza
+      pizza = new DurianPizza
+    } else if (pame.equals("MexicanPizza")) {
+      // 如果相等则创建 MexicanPizza
+      pizza = new MexicanPizza
+    }
+    return pizza
+  }
+}
+```
+
+- 6.创建OtherPizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.t002
+
+import com.geekparkhub.core.scala.designpatterns.t001.{DurianPizza, GreenTeaMustardPizza, Pizza}
+
+import util.control.Breaks._
+import scala.io.StdIn
+
+/**
+  * 其他披萨
+  */
+class OtherPizza {
+  var orderType: String = _
+  var pizza: Pizza = _
+  breakable {
+    do {
+      println()
+      println("<使用简单工厂模式 构建披萨> - 请输入pizza类型")
+      orderType = StdIn.readLine()
+      pizza = SimpleFactory.createPizza(orderType)
+      if (pizza == null) {
+        break()
+      }
+      this.pizza.prepare()
+      this.pizza.bake()
+      this.pizza.cut()
+      this.pizza.box()
+    } while (true)
+  }
+}
+
+// 创建半生类
+object OtherPizza {
+  def main(args: Array[String]): Unit = {
+    new OtherPizza
+  }
+}
+```
+-7.运行程序查看结果
+```
+<使用简单工厂模式 构建披萨> - 请输入pizza类型
+DurianPizza
+DurianPizza prepare
+DurianPizza baking ..
+DurianPizza cutting ..
+DurianPizza boxing ..
+
+<使用简单工厂模式 构建披萨> - 请输入pizza类型
+MexicanPizza
+MexicanPizzaprepare
+MexicanPizza baking ..
+MexicanPizza cutting ..
+MexicanPizza boxing ..
+
+<使用简单工厂模式 构建披萨> - 请输入pizza类型
+GreenTeaMustardPizza
+GreenTeaMustardPizza prepare
+GreenTeaMustardPizza baking ..
+GreenTeaMustardPizza cutting ..
+GreenTeaMustardPizza boxing ..
+
+<使用简单工厂模式 构建披萨> - 请输入pizza类型
+none
+```
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ## 2. 📖 算法 📖
