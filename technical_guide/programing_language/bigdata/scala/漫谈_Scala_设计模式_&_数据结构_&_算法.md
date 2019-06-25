@@ -83,12 +83,148 @@
 #### 1.5.2 简单工厂 引入实例需求
 > 披萨项目 : 要便于披萨种类的扩展,要便于维护,完成披萨订购功能.
 
+##### 1.5.2.1 使用传统方式完成
+- 1.创建Pizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.t001
+
+abstract class Pizza {
+
+  var name: String = _
+
+  //假定每种pizza准备原材料不同,因此做为抽象函数
+  def prepare() //抽象方法
+
+  def cut(): Unit = {
+    println(this.name + " cutting ..")
+  }
+
+  def bake(): Unit = {
+    println(this.name + " baking ..")
+  }
+
+  def box(): Unit = {
+    println(this.name + " boxing ..")
+  }
+}
+```
+
+- 2.创建DurianPizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.t001
+
+/**
+  * 榴莲披萨
+  */
+class DurianPizza extends Pizza {
+  // 复写prepare方法
+  override def prepare(): Unit = {
+    this.name = "DurianPizza"
+    println(this.name + " prepare")
+  }
+}
+```
+
+-3.创建GreenTeaMustardPizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.t001
+
+/**
+  * 绿茶芥末披萨
+  */
+class GreenTeaMustardPizza extends Pizza {
+
+  // 复写prepare方法
+  override def prepare(): Unit = {
+    this.name = "GreenTeaMustardPizza"
+    println(this.name + " prepare")
+  }
+}
+```
+
+-4.创建OtherPizza
+``` scala
+package com.geekparkhub.core.scala.designpatterns.t002
+
+import com.geekparkhub.core.scala.designpatterns.t001.{DurianPizza, GreenTeaMustardPizza, Pizza}
+
+import util.control.Breaks._
+import scala.io.StdIn
+
+/**
+  * 其他披萨
+  */
+class OtherPizza {
+  var orderType: String = _
+  var pizza: Pizza = _
+  breakable {
+    do {
+      println("<使用传统方式 构建披萨> - 请输入pizza类型")
+      orderType = StdIn.readLine()
+      if (orderType.equals("DurianPizza")) {
+        // 构建DurianPizza
+        this.pizza = new DurianPizza
+      } else if (orderType.equals("GreenTeaMustardPizza")) {
+        // 构建GreenTeaMustardPizza
+        this.pizza = new GreenTeaMustardPizza
+      } else {
+        println("退出程序....")
+        break()
+      }
+      this.pizza.prepare()
+      this.pizza.bake()
+      this.pizza.cut()
+      this.pizza.box()
+    } while (true)
+  }
+}
+
+// 创建半生类
+object OtherPizza {
+  def main(args: Array[String]): Unit = {
+    new OtherPizza
+  }
+}
+```
+
+-5.运行程序并查看结果
+```
+<使用简单工厂模式 构建披萨> - 请输入pizza类型
+GreenTeaMustardPizza
+GreenTeaMustardPizza prepare
+GreenTeaMustardPizza baking ..
+GreenTeaMustardPizza cutting ..
+GreenTeaMustardPizza boxing ..
+<使用简单工厂模式 构建披萨> - 请输入pizza类型
+DurianPizza
+DurianPizza prepare
+DurianPizza baking ..
+DurianPizza cutting ..
+DurianPizza boxing ..
+<使用简单工厂模式 构建披萨> - 请输入pizza类型
+none
+退出程序....
+```
+
+-6.使用传统方式优缺点
+> 1.优点是比较好理解,简单易操作.
+> 
+> 2.缺点是违反了设计模式的ocp原则,即对扩展开放,对修改关闭,即当给类增加新功能时,尽量不修改代码,或者尽可能少修改代码.
+
+-7.改进的思路分析
+> 分析 : 修改代码可以接受,但是如果在其它的地方也有创建Pizza的代码,就意味着也需要修改,而创建Pizza的代码,往往有多处.
+> 
+> 思路 : 把创建Pizza对象封装到一个类中,这样有新的Pizza种类时,只需要修改该类即可,其它有创建到Pizza对象的代码就不需要修改.
+
+##### 1.5.2.2 使用简单工厂模式
+> 简单工厂模式设计方案 : 定义一个实例化Pizaa对象的类.封装创建对象的代码.
 
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ## 2. 📖 算法 📖
-
+### 2.1 🔖  数据结构介绍 🔖 
+### 2.2 🔖 数据结构和算法的关系 🔖 
 
 ## 3. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
