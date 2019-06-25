@@ -724,7 +724,7 @@ none
 - 5.不要覆盖基类中已经实现的方法.
 
 
-#### 1.5.5 单例模式
+### 1.6 单例模式
 > 1.单例模式是指 : 保证在整个软件系统中,某个类只能存在一个对象实例.
 > 
 > 2.单例模式的应用场景
@@ -797,11 +797,279 @@ object SingleTons {
 ```
 
 
+### 1.7 装饰者模式
+> 1.实例需求 : 
+> 咖啡馆订单系统项目
+> 咖啡种类 - 单品咖啡 : 意大利浓咖啡、暗黑系咖啡、美式咖啡、无糖咖啡
+> 调味品 : 牛奶 / 冰糖 / 巧克力 / 砂糖
+> 要求在扩展新品咖啡种类时,具有良好扩展性、修改方便、维护方便.
+> 使用面向对象来计算不同种类咖啡费用,可以选单品咖啡,也可以单品咖啡+调味品组合.
+> 
+> 2.装饰者模式原理
+> 装饰者模式就像打包快递,装饰者模式分为主体和包装.
+> (Component 主体)比如 : 陶瓷/衣服 , (Decorator 包装)比如 : 报纸填充/塑料泡沫/纸板.
+> 
+> 3.装饰者模式定义
+> 装饰者模式 : 动态的将新功能附加到对象上,在对象功能扩展方面,它比继承更有弹性,装饰者模式也体现了开闭原则(OCP).
+> 
+> 4.装饰者模式咖啡订单实例
+- 1.创建Drink
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d05.t01
 
+/**
+  * 饮品 抽象类
+  */
+abstract class Drink {
+  // 饮品描述
+  var description = ""
+  // 饮品价格
+  private var price = 0.0f
 
+  // 定义价格计算 抽象方法
+  def cost(): Float
 
+  def setDescription(description: String): Unit = {
+    this.description = description
+  }
 
+  def getDescription(): String = {
+    description + " 价格: " + this.getPrice()
+  }
 
+  def getPrice(): Float = {
+    price
+  }
+
+  def setPrice(price: Float): Unit = {
+    this.price = price
+  }
+}
+```
+
+- 2.创建Coffee
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d05.t02
+
+import com.geekparkhub.core.scala.designpatterns.d05.t01.Drink
+
+/**
+  * 饮品 咖啡缓冲扩展类
+  */
+class Coffee extends Drink {
+  override def cost(): Float = {
+    super.getPrice()
+  }
+}
+```
+
+- 3.创建ItalianEspresso
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d05.t02
+
+/**
+  * 意大利浓咖啡
+  */
+class ItalianEspresso extends Coffee {
+  // 设置咖啡描述
+  super.setDescription("<ItalianEspresso | 意大利浓咖啡>")
+  // 设置咖啡价格
+  super.setPrice(50.2f)
+}
+```
+
+- 4.创建DarkCoffee
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d05.t02
+
+/**
+  * 暗黑系咖啡
+  */
+class DarkCoffee extends Coffee {
+  // 设置咖啡描述
+  super.setDescription("<Dark Coffee | 暗黑系咖啡>")
+  // 设置咖啡价格
+  super.setPrice(110.6f)
+}
+```
+
+- 5.创建AmericanCoffee
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d05.t02
+
+/**
+  * 美式咖啡
+  */
+class AmericanCoffee extends Coffee {
+  // 设置咖啡描述
+  super.setDescription("<American Coffee | 美式咖啡>")
+  // 设置咖啡价格
+  super.setPrice(45.6f)
+}
+```
+
+- 6.创建SugarFreeCoffee
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d05.t02
+
+/**
+  * 无糖咖啡
+  */
+class SugarFreeCoffee extends Coffee {
+  // 设置咖啡描述
+  super.setDescription("<SugarFreeCoffee | 无糖咖啡>")
+  // 设置咖啡价格
+  super.setPrice(32.2f)
+}
+```
+
+- 7.创建Decorator
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d05.t03
+
+import com.geekparkhub.core.scala.designpatterns.d05.t01.Drink
+
+/**
+  * Decorator 装饰者
+  */
+class Decorator extends Drink {
+
+  // obj既是被装饰的Drink对象
+  var obj: Drink = null
+
+  // 定义obj辅助构造器
+  def this(obj: Drink) {
+    this
+    this.obj = obj
+  }
+
+  // 定义价格方法 使用递归方式计算价格总数
+  override def cost(): Float = {
+    super.getPrice() + obj.cost()
+  }
+
+  // 定义商品描述 使用递归方式获取尚商品信息
+  override def getDescription(): String = {
+    super.getDescription() + " && " + obj.getDescription()
+  }
+}
+```
+
+- 8.创建Milk
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d05.t03
+
+import com.geekparkhub.core.scala.designpatterns.d05.t01.Drink
+
+/**
+  * 调味品 : 牛奶
+  * 主构造器 参数 : Drink
+  */
+class Milk(obj: Drink) extends Decorator(obj) {
+  // 设置调味品描述
+  setDescription("<Milk | 牛奶>")
+  // 设置调味品价格
+  setPrice(5.6f)
+}
+```
+
+- 9.创建Chocolate
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d05.t03
+
+import com.geekparkhub.core.scala.designpatterns.d05.t01.Drink
+
+/**
+  * 调味品 : 巧克力
+  * 主构造器 参数 : Drink
+  */
+class Chocolate(obj:Drink) extends Decorator(obj){
+  // 设置调味品描述
+  setDescription("<Chocolate | 巧克力>")
+  // 设置调味品价格
+  setPrice(15.6f)
+}
+```
+
+- 10.创建GranulatedSugar
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d05.t03
+
+import com.geekparkhub.core.scala.designpatterns.d05.t01.Drink
+
+/**
+  * 调味品 : 砂糖
+  * 主构造器 参数 : Drink
+  */
+class GranulatedSugar(obj:Drink) extends Decorator(obj) {
+  // 设置调味品描述
+  setDescription("<GranulatedSugar | 砂糖>")
+  // 设置调味品价格
+  setPrice(3.5f)
+}
+```
+
+- 11.创建CrystalSugar
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d05.t03
+
+import com.geekparkhub.core.scala.designpatterns.d05.t01.Drink
+
+/**
+  * 调味品 : 冰糖
+  */
+class CrystalSugar(obj:Drink) extends Decorator(obj){
+  // 设置调味品描述
+  setDescription("<CrystalSugar | 冰糖>")
+  // 设置调味品价格
+  setPrice(4.5f)
+}
+```
+
+- 12.创建CoffeeRunFlow
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d05
+
+import com.geekparkhub.core.scala.designpatterns.d05.t01.Drink
+import com.geekparkhub.core.scala.designpatterns.d05.t02.{AmericanCoffee, DarkCoffee}
+import com.geekparkhub.core.scala.designpatterns.d05.t03.{Chocolate, Milk}
+
+/**
+  * Coffee Shop 主程序入口
+  */
+object CoffeeRunFlow {
+  def main(args: Array[String]): Unit = {
+    println("++++++++++++++++++++++++++++++++++ Coffee Shop ++++++++++++++++++++++++++++++++++")
+
+    // 单选一杯美式咖啡
+    var americanCoffee: Drink = new AmericanCoffee
+    val CoffeeDescription01: String = americanCoffee.getDescription()
+    val CoffeeCost01: Float = americanCoffee.cost()
+    // 输出描述并计算价格
+    println("CoffeeDescription01 = " + CoffeeDescription01 + " | CoffeeCost01 = " + CoffeeCost01)
+    println()
+    println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+    // 选购一杯暗黑系咖啡+1份牛奶+2块巧克力
+    var darkCoffee: Drink = new DarkCoffee
+    // 1份牛奶
+    darkCoffee = new Milk(darkCoffee)
+    // 2块巧克力
+    darkCoffee = new Chocolate(darkCoffee)
+    darkCoffee = new Chocolate(darkCoffee)
+    // 输出描述并计算价格
+    println("CoffeeDescription02 = " + darkCoffee.getDescription() + " | CoffeeCost02 = " + darkCoffee.cost())
+  }
+}
+```
+- 13.运行程序并查看结果
+```
+++++++++++++++++++++++++++++++++++ Coffee Shop ++++++++++++++++++++++++++++++++++
+CoffeeDescription01 = <American Coffee | 美式咖啡> 价格: 45.6 | CoffeeCost01 = 45.6
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+CoffeeDescription02 = <Chocolate | 巧克力> 价格: 15.6 && <Chocolate | 巧克力> 价格: 15.6 && <Milk | 牛奶> 价格: 5.6 && <Dark Coffee | 暗黑系咖啡> 价格: 110.6 | CoffeeCost02 = 147.40001
+```
 
 
 
