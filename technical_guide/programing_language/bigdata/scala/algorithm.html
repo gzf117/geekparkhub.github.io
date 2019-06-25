@@ -59,27 +59,28 @@
 </li>
 <li><a href="#16-单例模式">1.6 单例模式</a></li>
 <li><a href="#17-装饰者模式">1.7 装饰者模式</a></li>
+<li><a href="#18-观察者模式">1.8 观察者模式</a></li>
 </ul>
 </li>
-<li><a href="#尚未解锁-正在探索中-尽情期待-blog更新-1">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</a></li>
-<li><a href="#2-算法-1">2. 📖 算法 📖</a><ul>
-<li><a href="#21-数据结构介绍-1">2.1 🔖  数据结构介绍 🔖</a></li>
-<li><a href="#22-数据结构和算法的关系-1">2.2 🔖 数据结构和算法的关系 🔖</a></li>
+<li><a href="#尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</a></li>
+<li><a href="#2-算法">2. 📖 算法 📖</a><ul>
+<li><a href="#21-数据结构介绍">2.1 🔖  数据结构介绍 🔖</a></li>
+<li><a href="#22-数据结构和算法的关系">2.2 🔖 数据结构和算法的关系 🔖</a></li>
 </ul>
 </li>
-<li><a href="#3-修仙之道-技术架构迭代-登峰造极之势-1">3. 修仙之道 技术架构迭代 登峰造极之势</a></li>
-<li><a href="#如何对该开源文档进行贡献-1">💡如何对该开源文档进行贡献💡</a><ul>
-<li><a href="#希望每一篇文章都能够对读者们提供帮助与提升这乃是每一位笔者的初衷-1">希望每一篇文章都能够对读者们提供帮助与提升,这乃是每一位笔者的初衷</a></li>
+<li><a href="#3-修仙之道-技术架构迭代-登峰造极之势">3. 修仙之道 技术架构迭代 登峰造极之势</a></li>
+<li><a href="#如何对该开源文档进行贡献">💡如何对该开源文档进行贡献💡</a><ul>
+<li><a href="#希望每一篇文章都能够对读者们提供帮助与提升这乃是每一位笔者的初衷">希望每一篇文章都能够对读者们提供帮助与提升,这乃是每一位笔者的初衷</a></li>
 </ul>
 </li>
-<li><a href="#感谢您的阅读-欢迎您的留言与建议-1">💌感谢您的阅读 欢迎您的留言与建议💌</a><ul>
-<li><a href="#捐助-项目的发展离不开你的支持请开发者喝杯coffee吧-1">捐助 项目的发展离不开你的支持,请开发者喝杯☕Coffee☕吧!</a><ul>
-<li><a href="#致谢-1">致谢：</a></li>
+<li><a href="#感谢您的阅读-欢迎您的留言与建议">💌感谢您的阅读 欢迎您的留言与建议💌</a><ul>
+<li><a href="#捐助-项目的发展离不开你的支持请开发者喝杯coffee吧">捐助 项目的发展离不开你的支持,请开发者喝杯☕Coffee☕吧!</a><ul>
+<li><a href="#致谢">致谢：</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a href="#license-开源协议-1">License 开源协议</a></li>
+<li><a href="#license-开源协议">License 开源协议</a></li>
 </ul>
 </li>
 </ul>
@@ -174,10 +175,14 @@
   <p>披萨项目 : 要便于披萨种类的扩展,要便于维护,完成披萨订购功能.</p>
 </blockquote>
 
+
+
 <h5 id="1521-使用传统方式完成">1.5.2.1 使用传统方式完成</h5>
 
 <ul><li><p>1.创建Pizza</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.t001
 </div><div class="hljs-line"><wbr>
@@ -289,6 +294,8 @@
 
 <p>-5.运行程序并查看结果</p>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="hljs gams"><div class="hljs-line">&lt;使用简单工厂模式 构建披萨&gt; - 请输入pizza类型
 </div><div class="hljs-line">GreenTeaMustardPizza
 </div><div class="hljs-line">GreenTeaMustardPizza prepare
@@ -361,6 +368,8 @@
 <ul><li><p>2.创建DurianPizza</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.t001
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-comment">/**</span>
@@ -377,6 +386,8 @@
 
 <ul><li><p>3.创建GreenTeaMustardPizza</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.t001
 </div><div class="hljs-line"><wbr>
@@ -396,6 +407,8 @@
 <ul><li><p>4.创建MexicanPizza</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.t001
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-comment">/**</span>
@@ -412,6 +425,8 @@
 
 <ul><li><p>5.创建SimpleFactory</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.t002
 </div><div class="hljs-line"><wbr>
@@ -441,6 +456,8 @@
 
 <ul><li><p>6.创建OtherPizza</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.t002
 </div><div class="hljs-line"><wbr>
@@ -482,6 +499,8 @@
 
 <p>-7.运行程序查看结果</p>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="hljs gams"><div class="hljs-line">&lt;使用简单工厂模式 构建披萨&gt; - 请输入pizza类型
 </div><div class="hljs-line">DurianPizza
 </div><div class="hljs-line">DurianPizza prepare
@@ -507,6 +526,8 @@
 </div><div class="hljs-line">none
 </div></code></pre>
 
+
+
 <h4 id="153-工厂方法模式">1.5.3 工厂方法模式</h4>
 
 <blockquote>
@@ -526,7 +547,9 @@
   
   <ul><li><p>1.创建抽象Pizza</p></li>
   </ul>
-</blockquote>
+  
+  </blockquote>
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d02.t001
 </div><div class="hljs-line"><wbr>
@@ -554,6 +577,8 @@
 <ul><li><p>2.创建AmericanCheesePizza</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d02.t001
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-comment">/**</span>
@@ -571,6 +596,8 @@
 <ul><li><p>3.创建AmericanPepperPizza</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d02.t001
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-comment">/**</span>
@@ -587,6 +614,8 @@
 
 <ul><li><p>4.创建OtherPizza</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d02.t002
 </div><div class="hljs-line"><wbr>
@@ -632,6 +661,8 @@
 
 <ul><li><p>5.创建AmericanOtherPizza</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d02.t002
 </div><div class="hljs-line"><wbr>
@@ -699,6 +730,7 @@
   
   </blockquote>
 
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d03.t001
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-keyword">abstract</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Pizza</span> </span>{
@@ -725,6 +757,8 @@
 <ul><li><p>2.创建AmericanCheesePizza</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d03.t001
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-comment">/**</span>
@@ -741,6 +775,8 @@
 
 <ul><li><p>3.创建AmericanPepperPizza</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d03.t001
 </div><div class="hljs-line"><wbr>
@@ -759,6 +795,8 @@
 <ul><li><p>4.创建AbsFactory</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d03.t002
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d03.t001.<span class="hljs-type">Pizza</span>
@@ -774,6 +812,8 @@
 
 <ul><li><p>5.创建AmericanFactory</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d03.t002
 </div><div class="hljs-line"><wbr>
@@ -797,6 +837,8 @@
 
 <ul><li><p>6.创建OtherPizza</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d03.t002
 </div><div class="hljs-line"><wbr>
@@ -843,6 +885,8 @@
 
 <p>-7.运行程序查看结果</p>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="hljs gams"><div class="hljs-line">&lt;使用抽象工厂模式 构建披萨&gt; - 请输入pizza类型
 </div><div class="hljs-line">AmericanPepperPizza
 </div><div class="hljs-line">AmericanPepperPizza prepare
@@ -869,6 +913,8 @@
 <li><p>5.不要覆盖基类中已经实现的方法.</p></li>
 </ul>
 
+
+
 <h3 id="16-单例模式">1.6 单例模式</h3>
 
 <blockquote>
@@ -883,7 +929,9 @@
   
   <ul><li><p>1.创建单例模式 - 懒汉式</p></li>
   </ul>
-</blockquote>
+  
+  </blockquote>
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d04
 </div><div class="hljs-line"><wbr>
@@ -919,6 +967,8 @@
 
 <ul><li><p>2.创建单例模式 - 饿汉模式</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d04
 </div><div class="hljs-line"><wbr>
@@ -968,8 +1018,8 @@
   
   <ul><li><p>1.创建Drink</p></li>
   </ul>
-  
-  </blockquote>
+</blockquote>
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d05.t01
 </div><div class="hljs-line"><wbr>
@@ -1006,6 +1056,8 @@
 <ul><li><p>2.创建Coffee</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d05.t02
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d05.t01.<span class="hljs-type">Drink</span>
@@ -1023,6 +1075,8 @@
 <ul><li><p>3.创建ItalianEspresso</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d05.t02
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-comment">/**</span>
@@ -1038,6 +1092,8 @@
 
 <ul><li><p>4.创建DarkCoffee</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d05.t02
 </div><div class="hljs-line"><wbr>
@@ -1055,6 +1111,8 @@
 <ul><li><p>5.创建AmericanCoffee</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d05.t02
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-comment">/**</span>
@@ -1070,6 +1128,8 @@
 
 <ul><li><p>6.创建SugarFreeCoffee</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d05.t02
 </div><div class="hljs-line"><wbr>
@@ -1122,6 +1182,8 @@
 <ul><li><p>8.创建Milk</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d05.t03
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d05.t01.<span class="hljs-type">Drink</span>
@@ -1140,6 +1202,8 @@
 
 <ul><li><p>9.创建Chocolate</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d05.t03
 </div><div class="hljs-line"><wbr>
@@ -1160,6 +1224,8 @@
 <ul><li><p>10.创建GranulatedSugar</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d05.t03
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d05.t01.<span class="hljs-type">Drink</span>
@@ -1179,6 +1245,8 @@
 <ul><li><p>11.创建CrystalSugar</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d05.t03
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d05.t01.<span class="hljs-type">Drink</span>
@@ -1196,6 +1264,8 @@
 
 <ul><li><p>12.创建CoffeeRunFlow</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d05
 </div><div class="hljs-line"><wbr>
@@ -1235,6 +1305,8 @@
 <ul><li><p>13.运行程序并查看结果</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="hljs coq"><div class="hljs-line">++++++++++++++++++++++++++++++++++ Coffee Shop ++++++++++++++++++++++++++++++++++
 </div><div class="hljs-line">CoffeeDescription01 = &lt;American Coffee | <span class="hljs-type">美式咖啡&gt; 价格: 45</span><span class="hljs-number">.6</span> | <span class="hljs-type">CoffeeCost01</span> = <span class="hljs-number">45.6</span>
 </div><div class="hljs-line"><wbr>
@@ -1242,23 +1314,276 @@
 </div><div class="hljs-line">CoffeeDescription02 = &lt;Chocolate | <span class="hljs-type">巧克力&gt; 价格: 15</span><span class="hljs-number">.6</span> &amp;&amp; &lt;Chocolate | <span class="hljs-type">巧克力&gt; 价格: 15</span><span class="hljs-number">.6</span> &amp;&amp; &lt;Milk | <span class="hljs-type">牛奶&gt; 价格: 5</span><span class="hljs-number">.6</span> &amp;&amp; &lt;Dark Coffee | <span class="hljs-type">暗黑系咖啡&gt; 价格: 110</span><span class="hljs-number">.6</span> | <span class="hljs-type">CoffeeCost02</span> = <span class="hljs-number">147.40001</span>
 </div></code></pre>
 
-<h2 id="尚未解锁-正在探索中-尽情期待-blog更新-1">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
+
+
+<h3 id="18-观察者模式">1.8 观察者模式</h3>
+
+<blockquote>
+  <p>1.实例需求 : 气象站 <br>
+  气象站可以将每天测量到温度/湿度/气压等等以公告的形式发布. <br>
+  需要设计开放型API,便于其他第三方接入气象站获取数据. <br>
+  提供温度/气压/湿度接口. <br>
+  测量数据更新时,要能实时通知第三方.</p>
+  
+  <p>2.观察者模式原理 <br>
+  观察者模式类似订牛奶业务 <br>
+  牛奶站 = 气象局：Subject <br>
+  用户 = 第三方网站：Observer</p>
+  
+  <p>Subject具有注册/移除/通知等功能. <br>
+  registerObserver 注册 <br>
+  removeObserver 移除 <br>
+  notifyObservers() 通知所有注册用户</p>
+  
+  <p>观察者模式 : 对象之间多对一依赖的一种设计方案,被依赖对象为Subject,依赖对象为Observer,Subject通知Observer变化,比如气象站是Subject,第三方是Observer就形成了多对一.</p>
+  
+  <p>3.观察者模式实例</p>
+  
+  <ul><li><p>1.创建Subject</p></li>
+  </ul>
+</blockquote>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d06.t01
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 气象 接口</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">Subject</span> </span>{
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义注册 抽象方法</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">registerObserver</span></span>(o: <span class="hljs-type">ObServer</span>)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义移除 抽象方法</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">removeObserver</span></span>(o: <span class="hljs-type">ObServer</span>)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义通知 抽象方法</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">notifyObservers</span></span>()
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>2.创建ObServer</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d06.t01
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 第三方 接口</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">ObServer</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义更新数据 抽象方法</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update</span></span>(mTemperatrue: <span class="hljs-type">Float</span>, mPressure: <span class="hljs-type">Float</span>, mHumidity: <span class="hljs-type">Float</span>)
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>3.创建WeatherData</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d06.t01
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> scala.collection.mutable.<span class="hljs-type">ListBuffer</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 定义 天气数据</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">WeatherData</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Subject</span> </span>{
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义温度属性</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> mTemperature: <span class="hljs-type">Float</span> = _
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义气压属性</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> mPressure: <span class="hljs-type">Float</span> = _
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义湿度属性</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> mHumidity: <span class="hljs-type">Float</span> = _
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义集合,用于管理所有观察者</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> mObservers: <span class="hljs-type">ListBuffer</span>[<span class="hljs-type">ObServer</span>] = <span class="hljs-type">ListBuffer</span>()
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义 获取温度方法</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getTemperature</span></span>() = {
+</div><div class="hljs-line">    mTemperature
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义 获取气压方法</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPressure</span></span>() = {
+</div><div class="hljs-line">    mPressure
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义 获取湿度方法</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getHumidity</span></span>() = {
+</div><div class="hljs-line">    mHumidity
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 设置天气变化属性</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setData</span></span>(mTemperature: <span class="hljs-type">Float</span>, mPressure: <span class="hljs-type">Float</span>, mHumidity: <span class="hljs-type">Float</span>) = {
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.mTemperature = mTemperature
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.mPressure = mPressure
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.mHumidity = mHumidity
+</div><div class="hljs-line">    dataChange()
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义数据等新方法</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">dataChange</span></span>() = {
+</div><div class="hljs-line">    <span class="hljs-comment">//当天气变化时通知所有观察者</span>
+</div><div class="hljs-line">    notifyObservers()
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 复写注册方法</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">registerObserver</span></span>(o: <span class="hljs-type">ObServer</span>): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    mObservers.append(o)
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 复写移除方法</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">removeObserver</span></span>(o: <span class="hljs-type">ObServer</span>): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (mObservers.contains(o)){
+</div><div class="hljs-line">      mObservers -= o
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 复写通知方法</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">notifyObservers</span></span>(): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">for</span> (m &lt;- mObservers){
+</div><div class="hljs-line">      m.update(mTemperature,mPressure,mHumidity)
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>4.创建CurrentConditions</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d06.t02
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d06.t01.<span class="hljs-type">ObServer</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 定义气象台 观察者</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CurrentConditions</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ObServer</span></span>{
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义温度属性</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> mTemperature: <span class="hljs-type">Float</span> = _
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义气压属性</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> mPressure: <span class="hljs-type">Float</span> = _
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义湿度属性</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> mHumidity: <span class="hljs-type">Float</span> = _
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义数据展示方法</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">display</span></span>() = {
+</div><div class="hljs-line">    println()
+</div><div class="hljs-line">    println(<span class="hljs-string">"*** Today mTemperature: "</span> + mTemperature + <span class="hljs-string">" ***"</span>)
+</div><div class="hljs-line">    println(<span class="hljs-string">"*** Today mPressure: "</span> + mPressure + <span class="hljs-string">" ***"</span>)
+</div><div class="hljs-line">    println(<span class="hljs-string">"*** Today mHumidity: "</span> + mHumidity + <span class="hljs-string">" ***"</span>)
+</div><div class="hljs-line">    println()
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 复写数据更新方法</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update</span></span>(mTemperatrue: <span class="hljs-type">Float</span>, mPressure: <span class="hljs-type">Float</span>, mHumidity: <span class="hljs-type">Float</span>): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-comment">// 更新气象数据</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.mTemperature = mTemperatrue
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.mPressure = mPressure
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.mHumidity = mHumidity
+</div><div class="hljs-line">    <span class="hljs-comment">// 调用数据展示方法</span>
+</div><div class="hljs-line">    display()
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>5.ThirdParty</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d06.t02
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d06.t01.<span class="hljs-type">ObServer</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 定义 第三方 观察者</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ThirdParty</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ObServer</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义温度属性</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> mTemperature: <span class="hljs-type">Float</span> = _
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义气压属性</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> mPressure: <span class="hljs-type">Float</span> = _
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义湿度属性</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">private</span> <span class="hljs-keyword">var</span> mHumidity: <span class="hljs-type">Float</span> = _
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义数据展示方法</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">display</span></span>() = {
+</div><div class="hljs-line">    println()
+</div><div class="hljs-line">    println(<span class="hljs-string">"*** ThirdParty Today mTemperature: "</span> + mTemperature + <span class="hljs-string">" ***"</span>)
+</div><div class="hljs-line">    println(<span class="hljs-string">"*** ThirdParty Today mPressure: "</span> + mPressure + <span class="hljs-string">" ***"</span>)
+</div><div class="hljs-line">    println(<span class="hljs-string">"*** ThirdParty Today mHumidity: "</span> + mHumidity + <span class="hljs-string">" ***"</span>)
+</div><div class="hljs-line">    println()
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 复写数据更新方法</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">update</span></span>(mTemperatrue: <span class="hljs-type">Float</span>, mPressure: <span class="hljs-type">Float</span>, mHumidity: <span class="hljs-type">Float</span>): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-comment">// 更新气象数据</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.mTemperature = mTemperatrue
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.mPressure = mPressure
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.mHumidity = mHumidity
+</div><div class="hljs-line">    <span class="hljs-comment">// 调用数据展示方法</span>
+</div><div class="hljs-line">    display()
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>6.创建WeatherDataRunFlow</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d06.t01
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d06.t02.{<span class="hljs-type">CurrentConditions</span>, <span class="hljs-type">ThirdParty</span>}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">WeatherDataRunFlow</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">// 创建 天气数据实例</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">val</span> weatherData = <span class="hljs-keyword">new</span> <span class="hljs-type">WeatherData</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">// 创建气象台实例</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">val</span> currentConditions = <span class="hljs-keyword">new</span> <span class="hljs-type">CurrentConditions</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">val</span> thirdParty = <span class="hljs-keyword">new</span> <span class="hljs-type">ThirdParty</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">// 注册</span>
+</div><div class="hljs-line">    weatherData.registerObserver(currentConditions)
+</div><div class="hljs-line">    weatherData.registerObserver(thirdParty)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">// 更新数据</span>
+</div><div class="hljs-line">    weatherData.setData(<span class="hljs-number">30</span>, <span class="hljs-number">160</span>, <span class="hljs-number">35</span>)
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>-7. 运行程序查看结果</p>
+
+<pre class="prettyprint hljs-dark"><code class="hljs asciidoc"><div class="hljs-line"><span class="hljs-bullet">*** </span>Today mTemperature: 30.0 ***
+</div><div class="hljs-line"><span class="hljs-bullet">*** </span>Today mPressure: 160.0 ***
+</div><div class="hljs-line"><span class="hljs-bullet">*** </span>Today mHumidity: 35.0 ***
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-bullet">*** </span>ThirdParty Today mTemperature: 30.0 ***
+</div><div class="hljs-line"><span class="hljs-bullet">*** </span>ThirdParty Today mPressure: 160.0 ***
+</div><div class="hljs-line"><span class="hljs-bullet">*** </span>ThirdParty Today mHumidity: 35.0 **<span class="hljs-strong">*</span>
+</div></code></pre>
+
+<h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 
 
 
-<h2 id="2-算法-1">2. 📖 算法 📖</h2>
+<h2 id="2-算法">2. 📖 算法 📖</h2>
 
 
 
-<h3 id="21-数据结构介绍-1">2.1 🔖  数据结构介绍 🔖</h3>
+<h3 id="21-数据结构介绍">2.1 🔖  数据结构介绍 🔖</h3>
 
 
 
-<h3 id="22-数据结构和算法的关系-1">2.2 🔖 数据结构和算法的关系 🔖</h3>
+<h3 id="22-数据结构和算法的关系">2.2 🔖 数据结构和算法的关系 🔖</h3>
 
 
 
-<h2 id="3-修仙之道-技术架构迭代-登峰造极之势-1">3. 修仙之道 技术架构迭代 登峰造极之势</h2>
+<h2 id="3-修仙之道-技术架构迭代-登峰造极之势">3. 修仙之道 技术架构迭代 登峰造极之势</h2>
 
 
 
@@ -1268,7 +1593,7 @@
 
 
 
-<h2 id="如何对该开源文档进行贡献-1">💡如何对该开源文档进行贡献💡</h2>
+<h2 id="如何对该开源文档进行贡献">💡如何对该开源文档进行贡献💡</h2>
 
 <ol><li rel="1"><p>Blog内容大多是手敲,所以难免会有笔误,你可以帮我找错别字。</p></li>
 <li rel="2"><p>很多知识点我可能没有涉及到,所以你可以对其他知识点进行补充。</p></li>
@@ -1279,13 +1604,13 @@
 
 
 
-<h3 id="希望每一篇文章都能够对读者们提供帮助与提升这乃是每一位笔者的初衷-1">希望每一篇文章都能够对读者们提供帮助与提升,这乃是每一位笔者的初衷</h3>
+<h3 id="希望每一篇文章都能够对读者们提供帮助与提升这乃是每一位笔者的初衷">希望每一篇文章都能够对读者们提供帮助与提升,这乃是每一位笔者的初衷</h3>
 
 <hr>
 
 
 
-<h2 id="感谢您的阅读-欢迎您的留言与建议-1">💌感谢您的阅读 欢迎您的留言与建议💌</h2>
+<h2 id="感谢您的阅读-欢迎您的留言与建议">💌感谢您的阅读 欢迎您的留言与建议💌</h2>
 
 <ul><li><p>FaceBook：<a href="https://www.facebook.com/profile.php?id=100018099483403" target="_blank">JEEP SevenEleven</a></p></li>
 <li><p>Twitter：<a href="https://twitter.com/JEEP7ll" target="_blank">@JEEP7ll</a></p></li>
@@ -1305,7 +1630,7 @@
 
 
 
-<h3 id="捐助-项目的发展离不开你的支持请开发者喝杯coffee吧-1">捐助 项目的发展离不开你的支持,请开发者喝杯☕Coffee☕吧!</h3>
+<h3 id="捐助-项目的发展离不开你的支持请开发者喝杯coffee吧">捐助 项目的发展离不开你的支持,请开发者喝杯☕Coffee☕吧!</h3>
 
 
 
@@ -1313,7 +1638,7 @@
 
 
 
-<h4 id="致谢-1"><code>致谢</code>：</h4>
+<h4 id="致谢"><code>致谢</code>：</h4>
 
 <p><strong>捐助时请备注 UserName</strong></p>
 
@@ -1321,7 +1646,7 @@
 
 
 
-<h2 id="license-开源协议-1">License 开源协议</h2>
+<h2 id="license-开源协议">License 开源协议</h2>
 
 <p><a href="https://github.com/geekparkhub/geekparkhub.github.io/blob/master/LICENSE" target="_blank">Apache License Version 2.0</a></p>
 

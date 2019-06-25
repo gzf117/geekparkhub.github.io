@@ -796,7 +796,6 @@ object SingleTons {
 }
 ```
 
-
 ### 1.7 装饰者模式
 > 1.实例需求 : 
 > 咖啡馆订单系统项目
@@ -1071,8 +1070,247 @@ CoffeeDescription01 = <American Coffee | 美式咖啡> 价格: 45.6 | CoffeeCost
 CoffeeDescription02 = <Chocolate | 巧克力> 价格: 15.6 && <Chocolate | 巧克力> 价格: 15.6 && <Milk | 牛奶> 价格: 5.6 && <Dark Coffee | 暗黑系咖啡> 价格: 110.6 | CoffeeCost02 = 147.40001
 ```
 
+### 1.8 观察者模式
+> 1.实例需求 : 气象站
+> 气象站可以将每天测量到温度/湿度/气压等等以公告的形式发布.
+> 需要设计开放型API,便于其他第三方接入气象站获取数据.
+> 提供温度/气压/湿度接口.
+> 测量数据更新时,要能实时通知第三方.
+> 
+> 2.观察者模式原理
+> 观察者模式类似订牛奶业务
+> 牛奶站 = 气象局：Subject
+> 用户 = 第三方网站：Observer
+> 
+> Subject具有注册/移除/通知等功能.
+> registerObserver 注册
+> removeObserver 移除
+> notifyObservers() 通知所有注册用户
+> 
+> 观察者模式 : 对象之间多对一依赖的一种设计方案,被依赖对象为Subject,依赖对象为Observer,Subject通知Observer变化,比如气象站是Subject,第三方是Observer就形成了多对一.
+> 
+> 3.观察者模式实例
+- 1.创建Subject
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d06.t01
+
+/**
+  * 气象 接口
+  */
+trait Subject {
+
+  // 定义注册 抽象方法
+  def registerObserver(o: ObServer)
+
+  // 定义移除 抽象方法
+  def removeObserver(o: ObServer)
+
+  // 定义通知 抽象方法
+  def notifyObservers()
+}
+```
+
+- 2.创建ObServer
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d06.t01
+
+/**
+  * 第三方 接口
+  */
+trait ObServer {
+  // 定义更新数据 抽象方法
+  def update(mTemperatrue: Float, mPressure: Float, mHumidity: Float)
+}
+```
+
+- 3.创建WeatherData
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d06.t01
+
+import scala.collection.mutable.ListBuffer
+
+/**
+  * 定义 天气数据
+  */
+class WeatherData extends Subject {
+
+  // 定义温度属性
+  private var mTemperature: Float = _
+  // 定义气压属性
+  private var mPressure: Float = _
+  // 定义湿度属性
+  private var mHumidity: Float = _
+
+  // 定义集合,用于管理所有观察者
+  private var mObservers: ListBuffer[ObServer] = ListBuffer()
+
+  // 定义 获取温度方法
+  def getTemperature() = {
+    mTemperature
+  }
+
+  // 定义 获取气压方法
+  def getPressure() = {
+    mPressure
+  }
+
+  // 定义 获取湿度方法
+  def getHumidity() = {
+    mHumidity
+  }
+
+  // 设置天气变化属性
+  def setData(mTemperature: Float, mPressure: Float, mHumidity: Float) = {
+    this.mTemperature = mTemperature
+    this.mPressure = mPressure
+    this.mHumidity = mHumidity
+    dataChange()
+  }
+
+  // 定义数据等新方法
+  def dataChange() = {
+    //当天气变化时通知所有观察者
+    notifyObservers()
+  }
+
+  // 复写注册方法
+  override def registerObserver(o: ObServer): Unit = {
+    mObservers.append(o)
+  }
+
+  // 复写移除方法
+  override def removeObserver(o: ObServer): Unit = {
+    if (mObservers.contains(o)){
+      mObservers -= o
+    }
+  }
+
+  // 复写通知方法
+  override def notifyObservers(): Unit = {
+    for (m <- mObservers){
+      m.update(mTemperature,mPressure,mHumidity)
+    }
+  }
+
+}
+```
+
+- 4.创建CurrentConditions
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d06.t02
+
+import com.geekparkhub.core.scala.designpatterns.d06.t01.ObServer
+
+/**
+  * 定义气象台 观察者
+  */
+class CurrentConditions extends ObServer{
+
+  // 定义温度属性
+  private var mTemperature: Float = _
+  // 定义气压属性
+  private var mPressure: Float = _
+  // 定义湿度属性
+  private var mHumidity: Float = _
+
+  // 定义数据展示方法
+  def display() = {
+    println()
+    println("*** Today mTemperature: " + mTemperature + " ***")
+    println("*** Today mPressure: " + mPressure + " ***")
+    println("*** Today mHumidity: " + mHumidity + " ***")
+    println()
+  }
+
+  // 复写数据更新方法
+  override def update(mTemperatrue: Float, mPressure: Float, mHumidity: Float): Unit = {
+    // 更新气象数据
+    this.mTemperature = mTemperatrue
+    this.mPressure = mPressure
+    this.mHumidity = mHumidity
+    // 调用数据展示方法
+    display()
+  }
+
+}
+```
+
+- 5.ThirdParty
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d06.t02
+
+import com.geekparkhub.core.scala.designpatterns.d06.t01.ObServer
+
+/**
+  * 定义 第三方 观察者
+  */
+class ThirdParty extends ObServer {
+  // 定义温度属性
+  private var mTemperature: Float = _
+  // 定义气压属性
+  private var mPressure: Float = _
+  // 定义湿度属性
+  private var mHumidity: Float = _
+
+  // 定义数据展示方法
+  def display() = {
+    println()
+    println("*** ThirdParty Today mTemperature: " + mTemperature + " ***")
+    println("*** ThirdParty Today mPressure: " + mPressure + " ***")
+    println("*** ThirdParty Today mHumidity: " + mHumidity + " ***")
+    println()
+  }
+
+  // 复写数据更新方法
+  override def update(mTemperatrue: Float, mPressure: Float, mHumidity: Float): Unit = {
+    // 更新气象数据
+    this.mTemperature = mTemperatrue
+    this.mPressure = mPressure
+    this.mHumidity = mHumidity
+    // 调用数据展示方法
+    display()
+  }
+}
+```
+
+- 6.创建WeatherDataRunFlow
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d06.t01
+
+import com.geekparkhub.core.scala.designpatterns.d06.t02.{CurrentConditions, ThirdParty}
+
+object WeatherDataRunFlow {
+  def main(args: Array[String]): Unit = {
+
+    // 创建 天气数据实例
+    val weatherData = new WeatherData
+
+    // 创建气象台实例
+    val currentConditions = new CurrentConditions
+    val thirdParty = new ThirdParty
+
+    // 注册
+    weatherData.registerObserver(currentConditions)
+    weatherData.registerObserver(thirdParty)
+
+    // 更新数据
+    weatherData.setData(30, 160, 35)
+  }
+}
+```
 
 
+-7. 运行程序查看结果
+```
+*** Today mTemperature: 30.0 ***
+*** Today mPressure: 160.0 ***
+*** Today mHumidity: 35.0 ***
+
+
+*** ThirdParty Today mTemperature: 30.0 ***
+*** ThirdParty Today mPressure: 160.0 ***
+*** ThirdParty Today mHumidity: 35.0 ***
+```
 
 
 
