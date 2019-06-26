@@ -7007,7 +7007,45 @@ object GenericFlow03 {
 ```
 
 > 2.上界应用实例 二
-> 
+> scala中上界 测试题(理解上界含义)
+``` scala
+package com.geekparkhub.core.scala.generic
+
+object GenericFlow04 {
+  def main(args: Array[String]): Unit = {
+    biophony(Seq(new Bird, new Bird)) // 说出运行结果
+    biophony(Seq(new Animal, new Animal)) // 说出运行结果
+    biophony(Seq(new Animal, new Bird)) // 说出运行结果
+    biophony(Seq(new Earth, new Earth)) // 说出运行结果
+  }
+  // 定义上界方法
+  def biophony[T <: Animal](things: Seq[T]) = things map (_.sound)
+}
+
+/**
+  * Earth 类
+  */
+class Earth {
+  // 定义方法
+  def sound() {
+    println("hello !")
+  }
+}
+
+class Animal extends Earth {
+  // 重写了Earth sound()方法
+  override def sound() = {
+    println("animal sound")
+  }
+}
+
+class Bird extends Animal {
+  // 将Animal方法重写
+  override def sound() = {
+    print("bird sounds")
+  }
+}
+```
 
 
 ## 7. 修仙之道 技术架构迭代 登峰造极之势
