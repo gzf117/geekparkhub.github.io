@@ -7262,6 +7262,73 @@ class CompareCommt[T <% Ordered[T]](object1: T, object2: T) {
 ```
 
 - 3.视图界定实例 三
+- 说明 : 编写隐式转换函数+视图界定方式,比较两个Persones对象年龄大小.
+- 创建ImplicitFlow
+``` scala
+package com.geekparkhub.core.scala.generic
+
+/**
+  * 定义隐式函数
+  */
+object ImplicitFlow {
+  /**
+    * 定义 隐式conversions函数
+    * 形参为Persones对象
+    * 返回类型为Ordered
+    * @param p
+    * @return
+    */
+  implicit def conversions(p:Persones) = new Ordered[Persones] {
+    // 复写compare方法
+    override def compare(that: Persones): Int = {
+      p.age - that.age
+    }
+  }
+}
+```
+- 创建GenericFlow08
+``` scala
+package com.geekparkhub.core.scala.generic
+
+object GenericFlow08 {
+  def main(args: Array[String]): Unit = {
+    val mac = new Persones("mac", 18)
+    val tom = new Persones("tom", 30)
+    // 引入隐式函数
+    import ImplicitFlow._
+    val res = new CompareCommts(mac,tom)
+    println("res01 = " + res.maxl)
+    println("res02 = " + res.maxi)
+  }
+}
+
+/**
+  * 定义Persones类
+  * @param name
+  * @param age
+  */
+class Persones(val name: String, val age: Int){
+  // 复写toString方法
+  override def toString: String = "name: " + this.name + " , age: " + this.age
+}
+
+/**
+  * 定义 视图界定 方法
+  * Ordered 类似java Comparable接口
+  * `T <% Ordered[T]` T表示传入的对象是Ordered子类型
+  * @param object1
+  * @param object2
+  * @tparam T
+  */
+class CompareCommts[T <% Ordered[T]](object1: T, object2: T) {
+  // Ordered接口提供两种比较方法
+  def maxl = if (object1 > object2) object1 else object2
+  def maxi = if (object1.compareTo(object2) > 0) object1 else object2
+}
+```
+
+
+##### 6.22.4.4 上下文界定 (Context bounds)
 
 
 
