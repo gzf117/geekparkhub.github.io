@@ -6953,9 +6953,61 @@ object GenericFlow02 {
 }
 ```
 
+#### 6.22.4 类型约束 - 上界(Upper Bounds) | 下界(lower bounds)
+> 上界(Upper Bounds)介绍和使用
+> 
+> java中上界 : 
+> 在Java泛型里表示某个类型是A类型的子类型则使用`extends`关键字,这种形式叫upper bounds(上限或上界),语法如下 : `<T extends A> 或用通配符形式：<? extends A>`
+> 
+> scala中上界 : 
+> 在scala里表示某个类型是A类型的子类型,也称上界或上限,使用`<:`关键字,语法如下 : `[T <: A]  或用通配符: [_ <: A]`
+> 
+> 1.上界应用实例 一
+> 编写通用的类,可以进行Int之间/Float之间等实现Comparable接口的值直接的比较.
+> 分别使用传统方法和上界方式完成.
+``` scala
+package com.geekparkhub.core.scala.generic
 
+object GenericFlow03 {
+  def main(args: Array[String]): Unit = {
+    val res01 = new CompareInt(50, 60)
+    println("res01 = " + res01.maxs)
 
+    // Integer类型
+    val res02 = new CompareComm(Integer.valueOf(50), Integer.valueOf(60))
+    println("res02 = " + res02.maxNum)
 
+    // Float类型
+    val res03 = new CompareComm(java.lang.Float.valueOf(50.5f), java.lang.Float.valueOf(60.7f))
+    println("res03 = " + res03.maxNum)
+
+    // 简写方式 内部使用隐式转换
+    val res04 = new CompareComm[java.lang.Float](50.5f, 60.7f)
+    println("res04 = " + res04.maxNum)
+  }
+
+  /**
+    * 使用传统方式
+    *
+    * @param n1
+    * @param n2
+    */
+  class CompareInt(n1: Int, n2: Int) {
+    def maxs = if (n1 > n2) n1 else n2
+  }
+
+  /**
+    * 使用上界方式
+    */
+  class CompareComm[T <: Comparable[T]](obj1: T, obj2: T) {
+    def maxNum = if (obj1.compareTo(obj2) > 0) obj1 else obj2
+  }
+
+}
+```
+
+> 2.上界应用实例 二
+> 
 
 
 ## 7. 修仙之道 技术架构迭代 登峰造极之势
