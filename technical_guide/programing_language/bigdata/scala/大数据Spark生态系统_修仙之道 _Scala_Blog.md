@@ -6895,7 +6895,6 @@ object CollectionFlow032 {
 }
 ```
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 6.22 泛型 & 上下界 & 视图界定 & 上下文界定 
 #### 6.22.1 泛型基本介绍
 > 如果要求函数的参数可以接受任意类型,可以使用泛型,这个类型可以代表任意的数据类型.
@@ -7329,6 +7328,121 @@ class CompareCommts[T <% Ordered[T]](object1: T, object2: T) {
 
 
 ##### 6.22.4.4 上下文界定 (Context bounds)
+> 与view bounds一样 context bounds(上下文界定)也是隐式参数的语法糖.
+> 为语法上的方便引入了”上下文界定”这个概念.
+> 
+> 上下文界定实例
+> 使用上下文界定+隐式参数方式,比较两个Personse对象的年龄大小.
+> 要求内部使用Ordering实现比较.
+> 
+> Ordered和Ordering区别
+> 
+> Ordering继承java中Comparator接口.
+> 
+> Ordered继承java Comparable接口,而在java中的Comparator是一个外部比较器(需要定义一个类来实现比较器),而Comparable则是一个内部比较器,在类内部重载compareTo函数.
+- 创建ImplicitFlow02
+``` scala
+package com.geekparkhub.core.scala.generic
+
+/**
+  * 定义隐式值
+  */
+object ImplicitFlow02 {
+  implicit val comparetor = new Ordering[Personse]{
+    // 复写compare方法
+    override def compare(x: Personse, y: Personse): Int = {
+      x.age - y.age
+    }
+  }
+}
+```
+- 创建GenericFlow09
+``` scala
+package com.geekparkhub.core.scala.generic
+
+object GenericFlow09 {
+  def main(args: Array[String]): Unit = {
+
+    val mac = new Personse("mac", 18)
+    val tom = new Personse("tom", 30)
+
+    // 引入隐式值
+    import ImplicitFlow02._
+
+    // 方式一
+    val res01 = new CompareComm01(mac, tom)
+    println("res01 = " + res01.maxs)
+
+    // 方式二
+    val res02 = new CompareComm02(mac, tom)
+    println("res02 = " + res02.maxs)
+
+    // 方式三
+    val res03 = new CompareComm03(mac,tom)
+    println("res03 = " + res03.maxs)
+  }
+}
+
+/**
+  * 定义Personse类
+  *
+  * @param name
+  * @param age
+  */
+class Personse(val name: String, val age: Int) {
+  // 复写toString方法
+  override def toString: String = "name: " + this.name + " , age: " + this.age
+}
+
+/**
+  * 方式一 定义上下文界方法 实现比较大小
+  * `obj01: T, obj02: T` 既表示接受T类型的对象
+  * `(implicit comparetor: Ordering[T]) ` 既表示隐式参数
+  *
+  * @param obj01
+  * @param obj02
+  * @param `ordering$T`
+  * @param comparetor
+  * @tparam T
+  */
+class CompareComm01[T: Ordering](obj01: T, obj02: T)(implicit comparetor: Ordering[T]) {
+  def maxs = if (comparetor.compare(obj01, obj02) > 0) obj01 else obj02
+}
+
+/**
+  * 方式二 定义上下文界方法 实现比较大小
+  * 将隐式参数嵌入到方法体内
+  *
+  * @param obj03
+  * @param obj04
+  * @tparam T
+  */
+class CompareComm02[T: Ordering](obj03: T, obj04: T) {
+  def maxs = {
+    def function01(implicit result01: Ordering[T]) = result01.compare(obj03, obj04)
+    if (function01 > 0) obj03 else obj04
+  }
+}
+
+/**
+  * 方式三 定义上下文界方法 实现比较大小
+  * 使用implicitly语法糖,最简单(推荐使用)
+  * @param obj05
+  * @param obj06
+  * @tparam T
+  */
+class CompareComm03[T: Ordering](obj05: T, obj06: T) {
+  def maxs = {
+    val value: Ordering[T] = implicitly[Ordering[T]]
+    println("hashCode = " + value.hashCode())
+    if (value.compare(obj05, obj06) > 0) obj05 else obj06
+  }
+}
+```
+
+#### 6.22.5 协变 & 逆变 & 不变
+
+
 
 
 
