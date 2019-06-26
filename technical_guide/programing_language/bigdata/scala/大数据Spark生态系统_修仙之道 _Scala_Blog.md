@@ -7179,6 +7179,92 @@ scala>
 ```
 
 ##### 6.22.4.3 视图界定 (View bounds)
+> `<%`既表示视图界定,它比`<:`适用范围更广,除了支持所有子类型,还允许隐式转换类型.
+> 
+> `<%`除了方法使用之外,class声明类型参数时也可使用: `class A[T <% Int]`
+> 
+> ```
+> def method [A <% B](arglist): R = ...
+> 等价于
+> def method [A](arglist)(implicit viewAB: A => B): R = ...
+> 或等价于
+> implicit def conver(a:A): B = …
+> ```
+- 1.视图界定实例 一
+- 说明 : 使用视图界定会将类型隐式转换
+``` scala
+package com.geekparkhub.core.scala.generic
+
+object GenericFlow06 {
+  def main(args: Array[String]): Unit = {
+    val res01 = new CompareComms(50, 60)
+    val res02 = new CompareComms(50.5f, 60.7f)
+    println("res01 = " + res01.max)
+    println("res02 = " + res02.max)
+  }
+}
+
+/**
+  * 定义 视图界定 方法
+  * 使用视图界定会将类型隐式转换
+  * @param obj1
+  * @param onj2
+  * @tparam T
+  */
+class CompareComms[T <% Comparable[T]](obj1: T, onj2: T) {
+  def max = if (obj1.compareTo(onj2) > 0) obj1 else onj2
+}
+```
+
+- 2.视图界定实例 二
+- 说明 : 使用视图界定方式,比较两个Persons对象年龄大小
+``` scala
+package com.geekparkhub.core.scala.generic
+
+object GenericFlow07 {
+  def main(args: Array[String]): Unit = {
+    val mac = new Persons("mac", 18)
+    val tom = new Persons("tom", 20)
+    val res = new CompareCommt(mac, tom)
+    println("res01 = " + res.maxl)
+    println("res02 = " + res.maxi)
+  }
+}
+
+/**
+  * 定义Persons类并继承Ordered接口
+  * 可以根据需求重写Ordered提供的方法
+  * @param name
+  * @param age
+  */
+class Persons(val name: String, val age: Int) extends Ordered[Persons] {
+  // 复写compare方法
+  override def compare(that: Persons): Int = this.age - that.age
+
+  // 复写toString方法
+  override def toString: String = "name: " + this.name + " , age: " + this.age
+}
+
+/**
+  * 定义 视图界定 方法
+  * Ordered 类似java Comparable接口
+  * `T <% Ordered[T]` T表示传入的对象是Ordered子类型
+  *
+  * @param object1
+  * @param object2
+  * @tparam T
+  */
+class CompareCommt[T <% Ordered[T]](object1: T, object2: T) {
+  // Ordered接口提供两种比较方法
+  def maxl = if (object1 > object2) object1 else object2
+  def maxi = if (object1.compareTo(object2) > 0) object1 else object2
+}
+```
+
+- 3.视图界定实例 三
+
+
+
 
 
 
