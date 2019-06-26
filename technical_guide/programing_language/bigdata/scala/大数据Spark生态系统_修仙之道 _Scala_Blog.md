@@ -6896,6 +6896,68 @@ object CollectionFlow032 {
 ```
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+### 6.22 泛型 & 上下界 & 视图界定 & 上下文界定 
+#### 6.22.1 泛型基本介绍
+> 如果要求函数的参数可以接受任意类型,可以使用泛型,这个类型可以代表任意的数据类型.
+> 
+> 例如List,在创建List 时,可以传入整型/字符串/浮点数等等任意类型,那是因为List在类定义时引用了泛型,比如在Java中:`public interface List<E> extends Collection<E>`
+
+#### 6.22.2 Scala泛型实例 一
+> 要求使用泛型来完成设计,编写Message类,不能使用Any
+> 可以构建Int类型的Message,String类型的Message.
+``` scala
+package com.geekparkhub.core.scala.generic
+
+object GenericFlow {
+  def main(args: Array[String]): Unit = {
+    val intMes = new IntMes(99)
+    val stringMes = new StringMes("mes02")
+    println("intMes = " + intMes)
+    println("stringMes = " + stringMes)
+  }
+}
+
+/**
+  * 定义抽象类
+  *
+  * @param t
+  * @tparam T
+  */
+abstract class Message[T](t: T) {
+  def get: T = t
+}
+
+// 定义整型类
+class IntMes[Int](n1: Int) extends Message(n1)
+
+// 定义字符类型
+class StringMes(str1: String) extends Message(str1)
+```
+
+#### 6.22.3 Scala泛型实例 二
+> 定义一个函数,可以获取各种类型,List的中间index的值,使用泛型完成
+``` scala
+package com.geekparkhub.core.scala.generic
+
+object GenericFlow02 {
+  def main(args: Array[String]): Unit = {
+    val list001 = List("q", "w", "e")
+    val list002 = List(1, 3, 5)
+    println("list001 = " + midList(list001))
+    println("list002 = " + midList(list002))
+  }
+
+  def midList[E](l: List[E]): E = {
+    l(l.length / 2)
+  }
+}
+```
+
+
+
+
+
+
 ## 7. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
@@ -6945,6 +7007,7 @@ object CollectionFlow032 {
 |1 | Object | WeChatPay |  5RMB | 一杯可乐 | 
 |2| 泰迪熊看月亮  | AliPay |  20RMB  | 一杯咖啡 | 
 |3| 修仙道长  | WeChatPay |  10RMB | 两杯可乐 | 
+
 
 
 ## License 开源协议
