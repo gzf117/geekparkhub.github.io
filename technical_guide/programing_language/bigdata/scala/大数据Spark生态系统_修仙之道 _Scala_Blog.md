@@ -208,8 +208,8 @@ package com.geekparkhub.core.scala.quickstart
   * GeekParkHub | 极客实验室
   * Website | https://www.geekparkhub.com/
   * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
-  * HackerParkHub | 黑客公园枢纽
-  * Website | https://www.hackerparkhub.com/
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
   * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
   * GeekDeveloper : JEEP-711
   *
@@ -242,7 +242,7 @@ package com.geekparkhub.core.scala.decompile;
  * GeekParkHub | 极客实验室
  * Website | https://www.geekparkhub.com/
  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
- * HackerParkHub | 黑客公园枢纽
+ * HackerParkHub | 黑客公园
  * Website | https://www.hackerparkhub.org/
  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
  * GeekDeveloper : JEEP-711
@@ -311,7 +311,7 @@ package com.geekparkhub.core.scala.demo
   * GeekParkHub | 极客实验室
   * Website | https://www.geekparkhub.com/
   * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
-  * HackerParkHub | 黑客公园枢纽
+  * HackerParkHub | 黑客公园
   * Website | https://www.hackerparkhub.org/
   * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
   * GeekDeveloper : JEEP-711
@@ -468,9 +468,9 @@ Scala 变量使用说明
 
 
 ### 6.8 Scala 数据类型
-- 1.Scala与Java有着相同的数据类型,在Scala中数据类型都是对象,也就是说Scala没有Hava中的原生类型.
+- 1.Scala与Java有着相同的数据类型,在Scala中数据类型都是对象,也就是说Scala没有Java中的原生类型.
 - 2.Scala数据类型分为两大类`AnyVal(值类型)`和`AnyRef(引用类型)`,注意:不管是AnyVal还是AnyRef都是对象.
-- 3.相对于java的类型系统,scala要复杂些,也正是这复杂多变的类型系统才让面向对象编程和函数式编程完美的融合在一起
+- 3.相对于java类型系统,scala要复杂些,也正是这复杂多变的类型系统才让面向对象编程和函数式编程完美的融合在一起.
 
 #### 6.8.1 Scala 数据类型体系
 ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/scala/start_004.jpg)
@@ -646,7 +646,7 @@ var t2 = s + b //ok,使用类型推导
 
 ##### 6.8.8.6 标识符命名规范
 ###### 6.8.8.6.1 `标识符概念`
-- 1.Scala 对各种变量、方法、函数等命名时使用的字符序列称为标识符
+- 1.Scala对各种变量、方法、函数等命名时使用的字符序列称为标识符
 - 2.凡是自己可以起名字的地方都叫标识符
 
 ###### 6.8.8.6.2 `标识符命名规则`
@@ -1258,20 +1258,29 @@ object DemoTest009 {
 }
 ```
 #### 6.11.4 函数注意事项
-- 1.函数的形参列表可以是多个,如果函数没有形参,调用时可以不带()
-- 2.形参列表和返回值列表的数据类型可以是值类型和引用类型.
-- 3.Scala中的函数可以根据函数体最后一行代码自行推断函数返回值类型,那么在这种情况下,return关键字可以省略.
-- 4.因为Scala可以自行推断,所以在省略return关键字的场合,返回值类型也可以省略.
-- 5.如果函数明确使用return关键字,那么函数返回就不能使用自行推断了,这时要明确写成: 返回类型=,当然如果什么都不写,即使有return返回值为()
-- 6.如果函数明确声明无返回值(声明Unit),那么函数体中即使使用return关键字也不会有返回值.
-- 7.如果明确函数无返回值或不确定返回值类型,那么返回值类型可以省略或声明为Any
-- 8.Scala语法中任何的语法结构都可以嵌套其他语法结构(灵活),即函数中可以再声明/定义函数,类中可以再声明类,方法中可以再声明/定义方法.
-- 9.Scala函数的形参,在声明参数时,直接赋初始值(默认值),这时调用函数时,如果没有指定实参,则会使用默认值,如果指定了实参,则实参会覆盖默认值.
-- 10.如果函数存在多个参数,每一个参数都可以设定默认值,那么传递的参数到底是覆盖默认值,还是赋值给没有默认值的参数,就不确定了(默认按照声明顺序[从左到右]),在这种情况下,可以采用带名参数.
-- 11.递归函数未执行之前是无法推断出来结果类型,在使用时必须有明确的返回值类型
-- 12.Scala函数支持可变参数.
-- 13
-
+> 1.函数的形参列表可以是多个,如果函数没有形参,调用时可以不带()
+> 
+> 2.形参列表和返回值列表的数据类型可以是值类型和引用类型.
+> 
+> 3.Scala中的函数可以根据函数体最后一行代码自行推断函数返回值类型,那么在这种情况下,return关键字可以省略.
+> 
+> 4.因为Scala可以自行推断,所以在省略return关键字的场合,返回值类型也可以省略.
+> 
+> 5.如果函数明确使用return关键字,那么函数返回就不能使用自行推断了,这时要明确写成: 返回类型=,当然如果什么都不写,即使有return返回值为()
+> 
+> 6.如果函数明确声明无返回值(声明Unit),那么函数体中即使使用return关键字也不会有返回值.
+> 
+> 7.如果明确函数无返回值或不确定返回值类型,那么返回值类型可以省略或声明为Any
+> 
+> 8.Scala语法中任何的语法结构都可以嵌套其他语法结构(灵活),即函数中可以再声明/定义函数,类中可以再声明类,方法中可以再声明/定义方法.
+> 
+> 9.Scala函数的形参,在声明参数时,直接赋初始值(默认值),这时调用函数时,如果没有指定实参,则会使用默认值,如果指定了实参,则实参会覆盖默认值.
+> 
+> 10.如果函数存在多个参数,每一个参数都可以设定默认值,那么传递的参数到底是覆盖默认值,还是赋值给没有默认值的参数,就不确定了(默认按照声明顺序[从左到右]),在这种情况下,可以采用带名参数.
+> 
+> 11.递归函数未执行之前是无法推断出来结果类型,在使用时必须有明确的返回值类型.
+> 
+> 12.Scala函数支持可变参数.
 
 #### 6.11.5 过程
 - `基本介绍`
@@ -1382,13 +1391,19 @@ object DemoTest011 {
 }
 ```
 ##### 6.11.7.4 Scala异常处理小结
-- 1.将可疑代码封装在try块中,在try块之后使用了一个catch处理程序来捕获异常,如果发生任何异常,catch处理程序将处理它,程序将不会异常终止.
-- 2.Scala异常的工作机制和Java一样,但是Scala没有“checked(编译期)”异常,即Scala没有编译异常概念,异常都是在运行时捕获处理.
-- 3.用throw关键字,抛出一个异常对象,所有异常都是Throwable的子类型,throw表达式是有类型的,就是Nothing,因为Nothing是所有类型的子类型,所以throw表达式可以用在需要类型的地方.
-- 4.在Scala里,借用了模式匹配的思想来做异常的匹配,因此在catch的代码里,是一系列case子句来匹配异常.当匹配上后=> 有多条语句可以换行写,类似java 的switch case x: 代码块
-- 5.异常捕捉的机制与其他语言中一样，如果有异常发生，catch子句是按次序捕捉的。因此，在catch子句中,越具体的异常越要靠前m越普遍的异常越靠后m如果把越普遍的异常写在前m把具体的异常写在后m在scala中也不会报错m但这样是非常不好的编程风格.
-- 6.finally子句用于执行不管是正常处理还是有异常发生时都需要执行的步骤,一般用于对象的清理工作,这点和Java一样.
-- 7.Scala提供了throws关键字来声明异常,可以使用方法定义声明异常,它向调用者函数提供了此方法可能引发此异常的信息,它有助于调用函数处理并将该代码包含在try-catch块中,以避免程序异常终止,在scala中可以使用throws注释来声明异常.
+> 1.将可疑代码封装在try块中,在try块之后使用了一个catch处理程序来捕获异常,如果发生任何异常,catch处理程序将处理它,程序将不会异常终止.
+> 
+> 2.Scala异常的工作机制和Java一样,但是Scala没有“checked(编译期)”异常,即Scala没有编译异常概念,异常都是在运行时捕获处理.
+> 
+> 3.用throw关键字,抛出一个异常对象,所有异常都是Throwable的子类型,throw表达式是有类型的,就是Nothing,因为Nothing是所有类型的子类型,所以throw表达式可以用在需要类型的地方.
+> 
+> 4.在Scala里,借用了模式匹配的思想来做异常的匹配,因此在catch的代码里,是一系列case子句来匹配异常.当匹配上后=> 有多条语句可以换行写,类似java 的switch case x: 代码块.
+> 
+> 5.异常捕捉的机制与其他语言中一样，如果有异常发生，catch子句是按次序捕捉的。因此，在catch子句中,越具体的异常越要靠前m越普遍的异常越靠后m如果把越普遍的异常写在前m把具体的异常写在后m在scala中也不会报错m但这样是非常不好的编程风格.
+> 
+> 6.finally子句用于执行不管是正常处理还是有异常发生时都需要执行的步骤,一般用于对象的清理工作,这点和Java一样.
+> 
+> 7.Scala提供了throws关键字来声明异常,可以使用方法定义声明异常,它向调用者函数提供了此方法可能引发此异常的信息,它有助于调用函数处理并将该代码包含在try-catch块中,以避免程序异常终止,在scala中可以使用throws注释来声明异常.
 ``` scala
   def main(args: Array[String]): Unit = {
     f11()
@@ -1434,7 +1449,6 @@ object DemoTest013 {
 - 2.对象是具体实际,代表一个具体事物
 - 3.类是对象模板,对象是类的一个个体,对应一个实例.
 - 4.Scala中类和对象的区别和联系和Java是一样的.
-
 
 ##### 6.12.1.3 如何定义类
 - `基本语法`
@@ -1873,12 +1887,18 @@ object Visit {
 }
 ```
 ##### 6.13.2.4 Scala 包可见性和访问修饰符使用
-- 1.当属性访问权限为默认时,从底层看属性是private,但是因为提供了`xxx_$eq()`[类似setter]/xxx()[类似getter]方法,因此从使用效果看是任何地方都可以访问.
-- 2.当方法访问权限为默认时,默认为public访问权限.
-- 3.private为私有权限,只在类内部和伴生对象中可用.
-- 4.protected为受保护权限,scala中受保护权限比Java中更严格,只能子类访问,同包无法访问.
-- 5.在scala中没有public关键字,即不能用public显式修饰属性和方法.
-- 6.包访问权限(表示属性有限制,同时包也有限制),这点和Java不一样,体现出Scala包使用的灵活性.
+> 1.当属性访问权限为默认时,从底层看属性是private,但是因为提供了`xxx_$eq()`[类似setter]/xxx()[类似getter]方法,因此从使用效果看是任何地方都可以访问.
+> 
+> 2.当方法访问权限为默认时,默认为public访问权限.
+> 
+> 3.private为私有权限,只在类内部和伴生对象中可用.
+> 
+> 4.protected为受保护权限,scala中受保护权限比Java中更严格,只能子类访问,同包无法访问.
+> 
+> 5.在scala中没有public关键字,即不能用public显式修饰属性和方法.
+> 
+> 6.包访问权限(表示属性有限制,同时包也有限制),这点和Java不一样,体现出Scala包使用的灵活性.
+> 
 - `包访问权限实例`
 ```  scala
 package com.geekparkhub.core.scala.package_flow
@@ -1924,7 +1944,7 @@ object Visit {
 - 5.如果某个冲突的类根本就不会用到,那么这个类可以直接隐藏掉.
 
 #### 6.13.4 面向对象编程 三大特征
-- 面向对象编程有三大特征 : 封装/继承/多态
+- 面向对象编程有三大特征 : 封装 / 继承 / 多态
 
 #### 6.13.5 面向对象编程方法 - 抽象
 - 实际上就是把一类事物共有的属性和行为提取出来,形成一个物理物理模型,这种方式就称之为抽象.
@@ -2836,7 +2856,7 @@ object DemoTest029 {
 ```
 
 ### 6.15 Scala 隐式转换 & 隐式值
-- 隐式转换函数是以`implicit`关键字声明的带有单个参数的函数。这种函数将会自动应用，将值从一种类型转换为另一种类型.
+- 隐式转换函数是以`implicit`关键字声明的带有单个参数的函数,这种函数将会自动应用,将值从一种类型转换为另一种类型.
 
 #### 6.15.1 隐式函数快速入门
 ``` scala
@@ -4737,16 +4757,24 @@ object CollectionFlow031 {
 
 ### 6.18 Scala 模式匹配
 #### 6.18.1 match
-- 1.Scala中模式匹配类似于Java中的switch语法,但是更加强大.
-- 2.模式匹配语法中,采用`match`关键字声明,每个分支采用`case`关键字进行声明.
-- 3.当需要匹配时,会从第一个case分支开始,如果匹配成功,那么执行对应的逻辑代码,如果匹配不成功,继续执行下一个分支进行判断,如果所有case都不匹配,那么会执行case _ 分支,类似于Java中default语句.
-- 4.`match细节说明` : 
-- 如果所有case都不匹配,那么会执行case _ 分支,类似于Java中default语句.
-- 如果所有case都不匹配,又没有写case _ 分支,那么会抛出MatchError.
-- 每个case中不用break语句,自动中断case.
-- 可以在match中使用其它类型,而不仅仅是字符.
-- `=>` 等价于java swtich,`=>`后面的代码块到下一个case是作为一个整体执行,可以使用{}扩起来,也可以不扩.
-- 5.`match实例`
+> 1.Scala中模式匹配类似于Java中的switch语法,但是更加强大.
+> 
+> 2.模式匹配语法中,采用`match`关键字声明,每个分支采用`case`关键字进行声明.
+> 
+> 3.当需要匹配时,会从第一个case分支开始,如果匹配成功,那么执行对应的逻辑代码,如果匹配不成功,继续执行下一个分支进行判断,如果所有case都不匹配,那么会执行case _ 分支,类似于Java中default语句.
+> 
+> 4.`match细节说明` : 
+> 如果所有case都不匹配,那么会执行case _ 分支,类似于Java中default语句.
+> 
+> 如果所有case都不匹配,又没有写case _ 分支,那么会抛出MatchError.
+> 
+> 每个case中不用break语句,自动中断case.
+> 
+> 可以在match中使用其它类型,而不仅仅是字符.
+> 
+> `=>` 等价于java swtich,`=>`后面的代码块到下一个case是作为一个整体执行,可以使用{}扩起来,也可以不扩.
+> 
+> 5.`match实例`
 ``` scala
 package scala.com.geekparkhub.core.scala.matching
 
@@ -4954,7 +4982,6 @@ object Square {
 }
 ```
 
-
 - 当case后面的对象提取器方法的参数为多个,则会默认调用def unapplySeq()方法.
 - 如果unapplySeq返回是Some,获取其中的值,判断得到的sequence中的元素的个数是否是三个如果是三个,则把三个元素分别取出赋值给v1, v2, v3
 - 其它的规则不变
@@ -5043,16 +5070,25 @@ object PatternMatchingFloat010 {
 ```
 
 #### 6.18.11 样例(模板)类
-- 1.说明 : 
-- 样例类仍然是类.
-- 样例类用case关键字进行声明.
-- 样例类是为模式匹配而优化的类.
-- 构造器中的每一个参数都成为val —— 除非它被显式地声明为var
-- 在样例类对应的伴生对象中提供apply方法,不用new关键字就能构造出相应的对象.
-- 提供unapply方法让模式匹配可以工作.
-- 将自动生成toString、equals、hashCode和copy方法(有点类似模板类,直接给生成使用).
-- 样例类和其他类完全一样,还可以添加方法和字段扩展它们.
-- 2.`样例类快速入门实例1`
+> 1.说明 : 
+> 
+> 样例类仍然是类.
+> 
+> 样例类用case关键字进行声明.
+> 
+> 样例类是为模式匹配而优化的类.
+> 
+> 构造器中的每一个参数都成为val —— 除非它被显式地声明为var
+> 
+> 在样例类对应的伴生对象中提供apply方法,不用new关键字就能构造出相应的对象.
+> 
+> 提供unapply方法让模式匹配可以工作.
+> 
+> 将自动生成toString、equals、hashCode和copy方法(有点类似模板类,直接给生成使用).
+> 
+> 样例类和其他类完全一样,还可以添加方法和字段扩展它们.
+> 
+> 2.`样例类快速入门实例1`
 ``` scala
 package scala.com.geekparkhub.core.scala.matching
 
@@ -7441,11 +7477,90 @@ class CompareComm03[T: Ordering](obj05: T, obj06: T) {
 ```
 
 #### 6.22.5 协变 & 逆变 & 不变
+> Scala中符号表示含义 : 
+> 
+> `+`既表示协变
+> 
+> `-`既表示逆变
+> 
+> `covariant`既表示协变
+> 
+> `contravariant`既表示逆变
+> 
+> `invariant`既表示不可变
+> 
+> 对于一个带类型参数的类型,比如List[T],如果对A及其子类型B,满足List[B]也符合List[A]的子类型,那么就称为covariance(协变).
+> 
+> 如果List[A]是List[B]的子类型,即与原来的父子关系正相反,则称为contravariance(逆变).
+> 
+> 如果一个类型支持协变或逆变,则称这个类型为variance(翻译为可变或变型),否则称为invariance(不可变).
+> 
+> 在Java中泛型类型都是(invariant)不可变,比如`List<String>`并不是`List<Object>`的子类型,而scala支持,可以在定义类型时声明(用加号表示为协变,减号表示逆变),如: `trait List[+T]` 在类型定义时声明为协变这样会把`List[String]`作为`List[Any]`的子类型.
+- 举例说明
+- 说明 : 在声明Scala泛型类型时,`+`表示协变,而`-`表示逆变. 
+```
+C[+T]：如果A是B的子类,那么C[A]是C[B]的子类,称为协变.
+C[-T]：如果A是B的子类,那么C[B]是C[A]的子类,称为逆变.
+C[T]：无论A和B是什么关系,C[A]和C[B]没有从属关系,称为不变.
+```
+- 应用实例
+``` scala
+ package com.geekparkhub.core.scala.generic
 
+object GenericFlow010 extends App {
+  val temp01: Temp01[Sub] = new Temp01[Sub]("temp01")
+  val temp02: Temp02[Sub] = new Temp02[Sub]("temp02")
+  val temp002: Temp02[Super] = new Temp02[Sub]("temp002")
+  val temp003: Temp03[Sub] = new Temp03[Super]("temp003")
+  println("temp01 = " + temp01 +"\n" + "temp02 = " + temp02 + "\n" + "temp002 = " + temp002 + "\n" + "temp003 = " + temp003)
+}
 
+/**
+  * 定义 invariance(不变) Temp01类
+  * `Temp01[A]` 既表示 invariance(不变)
+  *
+  * @param str
+  * @tparam A
+  */
+class Temp01[A](str: String) {
+  // 重写toString方法
+  override def toString: String = str
+}
 
+/**
+  * 定义 covariance(协变) Temp02类
+  * `Temp02[+A]` 既表示 covariance(协变)
+  *
+  * @param str
+  * @tparam A
+  */
+class Temp02[+A](str: String) {
+  // 重写toString方法
+  override def toString: String = str
+}
 
+/**
+  * 定义 contravariance(逆变) Temp03类
+  * `Temp03[-A]` 既表示 contravariance(逆变)
+  *
+  * @param str
+  * @tparam A
+  */
+class Temp03[-A](str: String) {
+  // 重写toString方法
+  override def toString: String = str
+}
 
+/**
+  * 定义 可协变 Super父类
+  */
+class Super
+
+/**
+  * 定义Sub子类继承Super父类
+  */
+class Sub extends Super
+```
 
 
 
