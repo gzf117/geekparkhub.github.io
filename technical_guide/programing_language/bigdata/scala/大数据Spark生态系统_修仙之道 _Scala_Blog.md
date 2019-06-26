@@ -6953,8 +6953,8 @@ object GenericFlow02 {
 }
 ```
 
-#### 6.22.4 类型约束 - 上界(Upper Bounds) | 下界(lower bounds)
-> 上界(Upper Bounds)介绍和使用
+#### 6.22.4 类型约束
+##### 6.22.4.1 上界 (Upper Bounds)
 > 
 > java中上界 : 
 > 在Java泛型里表示某个类型是A类型的子类型则使用`extends`关键字,这种形式叫upper bounds(上限或上界),语法如下 : `<T extends A> 或用通配符形式：<? extends A>`
@@ -7046,6 +7046,140 @@ class Bird extends Animal {
   }
 }
 ```
+
+##### 6.22.4.2 下界 (Lower Bounds)
+> 1.Java中下界
+> 在Java泛型里表示某个类型是A类型的父类型,使用`super`关键字.
+> `<T super A> 或用通配符的形式 <? super A>`
+> 
+> 2.scala中下界
+> 在scala的下界或下限,使用`>:`关键字,语法如下 : 
+> `[T >: A] 或用通配符 [_ >: A]`
+- scala中下界应用实例
+``` scala
+package com.geekparkhub.core.scala.generic
+
+object GenericFlow05 {
+  def main(args: Array[String]): Unit = {
+
+    biophonys(Seq(new Earths, new Earths)).map(_.sound())
+    biophonys(Seq(new Animals, new Animals)).map(_.sound())
+    biophonys(Seq(new Birds ,new Birds)).map(_.sound())
+    biophonys(Seq(new Moon))
+  }
+
+  // 定义下界方法
+  def biophonys[T >: Animals](things: Seq[T]) = things
+}
+
+/**
+  * Earth 类
+  */
+class Earths {
+  // 定义方法
+  def sound() {
+    println("hello !")
+  }
+}
+
+class Animals extends Earths {
+  // 重写了Earth sound()方法
+  override def sound() = {
+    println("animal sound")
+  }
+}
+
+class Birds extends Animals {
+  // 将Animal方法重写
+  override def sound() = {
+    print("bird sounds")
+  }
+}
+
+class Moon {}
+```
+> 3.scala中下界的使用总结
+> 
+> ```
+> def biophony[T >: Animal](things: Seq[T]) = things
+>```
+>
+> 1.对于下界,可以传入任意类型.
+> 
+> 2.如果传入的类是Animal直系并且是Animal父类,还是由父类处理.
+> ```
+> scala> biophonys(Seq(new Earths, new Earths))
+> res6: Seq[Earths] = List(Earths@5e8507f1, Earths@4bcaa195)
+> ```
+> 3.如果传入的类是Animal子类,则按照Animal处理.
+> ```
+> scala> biophonys(Seq(new Birds ,new Birds))
+> res4: Seq[Animals] = List(Birds@33db72bd, Birds@7f92b990)
+> ```
+> 4.传入的类与Animal无关一律按照Object处理.
+> ```
+> 
+> scala> biophonys(Seq(new Moon))
+> res5: Seq[Object] = List(Moon@3ee0b4f7)
+> ```
+> 5.下界传入的类可以随便传,只是处理是方式不一样.
+> 
+> 注意 : 不能使用上界的思路来类推下界的含义.
+```
+systemhub:~ system$ scala
+scala> /**
+     |   * Earth 类
+     |   */
+     | class Earths {
+     |   // 定义方法
+     |   def sound() {
+     |     println("hello !")
+     |   }
+     | }
+defined class Earths
+
+scala> 
+
+scala> class Animals extends Earths {
+     |   // 重写了Earth sound()方法
+     |   override def sound() = {
+     |     println("animal sound")
+     |   }
+     | }
+defined class Animals
+
+scala> 
+
+scala> class Birds extends Animals {
+     |   // 将Animal方法重写
+     |   override def sound() = {
+     |     print("bird sounds")
+     |   }
+     | }
+defined class Birds
+
+scala> 
+
+scala> class Moon {}
+defined class Moon
+
+scala> def biophonys[T >: Animals](things: Seq[T]) = things
+biophonys: [T >: Animals](things: Seq[T])Seq[T]
+
+scala> biophonys(Seq(new Birds ,new Birds))
+res4: Seq[Animals] = List(Birds@33db72bd, Birds@7f92b990)
+
+scala> biophonys(Seq(new Moon))
+res5: Seq[Object] = List(Moon@3ee0b4f7)
+
+scala> biophonys(Seq(new Earths, new Earths))
+res6: Seq[Earths] = List(Earths@5e8507f1, Earths@4bcaa195)
+
+scala> 
+```
+
+##### 6.22.4.3 视图界定 (View bounds)
+
 
 
 ## 7. 修仙之道 技术架构迭代 登峰造极之势
