@@ -1759,6 +1759,98 @@ Machine State:OnReadyState
 
 #### 1.9.5 Java RMI实例
 > 编写JavaRMI实例,代理端(客户端)可以通过RMI远程调用,远程端注册的服务方法,并且返回结果.
+> 
+> 实例-开发步骤
+> 编写远程接口：接口文件
+> 远程接口的实现：Service文件
+> RMI服务端注册,开启服务
+> RMI代理端通过RMI查询到服务端建立连接,通过接口调用远程方法.
+- 1.创建RemoteFlow
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07.t02
+
+import java.rmi.{Remote, RemoteException}
+
+/**
+  * 定义 文件接口
+  * 提供远程端与本地端调用
+  */
+trait RemoteFlow extends Remote {
+
+  // 定义初始化抽象方法,需要抛出RemoteException异常
+  @throws(classOf[RemoteException])
+  def init(): String
+}
+```
+
+- 2.创建RemoteFlowImpl
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07.t02
+
+import java.rmi.registry.LocateRegistry
+import java.rmi.{Naming, RemoteException}
+import java.rmi.server.UnicastRemoteObject
+
+/**
+  * 定义 文件实现类
+  */
+class RemoteFlowImpl extends UnicastRemoteObject with RemoteFlow {
+
+  // 复写初始化抽象方法,需要抛出RemoteException异常
+  @throws(classOf[RemoteException])
+  override def init(): String = {
+    "Start initialization!"
+  }
+}
+
+/**
+  * 定义 文件类 半生对象
+  * 完成对初始化方法注册任务
+  */
+object RemoteFlowImpl {
+  def main(args: Array[String]): Unit = {
+
+    // 创建对象
+    val service: RemoteFlow = new RemoteFlowImpl
+    Naming.rebind("rmi://127.0.0.1:9106/initialization", service)
+    println("Remote Service Open | info : <Host : 127.0.0.1 | Port : 9106 | Service Name : initialization>")
+  }
+}
+```
+
+- 3.创建RemoteClientFlow
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07.t02
+
+import java.rmi.Naming
+
+/**
+  * 定义远程调用客户端
+  */
+class RemoteClientFlow {
+  // 定义方法
+  def start(): Unit ={
+    val remoteFlow: RemoteFlow = Naming.lookup("rmi://127.0.0.1:9106/initialization").asInstanceOf[RemoteFlow]
+    val info: String = remoteFlow.init()
+    println("info = " + info)
+  }
+}
+
+object RemoteClientFlow{
+  def main(args: Array[String]): Unit = {
+    new RemoteClientFlow().start()
+  }
+}
+```
+
+
+
+
+
+
+
+
+
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒

@@ -2098,7 +2098,95 @@
 
 <blockquote>
   <p>编写JavaRMI实例,代理端(客户端)可以通过RMI远程调用,远程端注册的服务方法,并且返回结果.</p>
-</blockquote>
+  
+  <p>实例-开发步骤 <br>
+  编写远程接口：接口文件 <br>
+  远程接口的实现：Service文件 <br>
+  RMI服务端注册,开启服务 <br>
+  RMI代理端通过RMI查询到服务端建立连接,通过接口调用远程方法.</p>
+  
+  <ul><li><p>1.创建RemoteFlow</p></li>
+  </ul>
+  
+  </blockquote>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07.t02
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> java.rmi.{<span class="hljs-type">Remote</span>, <span class="hljs-type">RemoteException</span>}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 定义 文件接口</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 提供远程端与本地端调用</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">RemoteFlow</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Remote</span> </span>{
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义初始化抽象方法,需要抛出RemoteException异常</span>
+</div><div class="hljs-line">  <span class="hljs-meta">@throws</span>(classOf[<span class="hljs-type">RemoteException</span>])
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">init</span></span>(): <span class="hljs-type">String</span>
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>2.创建RemoteFlowImpl</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07.t02
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> java.rmi.registry.<span class="hljs-type">LocateRegistry</span>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> java.rmi.{<span class="hljs-type">Naming</span>, <span class="hljs-type">RemoteException</span>}
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> java.rmi.server.<span class="hljs-type">UnicastRemoteObject</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 定义 文件实现类</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RemoteFlowImpl</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">UnicastRemoteObject</span> <span class="hljs-keyword">with</span> <span class="hljs-title">RemoteFlow</span> </span>{
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 复写初始化抽象方法,需要抛出RemoteException异常</span>
+</div><div class="hljs-line">  <span class="hljs-meta">@throws</span>(classOf[<span class="hljs-type">RemoteException</span>])
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">init</span></span>(): <span class="hljs-type">String</span> = {
+</div><div class="hljs-line">    <span class="hljs-string">"Start initialization!"</span>
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 定义 文件类 半生对象</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 完成对初始化方法注册任务</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">RemoteFlowImpl</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">    <span class="hljs-comment">// 创建对象</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">val</span> service: <span class="hljs-type">RemoteFlow</span> = <span class="hljs-keyword">new</span> <span class="hljs-type">RemoteFlowImpl</span>
+</div><div class="hljs-line">    <span class="hljs-type">Naming</span>.rebind(<span class="hljs-string">"rmi://127.0.0.1:9106/initialization"</span>, service)
+</div><div class="hljs-line">    println(<span class="hljs-string">"Remote Service Open | info : &lt;Host : 127.0.0.1 | Port : 9106 | Service Name : initialization&gt;"</span>)
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>3.创建RemoteClientFlow</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07.t02
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> java.rmi.<span class="hljs-type">Naming</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 定义远程调用客户端</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">RemoteClientFlow</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-comment">// 定义方法</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">start</span></span>(): <span class="hljs-type">Unit</span> ={
+</div><div class="hljs-line">    <span class="hljs-keyword">val</span> remoteFlow: <span class="hljs-type">RemoteFlow</span> = <span class="hljs-type">Naming</span>.lookup(<span class="hljs-string">"rmi://127.0.0.1:9106/initialization"</span>).asInstanceOf[<span class="hljs-type">RemoteFlow</span>]
+</div><div class="hljs-line">    <span class="hljs-keyword">val</span> info: <span class="hljs-type">String</span> = remoteFlow.init()
+</div><div class="hljs-line">    println(<span class="hljs-string">"info = "</span> + info)
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">RemoteClientFlow</span></span>{
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">new</span> <span class="hljs-type">RemoteClientFlow</span>().start()
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
 
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 
