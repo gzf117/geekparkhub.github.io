@@ -66,6 +66,12 @@
 <li><a href="#193-java-rmi实现远程代理">1.9.3 Java RMI实现远程代理</a></li>
 <li><a href="#194-java-rmi介绍">1.9.4 Java RMI介绍</a></li>
 <li><a href="#195-java-rmi实例">1.9.5 Java RMI实例</a></li>
+<li><a href="#196-动态代理">1.9.6 动态代理</a><ul>
+<li><a href="#1961-保护代理">1.9.6.1 保护代理</a></li>
+<li><a href="#1962-动态代理实例">1.9.6.2 动态代理实例</a></li>
+<li><a href="#1963-常见代理模式介绍">1.9.6.3 常见代理模式介绍</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -2187,6 +2193,292 @@
 </div><div class="hljs-line">  }
 </div><div class="hljs-line">}
 </div></code></pre>
+
+
+
+<h4 id="196-动态代理">1.9.6 动态代理</h4>
+
+<blockquote>
+  <p>动态代理 : 运行时动态的创建代理类(对象),并将方法调用转发到指定类(对象).</p>
+</blockquote>
+
+
+
+<h5 id="1961-保护代理">1.9.6.1 保护代理</h5>
+
+<blockquote>
+  <p>动态代理其实就体现出保护代理,即代理时对被代理的对象(类)哪些方法可以调用,哪些方法不能调用在InvocationHandler可以控制,因此动态代理就体现(实现)了保护代理的效果.</p>
+</blockquote>
+
+<h5 id="1962-动态代理实例">1.9.6.2 动态代理实例</h5>
+
+<blockquote>
+  <p>社区项目 : 已知用户个人首页可以展示:个人信息/兴趣爱好/总体评分 <br>
+  要求 : 请使用动态代理实现保护代理效果. <br>
+  用户不能给自己评分 / 其它用户可以评分,但是不能设置对方信息/兴趣爱好.</p>
+  
+  <ul><li><p>1.创建PersonBean</p></li>
+  </ul>
+  
+  </blockquote>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07.t03
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 定义 用户接口</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">trait</span> <span class="hljs-title">PersonBean</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getName</span></span>(): <span class="hljs-type">String</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getGender</span></span>(): <span class="hljs-type">String</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getInterests</span></span>(): <span class="hljs-type">String</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getScore</span></span>(): <span class="hljs-type">Int</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setName</span></span>(name: <span class="hljs-type">String</span>)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setGender</span></span>(gender: <span class="hljs-type">String</span>)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setInterests</span></span>(interests: <span class="hljs-type">String</span>)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setScore</span></span>(score: <span class="hljs-type">Int</span>)
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>2.创建PersonBeanImpl</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07.t03
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 用户实现类</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">PersonBeanImpl</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">PersonBean</span> </span>{
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-keyword">var</span> name = <span class="hljs-string">""</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">var</span> gender = <span class="hljs-string">""</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">var</span> interests = <span class="hljs-string">""</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-keyword">var</span> score: <span class="hljs-type">Int</span> = _ <span class="hljs-comment">// 评分值</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getName</span></span>(): <span class="hljs-type">String</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">return</span> name
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getGender</span></span>(): <span class="hljs-type">String</span> = {
+</div><div class="hljs-line">    gender
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getInterests</span></span>(): <span class="hljs-type">String</span> = {
+</div><div class="hljs-line">    interests
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setName</span></span>(name: <span class="hljs-type">String</span>): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.name = name
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setGender</span></span>(gender: <span class="hljs-type">String</span>): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.gender = gender
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 用户自身可以调用此方法</span>
+</div><div class="hljs-line">  <span class="hljs-comment">// 其它用户不能调用此方法</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setInterests</span></span>(interests: <span class="hljs-type">String</span>): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.interests = interests
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getScore</span></span>(): <span class="hljs-type">Int</span> = {
+</div><div class="hljs-line">    score
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">// 用户自身不能调用此方法</span>
+</div><div class="hljs-line">  <span class="hljs-comment">// 其它用户可以调此方法</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">setScore</span></span>(score: <span class="hljs-type">Int</span>): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.score = score
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>3.创建OwnerInvocationHandler</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07.t03
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> java.lang.reflect.{<span class="hljs-type">InvocationHandler</span>, <span class="hljs-type">Method</span>}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">// 用户自身调用的代理类</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OwnerInvocationHandler</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">InvocationHandler</span> </span>{
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">//被调用的对象PersonBeanImpl</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">var</span> person: <span class="hljs-type">PersonBean</span> = _
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">//构造器</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">this</span></span>(person: <span class="hljs-type">PersonBean</span>) {
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.person = person
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">//说明</span>
+</div><div class="hljs-line">  <span class="hljs-comment">//1.这里的proxy就是和OwnerInvocationHandler合作的代理</span>
+</div><div class="hljs-line">  <span class="hljs-meta">@throws</span>(classOf[<span class="hljs-type">Throwable</span>])
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">invoke</span></span>(proxy: scala.<span class="hljs-type">Any</span>, method: <span class="hljs-type">Method</span>, args: <span class="hljs-type">Array</span>[<span class="hljs-type">AnyRef</span>]): <span class="hljs-type">AnyRef</span> = {
+</div><div class="hljs-line">    <span class="hljs-comment">//如果是get方法就直接调用</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (method.getName().startsWith(<span class="hljs-string">"get"</span>)) {
+</div><div class="hljs-line">      <span class="hljs-keyword">return</span> method.invoke(person)
+</div><div class="hljs-line">      <span class="hljs-comment">//自己不能调用setHotOrNotRating,给自己评分</span>
+</div><div class="hljs-line">    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (method.getName().equals(<span class="hljs-string">"setScore"</span>)) {
+</div><div class="hljs-line">      <span class="hljs-comment">//返回一个异常，同时invoke throws掉了</span>
+</div><div class="hljs-line">      <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-type">IllegalAccessException</span>()
+</div><div class="hljs-line">      <span class="hljs-comment">//如果是set方法就直接调用</span>
+</div><div class="hljs-line">    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (method.getName().startsWith(<span class="hljs-string">"set"</span>)) {
+</div><div class="hljs-line">      <span class="hljs-keyword">return</span> method.invoke(person, args(<span class="hljs-number">0</span>).toString)
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-literal">null</span>
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<ul><li><p>4.创建NonOwnerInvocationHandler</p></li>
+</ul>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07.t03
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> java.lang.reflect.{<span class="hljs-type">InvocationHandler</span>, <span class="hljs-type">Method</span>}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">// 其它用户调用的代理类</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NonOwnerInvocationHandler</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">InvocationHandler</span> </span>{
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-keyword">var</span> person: <span class="hljs-type">PersonBean</span> = _
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">//构造器</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">this</span></span>(person: <span class="hljs-type">PersonBean</span>) {
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">this</span>.person = person
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">//说明</span>
+</div><div class="hljs-line">  <span class="hljs-comment">//1.这里的proxy就是和NonOwnerInvocationHandler合作的代理</span>
+</div><div class="hljs-line">  <span class="hljs-meta">@throws</span>(classOf[<span class="hljs-type">Throwable</span>])
+</div><div class="hljs-line">  <span class="hljs-keyword">override</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">invoke</span></span>(proxy: scala.<span class="hljs-type">Any</span>, method: <span class="hljs-type">Method</span>, args: <span class="hljs-type">Array</span>[<span class="hljs-type">AnyRef</span>]): <span class="hljs-type">AnyRef</span> = {
+</div><div class="hljs-line">    <span class="hljs-comment">//如果是get方法就直接调用</span>
+</div><div class="hljs-line">    <span class="hljs-keyword">if</span> (method.getName().startsWith(<span class="hljs-string">"get"</span>)) {
+</div><div class="hljs-line">      <span class="hljs-keyword">return</span> method.invoke(person)
+</div><div class="hljs-line">      <span class="hljs-comment">//其它用户可以调用setHotOrNotRating,进行评分</span>
+</div><div class="hljs-line">    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (method.getName().equals(<span class="hljs-string">"setScore"</span>)) {
+</div><div class="hljs-line">      <span class="hljs-keyword">return</span> method.invoke(person, <span class="hljs-type">Integer</span>.valueOf(args(<span class="hljs-number">0</span>).toString))
+</div><div class="hljs-line">      <span class="hljs-comment">//其它用户不能调用set方法</span>
+</div><div class="hljs-line">    } <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (method.getName().startsWith(<span class="hljs-string">"set"</span>)) {
+</div><div class="hljs-line">      <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-type">IllegalAccessException</span>()
+</div><div class="hljs-line">    }
+</div><div class="hljs-line">    <span class="hljs-literal">null</span>
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>-5.创建MatchService</p>
+
+<pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07.t03
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-keyword">import</span> java.lang.reflect.<span class="hljs-type">Proxy</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MatchService</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-comment">//创建Person</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">val</span> tom = getPersonInfo(<span class="hljs-string">"tom"</span>, <span class="hljs-string">"男"</span>, <span class="hljs-string">"爱好编程"</span>)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">//得到一个给自己调用的代理对象,它替代被调用的对象</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">val</span> <span class="hljs-type">OwnerProxy</span> = getOwnerProxy(tom)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  println(<span class="hljs-string">"Name is "</span> + <span class="hljs-type">OwnerProxy</span>.getName()) <span class="hljs-comment">// tom</span>
+</div><div class="hljs-line">  println(<span class="hljs-string">"Interests is "</span> + <span class="hljs-type">OwnerProxy</span>.getInterests()) <span class="hljs-comment">// 爱好编程</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-type">OwnerProxy</span>.setInterests(<span class="hljs-string">"爱好淘宝~"</span>)
+</div><div class="hljs-line">  println(<span class="hljs-string">"Interests is "</span> + <span class="hljs-type">OwnerProxy</span>.getInterests()) <span class="hljs-comment">// 爱好淘宝~</span>
+</div><div class="hljs-line">  <span class="hljs-comment">//自己给自己设置评分，通过代理控制，不能成功</span>
+</div><div class="hljs-line">  <span class="hljs-type">OwnerProxy</span>.setScore(<span class="hljs-number">100</span>) <span class="hljs-comment">//刷分不成功!</span>
+</div><div class="hljs-line">  println(<span class="hljs-string">"Score is "</span> + <span class="hljs-type">OwnerProxy</span>.getScore()) <span class="hljs-comment">//分值仍然为 0</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  println(<span class="hljs-string">"********** 测试NonOwnerInvocationHandler **********"</span>)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-keyword">val</span> mary = getPersonInfo(<span class="hljs-string">"mary"</span>, <span class="hljs-string">"女"</span>, <span class="hljs-string">"爱好购物..."</span>)
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">//返回一个其用户调用的代理对象</span>
+</div><div class="hljs-line">  <span class="hljs-keyword">val</span> nonOwnerProxy = getNonOwnerProxy(mary)
+</div><div class="hljs-line">  println(<span class="hljs-string">"Name is "</span> + nonOwnerProxy.getName()) <span class="hljs-comment">// mary</span>
+</div><div class="hljs-line">  println(<span class="hljs-string">"Interests is "</span> + nonOwnerProxy.getInterests()) <span class="hljs-comment">// 爱好购物...</span>
+</div><div class="hljs-line">  <span class="hljs-comment">//其它人不能修改兴趣，通过代理进行控制不能调用setInterests</span>
+</div><div class="hljs-line">  nonOwnerProxy.setInterests(<span class="hljs-string">"爱好小猫咪~~"</span>) <span class="hljs-comment">//失败，在动态代理控制</span>
+</div><div class="hljs-line">  println(<span class="hljs-string">"Interests is "</span> + nonOwnerProxy.getInterests()) <span class="hljs-comment">//爱好购物...</span>
+</div><div class="hljs-line">  nonOwnerProxy.setScore(<span class="hljs-number">68</span>) <span class="hljs-comment">//其它人可以评分ok</span>
+</div><div class="hljs-line">  println(<span class="hljs-string">"score is "</span> + nonOwnerProxy.getScore()) <span class="hljs-comment">// 68</span>
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">    * 定义获取用户信息方法</span>
+</div><div class="hljs-line"><span class="hljs-comment">    *</span>
+</div><div class="hljs-line"><span class="hljs-comment">    * @param name</span>
+</div><div class="hljs-line"><span class="hljs-comment">    * @param gender</span>
+</div><div class="hljs-line"><span class="hljs-comment">    * @param interests</span>
+</div><div class="hljs-line"><span class="hljs-comment">    * @return</span>
+</div><div class="hljs-line"><span class="hljs-comment">    */</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getPersonInfo</span></span>(name: <span class="hljs-type">String</span>, gender: <span class="hljs-type">String</span>, interests: <span class="hljs-type">String</span>): <span class="hljs-type">PersonBean</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">val</span> person = <span class="hljs-keyword">new</span> <span class="hljs-type">PersonBeanImpl</span>()
+</div><div class="hljs-line">    person.setName(name)
+</div><div class="hljs-line">    person.setGender(gender)
+</div><div class="hljs-line">    person.setInterests(interests)
+</div><div class="hljs-line">    person
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">    * 定义 获取自身信息方法</span>
+</div><div class="hljs-line"><span class="hljs-comment">    *</span>
+</div><div class="hljs-line"><span class="hljs-comment">    * @param person</span>
+</div><div class="hljs-line"><span class="hljs-comment">    * @return</span>
+</div><div class="hljs-line"><span class="hljs-comment">    */</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getOwnerProxy</span></span>(person: <span class="hljs-type">PersonBean</span>): <span class="hljs-type">PersonBean</span> = {
+</div><div class="hljs-line">    <span class="hljs-type">Proxy</span>.newProxyInstance(person.getClass().getClassLoader(), person.getClass().getInterfaces(), <span class="hljs-keyword">new</span> <span class="hljs-type">OwnerInvocationHandler</span>(person)).asInstanceOf[<span class="hljs-type">PersonBean</span>]
+</div><div class="hljs-line">  }
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line">  <span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">    * 定义 其他用户获取信息方法</span>
+</div><div class="hljs-line"><span class="hljs-comment">    *</span>
+</div><div class="hljs-line"><span class="hljs-comment">    * @param person</span>
+</div><div class="hljs-line"><span class="hljs-comment">    * @return</span>
+</div><div class="hljs-line"><span class="hljs-comment">    */</span>
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getNonOwnerProxy</span></span>(person: <span class="hljs-type">PersonBean</span>): <span class="hljs-type">PersonBean</span> = {
+</div><div class="hljs-line">    <span class="hljs-type">Proxy</span>.newProxyInstance(person.getClass()
+</div><div class="hljs-line">      .getClassLoader(), person.getClass().getInterfaces(),
+</div><div class="hljs-line">      <span class="hljs-keyword">new</span> <span class="hljs-type">NonOwnerInvocationHandler</span>(person)).asInstanceOf[<span class="hljs-type">PersonBean</span>]
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div><div class="hljs-line"><wbr>
+</div><div class="hljs-line"><span class="hljs-comment">/**</span>
+</div><div class="hljs-line"><span class="hljs-comment">  * 程序运行入口</span>
+</div><div class="hljs-line"><span class="hljs-comment">  */</span>
+</div><div class="hljs-line"><span class="hljs-class"><span class="hljs-keyword">object</span> <span class="hljs-title">MatchServiceRun</span> </span>{
+</div><div class="hljs-line">  <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span></span>(args: <span class="hljs-type">Array</span>[<span class="hljs-type">String</span>]): <span class="hljs-type">Unit</span> = {
+</div><div class="hljs-line">    <span class="hljs-keyword">val</span> matchService = <span class="hljs-keyword">new</span> <span class="hljs-type">MatchService</span>()
+</div><div class="hljs-line">  }
+</div><div class="hljs-line">}
+</div></code></pre>
+
+<p>-6.创建 运行程序查看结果</p>
+
+<pre class="prettyprint hljs-dark"><code class="hljs delphi"><div class="hljs-line"><span class="hljs-keyword">Name</span> <span class="hljs-keyword">is</span> tom
+</div><div class="hljs-line">Interests <span class="hljs-keyword">is</span> 爱好编程
+</div><div class="hljs-line">Interests <span class="hljs-keyword">is</span> 爱好淘宝~
+</div><div class="hljs-line">Score <span class="hljs-keyword">is</span> <span class="hljs-number">0</span>
+</div><div class="hljs-line">********** 测试NonOwnerInvocationHandler **********
+</div><div class="hljs-line"><span class="hljs-keyword">Name</span> <span class="hljs-keyword">is</span> mary
+</div><div class="hljs-line">Interests <span class="hljs-keyword">is</span> 爱好购物...
+</div><div class="hljs-line">Interests <span class="hljs-keyword">is</span> 爱好购物...
+</div><div class="hljs-line">score <span class="hljs-keyword">is</span> <span class="hljs-number">68</span>
+</div></code></pre>
+
+<h5 id="1963-常见代理模式介绍">1.9.6.3 常见代理模式介绍</h5>
 
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 

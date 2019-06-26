@@ -1843,14 +1843,273 @@ object RemoteClientFlow{
 }
 ```
 
+#### 1.9.6 动态代理
+> 动态代理 : 运行时动态的创建代理类(对象),并将方法调用转发到指定类(对象).
+
+##### 1.9.6.1 保护代理
+> 动态代理其实就体现出保护代理,即代理时对被代理的对象(类)哪些方法可以调用,哪些方法不能调用在InvocationHandler可以控制,因此动态代理就体现(实现)了保护代理的效果.
+
+##### 1.9.6.2 动态代理实例
+> 社区项目 : 已知用户个人首页可以展示:个人信息/兴趣爱好/总体评分
+> 要求 : 请使用动态代理实现保护代理效果.
+> 用户不能给自己评分 / 其它用户可以评分,但是不能设置对方信息/兴趣爱好.
+- 1.创建PersonBean
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07.t03
+
+/**
+  * 定义 用户接口
+  */
+
+trait PersonBean {
+  def getName(): String
+
+  def getGender(): String
+
+  def getInterests(): String
+
+  def getScore(): Int
+
+  def setName(name: String)
+
+  def setGender(gender: String)
+
+  def setInterests(interests: String)
+
+  def setScore(score: Int)
+}
+```
+
+- 2.创建PersonBeanImpl
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07.t03
+
+/**
+  * 用户实现类
+  */
+class PersonBeanImpl extends PersonBean {
+
+  var name = ""
+  var gender = ""
+  var interests = ""
+
+  var score: Int = _ // 评分值
+
+  override def getName(): String = {
+    return name
+  }
+
+  override def getGender(): String = {
+    gender
+  }
+
+  override def getInterests(): String = {
+    interests
+  }
+
+  override def setName(name: String): Unit = {
+    this.name = name
+  }
+
+  override def setGender(gender: String): Unit = {
+    this.gender = gender
+  }
+
+  // 用户自身可以调用此方法
+  // 其它用户不能调用此方法
+  override def setInterests(interests: String): Unit = {
+    this.interests = interests
+  }
 
 
+  override def getScore(): Int = {
+    score
+  }
+
+  // 用户自身不能调用此方法
+  // 其它用户可以调此方法
+  override def setScore(score: Int): Unit = {
+    this.score = score
+  }
+
+}
+```
+
+- 3.创建OwnerInvocationHandler
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07.t03
+
+import java.lang.reflect.{InvocationHandler, Method}
+
+// 用户自身调用的代理类
+class OwnerInvocationHandler extends InvocationHandler {
+
+  //被调用的对象PersonBeanImpl
+  var person: PersonBean = _
+
+  //构造器
+  def this(person: PersonBean) {
+    this
+    this.person = person
+  }
+
+  //说明
+  //1.这里的proxy就是和OwnerInvocationHandler合作的代理
+  @throws(classOf[Throwable])
+  override def invoke(proxy: scala.Any, method: Method, args: Array[AnyRef]): AnyRef = {
+    //如果是get方法就直接调用
+    if (method.getName().startsWith("get")) {
+      return method.invoke(person)
+      //自己不能调用setHotOrNotRating,给自己评分
+    } else if (method.getName().equals("setScore")) {
+      //返回一个异常，同时invoke throws掉了
+      return new IllegalAccessException()
+      //如果是set方法就直接调用
+    } else if (method.getName().startsWith("set")) {
+      return method.invoke(person, args(0).toString)
+    }
+    null
+  }
+}
+```
+
+- 4.创建NonOwnerInvocationHandler
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07.t03
+
+import java.lang.reflect.{InvocationHandler, Method}
+
+// 其它用户调用的代理类
+class NonOwnerInvocationHandler extends InvocationHandler {
+
+  var person: PersonBean = _
+
+  //构造器
+  def this(person: PersonBean) {
+    this
+    this.person = person
+  }
+
+  //说明
+  //1.这里的proxy就是和NonOwnerInvocationHandler合作的代理
+  @throws(classOf[Throwable])
+  override def invoke(proxy: scala.Any, method: Method, args: Array[AnyRef]): AnyRef = {
+    //如果是get方法就直接调用
+    if (method.getName().startsWith("get")) {
+      return method.invoke(person)
+      //其它用户可以调用setHotOrNotRating,进行评分
+    } else if (method.getName().equals("setScore")) {
+      return method.invoke(person, Integer.valueOf(args(0).toString))
+      //其它用户不能调用set方法
+    } else if (method.getName().startsWith("set")) {
+      return new IllegalAccessException()
+    }
+    null
+  }
+}
+```
+
+-5.创建MatchService
+``` scala
+package com.geekparkhub.core.scala.designpatterns.d07.t03
+
+import java.lang.reflect.Proxy
+
+class MatchService {
+  //创建Person
+  val tom = getPersonInfo("tom", "男", "爱好编程")
+
+  //得到一个给自己调用的代理对象,它替代被调用的对象
+  val OwnerProxy = getOwnerProxy(tom)
+
+  println("Name is " + OwnerProxy.getName()) // tom
+  println("Interests is " + OwnerProxy.getInterests()) // 爱好编程
+
+  OwnerProxy.setInterests("爱好淘宝~")
+  println("Interests is " + OwnerProxy.getInterests()) // 爱好淘宝~
+  //自己给自己设置评分，通过代理控制，不能成功
+  OwnerProxy.setScore(100) //刷分不成功!
+  println("Score is " + OwnerProxy.getScore()) //分值仍然为 0
 
 
+  println("********** 测试NonOwnerInvocationHandler **********")
+
+  val mary = getPersonInfo("mary", "女", "爱好购物...")
+
+  //返回一个其用户调用的代理对象
+  val nonOwnerProxy = getNonOwnerProxy(mary)
+  println("Name is " + nonOwnerProxy.getName()) // mary
+  println("Interests is " + nonOwnerProxy.getInterests()) // 爱好购物...
+  //其它人不能修改兴趣，通过代理进行控制不能调用setInterests
+  nonOwnerProxy.setInterests("爱好小猫咪~~") //失败，在动态代理控制
+  println("Interests is " + nonOwnerProxy.getInterests()) //爱好购物...
+  nonOwnerProxy.setScore(68) //其它人可以评分ok
+  println("score is " + nonOwnerProxy.getScore()) // 68
+
+  /**
+    * 定义获取用户信息方法
+    *
+    * @param name
+    * @param gender
+    * @param interests
+    * @return
+    */
+  def getPersonInfo(name: String, gender: String, interests: String): PersonBean = {
+    val person = new PersonBeanImpl()
+    person.setName(name)
+    person.setGender(gender)
+    person.setInterests(interests)
+    person
+  }
+
+  /**
+    * 定义 获取自身信息方法
+    *
+    * @param person
+    * @return
+    */
+  def getOwnerProxy(person: PersonBean): PersonBean = {
+    Proxy.newProxyInstance(person.getClass().getClassLoader(), person.getClass().getInterfaces(), new OwnerInvocationHandler(person)).asInstanceOf[PersonBean]
+  }
+
+  /**
+    * 定义 其他用户获取信息方法
+    *
+    * @param person
+    * @return
+    */
+  def getNonOwnerProxy(person: PersonBean): PersonBean = {
+    Proxy.newProxyInstance(person.getClass()
+      .getClassLoader(), person.getClass().getInterfaces(),
+      new NonOwnerInvocationHandler(person)).asInstanceOf[PersonBean]
+  }
+}
+
+/**
+  * 程序运行入口
+  */
+object MatchServiceRun {
+  def main(args: Array[String]): Unit = {
+    val matchService = new MatchService()
+  }
+}
+```
+
+-6.创建 运行程序查看结果
+```
+Name is tom
+Interests is 爱好编程
+Interests is 爱好淘宝~
+Score is 0
+********** 测试NonOwnerInvocationHandler **********
+Name is mary
+Interests is 爱好购物...
+Interests is 爱好购物...
+score is 68
+```
 
 
-
-
+##### 1.9.6.3 常见代理模式介绍
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
