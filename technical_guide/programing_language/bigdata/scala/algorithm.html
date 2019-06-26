@@ -62,6 +62,10 @@
 <li><a href="#18-观察者模式">1.8 🏷️ 观察者模式 🏷️</a></li>
 <li><a href="#19-代理模式">1.9 🏷️ 代理模式 🏷️</a><ul>
 <li><a href="#191-本地监控实例">1.9.1 本地监控实例</a></li>
+<li><a href="#192-远程代理模式监控方案">1.9.2 远程代理模式监控方案</a></li>
+<li><a href="#193-java-rmi实现远程代理">1.9.3 Java RMI实现远程代理</a></li>
+<li><a href="#194-java-rmi介绍">1.9.4 Java RMI介绍</a></li>
+<li><a href="#195-java-rmi实例">1.9.5 Java RMI实例</a></li>
 </ul>
 </li>
 </ul>
@@ -159,6 +163,8 @@
 
 
 <h3 id="15-简单工厂">1.5 🏷️ 简单工厂 🏷️</h3>
+
+
 
 <h4 id="151-基本介绍">1.5.1 基本介绍</h4>
 
@@ -931,7 +937,8 @@
   
   <ul><li><p>1.创建单例模式 - 懒汉式</p></li>
   </ul>
-</blockquote>
+  
+  </blockquote>
 
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d04
@@ -998,6 +1005,8 @@
 </div><div class="hljs-line">}
 </div></code></pre>
 
+
+
 <h3 id="17-装饰者模式">1.7 🏷️ 装饰者模式 🏷️</h3>
 
 <blockquote>
@@ -1019,7 +1028,8 @@
   
   <ul><li><p>1.创建Drink</p></li>
   </ul>
-</blockquote>
+  
+  </blockquote>
 
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d05.t01
@@ -1342,7 +1352,9 @@
   
   <ul><li><p>1.创建Subject</p></li>
   </ul>
-</blockquote>
+  
+  </blockquote>
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d06.t01
 </div><div class="hljs-line"><wbr>
@@ -1365,6 +1377,8 @@
 <ul><li><p>2.创建ObServer</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d06.t01
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-comment">/**</span>
@@ -1378,6 +1392,8 @@
 
 <ul><li><p>3.创建WeatherData</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d06.t01
 </div><div class="hljs-line"><wbr>
@@ -1452,6 +1468,8 @@
 <ul><li><p>4.创建CurrentConditions</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d06.t02
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d06.t01.<span class="hljs-type">ObServer</span>
@@ -1493,6 +1511,8 @@
 <ul><li><p>5.ThirdParty</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d06.t02
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d06.t01.<span class="hljs-type">ObServer</span>
@@ -1532,6 +1552,8 @@
 <ul><li><p>6.创建WeatherDataRunFlow</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d06.t01
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-keyword">import</span> com.geekparkhub.core.scala.designpatterns.d06.t02.{<span class="hljs-type">CurrentConditions</span>, <span class="hljs-type">ThirdParty</span>}
@@ -1558,6 +1580,8 @@
 
 <p>-7. 运行程序查看结果</p>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="hljs asciidoc"><div class="hljs-line"><span class="hljs-bullet">*** </span>Today mTemperature: 30.0 ***
 </div><div class="hljs-line"><span class="hljs-bullet">*** </span>Today mPressure: 160.0 ***
 </div><div class="hljs-line"><span class="hljs-bullet">*** </span>Today mHumidity: 35.0 ***
@@ -1575,6 +1599,8 @@
 <li><p>3.Observable和Observer使用方法和Scala观察者模式实例基本一样,只是Observable是类,通过继承来实现观察者模式.</p></li>
 </ul>
 
+
+
 <h3 id="19-代理模式">1.9 🏷️ 代理模式 🏷️</h3>
 
 <blockquote>
@@ -1585,6 +1611,8 @@
   <p>代理模式有不同形式(比如远程代理/静态代理/动态代理)都是为了控制与管理对象访问.</p>
 </blockquote>
 
+
+
 <h4 id="191-本地监控实例">1.9.1 本地监控实例</h4>
 
 <blockquote>
@@ -1592,7 +1620,9 @@
   
   <ul><li><p>1.创建State</p></li>
   </ul>
-</blockquote>
+  
+  </blockquote>
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07
 </div><div class="hljs-line"><wbr>
@@ -1611,6 +1641,8 @@
 
 <ul><li><p>2.创建CandyMachine</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07
 </div><div class="hljs-line"><wbr>
@@ -1690,6 +1722,8 @@
 <ul><li><p>3.创建HasCoin</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-comment">/**</span>
@@ -1744,6 +1778,8 @@
 
 <ul><li><p>4.创建WinnerState </p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07
 </div><div class="hljs-line"><wbr>
@@ -1800,6 +1836,8 @@
 <ul><li><p>5.创建SoldState </p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-comment">/**</span>
@@ -1854,6 +1892,8 @@
 <ul><li><p>6.创建OnReadyState </p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-comment">/**</span>
@@ -1898,6 +1938,8 @@
 <ul><li><p>7.创建SoldOutState</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-comment">/**</span>
@@ -1940,6 +1982,8 @@
 <ul><li><p>8.创建Monitor</p></li>
 </ul>
 
+
+
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07
 </div><div class="hljs-line"><wbr>
 </div><div class="hljs-line"><span class="hljs-keyword">import</span> scala.collection.mutable.<span class="hljs-type">ListBuffer</span>
@@ -1972,6 +2016,8 @@
 
 <ul><li><p>9.创建CanyMachineRunFlow</p></li>
 </ul>
+
+
 
 <pre class="prettyprint hljs-dark"><code class="language-scala hljs"><div class="hljs-line"><span class="hljs-keyword">package</span> com.geekparkhub.core.scala.designpatterns.d07
 </div><div class="hljs-line"><wbr>
@@ -2021,6 +2067,38 @@
 </div><div class="hljs-line">Machine Candy count:13
 </div><div class="hljs-line">Machine State:OnReadyState
 </div></code></pre>
+
+
+
+<h4 id="192-远程代理模式监控方案">1.9.2 远程代理模式监控方案</h4>
+
+<blockquote>
+  <p>远程代理 : 远程对象的本地代表,通过它可以把远程对象当本地对象来调用,远程代理通过网络和真正的远程对象沟通信息.</p>
+</blockquote>
+
+<h4 id="193-java-rmi实现远程代理">1.9.3 Java RMI实现远程代理</h4>
+
+<blockquote>
+  <p>RMI是指远程方法调用(Remote Method Invocation),它是一种机制能够让在某个Java虚拟机上的对象调用另一个 Java虚拟机中的对象上的方法,可以用此方法调用的任何对象必须实现该远程接口,RMI可以将底层Socket编程封装,简化操作.</p>
+</blockquote>
+
+
+
+<h4 id="194-java-rmi介绍">1.9.4 Java RMI介绍</h4>
+
+<blockquote>
+  <p>RMI远程方法调用是计算机之间通过网络实现对象调用的一种通讯机制. <br>
+  使用RMI机制,一台计算机上的对象可以调用另外 一台计算机上的对象来获取远程数据. <br>
+  RMI被设计成一种面向对象开发方式,允许开发者使用远程对象来实现通信.</p>
+</blockquote>
+
+
+
+<h4 id="195-java-rmi实例">1.9.5 Java RMI实例</h4>
+
+<blockquote>
+  <p>编写JavaRMI实例,代理端(客户端)可以通过RMI远程调用,远程端注册的服务方法,并且返回结果.</p>
+</blockquote>
 
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 
