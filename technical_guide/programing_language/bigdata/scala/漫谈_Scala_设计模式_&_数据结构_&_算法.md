@@ -2269,9 +2269,141 @@ class Node(val row: Int, val col: Int, val value: Int)
 
 #### 2.5.2 队列 介绍
 > 1.队列是一个有序列表,可以用数组或是链表来实现.
+> 
 > 2.遵循先入先出的原则,即先存入队列的数据要先取出,后存入的要后取出.
 
 #### 2.5.3 数组模拟 单向队列
+> 1.队列本身是有序列表,若使用数组的结构来存储队列的数据,则队列数组的声明如下 : 其中maxSize是该队列的最大容量.
+> 
+> 2.因为队列的输出、输入是分别从前后端来处理,因此需要两个变量front(或head)及 rear(或tail)分别记录队列前后端下标,front会随着数据输出而改变,而rear则是随着数据输入而改变.
+> 
+> ![enter image description here](https://s2.ax1x.com/2019/04/12/Ab0qc4.png)
+> 
+> 视图说明 : 
+> 将数据存入队列时称为addqueue,addqueue处理需要有两个步骤 : 
+> 1.将尾指针往后移 : rear + 1,如果front == rear [表示队列为空]
+> 2.若尾指引rear小于等于队列的最大下标maxSize - 1,则将数据存入rear所指的数组元素中,否则无法存入数据, rear == maxSize - 1 [表示队列已满]
+``` scala
+package com.geekparkhub.core.scala.algorithm
+
+import scala.io.StdIn
+
+object AlgorithmFlow01 {
+  def main(args: Array[String]): Unit = {
+
+    // 初始化队列
+    val algorithm = new Algorithm(3)
+    var inputKey = ""
+
+    // 接收输入参数并触发对应方法
+    while (true) {
+      println("-add <添加队列数据>")
+      println("-show <显示队列数据>")
+      println("-get <取出队列数据>")
+      println("-exit <退出队列程序>")
+      println()
+      inputKey = StdIn.readLine()
+      inputKey match {
+        case "-add" => {
+          println("请输入数据")
+          var num1 = StdIn.readInt()
+          algorithm.addQueue(num1)
+        }
+        case "-show" => algorithm.showQueue()
+        case "-get" => {
+          var res = algorithm.getQueue()
+          if (res.isInstanceOf[Exception]) {
+            println(res.asInstanceOf[Exception].getMessage)
+          } else {
+            println(s"取值数据 = $res")
+          }
+        }
+        case "-exit" => System.exit(0)
+        case _ => println("输入指令无效,请重试")
+      }
+    }
+  }
+}
+
+/**
+  * 定义 数组模拟队列
+  *
+  * @param maxSize
+  */
+class Algorithm(maxSize: Int) {
+  // 定义当前数组最大值
+  val max = maxSize
+  // 定义数组并存放数据,用于模拟队列
+  val arr = new Array[Int](max)
+  // 记录队列前端
+  var front = -1 // front 是队列最前元素的索引[不含]
+  // 记录队列后端
+  var rear = -1 // rear 是队列最后元素的索引[含]
+
+  /**
+    * 定义 队列是否满足函数
+    *
+    * @return
+    */
+  def isFull(): Boolean = {
+    rear == max - 1
+  }
+
+  /**
+    * 定义队列是否为空函数
+    *
+    * @return
+    */
+  def isNull(): Boolean = {
+    front == rear
+  }
+
+  /**
+    * 定义 队列取值函数
+    * @return
+    */
+  def getQueue(): Any = {
+    if (isNull()) {
+      return new Exception("队列数据为空!")
+    }
+    front += 1
+    return arr(front)
+  }
+
+  /**
+    * 定义 添加数据函数
+    *
+    * @param n1
+    */
+  def addQueue(n1: Int): Unit = {
+    if (isFull()) {
+      println("队列已满,无法添加数据")
+      return
+    }
+    rear += 1
+    arr(rear) = n1
+    println("数据" + n1 + "添加成功")
+    println()
+  }
+
+  /**
+    * 定义显示队列所有数据 函数
+    */
+  def showQueue(): Unit = {
+    // 显示队列数据之前,先判断队列是否为空
+    if (isNull()) {
+      println("队列为空,无数据")
+      println()
+      return
+    }
+    // 遍历队列数据
+    for (i <- front + 1 to rear) {
+      printf("res = arr[%d]=%d\n", i, arr(i))
+      println()
+    }
+  }
+}
+```
 #### 2.5.4 数组模拟 环形队列
 
 
