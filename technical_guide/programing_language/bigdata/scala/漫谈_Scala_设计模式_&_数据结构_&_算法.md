@@ -2178,20 +2178,104 @@ score is 68
 > 1.使用稀疏数组来保留类似前面的二维数组(棋盘、地图等等).
 > 2.将稀疏数组存盘,并且可以重新恢复原来二维数组数.
 ![enter image description here](https://s2.ax1x.com/2019/04/12/Ab047q.png)
+``` scala
+package com.geekparkhub.core.scala.algorithm
+
+import scala.collection.mutable.ArrayBuffer
+
+object AlgorithmFlow {
+  def main(args: Array[String]): Unit = {
+    // 定义二维稀疏数组
+    val rowSize = 11
+    val colSize = 11
+    val chessMap = Array.ofDim[Int](rowSize, colSize)
+
+    // 初始化数组 1即表示黑棋,2即表示白棋
+    chessMap(1)(2) = 1
+    chessMap(2)(3) = 2
+
+    // 循环遍历 原始数组
+    for (i <- chessMap) {
+      for (j <- i) {
+        printf("%d\t", j)
+      }
+      println()
+    }
+
+    println()
+
+    /**
+      * 将 chessMap 转成 稀疏数组
+      * 效果是达到对数据的压缩
+      */
+    val nodesToNodes = ArrayBuffer[Node]()
+    val node = new Node(rowSize, colSize, 0)
+    nodesToNodes.append(node)
+    for (x <- 0 until chessMap.length) {
+      for (y <- 0 until chessMap(x).length) {
+        // 判断该值是否为0,如果不为0则保存
+        if (chessMap(x)(y) != 0) {
+          // 创建节点
+          val node = new Node(x, y, chessMap(x)(y))
+          // 添加到稀疏数组
+          nodesToNodes.append(node)
+        }
+      }
+    }
+
+    // 循环输出压缩后稀疏数组
+    for (node <- nodesToNodes) {
+      printf("%d\t%d\t%d\n", node.row, node.col, node.value)
+    }
+
+    println()
+
+    // 将稀疏数组恢复至原始数组
+    val newNode: Node = nodesToNodes(0)
+    val newRow: Int = newNode.row
+    val newCol: Int = newNode.col
+    val newChessMap = Array.ofDim[Int](newRow, newCol)
+    // 遍历稀疏数组
+    for (values <- 1 until nodesToNodes.length) {
+      val array = nodesToNodes(values)
+      newChessMap(array.row)(array.col) = array.value
+    }
+
+    // 稀疏数组恢复棋盘地图
+    for (v1 <- newChessMap) {
+      for (v2 <- v1) {
+        printf("%d\t", v2)
+      }
+      println()
+    }
+  }
+}
+
+/**
+  * 定义节点类
+  *
+  * @param row
+  * @param col
+  * @param value
+  */
+class Node(val row: Int, val col: Int, val value: Int)
+```
 
 
-#### 2.4.3 应用练习
-
-
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 
 ### 2.5 🔖 队列 queue 🔖 
 #### 2.5.1 队列 使用场景
+> 比如与排队相关的场景即表示为队列.
+
 #### 2.5.2 队列 介绍
+> 1.队列是一个有序列表,可以用数组或是链表来实现.
+> 2.遵循先入先出的原则,即先存入队列的数据要先取出,后存入的要后取出.
+
 #### 2.5.3 数组模拟 单向队列
 #### 2.5.4 数组模拟 环形队列
 
 
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 2.6 🔖 链表 linked list 🔖 
 #### 2.6.1 链表 介绍
 #### 2.6.2 单向链表 介绍
