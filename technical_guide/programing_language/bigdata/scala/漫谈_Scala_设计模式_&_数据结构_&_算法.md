@@ -2426,6 +2426,161 @@ class Algorithm(maxSize: Int) {
 ```
 
 #### 2.5.4 数组模拟 环形队列
+> 说明：
+> 对上面的数组模拟队列的优化,充分利用数组,因此将数组看做是一个环形,(通过取模方式来实现即可).
+> 
+> 分析说明 : 
+> 1.尾索引的下一个为头索引时表示队列满,即将队列容量空出一个作为约定,在做判断队列满的时需要注意`(rear + 1) % maxSize == front` [表示队列已满].
+> 
+> 2.rear == front [表示队列为空]
+``` scala
+package com.geekparkhub.core.scala.algorithm
+
+import scala.io.StdIn
+
+object AlgorithmFlow02 {
+  def main(args: Array[String]): Unit = {
+    // 初始化队列
+    val algorithm = new Algorithms(4)
+    var inputKey = ""
+
+    // 接收输入参数并触发对应方法
+    while (true) {
+      println("-add <添加队列数据>")
+      println("-show <显示队列数据>")
+      println("-get <取出队列数据>")
+      println("-head <查看队列头数据>")
+      println("-exit <退出队列程序>")
+      println()
+      inputKey = StdIn.readLine()
+      inputKey match {
+        case "-add" => {
+          println("请输入数据")
+          var num1 = StdIn.readInt()
+          algorithm.addQueue(num1)
+        }
+        case "-show" => algorithm.showQueue()
+        case "-get" => {
+          var res = algorithm.getQueue()
+          if (res.isInstanceOf[Exception]) {
+            println(res.asInstanceOf[Exception].getMessage)
+          } else {
+            println(s"取值数据 = $res")
+          }
+        }
+        case "-head" => {
+          val res = algorithm.headQueue()
+          if (res.isInstanceOf[Exception]) {
+            println(res.asInstanceOf[Exception].getMessage)
+          } else {
+            println(s"头部数据 = $res")
+          }
+        }
+        case "-exit" => System.exit(0)
+        case _ => println("输入指令无效,请重试")
+      }
+    }
+  }
+}
+
+/**
+  * 定义 数组模拟队列
+  *
+  * @param maxSizes
+  */
+class Algorithms(maxSizes: Int) {
+  // 定义当前数组最大值
+  val max = maxSizes
+  // 定义数组并存放数据,用于模拟队列
+  val arr = new Array[Int](max)
+  // 记录队列前端
+  var front = 0 // front 是队列最前元素的索引[含]
+  // 记录队列后端
+  var rear = 0 // rear 是队列最后元素的索引[含]
+
+  /**
+    * 定义 判断队列是否已满 方法
+    *
+    * @return
+    */
+  def isFull(): Boolean = {
+    // 尾索引的下一个为头索引时表示队列满,即将队列容量空出一个作为约定,在做判断队列满的时候需要注意
+    (rear + 1) % maxSizes == front
+  }
+
+  /**
+    * 定义 判断队列是否为空 方法
+    *
+    * @return
+    */
+  def isNull(): Boolean = {
+    rear == front
+  }
+
+  /**
+    * 定义 添加数据函数
+    *
+    * @param n2
+    */
+  def addQueue(n2: Int): Unit = {
+    if (isFull()) {
+      println("队列已满,无法添加数据")
+      return
+    }
+    arr(rear) = n2
+    // 将 rear 通过取模的方式后移m注意与 rear = rear + 1 的区别
+    rear = (rear + 1) % maxSizes
+    println("数据" + n2 + "添加成功")
+    println()
+  }
+
+  /**
+    * 定义 获取对列数据 方法
+    *
+    * @return
+    */
+  def getQueue(): Any = {
+    // 获取队列数据之前,先判断队列是否为空
+    if (isNull()) {
+      return new Exception("对列为空,无法获取对列数据")
+    }
+    val value = arr(front)
+    // 将 front 通过取模的方式后移，注意与 front = front + 1 的区别
+    front = (front + 1) % maxSizes
+    return value
+  }
+
+  // 显示环形队列的所有数据
+  def showQueue(): Unit = {
+    // 显示队列数据之前，先判断队列是否为空
+    if (isNull()) {
+      println("队列为空，没有数据可显示...")
+      return
+    }
+
+    // 思路：从 front 取，取出几个元素
+    for (i <- front until front + size()) {
+      printf("arr[%d]=%d\n", i % maxSizes, arr(i % maxSizes))
+    }
+  }
+
+  // 求出当前环形队列有几个元素
+  def size(): Int = {
+    // 算法
+    (rear + maxSizes - front) % maxSizes
+  }
+
+  // 查看队列的头元素，但是不是改变队列
+  def headQueue(): Any = {
+    if (isNull()) {
+      return new Exception("队列为空，没有头元素可查看")
+    }
+    // 这里注意，不要去改变 fornt 值
+    return arr(front)
+  }
+
+}
+```
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
