@@ -2281,8 +2281,12 @@ class Node(val row: Int, val col: Int, val value: Int)
 > 
 > 视图说明 : 
 > 将数据存入队列时称为addqueue,addqueue处理需要有两个步骤 : 
+> 
 > 1.将尾指针往后移 : rear + 1,如果front == rear [表示队列为空]
+> 
 > 2.若尾指引rear小于等于队列的最大下标maxSize - 1,则将数据存入rear所指的数组元素中,否则无法存入数据, rear == maxSize - 1 [表示队列已满]
+> 
+> 3.虽然实现了队列,但是数据空间不能复用,因此需要对其进行优化,使用取模方式实现环形队列.
 ``` scala
 package com.geekparkhub.core.scala.algorithm
 
@@ -2583,15 +2587,19 @@ class Algorithms(maxSizes: Int) {
 ```
 
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+
 ### 2.6 🔖 链表 linked list 🔖 
 #### 2.6.1 链表 介绍
+> 链表是有序的列表,但是它在内存中是存储如下 : 
+> ![enter image description here](https://s2.ax1x.com/2019/04/12/Ab0LjJ.png)
+
 #### 2.6.2 单向链表 介绍
 #### 2.6.3 单向链表 应用实例
 #### 2.6.4 双向链表 应用实例
 #### 2.6.5 单向环形链表 应用场景
 
 
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 2.7 🔖 栈 stack 🔖 
 #### 2.7.1 实际需求
 #### 2.7.2 栈 介绍
