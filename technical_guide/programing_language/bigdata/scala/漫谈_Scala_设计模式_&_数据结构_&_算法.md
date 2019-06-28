@@ -2300,6 +2300,7 @@ object AlgorithmFlow01 {
       println("-add <添加队列数据>")
       println("-show <显示队列数据>")
       println("-get <取出队列数据>")
+      println("-head <查看队列头数据>")
       println("-exit <退出队列程序>")
       println()
       inputKey = StdIn.readLine()
@@ -2316,6 +2317,14 @@ object AlgorithmFlow01 {
             println(res.asInstanceOf[Exception].getMessage)
           } else {
             println(s"取值数据 = $res")
+          }
+        }
+        case "-head" => {
+          val res = algorithm.headQueue()
+          if (res.isInstanceOf[Exception]) {
+            println(res.asInstanceOf[Exception].getMessage)
+          } else {
+            println(s"头部数据 = $res")
           }
         }
         case "-exit" => System.exit(0)
@@ -2360,6 +2369,7 @@ class Algorithm(maxSize: Int) {
 
   /**
     * 定义 队列取值函数
+    *
     * @return
     */
   def getQueue(): Any = {
@@ -2402,8 +2412,19 @@ class Algorithm(maxSize: Int) {
       println()
     }
   }
+
+  /**
+    * 定义 查看队列头部元素
+    */
+  def headQueue(): Unit = {
+    if (isNull()) {
+      return new Exception("队列数据为空!")
+    }
+    return arr(front + 1)
+  }
 }
 ```
+
 #### 2.5.4 数组模拟 环形队列
 
 
