@@ -2716,15 +2716,32 @@ object AlgorithmFlow03 extends App {
   val node02 = new PersonaNode(2, "RoBot002", "RB02")
   val node04 = new PersonaNode(4, "RoBot004", "RB04")
   val node03 = new PersonaNode(3, "RoBot003", "RB03")
+  val node05 = new PersonaNode(3, "RoBot005", "RB05")
+  val node06 = new PersonaNode(3, "RoBot006", "RB06")
 
   // 创建单向链表对象
   val singleLinkedList = new SingleLinkedList()
 
+  // 调用无序添加链表方法
+  singleLinkedList.add001(node01)
+  singleLinkedList.add001(node02)
+  singleLinkedList.add001(node04)
+  singleLinkedList.add001(node03)
+
   // 调用有序添加链表方法
-  singleLinkedList.add002(node01)
-  singleLinkedList.add002(node02)
-  singleLinkedList.add002(node04)
-  singleLinkedList.add002(node03)
+  //  singleLinkedList.add002(node01)
+  //  singleLinkedList.add002(node02)
+  //  singleLinkedList.add002(node04)
+  //  singleLinkedList.add002(node03)
+
+  // 调用无序修改链表方法
+  singleLinkedList.update(node05)
+
+  // 调用无序修改链表方法
+  singleLinkedList.update2(node06)
+
+  // 调用无序删除链表方法
+  singleLinkedList.del(3)
 
   // 调用查询链表方法
   singleLinkedList.list()
@@ -2738,6 +2755,29 @@ class SingleLinkedList {
   val headNode = new PersonaNode(0, "", "")
 
   /**
+    * 第一种方式 : 定义 添加节点方法
+    * 在添加人物信息时,直接将数据添加到链表尾部
+    *
+    * @param personaNode
+    */
+  def add001(personaNode: PersonaNode): Unit = {
+    // 定义临时节点作为辅助
+    var tempNode = headNode
+    // 寻找链表最后
+    breakable {
+      while (true) {
+        if (tempNode.next == null) {
+          break()
+        }
+        // 如果没有到链表最后,继续寻找链表
+        tempNode = tempNode.next
+      }
+    }
+    // 在链表最后将对象地址赋值给tempNode
+    tempNode.next = personaNode
+  }
+
+  /**
     * 第二种方式 : 定义 添加节点方法
     * 在添加人物信息时,根据排名将人物信息插入到指定位置
     *
@@ -2748,14 +2788,12 @@ class SingleLinkedList {
     var tempNode = headNode
     // flag 用于判断该人物编号是否已存在
     var flag = false
-
     breakable {
       while (true) {
         // 节点tempNode已经是链表最后
         if (tempNode.next == null) {
           break()
         }
-
         // 位置定位,节点personaNode应加入到节点tempNode.next前面与节点tempNode后面
         if (personaNode.no < tempNode.next.no) {
           break()
@@ -2771,6 +2809,108 @@ class SingleLinkedList {
     } else {
       personaNode.next = tempNode.next
       tempNode.next = personaNode
+    }
+  }
+
+  /**
+    * 方式一 : 定义 修改节点数据 方法
+    * 根据人物ID修改节点数据
+    *
+    * @param newPersonaNode
+    */
+  def update(newPersonaNode: PersonaNode): Unit = {
+    // 判断链表是否为空
+    if (headNode.next == null) {
+      println("链表为空,无法修改!")
+      break()
+    }
+    var temp = headNode.next
+    var flag = false
+    breakable {
+      while (true) {
+        if (temp == null) {
+          break()
+        }
+        if (temp.no == newPersonaNode.no) {
+          flag = true
+          break()
+        }
+        temp = temp.next
+      }
+    }
+    // 跳出循环,找到对应链表节点,并修改数据
+    if (flag) {
+      temp.name = newPersonaNode.name
+      temp.nickname = newPersonaNode.nickname
+    } else {
+      printf("没有找到编号为 %d 的节点,无法修改！\n", newPersonaNode.no)
+    }
+  }
+
+  /**
+    * 方式二 : 定义 修改节点数据 方法
+    * 将整个节点替换,即重新指向新节点数据
+    *
+    * @param newPersonaNod1
+    */
+  def update2(newPersonaNod1: PersonaNode): Unit = {
+    if (headNode.next == null) {
+      println("链表为空,不能修改!")
+      return
+    }
+    var temp = headNode.next
+    var flag = false
+    breakable {
+      while (true) {
+        // 判断是否找到该节点
+        if (temp == null) {
+          break()
+        }
+        // 判断已找到该节点
+        if (temp.no == newPersonaNod1.no) {
+          flag = true
+          break()
+        }
+        temp = temp.next
+      }
+    }
+    if (flag) {
+      // 删除节点ID
+      del(temp.no)
+      // 添加新节点
+      add001(newPersonaNod1)
+    } else {
+      printf("没有找到人物ID为 %d 节点,无法修改！\n", newPersonaNod1.no)
+    }
+  }
+
+  /**
+    * 定义 删除节点方法
+    * 根据人物ID删除节点数据
+    *
+    * @param no
+    */
+  def del(no: Int): Unit = {
+    var temp = headNode
+    var flag = false
+    breakable {
+      while (true) {
+        if (temp.next == null) {
+          break()
+        }
+        // 判断是否找到该节点
+        if (temp.next.no == no) {
+          flag = true
+          break()
+        }
+        temp = temp.next
+      }
+    }
+    if (flag) {
+      // 删除节点操作
+      temp.next = temp.next.next
+    } else {
+      printf("no=%d 节点删除失败,因节点不存在\n", no)
     }
   }
 
@@ -2800,8 +2940,9 @@ class SingleLinkedList {
 /**
   * 定义 人物角色节点
   * Persona Node
-  * @param personaNo       角色ID
-  * @param personaName     角色名称
+  *
+  * @param personaNo 角色ID
+  * @param personaName 角色名称
   * @param personaNickname 角色简称
   */
 class PersonaNode(personaNo: Int, personaName: String, personaNickname: String) {
