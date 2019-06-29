@@ -2605,9 +2605,108 @@ class Algorithms(maxSizes: Int) {
 > ![enter image description here](https://s2.ax1x.com/2019/04/12/Ab0jBR.png)
 
 
+#### 2.6.3 单向链表 应用实例
+> 使用带head头的单向链表实现 : 排行榜管理功能
+> 完成对单向链表的增删改查功能.
+- 1.无序单向链表实例
+``` scala
+package com.geekparkhub.core.scala.algorithm
+
+import util.control.Breaks._
+
+object AlgorithmFlow03 extends App {
+
+  // 创建PersonaNode对象
+  val node01 = new PersonaNode(1, "RoBot001", "RB01")
+  val node02 = new PersonaNode(2, "RoBot002", "RB02")
+  val node04 = new PersonaNode(4, "RoBot004", "RB04")
+  val node03 = new PersonaNode(3, "RoBot003", "RB03")
+
+  // 创建单向链表对象
+  val singleLinkedList = new SingleLinkedList()
+  // 调用添加链表方法
+  singleLinkedList.add001(node01)
+  singleLinkedList.add001(node02)
+  singleLinkedList.add001(node04)
+  singleLinkedList.add001(node03)
+  // 调用查询链表方法
+  singleLinkedList.list()
+}
+
+/**
+  * 定义单向链表
+  */
+class SingleLinkedList {
+
+  // 初始化 PersonaNode 头节点
+  val headNode = new PersonaNode(0, "", "")
+
+  /**
+    * 第一种方式 : 定义 添加节点方法
+    * 在添加人物信息时,直接将数据添加到链表尾部
+    *
+    * @param personaNode
+    */
+  def add001(personaNode: PersonaNode): Unit = {
+    // 定义临时节点作为辅助
+    var tempNode = headNode
+    // 寻找链表最后
+    breakable {
+      while (true) {
+        if (tempNode.next == null) {
+          break()
+        }
+        // 如果没有到链表最后,继续寻找链表
+        tempNode = tempNode.next
+      }
+    }
+    // 在链表最后将对象地址赋值给tempNode
+    tempNode.next = personaNode
+  }
+
+  /**
+    * 定义 查询节点方法
+    */
+  def list(): Unit = {
+    // 先判断当前列表是否为空
+    if (headNode.next == null) {
+      println("链表为空!")
+      return
+    }
+    // temp指向head下一个数据地址
+    var temp = headNode.next
+    breakable {
+      while (true) {
+        if (temp == null) {
+          break()
+        }
+        printf("Node Info : no = %d name = %s nickname = %s\n", temp.no, temp.name, temp.nickname)
+        temp = temp.next
+      }
+    }
+  }
+
+}
+
+/**
+  * 定义 人物角色节点
+  * Persona Node
+  *
+  * @param personaNo 角色ID
+  * @param personaName 角色名称
+  * @param personaNickname 角色简称
+  */
+class PersonaNode(personaNo: Int, personaName: String, personaNickname: String) {
+  var no: Int = personaNo
+  var name: String = personaName
+  var nickname: String = personaNickname
+  // next 默认为 null
+  var next: PersonaNode = null
+}
+```
+
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-#### 2.6.3 单向链表 应用实例
 #### 2.6.4 双向链表 应用实例
 #### 2.6.5 单向环形链表 应用场景
 
