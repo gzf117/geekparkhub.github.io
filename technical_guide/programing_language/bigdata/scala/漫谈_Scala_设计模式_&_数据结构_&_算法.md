@@ -2957,11 +2957,207 @@ class PersonaNode(personaNo: Int, personaName: String, personaNickname: String) 
 
 
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+
 #### 2.6.4 双向链表 应用实例
+> 使用带head头的双向链表实现 : 人物排行榜管理.
+> 
+> 单向链表的缺点分析 : 
+> 1.单向链表查找的方向只能是一个方向,而双向链表可以向前或者向后查找.
+> 2.单向链表不能自我删除,需要靠辅助节点,而双向链表则可以自我删除,所以单链表删除时节点,总是找到temp的下一个节点来删除.
+- 1.双向链表实例
+``` scala
+package com.geekparkhub.core.scala.algorithm
+
+import util.control.Breaks._
+
+object AlgorithmFlow04 extends App {
+
+  // 创建PersonaNodes对象
+  val node01 = new PersonaNodes(1, "RoBot001", "RB01")
+  val node02 = new PersonaNodes(2, "RoBot002", "RB02")
+  val node04 = new PersonaNodes(4, "RoBot004", "RB04")
+  val node03 = new PersonaNodes(3, "RoBot003", "RB03")
+  val node05 = new PersonaNodes(3, "RoBot005", "RB05")
+
+  // 创建双向链表对象
+  val doubleLinkedList = new DoubleLinkedList()
+
+  // 调用 双向链表 添加无序数据 方法
+  doubleLinkedList.addDoubleLinked(node01)
+  doubleLinkedList.addDoubleLinked(node02)
+  doubleLinkedList.addDoubleLinked(node04)
+  doubleLinkedList.addDoubleLinked(node03)
+
+  // 调用无序修改链表方法
+  doubleLinkedList.update(node05)
+
+  // 调用 双向链表 删除节点方法
+  doubleLinkedList.del(2)
+  doubleLinkedList.del(3)
+
+  // 调用 双向链表 查询数据方法
+  doubleLinkedList.showDoubleLinked()
+}
+
+/**
+  * 定义 双向链表
+  */
+class DoubleLinkedList {
+  // 初始化 PersonaNodes 头节点
+  val headNodes = new PersonaNodes(0, "", "")
+
+  /**
+    * 方式一 : 定义 双向链表 添加无序数据 方法
+    * 在添加人物信息时,直接将数据添加到链表尾部
+    *
+    * @param personaNodes
+    */
+  def addDoubleLinked(personaNodes: PersonaNodes): Unit = {
+    // 定义临时节点作为辅助
+    var temp = headNodes
+    breakable {
+      // 寻找链表最后
+      while (true) {
+        if (temp.next == null) {
+          break()
+        }
+        temp = temp.next
+      }
+    }
+    // 当退出while循环后,temp指向的就是链表的最后
+    // 在链表的最后将 角色对象地址赋值给temp
+    temp.next = personaNodes
+    personaNodes.pre = temp
+  }
+
+  /**
+    * 方式二 : 定义 双向链表 添加有序数据 方法
+    * 在添加人物信息时,根据排名将人物信息插入到指定位置
+    *
+    * @param personaNodes
+    */
+  def addDoubleLinkeds(personaNodes: PersonaNodes): Unit = {
+
+  }
+
+  /**
+    * 定义 查询 双向链表数据 方法
+    */
+  def showDoubleLinked(): Unit = {
+    // 先判断当前列表是否为空
+    if (headNodes.next == null) {
+      println("链表为空!")
+      return
+    }
+    // temp指向head下一个数据地址
+    var temp = headNodes.next
+    breakable {
+      while (true) {
+        if (temp == null) {
+          break()
+        }
+        printf("Node Info : no = %d name = %s nickname = %s\n", temp.no, temp.name, temp.nickname)
+        temp = temp.next
+      }
+    }
+  }
+
+  /**
+    * 定义 双向链表 节点更新 方法
+    * @param personaNodes
+    */
+  def update(personaNodes: PersonaNodes): Unit = {
+    // 判断链表是否为空
+    if (headNodes.next == null) {
+      println("链表为空,无法修改!")
+      break()
+    }
+    var temp = headNodes.next
+    var flag = false
+    breakable {
+      while (true) {
+        if (temp == null) {
+          break()
+        }
+        if (temp.no == personaNodes.no) {
+          flag = true
+          break()
+        }
+        temp = temp.next
+      }
+    }
+    // 跳出循环,找到对应链表节点,并修改数据
+    if (flag) {
+      temp.name = personaNodes.name
+      temp.nickname = personaNodes.nickname
+    } else {
+      printf("没有找到编号为 %d 的节点,无法修改！\n", personaNodes.no)
+    }
+  }
+
+  /**
+    * 定义 删除节点
+    * 根据编号删除节点,利用双向链表可以实现自我删除的特点
+    * @param no
+    */
+  def del(no: Int): Unit = {
+    // 先判断当前列表是否为空
+    if (headNodes.next == null) {
+      println("链表为空,无法删除!")
+      return
+    }
+    // 辅助节点
+    var temp = headNodes.next
+    var flag = false
+    breakable {
+      while (true) {
+        if (temp == null) {
+          break()
+        }
+        if (temp.no == no) { // 找到该节点
+          flag = true
+          break()
+        }
+        temp = temp.next
+      }
+    }
+    if (flag) {
+      // 删除节点
+      temp.pre.next = temp.next
+      if (temp.next != null) {
+        temp.next.pre = temp.pre
+        temp.pre = null
+        temp.next = null
+      } else {
+        temp.pre = null
+      }
+    } else {
+      printf("删除失败,该no=%d节点不存在\n", no)
+    }
+  }
+}
+
+/**
+  * 定义 人物角色节点
+  * Persona Node
+  * @param personaNo  角色ID
+  * @param personaName 角色名称
+  * @param personaNickname 角色简称
+  */
+class PersonaNodes(personaNo: Int, personaName: String, personaNickname: String) {
+  var no: Int = personaNo
+  var name: String = personaName
+  var nickname: String = personaNickname
+  var pre: PersonaNodes = null
+  // next 默认为 null
+  var next: PersonaNodes = null
+}
+```
+
+
 #### 2.6.5 单向环形链表 应用场景
 
-
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 2.7 🔖 栈 stack 🔖 
 #### 2.7.1 实际需求
 #### 2.7.2 栈 介绍
