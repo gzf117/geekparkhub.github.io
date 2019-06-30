@@ -3300,17 +3300,168 @@ class Boy(bNo: Int) {
 }
 ```
 
-
-
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 2.7 🔖 栈 stack 🔖 
 #### 2.7.1 实际需求
+> 请输入一个表达式并输出计算结果.
+> 计算式：[722-5+1-5+3-3]  = ?
 #### 2.7.2 栈 介绍
+> 1.栈 英文为(stack)
+> 
+> 2.栈是一个先入后出(FILO:First In Last Out)有序列表
+> 
+> 3.栈(stack)是限制线性表中元素的插入和删除只能在线性表的同一端进行的一种特殊线性表,允许插入和删除的一端,为变化的一端,称为栈顶(Top),另一端为固定的一端,称为栈底(Bottom).
+> 
+> 4.根据堆栈的定义可知,最先放入栈中元素在栈底,最后放入的元素在栈顶,而删除元素刚好相反,最后放入的元素最先删除,最先放入的元素最后删除.
+> 
+> 出栈 & 入栈 概念
+> 
+> 入栈 : 
+> ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBEDA.png)
+> 
+> 出栈 : 
+> ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBFjH.png)
+
+
+
 #### 2.7.3 栈 经典应用场景
+> 1.子程序的调用 : 在跳往子程序前,会先将下个指令的地址存到堆栈中,直到子程序执行完后再将地址取出,以回到原来的程序中.
+> 
+> 2.处理递归调用 : 和子程序的调用类似,只是除了储存下一个指令的地址外,也将参数、区域变量等数据存入堆栈中.
+> 
+> 3.表达式的转换与求值.
+> 
+> 4.二叉树遍历
+> 
+> 5.图形深度优先(depth-first)搜索法.
+
+
+
 #### 2.7.4 栈 快速入门
+> 使用数组模拟 栈
+> 由于栈是一种有序列表,可以使用数组结构来储存栈的数据内容.
+> 下面用数组模拟栈的出栈、入栈等操作,实现思路分析并画出示意图,如下 : 
+> ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBAud.png)
+- 栈 实例
+``` scala
+package com.geekparkhub.core.scala.algorithm
+
+import scala.io.StdIn
+
+object StackFlow extends App {
+  // 创建arrayStack建对象
+  val arrayStack = new ArrayStack(4)
+  var key = ""
+  while (true) {
+    println("-show 显示栈")
+    println("-push 压栈")
+    println("-pop 弹栈")
+    println("-quit 退出栈")
+    key = StdIn.readLine()
+    key match {
+      case "-show" => arrayStack.showStack()
+      case "-push" => {
+        println("请输入整数")
+        val temps = StdIn.readInt()
+        arrayStack.push(temps)
+      }
+      case "-pop" => {
+        val res: Any = arrayStack.pop()
+        if (res.isInstanceOf[Exception]) {
+          println(res.asInstanceOf[Exception].getMessage)
+        } else {
+          printf("Res is %d\n", res)
+        }
+      }
+      case "-quit" => System.exit(0)
+      case _ => println("输入参数有误,请重试!")
+    }
+  }
+}
+
+/**
+  * 定义 栈
+  *
+  * @param maxSize
+  */
+class ArrayStack(maxSize: Int) {
+  // 定义参数最大值
+  var max = maxSize
+
+  // 定义 Top栈顶指针
+  var top = -1
+
+  // 定义 数组
+  var stack = new Array[Int](max)
+
+  /**
+    * 定义 栈是否为满 方法
+    * @return
+    */
+  def isFull(): Boolean = {
+    top == max - 1
+  }
+
+  /**
+    * 定义 判断栈是否为空 方法
+    * @return
+    */
+  def isNull(): Boolean = {
+    top == -1
+  }
+
+  /**
+    * 定义 入栈方法
+    * @param value
+    */
+  def push(value: Int): Unit = {
+    if (isFull()) {
+      println("栈满")
+      return
+    }
+    // 栈顶指针+1上移
+    top += 1
+    //即表示 arr(1) = value
+    stack(top) = value
+  }
+
+  /**
+    * 出栈
+    * @return
+    */
+  def pop(): Any = {
+    if (isNull()) {
+      return new Exception("栈空")
+    }
+    // 将栈缓存到tempStack变量中
+    val tempStack = stack(top)
+    // 栈顶指针-1下移
+    top -= 1
+    // 最后返回tempStack
+    return tempStack
+  }
+
+  /**
+    * 遍历 栈
+    */
+  def showStack(): Unit = {
+    if (isNull()) {
+      println("栈空")
+      return
+    }
+    for (i <- 0 to top reverse) {
+      printf("stack[%d]=%d\n", i, stack(i))
+    }
+  }
+}
+```
+
+
+
 #### 2.7.5 栈 实现综合计算器
 
 
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 2.8 🔖 递归 recursive 🔖 
 #### 2.8.1 实际应用场景
 #### 2.8.2 递归 概念
