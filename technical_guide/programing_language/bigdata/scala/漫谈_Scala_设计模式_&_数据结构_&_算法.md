@@ -3455,9 +3455,7 @@ class ArrayStack(maxSize: Int) {
 }
 ```
 
-
-
-#### 2.7.5 栈 实现综合计算器
+#### 2.7.5 栈 实现综合计算器实例
 ``` scala
 package com.geekparkhub.core.scala.algorithm
 
@@ -3673,15 +3671,85 @@ class ArrayStacks(maxSize: Int) {
 }
 ```
 
-
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 2.8 🔖 递归 recursive 🔖 
 #### 2.8.1 实际应用场景
+> 迷宫问题(回溯)
 #### 2.8.2 递归 概念
+> 简单的说 : 递归就是函数或方法自己调用自己,每次调用时传入不同的变量,递归有助于编程者解决复杂的问题,同时可以让代码变得简洁.
+
+
 #### 2.8.3 递归 快速入门
+> 打印问题 实例
+``` scala
+package com.geekparkhub.core.scala.algorithm
+
+object RecursiveFlow extends App {
+
+  test1(5)
+  println("----------")
+  test2(5)
+  println("----------")
+  test3(5)
+
+  def test1(n: Int): Unit = {
+    if (n > 2) {
+      test1(n - 1)
+    }
+    println("n=" + n)
+  }
+
+  def test2(n: Int): Unit = {
+    println("n=" + n)
+    if (n > 2) {
+      test2(n - 1)
+    }
+  }
+
+  def test3(n: Int): Unit = {
+
+    if (n > 2) {
+      test3(n - 1)
+      println("n=" + n)
+    }
+  }
+}
+```
+> 阶乘问题 实例
+``` scala
+package com.geekparkhub.core.scala.algorithm
+
+object RecursiveFlow002 extends App {
+
+  println(factorial(3))
+
+  // 阶乘
+  def factorial(n: Int): Int = {
+    if (n == 1) {
+      1
+    } else {
+      factorial(n - 1) * n
+    }
+  }
+}
+```
+
 #### 2.8.4 递归用于解决哪些问题
+> 1.各种数学问题如 : 8皇后问题、汉诺塔、阶乘问题、迷宫问题、球和篮子的问题、google编程大赛
+> 
+> 2.将用栈解决的问题 -> 递归代码比较简洁
+
 #### 2.8.5 递归遵守重要原则
+> 1.执行一个函数时就创建一个新的受保护的独立空间(新函数栈).
+> 
+> 2.函数的局部变量是独立,不会相互影响.
+> 
+> 3.递归必须向退出递归的条件逼近,否则就是无限递归.
+> 
+> 4.当一个函数执行完毕或者遇到return就会返回,遵守谁调用,就将结果返回给谁,同时当函数执行完毕或者返回时,该函数本身也会被系统销毁.
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 #### 2.8.6 应用实例 迷宫问题
+
 
 ### 2.9 🔖 排序 sort 🔖 
 #### 2.9.1 排序 介绍
