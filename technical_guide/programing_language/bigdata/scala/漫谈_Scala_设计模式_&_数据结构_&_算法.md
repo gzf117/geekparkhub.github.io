@@ -3458,7 +3458,220 @@ class ArrayStack(maxSize: Int) {
 
 
 #### 2.7.5 栈 实现综合计算器
+``` scala
+package com.geekparkhub.core.scala.algorithm
 
+import util.control.Breaks._
+
+object StackFlows extends App {
+
+  // 定义 表达式 一
+  val expression = "3+2*6-2"
+
+  // 定义 数栈
+  val numStack = new ArrayStacks(10)
+
+  // 定义 字符栈
+  val operStack = new ArrayStacks(10)
+
+  /**
+    * 初始化 变量
+    */
+  var index = 0
+  var num1 = 0
+  var num2 = 0
+  var oper = 0
+  var res = 0
+  var char = ' '
+  var keepNum = ""
+  breakable {
+    while (true) {
+      // 1.设计两个栈 : 数值栈 符号栈
+      // 2.对expresson进行扫描,依次的取出
+      char = (expression.substring(index, index + 1)) (0)
+      // 如果当前符号是一个操作符
+      if (operStack.isOper(char)) {
+        // 如果当前符号栈中有数据
+        if (!operStack.isNull()) {
+          // 当前符号的优先级小于等于符号栈的栈顶的符号的优先级
+          if (operStack.priority(char) <= operStack.priority(operStack.stack(operStack.top))) {
+            // 开始计算
+            num1 = numStack.pop().toString.toInt
+            num2 = numStack.pop().toString.toInt
+            oper = operStack.pop().toString.toInt
+            res = numStack.cal(num1, num2, oper)
+            // 将计算的结果入数值栈
+            numStack.push(res)
+            // 将操作符压入符号栈
+            operStack.push(char)
+          } else {
+            // 反之直接入符号栈
+            operStack.push(char)
+          }
+        } else {
+          operStack.push(char)
+        }
+      } else {
+        // 处理多位数的逻辑
+        keepNum += char
+        // 如果char已经是expression的最后一个字符,则该数直接入栈
+        if (index == expression.length - 1) {
+          numStack.push(keepNum.toInt)
+        } else {
+          // 判断char的下一个字符是不是数字,如果是数字,则进行下一次扫描,如果是操作符,就该数直接入栈
+          // 是操作符,就将该数直接入栈
+          if (operStack.isOper(expression.substring(index + 1, index + 2)(0))) {
+            numStack.push(keepNum.toInt)
+            // 清空
+            keepNum = ""
+          }
+        }
+      }
+      // index 后移
+      index += 1
+      if (index >= expression.length) {
+        break()
+      }
+    }
+  }
+
+  // 当整个表达式扫描完毕后,依次从数值栈和符号栈中取出数据,进行运算最后在数值栈中的数据就是结果
+  breakable {
+    while (true) {
+      if (operStack.isNull()) {
+        break()
+      }
+      // 开始计算
+      num1 = numStack.pop().toString.toInt
+      num2 = numStack.pop().toString.toInt
+      oper = operStack.pop().toString.toInt
+      res = numStack.cal(num1, num2, oper)
+      // 将计算的结果入数值栈
+      numStack.push(res)
+    }
+  }
+  printf("Expression : %s = %d", expression, numStack.pop().toString.toInt)
+}
+
+
+/**
+  * 定义 栈
+  *
+  * @param maxSize
+  */
+class ArrayStacks(maxSize: Int) {
+  // 定义参数最大值
+  var max = maxSize
+
+  // 定义 Top栈顶指针
+  var top = -1
+
+  // 定义 数组
+  var stack = new Array[Int](max)
+
+  /**
+    * 定义 栈是否为满 方法
+    *
+    * @return
+    */
+  def isFull(): Boolean = {
+    top == max - 1
+  }
+
+  /**
+    * 定义 判断栈是否为空 方法
+    *
+    * @return
+    */
+  def isNull(): Boolean = {
+    top == -1
+  }
+
+  /**
+    * 定义 入栈方法
+    *
+    * @param value
+    */
+  def push(value: Int): Unit = {
+    if (isFull()) {
+      println("栈满")
+      return
+    }
+    // 栈顶指针+1上移
+    top += 1
+    //即表示 arr(1) = value
+    stack(top) = value
+  }
+
+  /**
+    * 出栈
+    *
+    * @return
+    */
+  def pop(): Any = {
+    if (isNull()) {
+      return new Exception("栈空")
+    }
+    // 将栈缓存到tempStack变量中
+    val tempStack = stack(top)
+    // 栈顶指针-1下移
+    top -= 1
+    // 最后返回tempStack
+    return tempStack
+  }
+
+  /**
+    * 遍历 栈
+    */
+  def showStack(): Unit = {
+    if (isNull()) {
+      println("栈空")
+      return
+    }
+    for (i <- 0 to top reverse) {
+      printf("stack[%d]=%d\n", i, stack(i))
+    }
+  }
+
+  /**
+    * 定义 运算符优先级 方法
+    *
+    * @param oper
+    * @return
+    */
+  def priority(oper: Int): Int = {
+    if (oper == '*' || oper == '/') {
+      return 1
+    } else if (oper == '+' || oper == '-') {
+      return 0
+    } else {
+      return -1 // 运算符不正确
+    }
+  }
+
+  /**
+    * 定义 操作符 方法
+    *
+    * @param value
+    * @return
+    */
+  def isOper(value: Int): Boolean = {
+    value == '+' || value == '-' || value == '*' || value == '/'
+  }
+
+  // 定义 计算方法
+  def cal(num1: Int, num2: Int, oper: Int): Int = {
+    var res = 0
+    oper match {
+      case '+' => res = num2 + num1
+      case '-' => res = num2 - num1
+      case '*' => res = num2 * num1
+      case '/' => res = num2 / num1
+    }
+    res
+  }
+}
+```
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
