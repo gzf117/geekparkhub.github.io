@@ -3156,6 +3156,151 @@ class PersonaNodes(personaNo: Int, personaName: String, personaNickname: String)
 
 
 #### 2.6.5 单向环形链表 应用场景
+##### 2.6.5 约瑟夫问题
+> 说明 : 
+> 
+> 设编号为1,2，…，n的n个人围坐一圈,约定编号为k（1<=k<=n）的人从1开始报数,数到 m的那个人出列,它的下一位又从1开始报数,数到m的那个人又出列,依次类推,直到所有人出列为止,由此产生一个出队编号的序列.
+> 
+> 问题具体化 : 
+> 先构成一个有n个结点的单循环链表,然后由k结点起从1开始计数,计到m时,对应结点从链表中删除,然后再从被删除结点的下一个结点又从1开始计数,直到最后一个结点从链表中删除算法结束.
+- **单向环形链表 实例**
+``` scala
+package com.geekparkhub.core.scala.algorithm
+
+import util.control.Breaks._
+
+object JosephuFlow extends App {
+  // 创建 单向环形链表对象
+  val boyGame = new BoyGame()
+  // 调用 添加玩家方法
+  boyGame.addBoy(7)
+  // 调用 显示玩家方法
+  boyGame.showBoy()
+  boyGame.countBoy(4, 3, 7)
+}
+
+/**
+  * 定义单向链表,用来管理Boy
+  */
+class BoyGame {
+
+  // 初始化头结点,禁止改动头结点
+  var first: Boy = null
+
+  /**
+    * 定义添加Boy 方法
+    * 形成单向环形链表
+    *
+    * @param nums 表示共有多少玩家
+    */
+  def addBoy(nums: Int): Unit = {
+    if (nums < 1) {
+      println("Boy人数不正确,请重新输入!")
+      return
+    }
+    // 因为头结点不能动,因此需要有一个临时节点作为辅助,只是该辅助节点的指向是null,即是一个没有指向任何地址的指针
+    var temp: Boy = null
+    for (no <- 1 to nums) {
+      // 根据编号创建Boy对象
+      val boy = new Boy(no)
+      // 如果是第一个Boy则自己指向自己,并将temp也指向第一个 Boy
+      if (no == 1) {
+        first = boy
+        boy.next = first
+        temp = first // 辅助指针指向到第一个Boy,即 irst
+      } else {
+        temp.next = boy // 辅助指针指向当前的Boy
+        boy.next = first // 当前的Boy指向第一个Boy
+        temp = boy // 辅助指针指向下一个Boy
+      }
+    }
+  }
+
+  /**
+    * 定义 遍历单向环形链表 方法
+    */
+  def showBoy(): Unit = {
+    if (first.next == null) {
+      println("没有Boy")
+      return
+    }
+    // 因为头结点不能动,因此需要有临时节点作为辅助
+    // 又因为first节点的数据有关,因此这里使得temp指向first地址
+    var temp = first
+    breakable {
+      while (true) {
+        printf("玩家 Boy ID = %d\n", temp.no)
+        println("===================")
+        if (temp.next == first) {
+          break()
+        }
+        temp = temp.next // 移动指针到下一个Boy
+      }
+    }
+  }
+
+  /**
+    * 编写 countBoy
+    *
+    * @param startNo  从第几个玩家开始数
+    * @param countNum 次数
+    * @param nums     总人数
+    */
+  def countBoy(startNo: Int, countNum: Int, nums: Int): Unit = {
+    // 对参数进行判断
+    if (first.next == null || startNo < 1 || startNo > nums) {
+      println("参数有误,请重新输入!")
+      return
+    }
+    /**
+      * 思路
+      * 1.在first前面设计辅助指针temp,即将temp指针定位到first前面
+      */
+    var temp = first // 辅助指针
+    breakable {
+      // 遍历一圈单向环形链表后,找到指针first的前一个位置,此时是新temp
+      while (true) {
+        if (temp.next == first) {
+          break()
+        }
+        // 移动指针
+        temp = temp.next
+      }
+    }
+    // 2.将first指针移动到startNo位置,将temp指针移动到startNo - 1位置
+    for (i <- 1 until startNo) {
+      first = first.next
+      temp = temp.next
+    }
+    breakable {
+      while (true) {
+        if (temp == first) {
+          break()
+        }
+        // 3.开始数countNum个位置, first和temp指针对应移动
+        for (i <- 1 until countNum) {
+          first = first.next
+          temp = temp.next
+        }
+        printf("玩家 Boy ID = %d  已出局\n", first.no)
+        // 4.删除first指向的节点,并移动first指针到下一节点,temp指针对应移动
+        temp.next = first.next
+        first = first.next
+      }
+    }
+    // while循环结束后,只有一个玩家
+    printf("最后玩家 Boy ID = %d", first.no)
+  }
+}
+
+// 定义 Boy 类
+class Boy(bNo: Int) {
+  var no: Int = bNo
+  var next: Boy = null
+}
+```
+
+
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 2.7 🔖 栈 stack 🔖 
