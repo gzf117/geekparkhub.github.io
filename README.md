@@ -6,7 +6,7 @@
   <img src="https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/hello_world.jpg" alt="修仙之路" title="修仙之路">
 <br>
 <!--<br><br><br><img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" width="192px" alt="GeekParkHub">-->
-</div>
+</div><br>
 
 - **极客实验室是极客国际公园旗下为未来而构建的极客社区;**
 - **我们正在构建一个活跃的小众社区,汇聚众多优秀开发者与设计师;**

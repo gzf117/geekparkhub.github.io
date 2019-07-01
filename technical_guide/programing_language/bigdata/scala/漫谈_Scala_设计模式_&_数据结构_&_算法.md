@@ -4311,6 +4311,129 @@ object InsertSortFlow extends App {
 ```
 
 #### 2.9.5 快速排序
+> 快速排序(Quicksort)是对冒泡排序的一种改进.
+> 
+> 插入排序法思想 : 
+> 
+> 基本思想是 : 通过一趟排序将要排序的数据分割成独立的两部分.
+> 
+> 其中一部分的所有数据都比另外一部分的所有数据都要小,然后再按此方法对这两部分数据分别进行快速排序.
+> 
+> 整个排序过程可以递归进行,以此达到整个数据变成有序序列.
+> 
+> 快速排序示意图 : 
+> 
+> ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBn4f.png)
+> 
+> 快速排序代码详细图解 : 
+> 
+> ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBKC8.png)
+- 快速排序 实例
+``` scala
+package com.geekparkhub.core.scala.algorithm
+
+import java.text.SimpleDateFormat
+import java.util.Date
+import util.control.Breaks._
+
+object QuickSortFlow extends App {
+
+  println("---- 快速排序  ----")
+  var arrs = Array[Int](-9, 78, 0, 23, -567, 70)
+  quickSort(0, arrs.length - 1, arrs)
+  println(arrs.mkString(" "))
+  println()
+
+  // 创建80000个随机数据的数组
+  val random = new util.Random()
+  val arr = new Array[Int](80000)
+  for (i <- 0 until 80000) {
+    arr(i) = random.nextInt(8000000)
+  }
+
+  // 创建时间戳
+  val dateFormat: SimpleDateFormat = new SimpleDateFormat("mm:ss")
+  val now: Date = new Date()
+  val date = dateFormat.format(now)
+
+  println("---- 快速排序  ----")
+  println("快速排序前时间 = " + date + ".s")
+
+  // 调用 快速排序方法
+  quickSort(0, arr.length - 1, arr)
+
+  val now2: Date = new Date()
+  val date2 = dateFormat.format(now2)
+  // 输出时间
+  println("快速排序后时间 = " + date2 + ".s")
+
+  /**
+    * 定义 快速排序 方法
+    *
+    * @param left  定义 从数组最左边索引 0
+    * @param right 定义 从数组最右边索引 arr.length - 1
+    * @param arr   进行排序的数组
+    */
+  def quickSort(left: Int, right: Int, arr: Array[Int]): Unit = {
+    // 数组左下标
+    var lefts = left
+    // 数组右下标
+    var rights = right
+    // 定义缓存变量
+    var temp = 0
+    // 定义中间值,将数组分割
+    var median = arr((left + right) / 2)
+    breakable {
+      // 定义while语句,作用是将比中间值小的数存放至左边,比中间值大的数存放至右边
+      while (lefts < rights) {
+        // 如果左边小于中间值,则从左边寻找一个比中间值大的值对应下标
+        while (arr(lefts) < median) {
+          lefts += 1
+        }
+        // 如果右边大于中间值,则从右边寻找一个比中间值小的值对应下标
+        while (arr(rights) > median) {
+          rights -= 1
+        }
+        // 如果左侧值大于等于右侧值则表示本次数值交换结束
+        if (lefts >= rights) {
+          break()
+        }
+        // 交换数值位置
+        var temp = arr(lefts)
+        arr(lefts) = arr(rights)
+        arr(rights) = temp
+        // 二者已经交换后再进行的判断,即arr(lefts)表示的是右边
+        if (arr(lefts) == median) {
+          // 如果从右边寻找一个值与中间值相等的值,则不用交换,继续进行右边下一个,提高效率
+          rights -= 1
+        }
+        // 二者已经交换后再进行的判断,即 arr(rights)表示的是左边
+        if (arr(rights) == median) {
+          // 如果从左边寻找一个值与中间值相等的值,则不用交换,继续进行左边下一个,提高效率
+          lefts += 1
+        }
+      }
+    }
+    // 如果左右值相等
+    if (lefts == rights) {
+      // 则向右递归做准备
+      lefts += 1
+      // 则向左递归做准备
+      rights -= 1
+    }
+    // 如果左边小于右边,则向左递归
+    if (left < rights) {
+      quickSort(left, rights, arr)
+    }
+    // 相反,如果右边大于左边,则向右递归
+    if (right > lefts) {
+      quickSort(lefts, right, arr)
+    }
+  }
+}
+```
+
+
 #### 2.9.6 归并排序
 
 
