@@ -3979,6 +3979,174 @@ object BubbleSortFlow extends App {
 ```
 
 #### 2.9.3 选择排序
+> 选择式排序也属于内部排序法(内存排序),是从排序的数据中,按指定的规则选出某一元素,经过和其他元素重整,再依规定交换位置后达到排序的目的.
+> 
+> 选择排序思想 : 
+> 
+> 选择排序(select sorting)也是一种简单的排序方法,它的基本思想是 :
+> 
+> 第一次从R[0]~R[n-1]中选取最小值,与R[0]交换
+> 第二次从R[1]~R[n-1]中选取最小值,与R[1]交换
+> 第三次从R[2]~R[n-1]中选取最小值,与R[2]交换…
+> 第i次从R[i-1]~R[n-1]中选取最小值,与R[i-1] 交换…
+> 第n-1次从R[n-2]~R[n-1]中选取最小值,与R[n-2]交换.
+> 总共通过n-1次,得到一个按排序码从小到大排列的有序序列.
+> 
+> 选择排序思路分析图 : 
+> 
+> ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBM8S.png)
+- 选择排序实例
+``` scala
+package com.geekparkhub.core.scala.algorithm
+
+import java.text.SimpleDateFormat
+import java.util.Date
+
+object SelectSortFlow extends App {
+
+  // 调用 选择排序 演变过程方法
+  println("---- 选择排序 方式1 <演变过程> ----")
+  evolution()
+  println()
+
+  // 创建80000个随机数据的数组
+  val random = new util.Random()
+  val arr = new Array[Int](80000)
+  for (i <- 0 until 80000) {
+    arr(i) = random.nextInt(8000000)
+  }
+
+  // 创建时间戳
+  val dateFormat: SimpleDateFormat = new SimpleDateFormat("mm:ss")
+  val now: Date = new Date()
+  val date = dateFormat.format(now)
+
+  // 打印 选择排序前结果
+  println("---- 选择排序 方式2 <简便方式> ----")
+  // println(arr.mkString(" "))
+  // 输出时间
+  println("选择排序前时间 = " + date + ".s")
+
+  // 调用 选择排序 简便方法
+  selectSort(arr)
+
+  // 打印 选择排序后结果
+  val now2: Date = new Date()
+  val date2 = dateFormat.format(now2)
+  // 输出时间
+  println("选择排序后时间 = " + date2 + ".s")
+
+  /**
+    * 定义 选择排序演变过程 方法
+    */
+  def evolution(): Unit = {
+
+    // 定义 数组
+    var arr = Array(456, 343, 937, 23)
+
+    // 假定第一个为最小值
+    var min = arr(0)
+    var minIndex = 0
+
+    /**
+      * 第1轮选择排序 (456, 343, 937, 23) => (23, 343, 937, 456)
+      */
+    for (x <- (0 + 1) until arr.length) {
+      // 判断如果min值不是真的最小值
+      if (min > arr(x)) {
+        // 则重置 min值
+        min = arr(x)
+        // 重置 minIndex
+        minIndex = x
+      }
+    }
+    // 判断minIndex是否需要交换位置
+    if (minIndex != 0) {
+      // 赋值操作
+      arr(minIndex) = arr(0)
+      arr(0) = min
+    }
+    println("第1轮选择排序结束 = " + arr.mkString(" "))
+
+
+    // 假定第一个为最小值
+    min = arr(1)
+    minIndex = 1
+
+    /**
+      * 第2轮选择排序 (23, 343, 937, 456) => (23, 343, 937, 456)
+      */
+    for (x <- 1 + 1 until arr.length) {
+      // 判断如果min值不是真的最小值
+      if (min > arr(x)) {
+        // 则重置 min值
+        min = arr(x)
+        // 重置 minIndex
+        minIndex = x
+      }
+    }
+    // 判断minIndex是否需要交换位置
+    if (minIndex != 1) {
+      // 赋值操作
+      arr(minIndex) = arr(1)
+      arr(1) = min
+    }
+    println("第2轮选择排序结束 = " + arr.mkString(" "))
+
+
+    // 假定第一个为最小值
+    min = arr(2)
+    minIndex = 2
+
+    /**
+      * 第3轮选择排序 (23, 343, 937, 456) => (23, 343, 456, 937)
+      */
+    for (x <- 2 + 1 until arr.length) {
+      // 判断如果min值不是真的最小值
+      if (min > arr(x)) {
+        // 重置 min
+        min = arr(x)
+        // 重置 minIndex
+        minIndex = x
+      }
+    }
+    // 判断minIndex是否需要交换位置
+    if (minIndex != 2) {
+      // 赋值操作
+      arr(minIndex) = arr(2)
+      arr(2) = min
+    }
+    println("第3轮选择排序结束 = " + arr.mkString(" "))
+  }
+
+  /**
+    * 定义 选择排序 简写 方法
+    * 选择排序结果用时为2秒
+    *
+    * @param arr
+    */
+  def selectSort(arr: Array[Int]) = {
+    for (x <- 0 until arr.length - 1) {
+      var min = arr(x)
+      var minIndex = x
+      for (y <- x + 1 until arr.length) {
+        // 如果min值不是最小值,则重置min值 & minIndex值
+        if (min > arr(y)) {
+          min = arr(y)
+          minIndex = y
+        }
+      }
+      // 判断minIndex值是否需要交换位置
+      if (minIndex != x) {
+        // 赋值操作
+        arr(minIndex) = arr(x)
+        arr(x) = min
+      }
+    }
+  }
+}
+```
+
 #### 2.9.4 插入排序
 #### 2.9.5 快速排序
 #### 2.9.6 归并排序
