@@ -3797,9 +3797,9 @@ object LabyrinthBacktracking extends App {
     println()
   }
 
+  // 调用 递归回溯 迷宫策略 一
   println()
   println("递归回溯 迷宫策略 一")
-  // 调用 递归回溯 迷宫策略 一
   strategy01(maps, 1, 1)
   for (i <- 0 until 8) {
     for (j <- 0 until 7) {
@@ -3807,6 +3807,18 @@ object LabyrinthBacktracking extends App {
     }
     println()
   }
+
+  // 调用 递归回溯 迷宫策略 二
+  println()
+  println("递归回溯 迷宫策略 二")
+  strategy02(maps, 1, 1)
+  for (i <- 0 until 8) {
+    for (j <- 0 until 7) {
+      print(maps(i)(j) + " ")
+    }
+    println()
+  }
+
 
   /**
     * 定义 递归回溯 迷宫策略 一
@@ -3837,6 +3849,47 @@ object LabyrinthBacktracking extends App {
           return true
           // 如果向下移动/右移动/上移动/都无法走通,则向左移动,判断是否可以走通
         } else if (strategy01(map, x, y - 1)) {
+          return true
+          // 如果以上策略无法走通
+        } else {
+          map(x)(y) = 3
+          return false
+        }
+      } else {
+        return false
+      }
+    }
+  }
+
+  /**
+    * 定义 递归回溯 迷宫策略 二
+    * 策略 : 上 -> 右 -> 下 -> 左
+    *
+    * @param map 迷宫地图
+    * @param x   开始出发点
+    * @param y   开始出发点
+    * @return
+    */
+  def strategy02(map: Array[Array[Int]], x: Int, y: Int): Boolean = {
+    // 即表示找到地图出路,可以走出迷宫
+    if (map(6)(5) == 2) {
+      return true
+    } else {
+      // 0表示可以移动
+      if (map(x)(y) == 0) {
+        // 开始递归回溯
+        map(x)(y) = 2
+        // 先向下移动,判断是否可以走通
+        if (strategy02(map, x - 1, y)) {
+          return true
+          // 先向上移动,如果走不通,则向右移动,判断是否可以走通
+        } else if (strategy02(map, x, y + 1)) {
+          return true
+          // 先向上移动,如果走不通,则向右移动,如果向右移动走不通,则向下移动,判断是否可以走通
+        } else if (strategy02(map, x + 1, y)) {
+          return true
+          // 如果向上移动/右移动/下移动/都无法走通,则向左移动,判断是否可以走通
+        } else if (strategy02(map, x, y - 1)) {
           return true
           // 如果以上策略无法走通
         } else {
