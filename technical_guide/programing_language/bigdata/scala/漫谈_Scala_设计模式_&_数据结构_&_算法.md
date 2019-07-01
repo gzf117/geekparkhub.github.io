@@ -4163,7 +4163,151 @@ object SelectSortFlow extends App {
 > ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBmUP.png)
 - 插入排序实例
 ``` scala
+package com.geekparkhub.core.scala.algorithm
 
+import java.text.SimpleDateFormat
+import java.util.Date
+
+object InsertSortFlow extends App {
+
+  // 调用 插入排序演变过程方法
+  println("---- 插入排序 方式1 <演变过程> ----")
+  evolution()
+  println()
+
+  // 定义 数组
+  println("---- 插入排序 方式2 <简便方式> ----")
+  var arrs = Array(456, 343, 937, 23)
+  insertSorts(arrs)
+  println()
+
+  // 创建80000个随机数据的数组
+  val random = new util.Random()
+  val arr = new Array[Int](80000)
+  for (i <- 0 until 80000) {
+    arr(i) = random.nextInt(8000000)
+  }
+
+  // 创建时间戳
+  val dateFormat: SimpleDateFormat = new SimpleDateFormat("mm:ss")
+  val now: Date = new Date()
+  val date = dateFormat.format(now)
+
+  println("---- 插入排序 方式2 <简便方式> ----")
+  println("插入排序前时间 = " + date + ".s")
+  // 调用 插入排序演 简化方法 | 插入排序结果用时为1秒
+  insertSort(arr)
+
+  val now2: Date = new Date()
+  val date2 = dateFormat.format(now2)
+  // 输出时间
+  println("插入排序后时间 = " + date2 + ".s")
+
+  /**
+    * 定义 插入排序演变过程 方法
+    */
+  def evolution(): Unit = {
+    // 定义 数组
+    var arr = Array(456, 343, 937, 23)
+
+    /**
+      * 第1轮 插入排序 ( (456), 343, 937, 23 ) => ( (343, 456), 937, 23 )
+      */
+
+    // 表示 插入元素的值 | arr(1) = 343
+    var insertValue = arr(1)
+    // 表示 (456)有序表的最后元素的下标,即有序表的最大值的索引
+    var insertIndex = 1 - 1
+    // 如果有序表最后元素下标大于等于0且插入元素值小于insertIndex条件,则表示没有找到插入位置
+    while (insertIndex >= 0 && insertValue < arr(insertIndex)) {
+      // 如没有找到位置,应将有序表最后元素下标向后移动
+      arr(insertIndex + 1) = arr(insertIndex)
+      insertIndex -= 1
+    }
+    // 如条件满足时,则退出while循环,即表示找到插入位置
+    arr(insertIndex + 1) = insertValue
+    // 打印 第1轮插入排序结束
+    println("第1轮插入排序结束 = " + arr.mkString(" "))
+
+    /**
+      * 第2轮 插入排序 ( (343, 456), 937, 23 ) => ( (343, 456, 937), 23 )
+      */
+
+    // 表示 插入元素的值 | arr(2) = 937
+    insertValue = arr(2)
+    // 表示 (343, 456)有序表的最后元素的下标,即有序表的最大值的索引
+    insertIndex = 2 - 1
+    // 如果有序表最后元素大于等于0且插入的值小于insertIndex条件,则表示没有找到插入位置
+    while (insertIndex >= 0 && insertValue < arr(insertIndex)) {
+      // 未能找打插入位置,则将有序表最后元素下标向后移动
+      arr(insertIndex + 1) = arr(insertIndex)
+      insertIndex -= 1
+    }
+    // 如条件满足时,则跳出while,既表示找到插入位置
+    arr(insertIndex + 1) = insertValue
+    // 打印 第2轮插入排序结束
+    println("第2轮插入排序结束 = " + arr.mkString(" "))
+
+    /**
+      * 第3轮 插入排序 ( (343, 456, 937), 23 ) => ( (23, 343, 456, 937) )
+      */
+    // 表示 插入元素的值 | arr(3) = 23
+    insertValue = arr(3)
+    // 表示 (343, 456, 937)有序表的最后元素的下标,即有序表的最大值的索引
+    insertIndex = 3 - 1
+    // 如果有序表最后元素值大于等于0且insertValue插入的值小于insertIndex条件,则表示没有找到插入位置
+    while (insertIndex >= 0 && insertValue < arr(insertIndex)) {
+      // 未能找打插入位置,则将有序表最后元素下标向后移动
+      arr(insertIndex + 1) = arr(insertIndex)
+      insertIndex -= 1
+    }
+    arr(insertIndex + 1) = insertValue
+    // 打印 第3轮插入排序结束
+    println("第3轮插入排序结束 = " + arr.mkString(" "))
+  }
+
+  /**
+    * 定义 插入排序 简化方法
+    *
+    * @param arr
+    */
+  def insertSort(arr: Array[Int]) = {
+    for (x <- 1 until arr.length) {
+      var insertValue = arr(x)
+      var insertIndex = x - 1
+      // 判断有序表最后的元素值是否大于等于0,且插入的值是否小于insertIndex,则表示未能找到插入位置
+      while (insertIndex >= 0 && insertValue < arr(insertIndex)) {
+        // 将有序表最后元素向后移动
+        arr(insertIndex + 1) = arr(insertIndex)
+        insertIndex -= 1
+      }
+      // 如果条件满足跳出循环,则表示找到插入位置
+      arr(insertIndex + 1) = insertValue
+      // println(s"第${x}轮插入排序结束 = "+ arr.mkString(" "))
+    }
+  }
+
+  /**
+    * 定义 插入排序 简化方法
+    *
+    * @param arr
+    */
+  def insertSorts(arr: Array[Int]) = {
+    for (x <- 1 until arr.length) {
+      var insertValue = arr(x)
+      var insertIndex = x - 1
+      // 判断有序表最后的元素值是否大于等于0,且插入的值是否小于insertIndex,则表示未能找到插入位置
+      while (insertIndex >= 0 && insertValue < arr(insertIndex)) {
+        // 将有序表最后元素向后移动
+        arr(insertIndex + 1) = arr(insertIndex)
+        insertIndex -= 1
+      }
+      // 如果条件满足跳出循环,则表示找到插入位置
+      arr(insertIndex + 1) = insertValue
+      println(s"第${x}轮插入排序结束 = " + arr.mkString(" "))
+    }
+  }
+}
 ```
 
 #### 2.9.5 快速排序
