@@ -5,7 +5,7 @@
 <div align="center">
   <img src="https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/hello_world.jpg" alt="修仙之路" title="修仙之路">
 <br><br><br>
-<img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" width="192px" alt="GeekParkHub">
+<!--<img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" width="192px" alt="GeekParkHub">-->
 </div><br>
 
 - **极客实验室是极客国际公园旗下为未来而构建的极客社区;**
@@ -106,9 +106,7 @@
 - Email：<jeep711.home.@gmail.com>—— <jeep-711@outlook.com> —— <geekparkhub@outlook.com>
 
 
-
 ### 捐助 项目的发展离不开你的支持,请开发者喝杯☕Coffee☕吧!
-![enter image description here](https://www.geekparkhub.com/docs/images/pay.jpg)
 
 #### `致谢`：
 **捐助时请备注 UserName**
