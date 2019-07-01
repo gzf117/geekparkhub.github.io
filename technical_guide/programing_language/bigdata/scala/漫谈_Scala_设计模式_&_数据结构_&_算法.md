@@ -4453,8 +4453,129 @@ object QuickSortFlow extends App {
 > ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBlvQ.png)
 > - 归并排序 实例
 ``` scala
+package com.geekparkhub.core.scala.algorithm
 
+import java.text.SimpleDateFormat
+import java.util.Date
+
+object MergeSortFlow extends App {
+
+  println("---- 归并排序  ----")
+  val arrs = Array(-9, 78, 0, 23, -567, 70)
+  val temparss = new Array[Int](arrs.length)
+  println("归并排序前结果 = " + arrs.mkString(" "))
+  mergeSort(arrs, 0, arrs.length - 1, temparss)
+  println("归并排序后结果 = " + arrs.mkString(" "))
+  println()
+
+  // 创建80000个随机数据的数组
+  val random = new util.Random()
+  val arr = new Array[Int](80000)
+  val temp = new Array[Int](arr.length)
+  for (i <- 0 until 80000) {
+    arr(i) = random.nextInt(8000000)
+  }
+
+  // 创建时间戳
+  val dateFormat: SimpleDateFormat = new SimpleDateFormat("mm:ss")
+  val now: Date = new Date()
+  val date = dateFormat.format(now)
+
+  println("---- 归并排序  ----")
+  println("归并排序前时间 = " + date + ".s")
+
+  // 调用 归并排序方法
+  mergeSort(arr, 0, arr.length - 1, temp)
+
+  val now2: Date = new Date()
+  val date2 = dateFormat.format(now2)
+  // 输出时间
+  println("归并排序后时间 = " + date2 + ".s")
+
+  /**
+    * 定义 归并排序 方法
+    *
+    * @param arr   既表示 待排序数组
+    * @param left  即表示 数组最左侧元素下标 0
+    * @param right 即表示 数组最右侧元素下标 length - 1
+    * @param temp  即表示 事先开辟完成的临时数组,临时数组大小与待排序数组大小要一致
+    */
+  def mergeSort(arr: Array[Int], left: Int, right: Int, temp: Array[Int]): Unit = {
+    // 如果左侧小于右侧,既表示继续拆分操作
+    if (left < right) {
+      val mid = (left + right) / 2
+      // 递归拆分左侧数组 合并为序列表
+      mergeSort(arr, left, mid, temp)
+      // 递归拆分右侧数组 合并为有序列表
+      mergeSort(arr, mid + 1, right, temp)
+      // 调用 合并方法
+      merge(arr, left, mid, right, temp)
+    }
+  }
+
+  /**
+    * 定义 数据合并 方法
+    *
+    * @param arr   既表示 待排序数组
+    * @param left  既表示 数组最左侧元素下标 0
+    * @param mid   既表示 中间值
+    * @param right 既表示 数组最右侧元素下标 length - 1
+    * @param temp  即表示 事先开辟完成的临时数组
+    */
+  def merge(arr: Array[Int], left: Int, mid: Int, right: Int, temp: Array[Int]): Unit = {
+    // lt 既表示 左边指针的索引
+    var lt = left
+    // rt 既表示 右边指针的索引
+    var rt = mid + 1
+    // temps 既表示 临时数组 第一个元素的索引
+    var temps = 0
+    // 如果左边指针索引小于等于中间值,并且右边指针索引小于等于数组最右侧元素下标
+    while (lt <= mid && rt <= right) {
+      // 如果当前左边有序列表的值 小于等于 当前右边有序列表的值条件满足时
+      if (arr(lt) <= arr(rt)) {
+        // 则将当前左边有序列表的值拷贝到临时数组中
+        temp(temps) = arr(lt)
+        // 防止temps下一次被覆盖,则临时数组的索引,向右移一位
+        temps += 1
+        // lt 左边有序列表的索引,向右移一位
+        lt += 1
+      } else {
+        // 如果当前右边有序列表的值 小于等于 当前做边有序列表的值条件满足时,则将当前右边有序列表的值拷贝到临时数组中.
+        temp(temps) = arr(rt)
+        // 防止temps下一次被覆盖,则临时数组的索引,向右移一位
+        temps += 1
+        // rt 右边有序列表的索引,向右移一位
+        rt += 1
+      }
+    }
+
+    // 如果当前左边有序列表还有剩余的数据,则依次将剩余的数据拷贝到临时数组中.
+    while (lt <= mid) {
+      temp(temps) = arr(lt)
+      temps += 1
+      lt += 1
+    }
+    // 如果当前右边有序列表还有剩余的数据,则依次将剩余的数据拷贝到临时数组中.
+    while (rt <= right) {
+      temp(temps) = arr(rt)
+      temps += 1
+      rt += 1
+    }
+
+    // 将本次 临时数组的数据 拷贝到 原始数组arr中
+    temps = 0 // 归位到临时数组的第一个元素的索引
+    var tempLeft = left // 辅助指针
+    while (tempLeft <= right) {
+      // 将临时数组中的数据依次拷贝至原数组中
+      arr(tempLeft) = temp(temps)
+      temps += 1
+      tempLeft += 1
+    }
+  }
+}
 ```
+
+
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 2.10 🔖 查找 🔖 
