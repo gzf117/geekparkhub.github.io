@@ -4582,13 +4582,146 @@ object MergeSortFlow extends App {
 ```
 
 
-
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 2.10 🔖 查找 🔖 
 #### 2.10.1 介绍
+> 在java中常用的查找有两种 : 1.顺序(线性)查找  2.二分查找
 #### 2.10.2 线性查找
+> 有一个数列 : {1, 8, 10, 89, 1000, 1234} ,判断数列中是否包含此名称.
+> 要求: 如果找到则提示已找到,并给出下标值.
 #### 2.10.3 二分查找
+> 请对一个有序数组进行二分查找 {1, 8, 10, 89, 1000, 1234},输入一个数看看该数组是否存在此数,并且求出下标,如果没有就提示"没有这个数".
+> - 二分查找 实例
+``` scala
+package com.geekparkhub.core.scala.algorithm
 
+import scala.collection.mutable.ArrayBuffer
+import util.control.Breaks._
+
+object BinarySearchFlow extends App {
+
+  var arr = Array(1, 8, 10, 89, 1000, 1000, 1000, 1234)
+  val index: Int = binarySearch(arr, 0, arr.length - 1, 1000)
+  if (index != -1) {
+    println("index = " + index)
+  } else {
+    println("Did not find the value!")
+  }
+
+  println("--------------------")
+
+  // 二分查找所有相同的值
+  val resArr = binarySearchs(arr, 0, arr.length - 1, 1000)
+  if (resArr.length != 0) {
+    for (index <- resArr) {
+      println("index = " + index)
+    }
+  } else {
+    println("Did not find the value!")
+  }
+
+  /**
+    * 定义 二分查找
+    *
+    * @param arr     即表示待查找的数组
+    * @param left    即表示左边下标索引
+    * @param right   即表示右边下标索引
+    * @param findVal 即表示查找值
+    * @return
+    */
+  def binarySearch(arr: Array[Int], left: Int, right: Int, findVal: Int): Int = {
+
+    // 定义 中间值索引
+    val midIndex = (left + right) / 2
+    // 获取中间值
+    val midValue = arr(midIndex)
+
+    // 如果找不到则返回 -1
+    if (left > right) {
+      return -1
+    }
+
+    // 如果中间值大于查找值,则执行向左递归
+    if (midValue > findVal) {
+      binarySearch(arr, left, midIndex - 1, findVal)
+      // 如果中间值小于查找值,则执行向右递归
+    } else if (midValue < findVal) {
+      binarySearch(arr, midIndex + 1, right, findVal)
+    } else {
+      // 否则返回索引值
+      return midIndex
+    }
+
+
+  }
+
+  /**
+    * 定义 二分查找 所有相同值
+    *
+    * @param arr     即表示待查找的数组
+    * @param left    即表示左边下标索引
+    * @param right   即表示右边下标索引
+    * @param findVal 即表示查找值
+    * @return
+    */
+  def binarySearchs(arr: Array[Int], left: Int, right: Int, findVal: Int): ArrayBuffer[Int] = {
+
+    // 定义 中间值索引
+    val midIndex = (left + right) / 2
+    // 获取中间值
+    val midValue = arr(midIndex)
+
+    // 如果找不到则返回 -1
+    if (left > right) {
+      // 返回可变空数组,可以通过数组长度进行判断
+      return ArrayBuffer()
+    }
+
+    // 如果中间值大于查找值,则执行向左递归
+    if (midValue > findVal) {
+      binarySearchs(arr, left, midIndex - 1, findVal)
+      // 如果中间值小于查找值,则执行向右递归
+    } else if (midValue < findVal) {
+      binarySearchs(arr, midIndex + 1, right, findVal)
+    } else {
+      // 定义可变数组
+      var res = ArrayBuffer[Int]()
+      // 定义辅助指针
+      var temp = midIndex - 1
+      // 向左扫描
+      breakable {
+        while (true) {
+          if (temp <= 0 || arr(temp) != findVal) {
+            break()
+          }
+          if (arr(temp) == findVal) {
+            res.append(temp)
+          }
+          temp -= 1
+        }
+      }
+      res.append(midIndex)
+
+      // 向右扫描
+      temp = midIndex + 1 // 辅助指针
+      breakable {
+        while (true) {
+          if (temp > right || arr(temp) != findVal) {
+            break()
+          }
+          if (arr(temp) == findVal) {
+            res.append(temp)
+          }
+          temp += 1
+        }
+      }
+      res
+    }
+  }
+}
+```
+
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 2.11 🔖 哈希表(散列表) 🔖 
 #### 2.11.1 实际需求
 #### 2.11.2 哈希表 基本介绍
