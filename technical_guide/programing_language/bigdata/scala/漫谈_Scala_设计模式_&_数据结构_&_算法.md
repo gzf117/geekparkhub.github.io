@@ -4757,9 +4757,198 @@ object BinarySearchFlow extends App {
 > 1.要求 : 不使用数据库,尽量节省内存,速度越快越好 => 哈希表(散列).
 > 2.使用链表来实现哈希表,该链表不带表头,[即: 链表的第一个结点就存放雇员信息].
 > 3.添加时保证按照id从低到高插入.
+> 
+> 思路分析示意图 : 
+> 
+> ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBYEq.png)
+> 
 > - 哈希表 实例
 ``` scala
+package com.geekparkhub.core.scala.algorithm
 
+import scala.io.StdIn
+import util.control.Breaks._
+
+object HashTabFlow extends App {
+
+  val hashTab = new HashTab(7)
+  var key = " "
+  while (true) {
+    println("add 添加员工")
+    println("list 显示员工")
+    println("find：查找雇员")
+    println("exit 退出")
+    key = StdIn.readLine()
+    key match {
+      case "add" => {
+        println("请输入id")
+        var id = StdIn.readInt()
+        println("请输入name")
+        var name = StdIn.readLine()
+        val emp = new Emp(id, name)
+        hashTab.add(emp)
+      }
+      case "find" => {
+        print("请输入id：")
+        val id = StdIn.readInt()
+        hashTab.findEmpById(id)
+      }
+      case "list" => hashTab.list()
+      case "exit" => System.exit(0)
+      case _ => println("输入指令无效,请重试!")
+    }
+  }
+}
+
+/**
+  * 定义 HashTab
+  * 对雇员链表进行增删改查
+  * 决定雇员应具体追加到哪一张雇员链表
+  *
+  * @param size
+  */
+class HashTab(var size: Int) {
+  val empLinkedLists = new Array[EmpLinkedList](size)
+
+  // 初始化 empLinkedLists
+  for (i <- 0 until size) {
+    empLinkedLists(i) = new EmpLinkedList
+  }
+
+  // 向雇员链表上添加雇员
+  def add(emp: Emp): Unit = {
+    // Array数组的索引,即具体哪一条链表
+    val empLinkedListNo: Int = hashFun(emp.id)
+    this.empLinkedLists(empLinkedListNo).add(emp)
+  }
+
+  // 定义 哈希散列函数,决定雇员应该添加到哪一条具体的雇员链表中
+  def hashFun(id: Int): Int = {
+    id % size
+  }
+
+  // 遍历整个哈希表
+  def list(): Unit = {
+    for (i <- 0 until size) {
+      empLinkedLists(i).list(i)
+    }
+  }
+
+  // 查找雇员
+  def findEmpById(id: Int): Unit = {
+    // Array数组的索引即具体哪一条链表
+    val empLinkedListNo = hashFun(id)
+    val emp = this.empLinkedLists(empLinkedListNo).findEmpById(id)
+    if (emp != null) {
+      printf(s"在第 ${empLinkedListNo} 条雇员链表上找到 id = %d name = %s 的雇员\n", id, emp.name)
+    } else {
+      printf("没有找到id为 %d 的雇员\n", id)
+    }
+  }
+}
+
+/**
+  * 定义 雇员类
+  *
+  * @param eId
+  * @param eName
+  */
+class Emp(eId: Int, eName: String) {
+  val id = eId
+  var name = eName
+  var next: Emp = null
+}
+
+/**
+  * 定义 EmpLinkedList
+  * 对雇员进行增删改查
+  */
+class EmpLinkedList {
+  // 定义头指针
+  var head: Emp = null
+
+  /**
+    * 定义 添加员工 方法一 寻找到链表的尾部加入即可
+    * 添加雇员id为自增,即雇员分配id是从小到大
+    *
+    * @param emp
+    */
+  def add(emp: Emp): Unit = {
+    // 对于第一个雇员
+    if (head == null) {
+      // head直接指向第一个雇员
+      head = emp
+      return
+    }
+    // 定义辅助指针
+    var temp = head
+    breakable {
+      while (true) {
+        // 如果辅助指针索引下一位值等于空,则说明已到达该链表尾部
+        if (temp.next == null) {
+          break()
+        }
+        // 辅助指针索引后移
+        temp = temp.next
+      }
+    }
+    // 该链表的尾部指向新加入的雇员
+    temp.next = emp
+  }
+
+  /**
+    * 定义 添加员工 方法二
+    * 在添加雇员的时,根据雇员id将雇员插入指定位置
+    * 如果该雇员id已存在,则添加失败并给出提示
+    *
+    * @param emp
+    */
+  def adds(emp: Emp): Unit = {
+
+  }
+
+  // 展示哈希链表
+  def list(i: Int) {
+    if (head == null) {
+      println(s"第${i}链表为空!")
+      return
+    }
+    print(s"第${i}链表信息\t")
+    // 定义辅助指针
+    var tp = head
+    breakable {
+      while (true) {
+        if (tp == null) {
+          break()
+        }
+        printf("=> id = %d name = %s\t", tp.id, tp.name)
+        tp = tp.next
+      }
+    }
+    println()
+  }
+
+  // 查找雇员,找到返回Emp,找不到返回null
+  def findEmpById(id: Int): Emp = {
+    if (head == null) {
+      return null
+    }
+    // 定义辅助指针
+    var temps = head
+    breakable {
+      while (true) {
+        if (temps == null) {
+          break()
+        }
+        if (temps.id == id) {
+          break()
+        }
+        temps = temps.next
+      }
+    }
+    return temps
+  }
+}
 ```
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
