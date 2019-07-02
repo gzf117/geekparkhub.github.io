@@ -4973,6 +4973,7 @@ class EmpLinkedList {
 
 #### 2.12.3 二叉树 概念
 > 1.树有很多种,每个节点最多只能有两个子节点的一种形式称为二叉树.
+> 
 > 2.二叉树的子节点分为左节点和右节点.
 > 
 > ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBaCT.png)
@@ -4985,11 +4986,179 @@ class EmpLinkedList {
 > ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBw2F.png)
 
 #### 2.12.4 二叉树 遍历说明
+> 使用前序、中序和后序对下面的二叉树进行遍历,对各种遍历方式的说明:
+> 
+> 前序遍历 : 先输出父节点,再遍历左子树和右子树.
+> 
+> 中序遍历 : 先遍历左子树,再输出父节点,再遍历右子树.
+> 
+> 后序遍历 : 先遍历左子树,再遍历右子树,最后输出父节点.
+> 
+> 小结 : 查看输出父节点的顺序,就能确定是前序、中序还是后序.
+
 #### 2.12.5 二叉树遍历 应用实例(前序/中序/后序)
+![enter image description here](https://s2.ax1x.com/2019/04/12/AbB0v4.png)
+
+``` scala
+package com.geekparkhub.core.scala.algorithm
+
+/**
+  * 二叉树遍历
+  * 前序遍历 / 中序遍历 / 后序遍历
+  */
+object BinaryTreeFlow extends App {
+
+  var rootNode = new PersonaNodees(1, "RootNode")
+  val node02 = new PersonaNodees(2, "RoBot002")
+  val node03 = new PersonaNodees(3, "RoBot003")
+  val node04 = new PersonaNodees(4, "RoBot004")
+  val node05 = new PersonaNodees(5, "RoBot005")
+
+  // 左节点手动关联root节点
+  rootNode.left = node02
+  // 右节点手动关联root节点
+  rootNode.right = node03
+  node03.left = node05
+  node03.right = node04
+
+  var binaryTree = new BinaryTree
+  binaryTree.root = rootNode
+
+  println("----- 前序遍历 结果 -----")
+  binaryTree.preOrder()
+
+  println()
+
+  println("----- 中序遍历 结果 -----")
+  binaryTree.infixOrder()
+
+  println()
+
+  println("----- 后序遍历 结果 -----")
+  binaryTree.postOrder()
+}
+
+/**
+  * 定义 节点
+  *
+  * @param pid
+  * @param pname
+  */
+class PersonaNodees(pid: Int, pname: String) {
+  // 定义节点属性
+  var id = pid
+  var name = pname
+  var left: PersonaNodees = null
+  var right: PersonaNodees = null
+
+  /**
+    * 定义 前序遍历方法
+    */
+  def preOrder(): Unit = {
+    // 先输出当前节点信息
+    printf("Node info | id = %d name = %s \n", id, name)
+    // 再向左递归输出左子树
+    if (this.left != null) {
+      this.left.preOrder()
+    }
+    // 最后向右递归输出右子树
+    if (this.right != null) {
+      this.right.preOrder()
+    }
+  }
+
+  /**
+    * 定义 中序遍历方法
+    */
+  def infixOrder(): Unit = {
+    // 先向左递归输出左子树
+    if (this.left != null) {
+      this.left.infixOrder()
+    }
+    // 中间 输出当前节点信息
+    printf("Node info | id = %d name = %s \n", id, name)
+    // 最后向右递归输出右子树
+    if (this.right != null) {
+      this.right.infixOrder()
+    }
+  }
+
+  /**
+    * 定义 后序遍历方法
+    */
+  def postOrder(): Unit = {
+    // 先向左递归输出左子树
+    if (this.left != null) {
+      this.left.postOrder()
+    }
+    // 再向右递归输出右子树
+    if (this.right != null) {
+      this.right.postOrder()
+    }
+    // 最后 输出当前节点信息
+    printf("Node info | id = %d name = %s \n", id, name)
+  }
+
+}
+
+/**
+  * 定义 节点的二叉树
+  */
+class BinaryTree() {
+  // 定义根节点
+  var root: PersonaNodees = null
+
+  /**
+    * 定义 前序遍历方法
+    */
+  def preOrder(): Unit = {
+    if (root != null) {
+      root.preOrder()
+    } else {
+      println("当前二叉树为空!")
+    }
+  }
+
+  /**
+    * 定义 中序遍历方法
+    */
+  def infixOrder(): Unit = {
+    if (root != null) {
+      root.infixOrder()
+    } else {
+      println("当前二叉树为空!")
+    }
+  }
+
+  /**
+    * 定义 后序遍历方法
+    */
+  def postOrder(): Unit = {
+    if (root != null) {
+      root.postOrder()
+    } else {
+      println("当前二叉树为空!")
+    }
+  }
+}
+```
+
 #### 2.12.6 二叉树-查找指定节点
+> 1.请编写前序查找、中序查找和后序查找的方法.
+> 
+> 2.并分别使用三种查找方式查找hNo=5的节点.
+> 
+> 3.并分析各种查找方式.分别比较了多少.
+> 
+> ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBDKJ.png)
+
+
 #### 2.12.7 二叉树-删除节点
-
-
+> 1.如果删除的节点是叶子节点,则删除该节点.
+> 
+> 2.如果删除的节点是非叶子节点,则删除该子树.
+> 
+> 3.测试删除掉5号叶子节点和3号子树.
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 
