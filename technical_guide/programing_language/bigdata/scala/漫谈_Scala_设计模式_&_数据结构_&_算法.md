@@ -5461,7 +5461,359 @@ class BinaryTree() {
 > 
 > 3.测试删除掉5号叶子节点和3号子树.
 ``` scala
+package com.geekparkhub.core.scala.algorithm
 
+/**
+  * 二叉树遍历
+  * 前序遍历 / 中序遍历 / 后序遍历
+  * 前序查找 / 中序查找 / 后序查找
+  * 删除节点
+  */
+object BinaryTreeFlow extends App {
+
+  var rootNode = new PersonaNodees(1, "RootNode")
+  val node02 = new PersonaNodees(2, "RoBot002")
+  val node03 = new PersonaNodees(3, "RoBot003")
+  val node04 = new PersonaNodees(4, "RoBot004")
+  val node05 = new PersonaNodees(5, "RoBot005")
+
+  // 左节点手动关联root节点
+  rootNode.left = node02
+  // 右节点手动关联root节点
+  rootNode.right = node03
+  node03.left = node05
+  node03.right = node04
+
+  var binaryTree = new BinaryTree
+  binaryTree.root = rootNode
+
+  println("---------- 前序遍历 结果 -----------")
+  binaryTree.preOrder()
+
+  println()
+
+  println("---------- 中序遍历 结果 -----------")
+  binaryTree.infixOrder()
+
+  println()
+
+  println("---------- 后序遍历 结果 -----------")
+  binaryTree.postOrder()
+
+  println()
+
+  println("---------- 前序查找 结果 -----------")
+  val resNode01: PersonaNodees = binaryTree.preOrderSearch(5)
+  if (resNode01 != null) {
+    printf("Find node information | id = %d name = %s\n", resNode01.id, resNode01.name)
+  } else {
+    println("The node was not found!")
+  }
+
+  println()
+
+  println("---------- 中序查找 结果 -----------")
+  val resNode02: PersonaNodees = binaryTree.infixOrderSearch(5)
+  if (resNode02 != null) {
+    printf("Find node information | id = %d name = %s\n", resNode02.id, resNode02.name)
+  } else {
+    println("The node was not found!")
+  }
+
+  println()
+
+  println("---------- 后序查找 结果 -----------")
+  val resNode03: PersonaNodees = binaryTree.postOrderSearch(5)
+  if (resNode03 != null) {
+    printf("Find node information | id = %d name = %s\n", resNode03.id, resNode03.name)
+  } else {
+    println("The node was not found!")
+  }
+
+  println()
+
+  println("---------- 删除节点 结果 -----------")
+  binaryTree.delNode(5)
+
+
+}
+
+/**
+  * 定义 节点
+  *
+  * @param pid
+  * @param pname
+  */
+class PersonaNodees(pid: Int, pname: String) {
+  // 定义节点属性
+  var id = pid
+  var name = pname
+  var left: PersonaNodees = null
+  var right: PersonaNodees = null
+
+  /**
+    * 定义 前序遍历方法
+    */
+  def preOrder(): Unit = {
+    // 先输出当前节点信息
+    printf("Node info | id = %d name = %s \n", id, name)
+    // 再向左递归输出左子树
+    if (this.left != null) {
+      this.left.preOrder()
+    }
+    // 最后向右递归输出右子树
+    if (this.right != null) {
+      this.right.preOrder()
+    }
+  }
+
+  /**
+    * 定义 中序遍历方法
+    */
+  def infixOrder(): Unit = {
+    // 先向左递归输出左子树
+    if (this.left != null) {
+      this.left.infixOrder()
+    }
+    // 中间 输出当前节点信息
+    printf("Node info | id = %d name = %s \n", id, name)
+    // 最后向右递归输出右子树
+    if (this.right != null) {
+      this.right.infixOrder()
+    }
+  }
+
+  /**
+    * 定义 后序遍历方法
+    */
+  def postOrder(): Unit = {
+    // 先向左递归输出左子树
+    if (this.left != null) {
+      this.left.postOrder()
+    }
+    // 再向右递归输出右子树
+    if (this.right != null) {
+      this.right.postOrder()
+    }
+    // 最后 输出当前节点信息
+    printf("Node info | id = %d name = %s \n", id, name)
+  }
+
+  /**
+    * 定义 前序查找方法
+    *
+    * @param id
+    * @return
+    */
+  def preOrderSearch(id: Int): PersonaNodees = {
+    // 定义辅助指针
+    var resNode: PersonaNodees = null
+    // 如果接收id参数等于当前id,则条件成立返回当前id
+    if (id == this.id) {
+      return this
+    }
+    // 如果当前左节点不等于空,则向左递归查找
+    if (this.left != null) {
+      resNode = this.left.preOrderSearch(id)
+    }
+    // 如果结果不等于空则返回结果值
+    if (resNode != null) {
+      return resNode
+    }
+    // 否则向右递归查找
+    if (this.right != null) {
+      resNode = this.right.preOrderSearch(id)
+    }
+    // 最终返回结果
+    return resNode
+  }
+
+  /**
+    * 定义 中序查找方法
+    *
+    * @param id
+    * @return
+    */
+  def infixOrderSearch(id: Int): PersonaNodees = {
+    // 定义辅助指针
+    var resNode: PersonaNodees = null
+    // 如果左节点不等于空,则先向左递归查找
+    if (this.left != null) {
+      resNode = this.left.infixOrderSearch(id)
+    }
+    // 如果辅助指针不等于空,则返回结果
+    if (resNode != null) {
+      return resNode
+    }
+    // 如果接收id参数等于当前id,则条件成立返回当前id
+    if (id == this.id) {
+      return this
+    }
+    // 最后向右递归查找
+    if (this.right != null) {
+      resNode = this.right.infixOrderSearch(id)
+    }
+    return resNode
+  }
+
+  /**
+    * 定义 后序查找方法
+    *
+    * @param id
+    * @return
+    */
+  def postOrderSearch(id: Int): PersonaNodees = {
+    // 定义辅助指针
+    var resNode: PersonaNodees = null
+    // 先向左递归查找
+    if (this.left != null) {
+      resNode = this.left.postOrderSearch(id)
+    }
+    // 如果辅助指针不等于空,则返回结果
+    if (resNode != null) {
+      return resNode
+    }
+    // 向右递归查找
+    if (this.right != null) {
+      resNode = this.right.postOrderSearch(id)
+    }
+    // 如果辅助指针不等于空,则返回结果
+    if (resNode != null) {
+      return resNode
+    }
+    // 如果接收id参数等于当前id,则条件成立返回当前id
+    if (id == this.id) {
+      return this
+    }
+    return resNode
+  }
+
+  /**
+    * 定义 删除节点方法
+    *
+    * @param id
+    */
+  def delNode(id: Int): Unit = {
+    // 判断当前节点的左节点是否是要删除的节点
+    if (this.left != null && this.left.id == id) {
+      this.left = null
+      return
+    }
+    // 判断当前节点的右节点是否是要删除的节点
+    if (this.right != null && this.right.id == id) {
+      this.right = null
+      return
+    }
+    // 如果以上两个条件都不满足,则向左递归删除
+    if (this.left != null) {
+      this.left.delNode(id)
+    }
+    // 如果以上三个条件都不满足,则向右递归删除
+    if (this.right != null) {
+      this.right.delNode(id)
+    }
+  }
+}
+
+/**
+  * 定义 节点的二叉树
+  */
+class BinaryTree() {
+  // 定义根节点
+  var root: PersonaNodees = null
+
+  /**
+    * 定义 前序遍历方法
+    */
+  def preOrder(): Unit = {
+    if (root != null) {
+      root.preOrder()
+    } else {
+      println("当前二叉树为空!")
+    }
+  }
+
+  /**
+    * 定义 中序遍历方法
+    */
+  def infixOrder(): Unit = {
+    if (root != null) {
+      root.infixOrder()
+    } else {
+      println("当前二叉树为空!")
+    }
+  }
+
+  /**
+    * 定义 后序遍历方法
+    */
+  def postOrder(): Unit = {
+    if (root != null) {
+      root.postOrder()
+    } else {
+      println("当前二叉树为空!")
+    }
+  }
+
+  /**
+    * 定义 前序查找方法
+    *
+    * @param id
+    * @return
+    */
+  def preOrderSearch(id: Int): PersonaNodees = {
+    // 如果接受参数id等于当前root,则返回当前id
+    if (root != null) {
+      return root.preOrderSearch(id)
+    } else {
+      return null
+    }
+  }
+
+  /**
+    * 定义 中序查找方法
+    *
+    * @param id
+    * @return
+    */
+  def infixOrderSearch(id: Int): PersonaNodees = {
+    if (root != null) {
+      return root.infixOrderSearch(id)
+    } else {
+      return null
+    }
+  }
+
+  /**
+    * 定义 后序查找方法
+    *
+    * @param id
+    * @return
+    */
+  def postOrderSearch(id: Int): PersonaNodees = {
+    if (root != null) {
+      return root.postOrderSearch(id)
+    } else {
+      return null
+    }
+  }
+
+  /**
+    * 定义 删除节点方法
+    *
+    * @param id
+    */
+  def delNode(id: Int): Unit = {
+    if (root != null) {
+      // 先判断root节点是否是要删除节点
+      if (root.id == id) {
+        root = null
+      } else {
+        root.delNode(id)
+      }
+    }
+  }
+}
 ```
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
