@@ -111,12 +111,83 @@
 
 
 ## 🔥 2. Flink 基本架构 🔥
-### 2.1 无界数据流 & 有界数据流
-### 2.2 数据流 编程模型
+### 2.1 JobManager & TaskManager
+> Flink运行时包含两种类型处理器 : 
+> 
+> 1.**JobManager处理器** : 
+> 
+> 也称之为Master,用于协调分布式执行,它用来调度task,协调检查点,协调失败时恢复等,Flink运行时至少存在一个master处理器,如果配置高可用模式则会存在多个master处理器,它们其中有一个是leader,而其他都是standby.
+> 
+> 2.**TaskManager处理器** : 
+> 
+> 也称之为Worker,用于执行一个dataflow的task(或者特殊的subtask)、数据缓冲和data stream的交换,Flink运行时至少会存在一个worker处理器.
+> 
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_004.jpg)
+> 
+> Master和Worker处理器可以直接在物理机上启动,或者通过像YARN资源调度框架启动.
+> 
+> Worker连接到Master,告知自身可用性进而获得任务分配.
+
+### 2.2 无界数据流 & 有界数据流
+> Flink用于处理有界和无界数据 : 
+> 
+> **无界数据流** : 
+> 无界数据流有一个开始但是没有结束,它们不会在生成时终止并提供数据,必须连续处理无界流,也就是说必须在获取后立即处理event,对于无界数据流无法等待所有数据都到达,因为输入是无界的,并且在任何时间点都不会完成,处理无界数据通常要求以特定顺序(例如事件发生顺序)获取event,以便能够推断结果完整性,无界流处理称为流处理.
+> 
+> **有界数据流** : 
+> 有界数据流有明确定义开始和结束,可以在执行任何计算之前通过获取所有数据来处理有界流,处理有界流不需要有序获取,因为可以始终对有界数据集进行排序,有界流的处理也称为批处理.
+> 
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_005.jpg)
+> 
+> Apache Flink是一个面向分布式数据流处理和批量数据处理的开源计算平台,它能够基于同一个Flink运行时(Flink  Runtime),提供支持流处理和批处理两种类型应用的功能.
+> 
+> 现有开源计算方案会把流处理和批处理作为两种不同的应用类型.
+> 
+> 因为它们要实现目标是完全不相同的 : 流处理一般需要支持低延迟、Exactly-once保证,而批处理需要支持高吞吐、高效处理,所以在实现时通常是分别给出两套实现方法.
+> 
+> 或者通过独立开源框架来实现其中每一种处理方案,例如实现批处理开源方案有MapReduce / Tez / Crunch / Spark,实现流处理开源方案有Samza / Storm等.
+> 
+> Flink在实现流处理和批处理时,与传统方案完全不同,它从另一个视角看待流处理和批处理,将二者统一起来 : Flink是完全支持流处理,也就是说作为流处理看待时输入数据流是无界的,批处理被作为一种特殊流处理,只是它的输入数据流被定义为有界,基于同一个Flink运行时(Flink Runtime),分别提供了流处理和批处理API,而这两种API也是实现上层面向流处理、批处理类型应用框架基础.
+
+### 2.3 数据流 编程模型
+> Flink提供了不同级别抽象,以开发流或批处理作业,如下图所示 : 
+> 
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_006.jpg)
+> 
+> **1. Process Function**
+> 
+> 最底层级的抽象仅仅提供了有状态流,它将通过过程函数(Process Function)被嵌入到DataStream API中.
+> 
+> 底层过程函数(Process Function)与DataStream API 相集成,使其可以对某些特定操作进行底层抽象,它允许开发者可以自由地处理来自一个或多个数据流的事件,并使用一致容错的状态,除此之外开发者可以注册事件时间并处理时间回调,从而使程序可以处理复杂计算.
+> 
+> **2. Core APIs**
+> 
+> 实际上大多数应用并不需要上述底层抽象,而是针对核心API(Core APIs)进行编程,比如DataStream API(有界或无界流数据)以及DataSet API(有界数据集).
+> 
+> 这些API为数据处理提供了通用构建模块,比如由开发者定义多种形式转换(transformations),连接(joins),聚合(aggregations),窗口操作(windows)等等.
+> 
+> DataSet API为有界数据集提供了额外支持,例如循环与迭代,这些API处理数据类型以类(classes)形式由各自编程语言所表示.
+> 
+> **3. Table API**
+> Table API以表为中心,其中表可能会动态变化(在表达流数据时).
+> 
+> Table API遵循(扩展)关系模型 : 表有二维数据结构(schema)(类似于关系数据库中的表),同时API提供可比较的操作,例如select / project / join / group-by / aggregate等.
+> 
+> Table API程序声明式地定义什么逻辑操作应该执行,而不是准确地确定这些操作代码的看上去如何,尽管Table API可以通过多种类型的开发者自定义函数(UDF)进行扩展,其仍不如核心API更具表达能力,但是使用起来却更加简洁(代码量更少),除此之外Table API程序在执行之前会经过内置优化器进行优化.
+> 开发者可以在表与DataStream/DataSet之间无缝切换,以允许程序将Table API与DataStream以及DataSet 混合使用.
+> 
+> **4. SQL**
+> 
+> Flink提供最高层级的抽象是SQL,这一层抽象在语法与表达能力上与Table API类似,但是是以SQL查询表达式的形式表现程序,SQL抽象与Table API交互密切,同时SQL查询可以直接在Table API定义的表上执行.
+
+
 
 ## 🔥 3. 构建 Flink集群 🔥
 ### 3.1 Standalone 模式
 ### 3.2 Yarn 模式
+
+
+
 
 ## 🔥 4. Flink 运行架构 🔥
 ### 4.1 任务提交流程
@@ -125,6 +196,7 @@
 ### 4.4 并行数据流
 ### 4.5 task & operatorchains
 ### 4.6 任务调度流程
+
 
 
 ## 🔥 5. Flink DataStream API 🔥
