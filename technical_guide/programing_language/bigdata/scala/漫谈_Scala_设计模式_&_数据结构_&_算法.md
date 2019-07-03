@@ -5952,7 +5952,6 @@ class ArrayTree(arr: Array[Int]) {
 }
 ```
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 2.14 🔖 二叉排序树 🔖 
 #### 2.14.1 实例需求
 > **需求**
@@ -6109,7 +6108,307 @@ class BinarySortTree {
 > **思路分析**
 > 
 > ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBcUx.png)
+``` scala
+package com.geekparkhub.core.scala.algorithm
 
+/**
+  * 定义 二叉排序树 程序入口
+  */
+object BinarySortTreeFlow extends App {
+  // 定义数组
+  val arr = Array(7, 3, 10, 12, 5, 1, 9, 2)
+  // 创建 二叉排序树对象
+  val binarySortTree = new BinarySortTree
+  // 循环添加
+  for (i <- arr) {
+    binarySortTree.add(new Nodese(i))
+  }
+
+  // 删除叶子节点
+  binarySortTree.delNode(2)
+  binarySortTree.delNode(5)
+  binarySortTree.delNode(9)
+  binarySortTree.delNode(12)
+
+  // 删除一颗子树单节点
+  binarySortTree.delNode(1)
+
+  // 删除两颗子树节点
+  binarySortTree.delNode(7)
+  //  binarySortTree.delNode(3)
+  //  binarySortTree.delNode(10)
+
+  // 遍历二叉排序树
+  binarySortTree.infixOrder()
+}
+
+/**
+  * 定义 节点
+  *
+  * @param value
+  */
+class Nodese(var value: Int) {
+  // 定义左节点
+  var left: Nodese = null
+  // 定义右节点
+  var right: Nodese = null
+
+  /**
+    * 定义 添加节点 方法
+    *
+    * @param node
+    */
+  def add(node: Nodese): Unit = {
+    // 判断如果左节点为空,则直接返回
+    if (node == null) {
+      return
+    }
+    // 如果插入的值小于当前节点的值
+    if (node.value < this.value) {
+      // 如果当前左节点等于空则表示可以插入值
+      if (this.left == null) {
+        this.left = node
+      } else {
+        // 如果当前左节点不等于空,则表示递归添加值
+        this.left.add(node)
+      }
+    } else {
+      // 如果插入的值大于或等于当前节点的值
+      if (this.right == null) {
+        // 判断如果右节点为空,则返回node
+        this.right = node
+      } else {
+        // 否则递归调用
+        this.right.add(node)
+      }
+    }
+  }
+
+  /**
+    * 定义 中序遍历 方法
+    * 先遍历左子树,再输出父节点,再遍历右子树
+    */
+  def infixOrder(): Unit = {
+    // 向左递归输出左子树
+    if (this.left != null) {
+      this.left.infixOrder()
+    }
+    // 输出当前节点信息
+    printf("Node info :  node = %d \n", value)
+    // 向右递归输出右子树
+    if (this.right != null) {
+      this.right.infixOrder()
+    }
+  }
+
+  /**
+    * 定义 指定值查找节点 方法
+    *
+    * @param value
+    * @return
+    */
+  def search(value: Int): Nodese = {
+    // 判断当前节点是否是要删除的节点
+    if (value == this.value) {
+      return this
+      // 如果当前节点小于删除的节点,则向左递归查找
+    } else if (value < this.value) {
+      // 如果left等于空,则直接返回
+      if (this.left == null) {
+        return null
+      } else {
+        // 如果left不等于空,则向左递归
+        return this.left.search(value)
+      }
+    } else {
+      // 如果right等于空,则直接返回
+      if (this.right == null) {
+        return null
+      } else {
+        // 如果right不等于空,则向右递归
+        return this.right.search(value)
+      }
+
+    }
+  }
+
+  /**
+    * 定义 根据值查找某节点父节点 方法
+    *
+    * @param value
+    * @return
+    */
+  def searchParent(value: Int): Nodese = {
+    // 判断当前左右子节点是否与接收值相等则返回当前查找的值
+    if ((this.left != null && this.left.value == value) || (this.right != null && this.right.value == value)) {
+      return this
+      // 如果条件不相等,则向左递归查找或者向右递归查找
+    } else {
+      // 先判断向左递归条件
+      if (this.left != null && value < this.value) {
+        return this.left.searchParent(value)
+        // 再判断向右递归条件
+      } else if (this.right != null && value > this.value) {
+        return this.right.searchParent(value)
+      } else {
+        // 如果以上判断条件都不满足,则直接返回为空
+        return null
+      }
+    }
+  }
+
+}
+
+/**
+  * 定义 二叉排序树
+  */
+class BinarySortTree {
+
+  // 初始化root节点
+  var root: Nodese = null
+
+  /**
+    * 定义 添加节点 方法
+    *
+    * @param node
+    */
+  def add(node: Nodese): Unit = {
+    // 如果root节点等于空
+    if (root == null) {
+      root = node
+    } else {
+      // 否则返回空
+      root.add(node)
+    }
+  }
+
+  /**
+    * 定义 中序遍历 方法
+    */
+  def infixOrder(): Unit = {
+    // 如果root节点不等于空,则调用自身方法
+    if (root != null) {
+      root.infixOrder()
+    } else {
+      println("当前二叉树为空!")
+    }
+  }
+
+  /**
+    * 定义 查找节点 方法
+    *
+    * @param value
+    * @return
+    */
+  def search(value: Int): Nodese = {
+    // 如果root节点不等于空,则调用自身方法
+    if (root != null) {
+      return root.search(value)
+    } else {
+      // 否则返回空
+      return null
+    }
+  }
+
+  /**
+    * 定义 根据值查找某节点父节点 方法
+    *
+    * @param value
+    * @return
+    */
+  def searchParent(value: Int): Nodese = {
+    // 如果root节点不等于空,则调用自身方法
+    if (root != null) {
+      return root.searchParent(value)
+    } else {
+      // 否则返回空
+      return null
+    }
+  }
+
+  /**
+    * 删除方法 一 : 删除节点
+    * 既表示删除叶子节点
+    *
+    * @param value
+    */
+  def delNode(value: Int): Unit = {
+    // 先判断是否为空,如果为空,则直接返回
+    if (root == null) {
+      return
+    }
+    // 定义目标节点
+    val targetNode = search(value)
+    // 先判断有没有可删除的节点,如果目标节点为空,则直接返回
+    if (targetNode == null) {
+      return
+    }
+    // 定义 父节点
+    var parentNode = searchParent(value)
+    // 如果只剩下一个节点,则应将父节点设置为空
+    if (parentNode == null) {
+      root = null
+      return
+    }
+    // 如果目标节点不为空,则查找目标节点的父节点
+    if (targetNode.left == null && targetNode.right == null) {
+      // 需要判断删除节点是父节点的左子节点还是右子节点
+      if (parentNode.left != null && parentNode.left.value == value) {
+        // 将父节点的左子节点设置为空
+        parentNode.left = null
+      } else {
+        // 否则将父节点的右子节点设置为空
+        parentNode.right = null
+      }
+      // 要删除的节点tagetNode有两颗子树,找到删除节点的右子树的最小值,删除并返回最小值
+    } else if (targetNode.left != null && targetNode.right != null) {
+      // 寻找最小值并删除
+      val delRig: Int = delRightTreeMin(targetNode.right)
+      // 将value置换成delRig
+      targetNode.value = delRig
+      // 既表示 要删除的节点tagetNode只有一颗子树
+    } else {
+      // 判断最终目标节点是父节点的左子节点,还是父节点的右子节点
+      // 要删除的节点的左子节点不为空,右子节点为空 <= 注意
+      if (targetNode.left != null) {
+        // 判断目标节点是父节点的左子节点还是右子节点
+        // 左子节点
+        if (parentNode.left.value == value) {
+          parentNode.left = targetNode.left
+        } else {
+          // 右子节点
+          parentNode.right = targetNode.left
+        }
+      } else {
+        // 要删除的节点的左子节点为空,右子节点不为空 <= 注意
+        // 判断目标节点是父节点的左子节点还是右子节点
+        if (parentNode.left.value == value) { // 左子节点
+          parentNode.left = targetNode.right
+        } else { // 右子节点
+          parentNode.right = targetNode.right
+        }
+      }
+    }
+  }
+
+  /**
+    * 要删除的节点的右子树的最小值的节点,并返回最小值
+    *
+    * @param node
+    * @return
+    */
+  def delRightTreeMin(node: Nodese): Int = {
+    var targetRight = node
+    // 循环找到要删除的节点的右子树的最小值
+    while (targetRight.left != null) {
+      targetRight = targetRight.left
+    }
+    val minValue = targetRight.value
+    delNode(minValue)
+    return minValue
+  }
+}
+```
 
 ### 2.15 🔖 其它二叉树 🔖 
 > 1.线索二叉树 : 利用没有用到的节点反向指向其父节点.
