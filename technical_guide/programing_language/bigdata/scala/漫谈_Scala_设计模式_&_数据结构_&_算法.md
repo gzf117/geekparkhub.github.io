@@ -5816,12 +5816,143 @@ class BinaryTree() {
 }
 ```
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-
 ### 2.13 🔖 顺序存储二叉树 🔖 
 #### 2.13.1 顺序存储二叉树 概念
-#### 2.13.2 顺序存储二叉树 遍历
+> 从数据存储来看,数组存储方式和树的存储方式可以相互转换,即数组可以转换成树,树也可以转换成数组.
+> 
+> ![enter image description here](https://s2.ax1x.com/2019/04/12/AbBsbR.png)
 
+#### 2.13.2 顺序存储二叉树 遍历
+> 定义数组 Array(1,2,3,4,5,6,7)
+> 
+> 要求以二叉树前序遍历方式进行遍历. 
+> 
+> 前序遍历 结果应当为 1245367
+> 
+> 中序遍历 结果应当为 4251637
+> 
+> 后序遍历 结果应当为1245367
+``` scala
+package com.geekparkhub.core.scala.algorithm
+
+/**
+  * 定义ArrayTreeFlow
+  */
+object ArrayTreeFlow extends App {
+
+  val arr = Array(1, 2, 3, 4, 5, 6, 7)
+  val arrayTree = new ArrayTree(arr)
+
+  println("----- 前序遍历(数组) 结果 -----")
+  // 调用前序遍历方法
+  arrayTree.preOrder()
+
+  println()
+
+  println("----- 中序遍历(数组) 结果 -----")
+  // 调用中序遍历方法
+  arrayTree.infixOrder()
+
+  println()
+
+  println("----- 后序遍历(数组) 结果 -----")
+  // 调用后序遍历方法
+  arrayTree.postOrder()
+}
+
+
+/**
+  * 定义 ArrayTree
+  *
+  * @param arr
+  */
+class ArrayTree(arr: Array[Int]) {
+
+  // 重载 前序遍历preOrder方法
+  def preOrder(): Unit = {
+    // index初始化值为0，即对应 root 节点
+    this.preOrder(0)
+  }
+
+  // 中序遍历infixOrder方法
+  def infixOrder(): Unit = {
+    this.infixOrder(0)
+  }
+
+  // 后序遍历postOrder方法
+  def postOrder(): Unit = {
+    this.preOrder()
+  }
+
+  /**
+    * 定义 前序遍历二叉树 方法 , 即前序遍历数组
+    * 前序遍历：先输出父节点,再遍历左子树和右子树
+    *
+    * @param index
+    */
+  def preOrder(index: Int): Unit = {
+    if (arr == null && arr.length == 0) {
+      println("数组为空,无法进行二叉树遍历!")
+    }
+    // 当前节点信息
+    print(arr(index))
+    // 向左递归遍历
+    if ((index * 2 + 1) < arr.length) {
+      preOrder(index * 2 + 1)
+    }
+    // 向右递归遍历
+    if ((index * 2 + 2) < arr.length) {
+      preOrder(index * 2 + 2)
+    }
+  }
+
+  /**
+    * 定义 中序遍历二叉树 方法 , 即中序遍历数组
+    * 中序遍历 : 先遍历左子树,再输出父节点,再遍历右子树
+    *
+    * @param index
+    */
+  def infixOrder(index: Int): Unit = {
+    if (arr == null && arr.length == 0) {
+      println("数组为空,无法进行二叉树遍历!")
+    }
+    // 向左递归输出左子树
+    if ((index * 2 + 1) < arr.length) {
+      infixOrder(index * 2 + 1)
+    }
+    // 输出当前节点信息 , index初始化值为0,即对应root节点
+    print(arr(index))
+    // 向右递归输出右子树
+    if ((index * 2 + 2) < arr.length) {
+      infixOrder(index * 2 + 2)
+    }
+  }
+
+  /**
+    * 定义 后序遍历二叉树 方法 , 即后序遍历数组
+    * 后序遍历 : 先遍历左子树,再遍历右子树,最后输出父节点
+    *
+    * @param index
+    */
+  def postOrder(index: Int): Unit = {
+    if (arr == null && arr.length == 0) {
+      println("数组为空,无法进行二叉树遍历!")
+    }
+    // 向左递归输出左子树
+    if ((index * 2 + 1) < arr.length) {
+      postOrder(index * 2 + 1)
+    }
+    // 向右递归输出右子树
+    if ((index * 2 + 2) < arr.length) {
+      postOrder(index * 2 + 2)
+    }
+    // 输出当前节点信息 ,  index初始化值为0即对应root节点
+    print(arr(index))
+  }
+}
+```
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 2.14 🔖 二叉排序树 🔖 
 #### 2.14.1 实例需求
 #### 2.14.2 二叉排序树 介绍
