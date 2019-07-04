@@ -181,14 +181,105 @@
 > Flink提供最高层级的抽象是SQL,这一层抽象在语法与表达能力上与Table API类似,但是是以SQL查询表达式的形式表现程序,SQL抽象与Table API交互密切,同时SQL查询可以直接在Table API定义的表上执行.
 
 
+## 🔥 3. 构建 Flink集群 🔥
+
+### 3.1 Flink 部署
+> Flink可以选择部署方式有 : 
+> 
+> Local / Standalone(资源利用率低) / Yarn / Mesos / Docker / Kubernetes / AWS
+> 
+> 现有主要对Standalone模式和Yarn模式下进行Flink集群部署.
+
+- Flink 官方地址 : [flink.apache.org/zh/](https://flink.apache.org/zh/)
+- Flink 官方下载 : [archive.apache.org/dist/flink/flink-1.6.1/](https://archive.apache.org/dist/flink/flink-1.6.1/)
+- Flink 官方文档 : [ci.apache.org/projects/flink/flink-docs-release-1.6/](https://ci.apache.org/projects/flink/flink-docs-release-1.6/)
+
+1.解压`flink-1.6.1-bin-hadoop2.7-scala_2.11.tgz`
+```
+[root@systemhub511 ~]# cd /opt/software/
+[root@systemhub511 software]# tar -zxvf flink-1.6.1-bin-hadoop2.7-scala_2.11.tgz -C /opt/module/
+```
+2.重命名`flink-1.6.1`
+```
+[root@systemhub511 software]# cd ..
+[root@systemhub511 opt]# cd module/
+[root@systemhub511 module]# mv flink-1.6.1 flink
+```
+
+### 3.2 Standalone 模式
+3. vim `flink-conf.yaml` | 在conf目录下修改flink-conf.yaml文件,指定JobManager
+``` powershell
+[root@systemhub511 module]# cd flink/conf/
+[root@systemhub511 conf]# vim flink-conf.yaml
+```
+```
+jobmanager.rpc.address: systemhub511
+
+# The RPC port where the JobManager is reachable.
+```
+ 
+4. vim `slaves` | 在conf目录下修改slave文件,指定TaskManager
+```
+[root@systemhub511 conf]# vim slaves
+```
+```
+systemhub611
+systemhub711
+```
+5.配置完毕 将flink集群分发
+```
+[root@systemhub511 module]# scp -r ./flink/ root@systemhub611:/opt/module/flink/
+[root@systemhub511 module]# scp -r ./flink/ root@systemhub711:/opt/module/flink/
+```
+6.在systemhub511节点启动flink集群
+```
+[root@systemhub511 module]# cd flink/
+[root@systemhub511 flink]# ./bin/start-cluster.sh
+Starting cluster.
+Starting standalonesession daemon on host systemhub511.
+Starting taskexecutor daemon on host systemhub611.
+Starting taskexecutor daemon on host systemhub711.
+[root@systemhub511 flink]# 
+```
+7.查看flink集群进程
+```
+[root@systemhub511 flink]# jps.sh
+                                                                                                                  
+                                                                                                                  
+                            
+ ██████╗ ███████╗███████╗██╗  ██╗██████╗  █████╗ ██████╗ ██╗  ██╗██╗  ██╗██╗   ██╗██████╗ 
+██╔════╝ ██╔════╝██╔════╝██║ ██╔╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝██║  ██║██║   ██║██╔══██╗
+██║  ███╗█████╗  █████╗  █████╔╝ ██████╔╝███████║██████╔╝█████╔╝ ███████║██║   ██║██████╔╝
+██║   ██║██╔══╝  ██╔══╝  ██╔═██╗ ██╔═══╝ ██╔══██║██╔══██╗██╔═██╗ ██╔══██║██║   ██║██╔══██╗
+╚██████╔╝███████╗███████╗██║  ██╗██║     ██║  ██║██║  ██║██║  ██╗██║  ██║╚██████╔╝██████╔╝
+ ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
+
+                Open · Creation | Website | https://www.geekparkhub.com/
+    
+Open Source Open Achievement Dream , GeekParkHub Co-construction has never been seen before. 
+
+
+===========     root@systemhub511 All Processes         ===========
+9384 sun.tools.jps.Jps
+9306 org.apache.flink.runtime.entrypoint.StandaloneSessionClusterEntrypoint
+===========     root@systemhub611 All Processes         ===========
+9686 sun.tools.jps.Jps
+9622 org.apache.flink.runtime.taskexecutor.TaskManagerRunner
+===========     root@systemhub711 All Processes         ===========
+9426 org.apache.flink.runtime.taskexecutor.TaskManagerRunner
+9470 sun.tools.jps.Jps
+[root@systemhub511 flink]# 
+```
+8.可通过WebUI访问flink | http://hostname:8081/#/overview
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_007.jpg)
+
+
+### 3.3 Yarn 模式
+
 
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-## 🔥 3. 构建 Flink集群 🔥
-### 3.1 Standalone 模式
-### 3.2 Yarn 模式
-
 
 ## 🔥 4. Flink 运行架构 🔥
 ### 4.1 任务提交流程
