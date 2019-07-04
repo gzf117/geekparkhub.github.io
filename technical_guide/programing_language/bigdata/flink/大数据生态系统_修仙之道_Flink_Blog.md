@@ -272,6 +272,8 @@ Open Source Open Achievement Dream , GeekParkHub Co-construction has never been 
 ```
 8.可通过WebUI访问flink | http://hostname:8081/#/overview
 > ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_007.jpg)
+> 
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_008.jpg)
 
 
 ### 3.3 Yarn 模式
