@@ -213,7 +213,7 @@
 [root@systemhub511 conf]# vim flink-conf.yaml
 ```
 ```
-jobmanager.rpc.address: systemhub511
+jobmanager.rpc.address: systemhub611
 
 # The RPC port where the JobManager is reachable.
 ```
@@ -223,7 +223,7 @@ jobmanager.rpc.address: systemhub511
 [root@systemhub511 conf]# vim slaves
 ```
 ```
-systemhub611
+systemhub511
 systemhub711
 ```
 5.配置完毕 将flink集群分发
@@ -231,19 +231,19 @@ systemhub711
 [root@systemhub511 module]# scp -r ./flink/ root@systemhub611:/opt/module/flink/
 [root@systemhub511 module]# scp -r ./flink/ root@systemhub711:/opt/module/flink/
 ```
-6.在systemhub511节点启动flink集群
+6.在systemhub611节点启动flink集群
 ```
 [root@systemhub511 module]# cd flink/
-[root@systemhub511 flink]# ./bin/start-cluster.sh
+[root@systemhub611 flink]# ./bin/start-cluster.sh
 Starting cluster.
 Starting standalonesession daemon on host systemhub511.
 Starting taskexecutor daemon on host systemhub611.
 Starting taskexecutor daemon on host systemhub711.
-[root@systemhub511 flink]# 
+[root@systemhub611 flink]# 
 ```
 7.查看flink集群进程
 ```
-[root@systemhub511 flink]# jps.sh
+[root@systemhub611 flink]# jps.sh
                                                                                                                   
                                                                                                                   
                             
@@ -277,8 +277,134 @@ Open Source Open Achievement Dream , GeekParkHub Co-construction has never been 
 
 
 ### 3.3 Yarn 模式
+> 1.确保已经设置HADOOP_HOME环境变量
+> 
+> 2.启动Hadoop集群 (HDFS和Yarn)
+```
+[root@systemhub611 ~]# start-cluster.sh
+                                                                                                                                                                                                                                                                
+ ██████╗ ███████╗███████╗██╗  ██╗██████╗  █████╗ ██████╗ ██╗  ██╗██╗  ██╗██╗   ██╗██████╗ 
+██╔════╝ ██╔════╝██╔════╝██║ ██╔╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝██║  ██║██║   ██║██╔══██╗
+██║  ███╗█████╗  █████╗  █████╔╝ ██████╔╝███████║██████╔╝█████╔╝ ███████║██║   ██║██████╔╝
+██║   ██║██╔══╝  ██╔══╝  ██╔═██╗ ██╔═══╝ ██╔══██║██╔══██╗██╔═██╗ ██╔══██║██║   ██║██╔══██╗
+╚██████╔╝███████╗███████╗██║  ██╗██║     ██║  ██║██║  ██║██║  ██╗██║  ██║╚██████╔╝██████╔╝
+ ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝ ╚═════╝ 
+
+                Open · Creation | Website | https://www.geekparkhub.com/
+    
+Open Source Open Achievement Dream , GeekParkHub Co-construction has never been seen before. 
 
 
+================                Start All Node Services         ===========
+================================================================
+================                Starting Zookeeper              ===========
+================================================================
+Starting zookeeper ... ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeeper/bin/../conf/zoo.cfg
+STARTED
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeeper/bin/../conf/zoo.cfg
+Starting zookeeper ... STARTED
+ZooKeeper JMX enabled by default
+Using config: /opt/module/zookeeper/bin/../conf/zoo.cfg
+Starting zookeeper ... STARTED
+================                Starting HDFS           ===========
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/module/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/module/hbase/lib/slf4j-log4j12-1.7.5.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+Starting namenodes on [systemhub511]
+systemhub511: starting namenode, logging to /opt/module/hadoop/logs/hadoop-root-namenode-systemhub511.out
+systemhub511: SLF4J: Class path contains multiple SLF4J bindings.
+systemhub511: SLF4J: Found binding in [jar:file:/opt/module/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+systemhub511: SLF4J: Found binding in [jar:file:/opt/module/hbase/lib/slf4j-log4j12-1.7.5.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+systemhub511: SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+systemhub511: SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+systemhub711: starting datanode, logging to /opt/module/hadoop/logs/hadoop-root-datanode-systemhub711.out
+systemhub511: starting datanode, logging to /opt/module/hadoop/logs/hadoop-root-datanode-systemhub511.out
+systemhub611: starting datanode, logging to /opt/module/hadoop/logs/hadoop-root-datanode-systemhub611.out
+Starting secondary namenodes [systemhub711]
+systemhub711: starting secondarynamenode, logging to /opt/module/hadoop/logs/hadoop-root-secondarynamenode-systemhub711.out
+SLF4J: Class path contains multiple SLF4J bindings.
+SLF4J: Found binding in [jar:file:/opt/module/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: Found binding in [jar:file:/opt/module/hbase/lib/slf4j-log4j12-1.7.5.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+================                Starting YARN           ===========
+starting yarn daemons
+starting resourcemanager, logging to /opt/module/hadoop/logs/yarn-root-resourcemanager-systemhub611.out
+systemhub711: starting nodemanager, logging to /opt/module/hadoop/logs/yarn-root-nodemanager-systemhub711.out
+systemhub511: starting nodemanager, logging to /opt/module/hadoop/logs/yarn-root-nodemanager-systemhub511.out
+systemhub611: starting nodemanager, logging to /opt/module/hadoop/logs/yarn-root-nodemanager-systemhub611.out
+================                Starting JobHistoryServer       ===========
+starting historyserver, logging to /opt/module/hadoop/logs/mapred-root-historyserver-systemhub511.out
+[root@systemhub511 ~]#
+```
+> 3.在systemhub611节点提交Yarn-Session,使用yarn-session.sh脚本进行提交.
+> 
+> 参数说明 : 
+> 
+> `-n` (--container) : TaskManager数量
+> 
+> `-s` (--slots) : 每个TaskManager的slot数量,默认一个slot一个core,默认每个taskmanager的slot的个数为1,有时可以多一些taskmanager,做冗余.
+> 
+> `-jm` : JobManager内存 (单位MB)
+> 
+> `-tm` : 每个taskmanager内存 (单位MB)
+> 
+> `-nm` : yarn 的appName (即表示yarn应用名称)
+> 
+> `-d` : 后台执行
+> 
+```
+[root@systemhub611 ~]# cd /opt/module/flink/
+[root@systemhub611 flink]# ./bin/yarn-session.sh -n 2 -s 6 -jm 1024 -tm 1024 -nm test -d
+```
+> 4.启动后查看HadoopWebUi,可以查看任务提交
+> 
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_009.jpg)
+> 
+> 5.查看进程 提交Session节点
+```
+[root@systemhub611 conf]# jps -l
+5540 org.apache.zookeeper.server.quorum.QuorumPeerMain
+5781 org.apache.hadoop.yarn.server.resourcemanager.ResourceManager
+8277 sun.tools.jps.Jps
+8089 org.apache.flink.yarn.entrypoint.YarnSessionClusterEntrypoint
+5609 org.apache.hadoop.hdfs.server.datanode.DataNode
+5886 org.apache.hadoop.yarn.server.nodemanager.NodeManager
+[root@systemhub611 conf]# 
+```
+> 6.提交Jar到集群运行
+```
+[root@systemhub611 flink]# ./bin/flink run -m yarn-cluster ./examples/batch/WordCount.jar
+```
+> 7.提交后在YarnWebUI查看任务运行情况
+> 
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_010.jpg)
+> 
+> 8.任务结束 查看运行结果
+```
+Use --input to specify file input.
+Printing result to stdout. Use --output to specify output path.
+(a,5)
+(action,1)
+(after,1)
+(against,1)
+(all,2)
+(for,2)
+(fortune,1)
+(would,2)
+(wrong,1)
+(you,1)
+Program execution finished
+Job with JobID c2f9e1af0aaf6005895fa362f2ae5d5b has finished.
+Job Runtime: 41972 ms
+Accumulator Results: 
+- 8835528805a89471c138d1cd86fd473b (java.util.ArrayList) [170 elements]
+[root@systemhub611 flink]#
+```
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
