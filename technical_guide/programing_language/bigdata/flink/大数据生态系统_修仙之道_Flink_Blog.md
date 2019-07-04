@@ -181,9 +181,9 @@
 > Flink提供最高层级的抽象是SQL,这一层抽象在语法与表达能力上与Table API类似,但是是以SQL查询表达式的形式表现程序,SQL抽象与Table API交互密切,同时SQL查询可以直接在Table API定义的表上执行.
 
 
-## 🔥 3. 构建 Flink集群 🔥
+## 🔥 3. Flink集群部署 🔥
 
-### 3.1 Flink 部署
+### 3.1 Flink for Linux 部署
 > Flink可以选择部署方式有 : 
 > 
 > Local / Standalone(资源利用率低) / Yarn / Mesos / Docker / Kubernetes / AWS
@@ -407,22 +407,123 @@ Accumulator Results:
 ```
 
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-
 ## 🔥 4. Flink 运行架构 🔥
 ### 4.1 任务提交流程
-### 4.2 TaskManager & Slots
-### 4.3 Dataflow
-### 4.4 并行数据流
-### 4.5 task & operatorchains
-### 4.6 任务调度流程
 
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_011.jpg)
+> 
+> Flink任务提交后,Client向HDFS上传Flink的Jar包和配置.
+> 
+> 之后向YarnResourceManager提交任务,ResourceManager分配Container资源并通知对应的NodeManager启动ApplicationMaster.
+> 
+> ApplicationMaster启动后加载Flink的Jar包和配置构建环境,然后启动JobManager.
+> 
+> 之后ApplicationMaster向ResourceManager申请资源启动TaskManager,ResourceManager分配Container资源后,由ApplicationMaster通知资源所在节点的NodeManager启动TaskManager.
+> 
+> NodeManager加载Flink的Jar包和配置构建环境并启动TaskManager,TaskManager启动后向JobManager发送心跳包,并等待JobManager向其分配任务.
+> 
+
+### 4.2 任务调度流程
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_012.jpg)
+> 
+> 客户端不是运行时和程序执行的一部分,但它用于准备并发送dataflow给Master,然后客户端断开连接或者维持连接以等待接收计算结果,客户端可以以两种方式运行 : 要么作为Java/Scala程序的一部分被程序触发执行,要么以命令行./bin/flink run方式执行.
+
+### 4.3 Worker & Slots
+> 每一个worker(TaskManager)是一个JVM进程,它可能会在独立的线程上执行一个或多个subtask.
+> 
+> 为了控制一个worker能接收多少个task,worker通过task slot来进行控制(一个worker至少有一个task slot).
+> 
+> 每个task slot表示TaskManager拥有资源的一个固定大小的子集.
+> 
+> 假如一个TaskManager有三个slot.那么它会将其管理的内存分成三份给各个slot.
+> 
+> 资源slot化意味着一个subtask将不需要跟来自其他job的subtask竞争被管理的内存.取而代之的是它将拥有一定数量的内存储备.
+> 
+> 需要注意的是这里不会涉及到CPU隔离,slot目前仅仅用来隔离task的受管理的内存.
+> 
+> 通过调整task slot的数量,允许开发者定义subtask之间如何互相隔离.
+> 
+> 如果一个TaskManager一个slot,那将意味着每个task group运行在独立的JVM中(该JVM可能是通过一个特定的容器启动),而一个TaskManager多个slot意味着更多的subtask可以共享同一个JVM,而在同一个JVM进程中的task将共享TCP连接(基于多路复用)和心跳消息,它们也可能共享数据集和数据结构,因此这减少了每个task的负载.
+> 
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_013.jpg)
+> 
+> TaskSlot是静态概念,是指TaskManager具有的并发执行能力,可以通过参数`taskmanager.numberOfTaskSlots`进行配置.
+> 
+> 而并行度parallelism是动态概念,即TaskManager运行程序时实际使用的并发能力,可以通过参数`parallelism.default`进行配置.
+> 
+> 也就是说,假设一共有3个TaskManager,每一个TaskManager中的分配3个TaskSlot,也就是每个TaskManager可以接收3个task,一共9个TaskSlot.
+> 
+> 如果设置`parallelism.default=1`,即运行程序默认的并行度为1,9个TaskSlot只用了1个,有8个空闲,因此设置合适的并行度才能提高效率.
+> 
+
+### 4.4 程序与数据流
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_014.jpg)
+> 
+> Flink程序的基础构建模块是流(streams)与转换(transformations),需要注意的是Flink的DataSet API所使用的DataSets其内部也是stream.
+> 
+> 一个stream可以看成一个中间结果,而一个transformations是以一个或多个stream作为输入的某种operation,该operation利用这些stream进行计算从而产生一个或多个result stream.
+> 
+> 在运行时Flink上运行程序会被映射成streaming dataflows,它包含了streams和transformationsoperators.
+> 
+> 每一个dataflow以一个或多个sources开始以一个或多个sinks结束.
+> 
+> dataflow类似于任意的有向无环图(DAG),当然特定形式的环可以通过iteration构建.
+> 
+> 在大部分情况下,程序中的transformations跟dataflow中的operator是一一对应关系,但有时候,一个transformation可能对应多个operator.
+
+### 4.5 并行数据流
+> Flink程序执行具有并行、分布式的特性.
+> 
+> 在执行过程中一个stream包含一个或多个stream partition,而每一个operator包含一个或多个operator subtask,这些operator subtasks在不同的线程、不同的物理机或不同的容器中彼此互不依赖得执行.
+> 
+> 一个特定operator的subtask的个数被称之为其parallelism(并行度).
+> 
+> 一个stream的并行度总是等同于其producing operator的并行度.
+> 
+> 一个程序中不同的operator可能具有不同的并行度.
+> 
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_015.jpg)
+> 
+> Stream在operator之间传输数据的形式可以是one-to-one(forwarding)的模式也可以是redistributing的模式,具体是哪一种形式取决于operator的种类.
+> 
+> `One-to-one` : stream(比如在source和map operator之间)维护着分区以及元素的顺序,那意味着map operator的subtask看到的元素的个数以及顺序跟source operator的subtask生产的元素的个数、顺序相同,map、fliter、flatMap等算子都是one-to-one的对应关系.
+> 
+> `Redistributing` : stream(map()跟keyBy/window之间或者keyBy/window跟sink之间)的分区会发生改变.
+> 
+> 每一个operator subtask依据所选择的transformation发送数据到不同的目标subtask.
+> 
+> 例如keyBy()基于hashCode重分区、broadcast和rebalance会随机重新分区,这些算子都会引起redistribute过程,而redistribute过程就类似于Spark中的shuffle过程.
+
+### 4.6 task & operatorchains
+> 出于分布式执行的目的,Flink将operator的subtask链接在一起形成task,每个task在一个线程中执行.
+> 
+> 将operators链接成task是非常有效的优化 : 它能减少线程之间的切换和基于缓存区的数据交换,在减少时延的同时提升吞吐量,链接的行为可以在编程API中进行指定.
+> 
+> 以下展示5个subtask以5个并行线程执行
+> 
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_016.jpg)
+
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 
 ## 🔥 5. Flink DataStream API 🔥
+### 5.1 Flink 运行模型
+### 5.2 Flink 程序架构
+### 5.3 Environment
+### 5.4 Source
+### 5.5 Sink
+### 5.6 Transformation
 
 ## 🔥 6. Time & Window 🔥
+### 6.1 Time
+### 6.2 Window
+### 6.3 Window API
+
 
 ## 🔥 7. EventTime & Window 🔥
+### 7.1 EventTime 引入
+### 7.2 Watermark
+### 7.3 EvnetTimeWindow API
 
 
 
