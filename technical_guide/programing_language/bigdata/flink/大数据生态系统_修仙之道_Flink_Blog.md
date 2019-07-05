@@ -824,7 +824,61 @@ socketTextFlow
 ```
 
 #### 5.4.3 基于(集合 Collection) 数据源
+> **1. fromCollection(seq)**
+> 
+> 说明 : 从集合中创建一个数据流,集合中所有元素类型是一致的.
+``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.api.java.io.TextInputFormat
+import org.apache.flink.core.fs.Path
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * FlinkSourceFlow
+  * <p>
+  */
+
+object FlinkSourceFlow extends App {
+
+  // 调用fromCollectionFlow方法
+  fromCollectionFlow()
+
+  /**
+    * 定义 fromCollectionFlow 方法
+    * 从集合中创建一个数据流
+    */
+  def fromCollectionFlow(): Unit = {
+    // 创建执行环境
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    // 创建集合,集合中所有元素类型需一致
+    val list = List(1, 2, 3, 4)
+    // 加载初始数据 -> (Source)
+    val stream = env.fromCollection(list)
+    // 打印数据 -> (Sink)
+    stream.print()
+    // 触发程序执行
+    env.execute("fromCollectionFlow")
+  }
+}
+```
+> **2. fromCollection(Iterator)**
+> 
+> 说明 : 从迭代(Iterator)中创建一个数据流,指定元素数据类型的类由iterator返回.
+``` scala
+
+```
 
 ### 5.5 Sink
 ### 5.6 Transformation
