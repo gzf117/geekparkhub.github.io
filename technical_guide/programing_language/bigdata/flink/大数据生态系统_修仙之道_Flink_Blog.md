@@ -1,4 +1,4 @@
-# 大数据生态系统 修仙之道 Flink Blog
+# 大数据Flink生态系统 修仙之道 Flink Blog
 
 @(2019-06-01)[ Docs Language:简体中文 & English|Programing Flink|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
@@ -26,6 +26,15 @@
 
 
 [TOC]
+
+
+
+## 🔥 0. 在学习Flink之前你需要了解 🔥
+> 在继续学习本路线之前,你应该了解一些基本计算机编程术语.
+> 
+> Flink是新一代分布式流式处理计算引擎,是大数据重要内容.
+> 
+> 如果你学习过Java & Scala编程语言 & Spark计算框架,将有助于你更快了解掌握Flink核心技术.
 
 
 ## 🔥 1. 概述 🔥
@@ -1037,7 +1046,59 @@ object FlinkSourceFlow extends App {
 ### 5.6 Transformation
 
 #### 5.6.1 Map
+> DataStream → DataStream : 输入一个参数产生一个参数.
+> 
+> stream.print() = 输出结果 4> 4 | 当前4是代表第4个并行线程输出的结果.
+> 
+> 即表示每一行前面的数字代表当前行是哪一个并行线程输出的结果
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * TransformationFlow
+  * <p>
+  */
+
+object TransformationFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用mapFlow方法
+  mapFlow()
+
+  /**
+    * 定义map方法
+    * DataStream → DataStream : 输入一个参数产生一个参数.
+    */
+  def mapFlow(): Unit = {
+    // 加载初始数据 -> (Source)
+    val stream = env.generateSequence(1, 20)
+    // 调用map函数
+    val streamMap = stream.map(x => x * 2)
+    // 打印数据 -> (Sink)
+    stream.print()
+    // 触发程序执行
+    env.execute("generateSequenceFlow")
+  }
+}
+```
+
 #### 5.6.2 FlatMap
+> DataStream → DataStream：输入一个参数，产生0个、1个或者多个输出
 #### 5.6.3 Filter
 #### 5.6.4 Connect
 #### 5.6.5 CoMap & CoFlatMap
