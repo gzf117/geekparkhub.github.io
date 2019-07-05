@@ -1265,11 +1265,108 @@ object TransformationFlow extends App {
 #### 5.6.5 CoMap & CoFlatMap
 > ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_019.jpg)
 > 
-> ConnectedStreams  →  DataStream : 作用于ConnectedStreams上,功能与map和flatMap一样,对ConnectedStreams中的每一个Stream分别进行map和flatMap.
+> ConnectedStreams  →  DataStream : 作用于ConnectedStreams上,功能与map和flatMap一样,对ConnectedStreams中的每一个Stream分别进行map和flatMap处理.
+> 
+> **1. CoMap**
 ``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * TransformationFlow
+  * <p>
+  */
+
+object TransformationFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用CoMapFlow方法
+  CoMapFlow()
+
+  /**
+    * 定义CoMapFlow方法
+    * ConnectedStreams → DataStream
+    */
+  def CoMapFlow(): Unit = {
+    // 加载与创建初始数据 -> (Source)
+    val filePaths = "../flink_server/flink-coreflow/src/main/resources/input_01/test03.txt"
+    val stream01 = env.generateSequence(1, 20)
+    val stream02 = env.readTextFile(filePaths).flatMap(x => x.split(" "))
+    // stream01将与stream02连接并形成ConnectedStreams连接流
+    var streamConnect = stream01.connect(stream02)
+    // 当streamConnect调用map函数的过程就称之为CoMap操作
+    val streamCoMap = streamConnect.map((x) => x + 100, (y) => y + " connect")
+    // 打印数据 -> (Sink)
+    streamCoMap.print()
+    // 触发程序执行
+    env.execute("CoMapFlow")
+  }
+}
 ```
+> **2. CoFlatMap**
+```
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * TransformationFlow
+  * <p>
+  */
+
+object TransformationFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用CoFlatMapFlow方法
+  CoFlatMapFlow()
+
+  /**
+    * 定义CoFlatMapFlow方法
+    * ConnectedStreams → DataStream
+    */
+  def CoFlatMapFlow(): Unit = {
+    // 加载初始数据 -> (Source)
+    val filePaths = "../flink_server/flink-coreflow/src/main/resources/input_01/test03.txt"
+    val stream01 = env.readTextFile(filePaths)
+    val stream02 = env.readTextFile(filePaths)
+    // stream01将与stream02连接并形成ConnectedStreams连接流
+    var streamConnect = stream01.connect(stream02)
+    // 当streamConnect调用flatMap函数的过程就称之为CoFlatMap操作
+    val streamCoFlatMap = streamConnect.flatMap((x) => x.split(" "), (y) => y.split(" "))
+    // 打印数据 -> (Sink)
+    streamCoFlatMap.print()
+    // 触发程序执行
+    env.execute("CoFlatMapFlow")
+  }
+}
+```
 
 #### 5.6.6 Split
 > 
