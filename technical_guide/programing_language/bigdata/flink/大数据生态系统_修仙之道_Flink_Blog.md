@@ -504,16 +504,67 @@ Accumulator Results:
 > ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_016.jpg)
 
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-
 ## 🔥 5. Flink DataStream API 🔥
 ### 5.1 Flink 运行模型
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_017.jpg)
+> 
+> 以上为Flink的运行模型,Flink的程序主要由三部分构成 : 
+> 
+> 分别为`Source` / `Transformation` / `Sink`
+> 
+> **DataSource** 主要负责数据的读取.
+> **Transformation** 主要负责对属于的转换操作.
+> **Sink** 负责最终数据的输出.
+
+
 ### 5.2 Flink 程序架构
+- 每个Flink程序都包含以下若干流程 : 
+- 获得执行环境 : (Execution Environment)
+- 加载/创建初始数据 : (Source)
+- 指定转换数据 : (Transformation)
+- 指定放置计算结果位置 : (Sink)
+- 触发程序执行
+
 ### 5.3 Environment
+> 执行环境`Stream Execution Environment`是所有Flink程序的基础.
+> 
+> 创建执行环境有三种方式分别为 : 
+> ```
+> StreamExecutionEnvironment.getExecutionEnvironment
+> StreamExecutionEnvironment.createLocalEnvironment
+> StreamExecutionEnvironment.createRemoteEnvironment
+> ```
+
+#### 5.3.1 StreamExecutionEnvironment.getExecutionEnvironment
+> ```
+> val env = StreamExecutionEnvironment.getExecutionEnvironment
+> ```
+> 说明 : 创建一个执行环境,表示当前执行程序的上下文.
+> 
+> 如果程序是独立调用,则此方法返回本地执行环境.
+> 如果从命令行客户端调用程序以提交到集群,则此方法返回此集群的执行环境,也就是说getExecutionEnvironment会根据查询运行方式决定返回什么样的运行环境,是最常用的一种创建执行环境方式.
+
+#### 5.3.2 StreamExecutionEnvironment.createLocalEnvironment
+> ```
+> val env = StreamExecutionEnvironment.createLocalEnvironment(1)
+> ```
+> 
+> 说明 : 返回本地执行环境,需要在调用时指定默认的并行度.
+
+
+#### 5.3.3 StreamExecutionEnvironment.createRemoteEnvironment
+> ```
+> val env = StreamExecutionEnvironment.createRemoteEnvironment(1)
+> ```
+> 
+> 说明 : 返回集群执行环境,将Jar提交到远程服务器,需要在调用时指定JobManager的IP和端口号,并指定要在集群中运行的Jar包.
+
 ### 5.4 Source
 ### 5.5 Sink
 ### 5.6 Transformation
 
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ## 🔥 6. Time & Window 🔥
 ### 6.1 Time
 ### 6.2 Window
