@@ -192,7 +192,7 @@
 > Flink提供最高层级的抽象是SQL,这一层抽象在语法与表达能力上与Table API类似,但是是以SQL查询表达式的形式表现程序,SQL抽象与Table API交互密切,同时SQL查询可以直接在Table API定义的表上执行.
 
 
-## 🔥 3. Flink集群部署 🔥
+## 🔥 3. Flink 集群部署 🔥
 
 ### 3.1 Flink for Linux 部署
 > Flink可以选择部署方式有 : 
