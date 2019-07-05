@@ -510,20 +510,22 @@ Accumulator Results:
 > 
 > 以上为Flink的运行模型,Flink的程序主要由三部分构成 : 
 > 
-> 分别为`Source` / `Transformation` / `Sink`
+> 分别为`Source` -> `Transformation` -> `Sink`
 > 
-> **DataSource** 主要负责数据的读取.
-> **Transformation** 主要负责对属于的转换操作.
-> **Sink** 负责最终数据的输出.
+> **DataSource** : 主要负责数据的读取.
+> 
+> **Transformation** : 主要负责对属于的转换操作.
+> 
+> **Sink** : 负责最终数据的输出.
 
 
-### 5.2 Flink 程序架构
+### 5.2 Flink程序 运行流程
 - 每个Flink程序都包含以下若干流程 : 
-- 获得执行环境 : (Execution Environment)
-- 加载/创建初始数据 : (Source)
-- 指定转换数据 : (Transformation)
-- 指定放置计算结果位置 : (Sink)
-- 触发程序执行
+- 1.获得执行环境 : (Execution Environment)
+- 2.加载/创建初始数据 : (Source)
+- 3.指定转换数据 : (Transformation)
+- 4.指定放置计算结果位置 : (Sink)
+- 5.触发程序执行
 
 ### 5.3 Environment
 > 执行环境`Stream Execution Environment`是所有Flink程序的基础.
@@ -622,7 +624,7 @@ Accumulator Results:
 </project>
 ```
 
-#### 5.4.1 基于File 数据源
+#### 5.4.1 基于File输入数据源
 > **1. readTextFile(path)**
 > 
 > 说明 : 一列一列的读取遵循TextInputFormat规范的文本文件,并将结果作为String返回.
@@ -743,8 +745,7 @@ object FlinkSourceFlow extends App {
 1> apache 2
 ```
 
-
-#### 5.4.2 基于Socket数据源
+#### 5.4.2 基于Socket输入数据源
 - 1.创建socketTextFlow方法
 ``` scala
 package com.geekparkhub.core.flink.workflow
@@ -823,7 +824,7 @@ socketTextFlow
 2> socketTextFlow
 ```
 
-#### 5.4.3 基于(集合 Collection) 数据源
+#### 5.4.3 基于(集合 Collection)输入数据源
 > **1. fromCollection(seq)**
 > 
 > 说明 : 从集合中创建一个数据流,集合中所有元素类型是一致的.
@@ -873,15 +874,181 @@ object FlinkSourceFlow extends App {
   }
 }
 ```
+
 > **2. fromCollection(Iterator)**
 > 
 > 说明 : 从迭代(Iterator)中创建一个数据流,指定元素数据类型的类由iterator返回.
 ``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.api.java.io.TextInputFormat
+import org.apache.flink.core.fs.Path
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * FlinkSourceFlow
+  * <p>
+  */
+
+object FlinkSourceFlow extends App {
+
+  // 调用fromCollectionIteratorFlow方法
+  fromCollectionIteratorFlow()
+
+  /**
+    * 定义 fromCollectionIteratorFlow 方法
+    * 从集合中创建一个数据流
+    */
+  def fromCollectionIteratorFlow(): Unit = {
+    // 创建执行环境
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    // 创建集合,集合中所有元素类型需一致
+    val iterator = Iterator(1, 2, 3, 4)
+    // 加载初始数据 -> (Source)
+    val stream = env.fromCollection(iterator)
+    // 打印数据 -> (Sink)
+    stream.print()
+    // 触发程序执行
+    env.execute("fromCollectionIteratorFlow")
+  }
+}
+```
+
+> **3. fromElements(elements:_*)**
+> 
+> 从一个给定的对象序列中创建一个数据流,所有的对象必须是相同类型.
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+import org.apache.flink.api.java.io.TextInputFormat
+import org.apache.flink.core.fs.Path
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * FlinkSourceFlow
+  * <p>
+  */
+
+object FlinkSourceFlow extends App {
+
+  // 调用fromElementsFlow方法
+  fromElementsFlow()
+
+  /**
+    * 定义 fromElementsFlow 方法
+    * 从一个给定的对象序列中创建一个数据流,所有的对象必须是相同类型
+    */
+  def fromElementsFlow(): Unit = {
+    // 创建执行环境
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    // 创建集合,集合中所有元素类型需一致
+    val list = List(1, 2, 3, 4)
+    // 加载初始数据 -> (Source)
+    val stream = env.fromElements(list)
+    // 打印数据 -> (Sink)
+    stream.print()
+    // 触发程序执行
+    env.execute("fromElementsFlow")
+  }
+}
+```
+
+> **4. generateSequence(from, to)**
+> 
+> 从给定的间隔中并行地产生一个数字序列.
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+import org.apache.flink.api.java.io.TextInputFormat
+import org.apache.flink.core.fs.Path
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * FlinkSourceFlow
+  * <p>
+  */
+
+object FlinkSourceFlow extends App {
+
+  // 调用generateSequenceFlow方法
+  generateSequenceFlow()
+
+  /**
+    * 定义 generateSequenceFlow 方法
+    */
+  def generateSequenceFlow(): Unit ={
+    // 创建执行环境
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    // 加载初始数据 -> (Source)
+    val stream = env.generateSequence(1,20)
+    // 打印数据 -> (Sink)
+    stream.print()
+    // 触发程序执行
+    env.execute("generateSequenceFlow")
+  }
+}
 ```
 
 ### 5.5 Sink
+> Data Sink消费DataStream中的数据,并将它们转发到文件/套接字/外部系统或者打印出.
+> 
+> Flink有许多封装在DataStream操作里的内置输出格式.
+
+#### 5.5.1 writeAsText
+
+#### 5.5.2 WriteAsCsv
+#### 5.5.3 print/printToErr
+#### 5.5.4 writeUsingOutputFormat
+#### 5.5.5 writeToSocket
+
 ### 5.6 Transformation
+
+#### 5.6.1 Map
+#### 5.6.2 FlatMap
+#### 5.6.3 Filter
+#### 5.6.4 Connect
+#### 5.6.5 CoMap & CoFlatMap
+#### 5.6.6 Split
+#### 5.6.7 Select
+#### 5.6.8 Union
+#### 5.6.9 KeyBy
+#### 5.6.10 Reduce
+#### 5.6.11 Fold
+#### 5.6.12 Aggregations
+
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
