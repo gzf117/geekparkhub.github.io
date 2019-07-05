@@ -1,11 +1,11 @@
 # 🙈 The way of cultivation 🙈
 
-@(Update Time:2019-07-06)[ Docs Language:[Simplified Chinese](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README_CN.md) & [English](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README.md) | Programing Language:Technology Architecture | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) ]
+@(Update Time:2019-07-08)[ Docs Language:[Simplified Chinese](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README_CN.md) & [English](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README.md) | Programing Language:Technology Architecture | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) ]
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/hello_world.jpg" alt="Road to Xiuxian" title="Road to Xiuxian">
-<br>
-<!--<br><br><br><img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" width="192px" alt="GeekParkHub">-->
+<br><br><br>
+<img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" width="192px" alt="GeekParkHub">
 </div><br>
 
 - **The Geek Lab is a geek community built for the future by Geek International Park.**
@@ -107,6 +107,7 @@
 
 
 ### The development of the donation project is inseparable from your support. Please ask the developer to have a ☕coffee☕ cup!
+![enter image description here](https://www.geekparkhub.com/docs/images/pay.jpg)
 
 #### `Acknowledgement`：
 **Please note when making a donation UserName**

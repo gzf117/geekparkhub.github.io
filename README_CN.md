@@ -1,11 +1,12 @@
 # 🙈 修仙之道 🙈
 
-@(Update Time:2019-07-06)[ Docs Language:[简体中文](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README_cn.md) & [English](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README.md) | Programing Language:Technology Architecture | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) ]
+@(Update Time:2019-07-08)[ Docs Language:[简体中文](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README_cn.md) & [English](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README.md) | Programing Language:Technology Architecture | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) ]
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/hello_world.jpg" alt="修仙之路" title="修仙之路">
 <br>
-<!--<br><br><br><img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" width="192px" alt="GeekParkHub">-->
+<br><br><br>
+<img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" width="192px" alt="GeekParkHub">
 </div><br>
 
 - **极客实验室是极客国际公园旗下为未来而构建的极客社区;**
@@ -107,6 +108,7 @@
 
 
 ### 捐助 项目的发展离不开你的支持,请开发者喝杯☕Coffee☕吧!
+![enter image description here](https://www.geekparkhub.com/docs/images/pay.jpg)
 
 #### `致谢`：
 **捐助时请备注 UserName**
