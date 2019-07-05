@@ -791,7 +791,7 @@ object FlinkSourceFlow extends App {
   def socketTextFlow(): Unit ={
     // 创建执行环境
     val env = StreamExecutionEnvironment.getExecutionEnvironment
-    // 加载初始数据 -> (Source)
+    // 监听端口并加载初始数据 -> (Source)
     val stream = env.socketTextStream("systemhub",9999)
     // 打印数据 -> (Sink)
     stream.print()
@@ -1021,7 +1021,7 @@ object FlinkSourceFlow extends App {
   def generateSequenceFlow(): Unit ={
     // 创建执行环境
     val env = StreamExecutionEnvironment.getExecutionEnvironment
-    // 加载初始数据 -> (Source)
+    // 创建初始数据 -> (Source)
     val stream = env.generateSequence(1,20)
     // 打印数据 -> (Sink)
     stream.print()
@@ -1085,30 +1085,240 @@ object TransformationFlow extends App {
     * DataStream → DataStream : 输入一个参数产生一个参数.
     */
   def mapFlow(): Unit = {
-    // 加载初始数据 -> (Source)
+    // 创建初始数据 -> (Source)
     val stream = env.generateSequence(1, 20)
     // 调用map函数
     val streamMap = stream.map(x => x * 2)
     // 打印数据 -> (Sink)
-    stream.print()
+    streamMap.print()
     // 触发程序执行
-    env.execute("generateSequenceFlow")
+    env.execute("mapFlow")
   }
 }
 ```
 
 #### 5.6.2 FlatMap
-> DataStream → DataStream：输入一个参数，产生0个、1个或者多个输出
+> DataStream → DataStream：输入一个参数,产生0个、1个或者多个输出.
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * TransformationFlow
+  * <p>
+  */
+
+object TransformationFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用FlatMapFlow方法
+  FlatMapFlow()
+
+  /**
+    * 定义FlatMapFlow方法
+    * DataStream → DataStream：输入一个参数,产生0个、1个或者多个输出.
+    */
+  def FlatMapFlow(): Unit = {
+    // 加载初始数据 -> (Source)
+    val filePaths = "../flink_server/flink-coreflow/src/main/resources/input_01/test01.txt"
+    val stream = env.readTextFile(filePaths)
+    // 调用flatMap函数对数据以空格进行数据切分
+    val streamFlatMap = stream.flatMap(x => x.split(" "))
+    // 打印数据 -> (Sink)
+    streamFlatMap.print()
+    // 触发程序执行
+    env.execute("FlatMapFlow")
+  }
+}
+```
+
+
+
 #### 5.6.3 Filter
+> DataStream → DataStream : 计算每个元素的布尔值,并返回布尔值为true的元素.
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * TransformationFlow
+  * <p>
+  */
+
+object TransformationFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用FilterFlow方法
+  FilterFlow()
+
+  /**
+    * 定义FilterFlow方法
+    * DataStream → DataStream : 计算每个元素的布尔值,并返回布尔值为true的元素.
+    */
+  def FilterFlow(): Unit = {
+    // 创建初始数据 -> (Source)
+    val stream = env.generateSequence(1, 20)
+    // 调用filter函数,去除不等于1的元素的值
+    val streamFilter = stream.filter(x => x == 1)
+    // 打印数据 -> (Sink)
+    streamFilter.print()
+    // 触发程序执行
+    env.execute("FilterFlow")
+  }
+}
+```
+
+
 #### 5.6.4 Connect
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_018.jpg)
+> 
+> DataStream , DataStream → ConnectedStreams : 连接两个保持它们类型的数据流,两个数据流被Connect之后,只是被放在ConnectedStreams同一个流中,内部依然保持各自的数据和形式不发生任何变化,两个流相互独立.
+> 
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * TransformationFlow
+  * <p>
+  */
+
+object TransformationFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用ConnectFlow方法
+  ConnectFlow()
+
+  /**
+    * 定义ConnectFlow方法
+    * DataStream , DataStream → ConnectedStreams
+    */
+  def ConnectFlow(): Unit = {
+    // 加载与创建初始数据 -> (Source)
+    val filePaths = "../flink_server/flink-coreflow/src/main/resources/input_01/test03.txt"
+    val stream01 = env.generateSequence(1, 20)
+    val stream02 = env.readTextFile(filePaths).flatMap(x => x.split(" "))
+    // stream01将与stream02连接并形成ConnectedStreams连接流
+    var streamConnect = stream01.connect(stream02)
+    /**
+      * 当ConnectedStreams在调用map函数的过程就称之为CoMap操作
+      * x 即代表stream01在调用flatMap函数的过程就称之为CoFlatMap操作
+      * y 即代表stream02在调用flatMap函数时的过程就称之为CoFlatMap操作
+      *
+      * 说明 : 对ConnectedStreams流进行CoMap操作
+      * 说明 : `x` 即代表对stream01进行CoFlatMap操作
+      * 说明 : `y` 即代表对stream02进行CoFlatMap操作
+      *
+      */
+    val streamRes = streamConnect.map(x => x * 2, y => (y, 1L))
+    // 打印数据 -> (Sink)
+    streamRes.print()
+    // 触发程序执行
+    env.execute("ConnectFlow")
+  }
+}
+```
+
+
 #### 5.6.5 CoMap & CoFlatMap
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_019.jpg)
+> 
+> ConnectedStreams  →  DataStream : 作用于ConnectedStreams上,功能与map和flatMap一样,对ConnectedStreams中的每一个Stream分别进行map和flatMap.
+``` scala
+
+```
+
+
 #### 5.6.6 Split
+> 
+``` scala
+
+```
+
+
 #### 5.6.7 Select
+> 
+``` scala
+
+```
+
+
 #### 5.6.8 Union
+> 
+``` scala
+
+```
+
+
 #### 5.6.9 KeyBy
+> 
+``` scala
+
+```
+
+
 #### 5.6.10 Reduce
+> 
+``` scala
+
+```
+
+
 #### 5.6.11 Fold
+> 
+``` scala
+
+```
+
+
 #### 5.6.12 Aggregations
+> 
+``` scala
+
+```
+
 
 
 
