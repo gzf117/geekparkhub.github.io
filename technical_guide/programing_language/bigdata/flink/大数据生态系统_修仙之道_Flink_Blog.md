@@ -573,7 +573,7 @@ Accumulator Results:
 > 说明 : 返回集群执行环境,将Jar提交到远程服务器,需要在调用时指定JobManager的IP和端口号,并指定要在集群中运行的Jar包.
 
 ### 5.4 Source
-> **0. 基于Scala编程语言完成对Source/Transformation/Sink环节操作**
+> **0. 基于Scala编程语言完成对Source/Transformation/Sink等环节进行操作**
 > 
 > **1. JetBrains IntelliJ IDEA New Maven Project | 此过程省略**
 > 
@@ -637,7 +637,7 @@ Accumulator Results:
 </project>
 ```
 
-#### 5.4.1 基于File输入数据源
+#### 5.4.1 基于File创建输入数据源
 > **1. readTextFile(path)**
 > 
 > 说明 : 一列一列的读取遵循TextInputFormat规范的文本文件,并将结果作为String返回.
@@ -758,7 +758,7 @@ object FlinkSourceFlow extends App {
 1> apache 2
 ```
 
-#### 5.4.2 基于Socket输入数据源
+#### 5.4.2 基于Socket创建输入数据源
 - 1.创建socketTextFlow方法
 ``` scala
 package com.geekparkhub.core.flink.workflow
@@ -837,7 +837,7 @@ socketTextFlow
 2> socketTextFlow
 ```
 
-#### 5.4.3 基于(集合 Collection)输入数据源
+#### 5.4.3 基于(集合 Collection)创建输入数据源
 > **1. fromCollection(seq)**
 > 
 > 说明 : 从集合中创建一个数据流,集合中所有元素类型是一致的.
@@ -1041,11 +1041,19 @@ object FlinkSourceFlow extends App {
 > Flink有许多封装在DataStream操作里的内置输出格式.
 
 #### 5.5.1 writeAsText
+> 将元素以字符串形式逐行写入(TextOutputFormat),这些字符串通过调用每个元素的toString()方法来获取.
 
 #### 5.5.2 WriteAsCsv
+> 将元组以逗号分隔写入文件中(CsvOutputFormat),行及字段之间的分隔是可配置,每个字段的值来自对象的toString()方法.
+
 #### 5.5.3 print/printToErr
+> 打印每个元素的toString()方法的值到标准输出或者标准错误输出流中,或者也可以在输出流中添加一个前缀,这个可以帮助区分不同的打印调用,如果并行度大于1,那么输出也会有一个标识由哪个任务产生的标志.
+
 #### 5.5.4 writeUsingOutputFormat
+> 自定义文件输出的方法和基类(FileOutputFormat),支持自定义对象到字节的转换.
+
 #### 5.5.5 writeToSocket
+> 根据SerializationSchema将元素写入到socket中.
 
 ### 5.6 Transformation
 
@@ -1571,11 +1579,55 @@ object TransformationFlow extends App {
 #### 5.6.9 KeyBy
 > DataStream → KeyedStream : 输入必须是Tuple(元祖)类型,逻辑的将一个流拆分成不相交的分区,每个分区包含具有相同key的元素,在内部以hash形式实现.
 ``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * TransformationFlow
+  * <p>
+  */
+
+object TransformationFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用KeyByFlow方法
+  KeyByFlow()
+
+  /**
+    * 定义KeyByFlow方法
+    * DataStream → KeyedStream
+    */
+  def KeyByFlow(): Unit = {
+    // 加载初始数据 -> (Source)
+    val filePath = "../flink_server/flink-coreflow/src/main/resources/input_01/test03.txt"
+    val stream = env.readTextFile(filePath).flatMap(x => x.split(" ")).map(x => (x, 1L))
+    // 调用keyBy函数
+    val streamkeyBy = stream.keyBy(0)
+    // 打印数据 -> (Sink)
+    streamkeyBy.print()
+    // 触发程序执行
+    env.execute("KeyByFlow")
+  }
+}
 ```
 
 
 #### 5.6.10 Reduce
+> KeyedStream → DataStream : 一个分组数据流的聚合操作,合并当前的元素和上次聚合的结果,产生一个新的值,返回的流中包含每一次聚合的结果,而不是只返回最后一次聚合的最终结果.
 > 
 ``` scala
 
