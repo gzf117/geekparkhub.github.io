@@ -34,6 +34,8 @@
 > 
 > Flink是新一代分布式流式处理计算引擎,是大数据重要内容.
 > 
+> 此学习路线将基于Scala编程语言对Flink核心环节进行详细操作.
+> 
 > 如果你学习过Java & Scala编程语言 & Spark计算框架,将有助于你更快了解掌握Flink核心技术.
 
 
@@ -571,6 +573,8 @@ Accumulator Results:
 > 说明 : 返回集群执行环境,将Jar提交到远程服务器,需要在调用时指定JobManager的IP和端口号,并指定要在集群中运行的Jar包.
 
 ### 5.4 Source
+> **0. 基于Scala编程语言完成对Source/Transformation/Sink环节操作**
+> 
 > **1. JetBrains IntelliJ IDEA New Maven Project | 此过程省略**
 > 
 > **2. pom配置信息 | pom.xml**
@@ -1202,6 +1206,8 @@ object TransformationFlow extends App {
 > 
 > DataStream , DataStream → ConnectedStreams : 连接两个保持它们类型的数据流,两个数据流被Connect之后,只是被放在ConnectedStreams同一个流中,内部依然保持各自的数据和形式不发生任何变化,两个流相互独立.
 > 
+> 通常Connect会与CoMap&CoFlatMap配合使用.
+> 
 ``` scala
 package com.geekparkhub.core.flink.workflow
 
@@ -1266,6 +1272,8 @@ object TransformationFlow extends App {
 > ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_019.jpg)
 > 
 > ConnectedStreams  →  DataStream : 作用于ConnectedStreams上,功能与map和flatMap一样,对ConnectedStreams中的每一个Stream分别进行map和flatMap处理.
+> 
+> 通常Connect会与CoMap&CoFlatMap配合使用.
 > 
 > **1. CoMap**
 ``` scala
@@ -1369,28 +1377,199 @@ object TransformationFlow extends App {
 ```
 
 #### 5.6.6 Split
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_020.jpg)
+> 
+> DataStream → SplitStream : 根据某些特征将DataStream拆分成两个或者多个DataStream.
+> 
+> 通常split()函数会与select()函数配合使用.
 > 
 ``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * TransformationFlow
+  * <p>
+  */
+
+object TransformationFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用SplitFlow方法
+  SplitFlow()
+
+  /**
+    * 定义SplitFlow方法
+    * DataStream → SplitStream
+    * 通常split()函数会与select()函数配合使用
+    */
+  def SplitFlow(): Unit = {
+    // 加载初始数据 -> (Source)
+    val filePaths = "../flink_server/flink-coreflow/src/main/resources/input_01/test03.txt"
+    val stream = env.readTextFile(filePaths).flatMap(x => x.split(" "))
+    // 调用split函数
+    var streamSplit = stream.split(
+      // 遍历每行数据,并校验values值与hadoop值相等,则表示条件成立
+      values => ("hadoop".equals(values))
+        // 将values值进行match模式匹配
+      match {
+        // 如果values条件为true,则将hadoop追加List集合中
+        case true => List("hadoop")
+        // 如果values条件为false,则将other追加List集合中
+        case false => List("other")
+      }
+    )
+    // 打印数据 -> (Sink)
+    streamSplit.print()
+    // 触发程序执行
+    env.execute("SplitFlow")
+  }
+}
 ```
 
 
 #### 5.6.7 Select
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_021.jpg)
 > 
+> SplitStream → DataStream : 从一个SplitStream中获取一个或者多个DataStream.
+> 
+> 通常select()函数会与split()函数配合使用.
 ``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * TransformationFlow
+  * <p>
+  */
+
+object TransformationFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用SplitAndSelectFlow方法
+  SplitAndSelectFlow()
+
+  /**
+    * 定义SplitAndSelectFlow方法
+    * SplitStream → DataStream
+    * 通常select()函数会与split()函数配合使用
+    */
+  def SplitAndSelectFlow(): Unit = {
+    // 加载初始数据 -> (Source)
+    val filePaths = "../flink_server/flink-coreflow/src/main/resources/input_01/test03.txt"
+    val stream = env.readTextFile(filePaths).flatMap(x => x.split(" "))
+    // 调用split函数
+    var streamSplit = stream.split(
+      // 遍历每行数据,并校验values值与hadoop值相等,则表示条件成立
+      values => ("hadoop".equals(values))
+        // 将values值进行match模式匹配
+      match {
+        // 如果values条件为true,则将hadoop追加List集合中
+        case true => List("hadoop")
+        // 如果values条件为false,则将other追加List集合中
+        case false => List("other")
+      }
+    )
+    // 调用select函数
+    val streamSelectHadoop = streamSplit.select("hadoop")
+    val streamSelectOther = streamSplit.select("other")
+    // 打印数据 -> (Sink)
+    streamSelectHadoop.print()
+    streamSelectOther.print()
+    // 触发程序执行
+    env.execute("SplitAndSelectFlow")
+  }
+}
 ```
 
 
 #### 5.6.8 Union
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_022.jpg)
+> 
+> DataStream → DataStream : 对两个或者两个以上DataStream进行union操作.产生一个包含所有DataStream元素的新DataStream.
+> 
+> 注意:如果将一个DataStream跟它自身做union操作,在新的DataStream中,将看到每一个元素都出现两次.
 > 
 ``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * TransformationFlow
+  * <p>
+  */
+
+object TransformationFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用UnionFlow方法
+  UnionFlow()
+
+  /**
+    * 定义UnionFlow方法
+    * DataStream → DataStream
+    */
+  def UnionFlow(): Unit = {
+    // 加载初始数据 -> (Source)
+    val filePath01 = "../flink_server/flink-coreflow/src/main/resources/input_01/test01.txt"
+    val filePath02 = "../flink_server/flink-coreflow/src/main/resources/input_01/test03.txt"
+    val stream01 = env.readTextFile(filePath01).flatMap(x => x.split(" "))
+    val stream02 = env.readTextFile(filePath02).flatMap(x => x.split(" "))
+    // 调用union函数
+    val streamUnion = stream01.union(stream02)
+    // 打印数据 -> (Sink)
+    streamUnion.print()
+    // 触发程序执行
+    env.execute("UnionFlow")
+  }
+}
 ```
 
 
 #### 5.6.9 KeyBy
-> 
+> DataStream → KeyedStream : 输入必须是Tuple(元祖)类型,逻辑的将一个流拆分成不相交的分区,每个分区包含具有相同key的元素,在内部以hash形式实现.
 ``` scala
 
 ```
