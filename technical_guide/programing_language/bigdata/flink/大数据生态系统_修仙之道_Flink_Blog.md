@@ -560,6 +560,272 @@ Accumulator Results:
 > 说明 : 返回集群执行环境,将Jar提交到远程服务器,需要在调用时指定JobManager的IP和端口号,并指定要在集群中运行的Jar包.
 
 ### 5.4 Source
+> **1. JetBrains IntelliJ IDEA New Maven Project | 此过程省略**
+> 
+> **2. pom配置信息 | pom.xml**
+``` xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>flink_server</artifactId>
+        <groupId>com.geekparkhub.core.flink</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>flink-common</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.scala-lang</groupId>
+            <artifactId>scala-library</artifactId>
+            <version>2.11.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-core</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-clients_2.11</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-scala_2.11</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-scala_2.11</artifactId>
+            <version>1.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cassandra</groupId>
+            <artifactId>cassandra-all</artifactId>
+            <version>0.8.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+</project>
+```
+
+#### 5.4.1 基于File 数据源
+> **1. readTextFile(path)**
+> 
+> 说明 : 一列一列的读取遵循TextInputFormat规范的文本文件,并将结果作为String返回.
+> 
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+import org.apache.flink.api.java.io.TextInputFormat
+import org.apache.flink.core.fs.Path
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * FlinkSourceFlow
+  * <p>
+  */
+
+object FlinkSourceFlow extends App {
+
+  // 调用readTextFileFlow方法
+  readTextFileFlow()
+
+  /**
+    * 定义 readTextFile方法
+    * 读取文本文件
+    */
+  def readTextFileFlow(): Unit = {
+    // 创建执行环境
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    // 加载初始数据 -> (Source)
+    val filePaths = "../flink_server/flink-coreflow/src/main/resources/input_01/test01.txt"
+    val stream = env.readTextFile(filePaths)
+    // 打印数据 -> (Sink)
+    stream.print()
+    // 触发程序执行
+    env.execute("readTextFileFlow")
+  }
+}
+```
+- 运行查看结果
+```
+1> svm lr softmax gbdt
+5> cnn rnn lstm gbdt
+2> cnn rnn lstm gan
+7> svm lr softmax adam
+4> sgd adam relu rss
+```
+
+> **2. readFile(fileInputFormat, path)**
+> 
+> 说明 : 按照指定的文件格式读取文件
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+import org.apache.flink.api.java.io.TextInputFormat
+import org.apache.flink.core.fs.Path
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * FlinkSourceFlow
+  * <p>
+  */
+
+object FlinkSourceFlow extends App {
+
+  // 调用readFileFlow方法
+  readFileFlow()
+
+  /**
+    * 定义 readFileFlow方法
+    * 指定文件格式读取文件
+    */
+  def readFileFlow(): Unit = {
+    // 创建执行环境
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    // 创建文件路径
+    val paths = "../flink_server/flink-coreflow/src/main/resources/input_01/test02.txt"
+    val path = new Path(paths)
+    // 加载初始数据 -> (Source)
+    val filePath = "../flink_server/flink-coreflow/src/main/resources/input_01/test02.txt"
+    val stream = env.readFile(new TextInputFormat(path), filePath)
+    // 打印数据 -> (Sink)
+    stream.print()
+    // 触发程序执行
+    env.execute("readFileFlow")
+  }
+}
+```
+- 运行查看结果
+```
+6> kafka 1
+8> sqoop 1
+4> kafka 2
+5> apache 5
+3> apache 3
+2> kafka 1
+1> apache 2
+```
+
+
+#### 5.4.2 基于Socket数据源
+- 1.创建socketTextFlow方法
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+import org.apache.flink.api.java.io.TextInputFormat
+import org.apache.flink.core.fs.Path
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * FlinkSourceFlow
+  * <p>
+  */
+
+object FlinkSourceFlow extends App {
+
+  // 调用socketTextFlow方法
+  socketTextFlow()
+
+  /**
+    * 定义 socketTextFlow方法
+    * 从Socket中读取信息,元素可以用分隔符分开
+    */
+  def socketTextFlow(): Unit ={
+    // 创建执行环境
+    val env = StreamExecutionEnvironment.getExecutionEnvironment
+    // 加载初始数据 -> (Source)
+    val stream = env.socketTextStream("systemhub",9999)
+    // 打印数据 -> (Sink)
+    stream.print()
+    // 触发程序执行
+    env.execute("socketTextFlow")
+  }
+}
+```
+- 2.在本地监听服务端口
+```
+systemhub:~ system$ nc -l 9999
+```
+- 3.运行程序
+- 4.在本地服务端输入数据源
+```
+systemhub:~ system$ nc -l 9999
+hello
+flink
+flink
+socketTextFlow
+socketTextFlow
+socketTextFlow
+socketTextFlow
+socketTextFlow
+socketTextFlow
+socketTextFlow
+```
+- 5.查看运行结果
+```
+1> hello
+2> flink
+3> flink
+4> socketTextFlow
+5> socketTextFlow
+6> socketTextFlow
+7> socketTextFlow
+8> socketTextFlow
+1> socketTextFlow
+2> socketTextFlow
+```
+
+#### 5.4.3 基于(集合 Collection) 数据源
+
+
 ### 5.5 Sink
 ### 5.6 Transformation
 
