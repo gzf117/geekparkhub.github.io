@@ -1729,15 +1729,208 @@ object TransformationFlow extends App {
 > ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_026.jpg)
 
 
-
-
 ### 6.3 Window API
 #### 6.3.1 Count Window
-#### 6.3.2 Time Window
-#### 6.3.3 Window Reduce
-#### 6.3.4 Window Fold
-#### 6.3.5 Aggregation on Window
+> CountWindow根据窗口中相同key元素的数量来触发执行,执行时只计算元素数量达到窗口大小的key对应的结果.
+> 
+> 注意 : CountWindow的window_size指的是相同Key的元素的个数,不是输入的所有元素的总数.
+> 
+> **1. 滚动窗口**
+> 默认CountWindow是一个滚动窗口,只需要指定窗口大小即可,当元素key值数量达到窗口大小时,就会触发窗口的执行.
+- 1.创建CountWindow方法
+``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * WindowsFlow
+  * <p>
+  */
+
+object WindowsFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用countWindowFlow方法
+  countWindowFlow()
+
+  /**
+    * 定义countWindowFlow方法
+    */
+  def countWindowFlow(): Unit = {
+    // 监听端口并加载初始数据 -> (Source)
+    val stream = env.socketTextStream("systemhub", 9999)
+    // 对stream进行处理并按key聚合
+    val streamKeyBy = stream.map(x => (x, 1L)).keyBy(0)
+    /**
+      * 引入滚动窗口
+      * 参数5即表示5个相同key的元素计算一次
+      * 注意 : CountWindow的window_size指的是相同Key的元素的个数,不是输入的所有元素的总数.
+      */
+    val streamWindow = streamKeyBy.countWindow(5)
+    // 将聚合数据写入文件
+    val streamReduce = streamWindow.reduce((x, y) => (x._1, x._2 + y._2))
+    // 打印数据 -> (Sink)
+    streamReduce.print()
+    // 触发程序执行
+    env.execute("countWindowFlow")
+  }
+}
+```
+- 2.在本地监听服务端口
+```
+systemhub:~ system$ nc -l 9999
+```
+- 3.运行程序
+- 4.在本地服务端输入数据源
+```
+systemhub:~ system$ nc -l 9999
+streamWindow
+streamWindow
+streamWindow
+streamWindow
+streamWindow
+streamKeyBy
+streamKeyBy
+streamKeyBy
+streamKeyBy
+streamKeyBy
+```
+- 5.查看运行结果
+```
+1> (streamWindow,5)
+5> (streamKeyBy,5)
+```
+
+
+> **2. 滑动窗口**
+> 滑动窗口和滚动窗口的函数名是完全一致的,只是在传参数时需要传入两个参数,一个是`window_size`,一个是`sliding_size`.
+> 
+> 下面实例中sliding_size设置为2,也就是说每收到两个相同key的数据就计算一次,每一次计算的window范围是5个元素.
+- 1.创建CountWindow方法
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * WindowsFlow
+  * <p>
+  */
+
+object WindowsFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用countWindowsFlow方法
+  countWindowsFlow()
+
+  /**
+    * 定义countWindowsFlow方法
+    */
+  def countWindowsFlow(): Unit = {
+    // 监听端口并加载初始数据 -> (Source)
+    val stream = env.socketTextStream("systemhub", 9999)
+    // 对stream进行处理并按key聚合
+    val streamKeyBy = stream.map(x => (x, 1L)).keyBy(0)
+
+    /**
+      * 引入滑动窗口
+      * 每收到两个相同key的数据就计算一次,每一次计算的window范围是5个元素.
+      */
+    val streamWindow = streamKeyBy.countWindow(5, 2)
+    // 将聚合数据写入文件
+    val streamReduce = streamWindow.reduce((x, y) => (x._1, x._2 + y._2))
+    // 打印数据 -> (Sink)
+    streamReduce.print()
+    // 触发程序执行
+    env.execute("countWindowsFlow")
+  }
+}
+```
+- 2.在本地监听服务端口
+```
+systemhub:~ system$ nc -l 9999
+```
+- 3.运行程序
+- 4.在本地服务端输入数据源
+```
+systemhub:~ system$ nc -l 9999
+streamWindow
+streamWindow
+streamKeyBy
+streamKeyBy
+streamWindow
+streamWindow
+streamWindow
+streamWindow
+```
+- 5.查看运行结果
+```
+1> (streamWindow,2)
+5> (streamKeyBy,2)
+1> (streamWindow,4)
+1> (streamWindow,5)
+```
+
+#### 6.3.2 Time Window
+> TimeWindow是将指定时间范围内的所有数据组成一个window,一次对一个window内的所有数据进行计算.
+> 
+> **1. 滚动窗口**
+> 
+``` scala
+
+```
+
+
+> **2. 滑动窗口 (SlidingEventTimeWindows)**
+> 
+``` scala
+
+```
+
+
+#### 6.3.3 Window Reduce
+> WindowedStream → DataStream : 给window赋一个reduce功能的函数,并返回一个聚合的结果.
+> 
+#### 6.3.4 Window Fold
+> WindowedStream → DataStream : 给窗口赋一个fold功能的函数,并返回一个fold后的结果.
+``` scala
+
+```
+
+#### 6.3.5 Aggregation on Window
+> WindowedStream → DataStream : 对一个window内的所有元素做聚合操作.
+> 
+> min和minBy的区别是min返回的是最小值,而minBy返回的是包含最小值字段的元素(同样的原理适用于max和maxBy).
+``` scala
+
+```
 
 
 ## 🔥 7. EventTime & Window 🔥
