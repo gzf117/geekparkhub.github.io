@@ -2413,7 +2413,7 @@ object WindowsFlow extends App {
 }
 ```
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+
 ## 🔥 7. EventTime & Window 🔥
 ### 7.1 EventTime 引入
 > 在Flink流式处理中,绝大部分的业务都会使用eventTime,一般只在eventTime无法使用时,才会被迫使用ProcessingTime或者IngestionTime.
@@ -2572,7 +2572,7 @@ object EvnetTimeWindowFlow extends App {
 > ```
 > 
 > 注意,窗口是左闭右开,形式为 : 
-
+> 
 > `[window_start_time,window_end_time)`
 > 
 > Window的设定无关数据本身,而是系统实现定义好的,也就是说Window会一直按照指定的时间间隔进行划分,不论这个Window中有没有数据,EventTime在这个Window期间的数据会进入这个Window.
@@ -2582,18 +2582,284 @@ object EvnetTimeWindowFlow extends App {
 > - Window会在以下的条件满足时被触发执行 : 
 > - watermark时间 >= window_end_time
 > - 在[window_start_time,window_end_time)中有数据存在
+> 
 > 通过下图来说明Watermark、EventTime和Window的关系
 > 
 > ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_029.jpg)
 
 
-
 #### 7.3.1 滚动窗口 (TumblingEventTimeWindows)
+> 按照EventTime的时间窗口计算出结果,而无关系统的时间(包括输入的快慢)
+- 1.创建TumblingEventTimeWindowsFlow方法
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+import org.apache.flink.streaming.api.TimeCharacteristic
+import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
+import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.windowing.assigners.TumblingEventTimeWindows
+import org.apache.flink.streaming.api.windowing.time.Time
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * EvnetTimeWindowFlow
+  * <p>
+  */
+object EvnetTimeWindowFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用TumblingEventTimeWindowsFlow方法
+  TumblingEventTimeWindowsFlow()
+
+  /**
+    * 定义TumblingEventTimeWindowsFlow方法
+    * 定义 滚动窗口 方法
+    */
+  def TumblingEventTimeWindowsFlow(): Unit = {
+    // 设置时间特征为EventTime,即表示从调用时开始赋予env创建的每个stream追加时间特征
+    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+    // 设置时间戳,对stream进行处理并按key聚合
+    val stream = env.socketTextStream("systemhub", 9999)
+      .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[String](Time.milliseconds(3000)) {
+        override def extractTimestamp(time: String): Long = {
+          // / EventTime是日志生成时间,从日志中解析EventTime
+          val eventTime = time.split(" ")(0).toLong
+          println("eventTime = " + eventTime)
+          eventTime
+        }
+      }).map(x => (x.split(" ")(1), (1L))).keyBy(0)
+    // 引入滚动窗口,设置每5秒开启一个窗口
+    val streamWindow = stream.window(TumblingEventTimeWindows.of(Time.seconds(5)))
+    // 执行聚合操作
+    val streamReduce = streamWindow.reduce((x, y) => (x._1, x._2 + y._2))
+    // 打印数据 -> (Sink)
+    streamReduce.print()
+    // 触发程序执行
+    env.execute("TumblingEventTimeWindowsFlow")
+  }
+}
+```
+- 2.在本地监听服务端口
+```
+systemhub:~ system$ nc -l 9999
+```
+- 3.运行程序
+- 4.在本地服务端输入数据源
+```
+systemhub:~ system$ nc -l 9999
+10000 TumblingEventTimeWindowsFlow
+11000 TumblingEventTimeWindowsFlow
+15000 TumblingEventTimeWindowsFlow
+18000 TumblingEventTimeWindowsFlow
+23000 TumblingEventTimeWindowsFlow
+27999 TumblingEventTimeWindowsFlow
+```
+- 5.查看运行结果
+```
+eventTime = 10000
+eventTime = 11000
+eventTime = 15000
+eventTime = 18000
+2> (TumblingEventTimeWindowsFlow,2)
+eventTime = 23000
+2> (TumblingEventTimeWindowsFlow,2)
+eventTime = 27999
+2> (TumblingEventTimeWindowsFlow,1)
+```
+
 #### 7.3.2 滑动窗口 (SlidingEventTimeWindows)
+- 1.创建SlidingEventTimeWindowsFlow方法
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+import org.apache.flink.streaming.api.TimeCharacteristic
+import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
+import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.windowing.assigners.{SlidingEventTimeWindows, TumblingEventTimeWindows}
+import org.apache.flink.streaming.api.windowing.time.Time
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * EvnetTimeWindowFlow
+  * <p>
+  */
+object EvnetTimeWindowFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用SlidingEventTimeWindowsFlow方法
+    SlidingEventTimeWindowsFlow()
+
+  /**
+    * 定义SlidingEventTimeWindowsFlow方法
+    * 定义 滑动窗口 方法
+    */
+  def SlidingEventTimeWindowsFlow(): Unit = {
+    // 设置时间特征为EventTime,即表示从调用时开始赋予env创建的每个stream追加时间特征
+    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+    // 设置时间戳,对stream进行处理并按key聚合
+    val stream = env.socketTextStream("systemhub", 9999)
+      .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[String](Time.milliseconds(3000)) {
+        override def extractTimestamp(time: String): Long = {
+          // / EventTime是日志生成时间,从日志中解析EventTime
+          val eventTime = time.split(" ")(0).toLong
+          println("eventTime = " + eventTime)
+          eventTime
+        }
+      }).map(x => (x.split(" ")(1), (1L))).keyBy(0)
+    /**
+      * 引入滑动窗口,设置窗口大小为10秒,并设置窗口滑动过程为5秒
+      * 即表示5秒触发一次窗口执行,计算范围为10秒
+      */
+    val streamWindow = stream.window(SlidingEventTimeWindows.of(Time.seconds(10), Time.seconds(5)))
+    // 执行聚合操作
+    val streamReduce = streamWindow.reduce((x, y) => (x._1, x._2 + y._2))
+    // 打印数据 -> (Sink)
+    streamReduce.print()
+    // 触发程序执行
+    env.execute("SlidingEventTimeWindowsFlow")
+  }
+}
+```
+- 2.在本地监听服务端口
+```
+systemhub:~ system$ nc -l 9999
+```
+- 3.运行程序
+- 4.在本地服务端输入数据源
+```
+10000 SlidingEventTimeWindowsFlow
+11000 SlidingEventTimeWindowsFlow
+15000 SlidingEventTimeWindowsFlow
+18000 SlidingEventTimeWindowsFlow
+```
+- 5.查看运行结果
+```
+eventTime = 10000
+eventTime = 11000
+eventTime = 15000
+eventTime = 18000
+7> (SlidingEventTimeWindowsFlow,2)
+```
+
 #### 7.3.3 会话窗口 (EventTimeSessionWindows)
+> 相邻两次数据的EventTime的时间差超过指定的时间间隔就会触发执行.
+> 如果加入Watermark.那么当触发执行时.所有满足时间间隔而还没有触发的Window会同时触发执行.
+- 1.创建EventTimeSessionWindowsFlow方法
+``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.TimeCharacteristic
+import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
+import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.windowing.assigners.{EventTimeSessionWindows, SlidingEventTimeWindows, TumblingEventTimeWindows}
+import org.apache.flink.streaming.api.windowing.time.Time
 
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * EvnetTimeWindowFlow
+  * <p>
+  */
+object EvnetTimeWindowFlow extends App {
 
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用EventTimeSessionWindowsFlow方法
+  EventTimeSessionWindowsFlow()
+
+  /**
+    * 定义EventTimeSessionWindowsFlow方法
+    * 定义 会话窗口 方法
+    */
+  def EventTimeSessionWindowsFlow(): Unit = {
+    // 设置时间特征为EventTime,即表示从调用时开始赋予env创建的每个stream追加时间特征
+    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+    // 设置时间戳,对stream进行处理并按key聚合
+    val stream = env.socketTextStream("systemhub", 9999)
+      .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[String](Time.milliseconds(3000)) {
+        override def extractTimestamp(time: String): Long = {
+          // / EventTime是日志生成时间,从日志中解析EventTime
+          val eventTime = time.split(" ")(0).toLong
+          println("eventTime = " + eventTime)
+          eventTime
+        }
+      }).map(x => (x.split(" ")(1), (1L))).keyBy(0)
+    /**
+      * 引入会话窗口
+      * 设置5秒触发一次窗口执行,准确的说当前5秒加上3秒等于8秒,既每8秒才触发对应的窗口执行
+      */
+    val streamWindow = stream.window(EventTimeSessionWindows.withGap(Time.seconds(5)))
+    // 执行聚合操作
+    val streamReduce = streamWindow.reduce((x, y) => (x._1, x._2 + y._2))
+    // 打印数据 -> (Sink)
+    streamReduce.print()
+    // 触发程序执行
+    env.execute("EventTimeSessionWindowsFlow")
+  }
+}
+```
+- 2.在本地监听服务端口
+```
+systemhub:~ system$ nc -l 9999
+```
+- 3.运行程序
+- 4.在本地服务端输入数据源
+```
+systemhub:~ system$ nc -l 9999
+10000 EventTimeSessionWindowsFlow
+11000 EventTimeSessionWindowsFlow
+20000 EventTimeSessionWindowsFlow
+29000 EventTimeSessionWindowsFlow
+30000 EventTimeSessionWindowsFlow
+39000 EventTimeSessionWindowsFlow
+```
+- 5.查看运行结果
+```
+eventTime = 10000
+eventTime = 11000
+eventTime = 20000
+7> (EventTimeSessionWindowsFlow,2)
+eventTime = 29000
+7> (EventTimeSessionWindowsFlow,1)
+eventTime = 30000
+eventTime = 39000
+7> (EventTimeSessionWindowsFlow,2)
+eventTime = 40000
+```
 
 
 ## 8. 修仙之道 技术架构迭代 登峰造极之势
