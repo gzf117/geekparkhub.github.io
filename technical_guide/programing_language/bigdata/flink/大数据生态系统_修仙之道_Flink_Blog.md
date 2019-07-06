@@ -1808,7 +1808,7 @@ object TransformationFlow extends App {
 > 
 > 日志内容如下 : `2017-11-02 18:37:15.624 INFO Fail over to rm2` -> 即表示 Event Time
 > 
-> 对于业务来说,要统计1min内故障日志个数,哪个时间是最有意义的？—— eventTime,因为要根据日志的生成时间进行统计.
+> 对于业务来说,要统计1min内故障日志个数,哪个时间是最有意义？—— eventTime,因为要根据日志的生成时间进行统计.
 
 
 ### 6.2 Window
@@ -2416,11 +2416,178 @@ object WindowsFlow extends App {
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ## 🔥 7. EventTime & Window 🔥
 ### 7.1 EventTime 引入
+> 在Flink流式处理中,绝大部分的业务都会使用eventTime,一般只在eventTime无法使用时,才会被迫使用ProcessingTime或者IngestionTime.
+> 
+> 如果要使用EventTime,那么需要引入EventTime时间属性,引入方式如下所示 : 
+> ```
+> val env = StreamExecutionEnvironment.getExecutionEnvironment
+> 
+> // 从调用时刻开始给env创建的每一个stream追加时间特征
+> env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+> ```
+
 ### 7.2 Watermark
 #### 7.2.1 基本概念
-#### 7.2.2 Watermark 引入
+> 流处理从事件产生到流经过source,再到operator,中间是有一个过程和时间.
+> 
+> 虽然大部分情况下,流到operator的数据都是按照事件产生的时间顺序来排列,但是也不排除由于网络、背压等原因,导致数据乱序的产生.
+> 
+> 所谓数据乱序就是指Flink接收到事件的先后顺序不是严格按照事件EventTime顺序排列的.
+> 
+> 数据乱序图如下 : 
+> 
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_027.jpg)
+> 
+> 那么此时出现一个问题,一旦出现乱序,如果只根据eventTime决定window的运行,是不能明确数据是否全部到位,但又不能无限期的等待,此时必须要有个机制来保证一个特定时间后必须触发window进行计算,这个特别的机制就是Watermark.
+> 
+> Watermark是一种衡量EventTime进展机制,它是数据自身的隐藏属性,数据自身携带着对应的Watermark.
+> 
+> Watermark是用于处理乱序事件,而正确处理乱序事件,通常用Watermark机制结合window来实现.
+> 
+> 数据流中的Watermark用于表示EventTime小于Watermark的数据都已经到达,因此window的执行也是由Watermark来触发.
+> 
+> Watermark可以理解成一个延迟触发机制,可以设置Watermark的延时时长.
+> 
+> 每次系统会校验已经到达的数据中最大的maxEventTime,然后认定eventTime小于maxEventTime减去延时时长的所有数据都已经到达.
+> 
+> 如果有窗口停止时间等于maxEventTime减去延时时长,那么这个窗口就会被触发执行.
+> 
+> 有序流Watermarker 如下图所示 : (Watermark设置为0)
+> 
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_028.jpg)
+> 
+> 无序数据 处理流程原理 : 
+> 
+> `已知条件` : 设置允许最大延时时长为2s , 以5秒为时间单位划分窗口,每个隔5秒就会划分一个窗口.
+> 
+> 在一条数据流中,将以1到5,5到10,10到15进行划分窗口,当窗口划分之后,在触发窗口执行之前,将会不断的接收外来数据进入窗口,当1进入时,将1存放至窗口1,当4进入时,4会先判断自身Watermark是多少,`计算公式:maxEventTime - 延时时长 = 自身Watermark`,既是`4-2=2`,计算完毕后得知4自身Watermark是2,此时4会判断当前窗口结束时间有没有小于等于2的值,此时发现并没有,则5进入窗口,此时5的自身Watermark就是3,5此时再次比较当前窗口结束时间有没有小于等于3的值,如没有则2进入,直到7进入窗口时,发现当前窗口结束时间小于等于5的条件成立,此时证明窗口1的数据已经全部到位,可以进行窗口执行,那么所剩下还没有进入到窗口的数据,则全部被抛弃,其他窗口流程如上述所示,这就是无序数据 处理流程原理.
+> 
+> 当Flink接收到每一条数据时,都会产生一条Watermark,当maxEventTime减去延时时长即表示这条Watermark就等于当前所有到达数据中的时间.
+> 
+> 也就是说Watermark是由数据自身携带,一旦数据携带的Watermark比当前未触发的窗口停止时间要晚,那么就会被触发相应窗口执行.
+> 
+> 由于Watermark是由数据携带,因此如果运行过程中无法获取新的数据,那么没有被触发的窗口将永远都不被触发.
+> 
+> 上图中所设置的允许最大延迟到达时间为2s.
+> 
+> 所以,时间戳为7s的事件既对应的Watermark时间是5s.
+> ``` 
+> 计算公式模型 : maxEventTime - 延时时长 = Watermark
+> 套用计算模型 : 7s - 2s = 5s
+> ```
+> 时间戳为12s的事件既对应的Watermark时间是10s.
+> ``` 
+> 计算公式模型 : maxEventTime - 延时时长 = Watermark
+> 套用计算模型 : 12s - 2s = 10s
+> ```
+> 如图所示 : 图中以5秒为时间单位划分窗口,每个隔5秒就会划分一个窗口.
+> 
+> 窗口1即表示是1s ~ 5s , 窗口2即表示是6s ~ 10s , 窗口3,窗口4,划分窗口以此类推
+> 
+> 那么时间戳为7s的事件到达时的Watermarker恰好触发窗口1.
+> ``` 
+> 计算公式模型 : maxEventTime - 延时时长 = Watermark
+> 套用计算模型 : 7s - 2s = 5s
+> 
+> 判断公式模型 : Watermark = 窗口1 && Watermark = 窗口2
+> 套用判断模型 : 5s = (窗口1 - 1s~5s) && 5s != (窗口2 - 6s~10s)
+> ```
+> 时间戳为12s的事件到达时的Watermark恰好触发窗口2.
+> ``` 
+> 计算公式模型 : maxEventTime - 延时时长 = Watermark
+> 套用计算模型 : 12s - 2s = 10s
+> 
+> 判断公式模型 : Watermark = 窗口1 && Watermark = 窗口2
+> 套用判断模型 : 10s != (窗口1 - 1s~5s) && 10s = (窗口2 - 6s~10s)
+> ```
 
+#### 7.2.2 Watermark 引入
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+
+import org.apache.flink.streaming.api.TimeCharacteristic
+import org.apache.flink.streaming.api.functions.timestamps.BoundedOutOfOrdernessTimestampExtractor
+import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.windowing.time.Time
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * EvnetTimeWindowFlow
+  * <p>
+  */
+object EvnetTimeWindowFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用watermarkFlow方法
+  watermarkFlow()
+  
+  /**
+    * 定义watermarkFlow方法
+    * 分配时间戳与Watermarks
+    */
+  def watermarkFlow(): Unit = {
+    // 设置时间特征为EventTime,即表示从调用时开始赋予env创建的每个stream追加时间特征
+    env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
+    // 设置时间戳
+    val stream = env.socketTextStream("systemhub", 9999)
+      .assignTimestampsAndWatermarks(new BoundedOutOfOrdernessTimestampExtractor[String](Time.milliseconds(0)) {
+        override def extractTimestamp(time: String): Long = {
+          // / EventTime是日志生成时间,从日志中解析EventTime
+          val eventTime = time.split(" ")(0).toLong
+          println("eventTime = " + eventTime)
+          eventTime
+        }
+      })
+  }
+}
+```
 ### 7.3 EvnetTimeWindow API
+> 当使用EventTimeWindow时,所有的Window在EventTime的时间轴上进行划分,也就是说,在Window启动后,会根据初始的EventTime时间每隔一段时间划分一个窗口,如果Window大小是3秒,那么1分钟内会把Window划分为如下的形式 : 
+> ```
+> [00:00:00,00:00:03)
+> [00:00:03,00:00:06)
+> ...
+> [00:00:57,00:01:00)
+> ```
+> 
+> 如果Window大小是10秒,则Window会被分为如下形式 : 
+> ```
+> [00:00:00,00:00:10)
+> [00:00:10,00:00:20)
+> ...
+> [00:00:50,00:01:00)
+> ```
+> 
+> 注意,窗口是左闭右开,形式为 : 
+
+> `[window_start_time,window_end_time)`
+> 
+> Window的设定无关数据本身,而是系统实现定义好的,也就是说Window会一直按照指定的时间间隔进行划分,不论这个Window中有没有数据,EventTime在这个Window期间的数据会进入这个Window.
+> 
+> Window会不断产生,属于这个Window范围的数据会被不断加入到Window中,所有未被触发的Window都会等待触发,只要Window还没触发,属于这个Window范围的数据就会一直被加入到Window中,直到Window被触发才会停止数据的追加,而当Window触发之后才接受到的属于被触发Window的数据会被丢弃.
+> 
+> - Window会在以下的条件满足时被触发执行 : 
+> - watermark时间 >= window_end_time
+> - 在[window_start_time,window_end_time)中有数据存在
+> 通过下图来说明Watermark、EventTime和Window的关系
+> 
+> ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_029.jpg)
+
+
+
 #### 7.3.1 滚动窗口 (TumblingEventTimeWindows)
 #### 7.3.2 滑动窗口 (SlidingEventTimeWindows)
 #### 7.3.3 会话窗口 (EventTimeSessionWindows)
