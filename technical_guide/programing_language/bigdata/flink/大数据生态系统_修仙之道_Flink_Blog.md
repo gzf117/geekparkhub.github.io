@@ -255,8 +255,8 @@ Starting taskexecutor daemon on host systemhub711.
 7.查看flink集群进程
 ```
 [root@systemhub611 flink]# jps.sh
-                                                                                                                  
-                                                                                                                  
+                                                               
+                                                           
                             
  ██████╗ ███████╗███████╗██╗  ██╗██████╗  █████╗ ██████╗ ██╗  ██╗██╗  ██╗██╗   ██╗██████╗ 
 ██╔════╝ ██╔════╝██╔════╝██║ ██╔╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝██║  ██║██║   ██║██╔══██╗
@@ -293,7 +293,7 @@ Open Source Open Achievement Dream , GeekParkHub Co-construction has never been 
 > 2.启动Hadoop集群 (HDFS和Yarn)
 ```
 [root@systemhub611 ~]# start-cluster.sh
-                                                                                                                                                                                                                                                                
+                                                        
  ██████╗ ███████╗███████╗██╗  ██╗██████╗  █████╗ ██████╗ ██╗  ██╗██╗  ██╗██╗   ██╗██████╗ 
 ██╔════╝ ██╔════╝██╔════╝██║ ██╔╝██╔══██╗██╔══██╗██╔══██╗██║ ██╔╝██║  ██║██║   ██║██╔══██╗
 ██║  ███╗█████╗  █████╗  █████╔╝ ██████╔╝███████║██████╔╝█████╔╝ ███████║██║   ██║██████╔╝
@@ -1158,8 +1158,6 @@ object TransformationFlow extends App {
 }
 ```
 
-
-
 #### 5.6.3 Filter
 > DataStream → DataStream : 计算每个元素的布尔值,并返回布尔值为true的元素.
 ``` scala
@@ -1207,7 +1205,6 @@ object TransformationFlow extends App {
   }
 }
 ```
-
 
 #### 5.6.4 Connect
 > ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_018.jpg)
@@ -1274,7 +1271,6 @@ object TransformationFlow extends App {
   }
 }
 ```
-
 
 #### 5.6.5 CoMap & CoFlatMap
 > ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_019.jpg)
@@ -1449,7 +1445,6 @@ object TransformationFlow extends App {
 }
 ```
 
-
 #### 5.6.7 Select
 > ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_021.jpg)
 > 
@@ -1518,7 +1513,6 @@ object TransformationFlow extends App {
 }
 ```
 
-
 #### 5.6.8 Union
 > ![enter image description here](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/flink/start_022.jpg)
 > 
@@ -1575,7 +1569,6 @@ object TransformationFlow extends App {
 }
 ```
 
-
 #### 5.6.9 KeyBy
 > DataStream → KeyedStream : 输入必须是Tuple(元祖)类型,逻辑的将一个流拆分成不相交的分区,每个分区包含具有相同key的元素,在内部以hash形式实现.
 ``` scala
@@ -1625,30 +1618,178 @@ object TransformationFlow extends App {
 }
 ```
 
-
 #### 5.6.10 Reduce
 > KeyedStream → DataStream : 一个分组数据流的聚合操作,合并当前的元素和上次聚合的结果,产生一个新的值,返回的流中包含每一次聚合的结果,而不是只返回最后一次聚合的最终结果.
 > 
 ``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * WindowsFlow
+  * <p>
+  */
+
+object TransformationFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用ReduceFlow方法
+  ReduceFlow()
+
+  /**
+    * 定义ReduceFlow方法
+    * KeyedStream → DataStream
+    */
+  def ReduceFlow(): Unit = {
+    // 加载初始数据 -> (Source)
+    val filePath = "../flink_server/flink-coreflow/src/main/resources/input_01/test03.txt"
+    val stream = env.readTextFile(filePath).flatMap(x => x.split(" ")).map(x => (x, 1L))
+    // 调用keyBy函数
+    val streamkeyBy = stream.keyBy(0)
+    // 调用reduce函数
+    val streamReduce = streamkeyBy.reduce((item1, item2) => (item1._1, item1._2 + item2._2))
+    // 打印数据 -> (Sink)
+    streamReduce.print()
+    // 触发程序执行
+    env.execute("ReduceFlow")
+  }
+}
 ```
 
 
 #### 5.6.11 Fold
-> 
+> KeyedStream → DataStream : 一个有初始值的分组数据流的滚动折叠操作,合并当前元素和前一次折叠操作的结果,并产生一个新的值,返回的流中包含每一次折叠的结果,而不是只返回最后一次折叠的最终结果.
+
 ``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * WindowsFlow
+  * <p>
+  */
+
+object TransformationFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用FoldFlow方法
+  FoldFlow()
+
+  /**
+    * 定义FoldFlow方法
+    * KeyedStream → DataStream
+    */
+  def FoldFlow(): Unit = {
+    // 加载初始数据 -> (Source)
+    val filePath = "../flink_server/flink-coreflow/src/main/resources/input_01/test03.txt"
+    // 依次调用flatMap函数 -> map函数 -> keyBy函数
+    val streamkeyBy = env.readTextFile(filePath).flatMap(x => x.split(" ")).map(x => (x, 1)).keyBy(0)
+    // 调用fold函数
+    val streamReduceFold = streamkeyBy.fold(100)((x, y) => (x + y._2))
+    // 打印数据 -> (Sink)
+    streamReduceFold.print()
+    // 触发程序执行
+    env.execute("FoldFlow")
+  }
+}
 ```
-
 
 #### 5.6.12 Aggregations
+> KeyedStream → DataStream : 分组数据流上的滚动聚合操作.
 > 
+> min和minBy的区别是min返回的是一个最小值,而minBy返回的是其字段中包含最小值的元素(同样原理适用于max和maxBy),返回的流中包含每一次聚合的结果,而不是只返回最后一次聚合的最终结果.
+> ```
+> keyedStream.sum(0)
+> keyedStream.sum("key")
+> keyedStream.min(0)
+> keyedStream.min("key")
+> keyedStream.max(0)
+> keyedStream.max("key")
+> keyedStream.minBy(0)
+> keyedStream.minBy("key")
+> keyedStream.maxBy(0)
+> keyedStream.maxBy("key")
+> ```
 ``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * WindowsFlow
+  * <p>
+  */
+
+object TransformationFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+  
+  // 调用AggregationsFlow方法
+  AggregationsFlow()
+  
+  /**
+    * 定义AggregationsFlow方法
+    * KeyedStream → DataStream
+    */
+  def AggregationsFlow(): Unit = {
+    // 加载初始数据 -> (Source)
+    val filePath = "../flink_server/flink-coreflow/src/main/resources/input_01/test02.txt"
+    // 依次调用map函数 ->  keyBy函数
+    val streamkeyBy = env.readTextFile(filePath).map(item => (item.split(" ")(0), item.split(" ")(1).toLong)).keyBy(0)
+    // 调用sum函数
+    val streamReduceAggregations = streamkeyBy.sum(1)
+    // 打印数据 -> (Sink)
+    streamReduceAggregations.print()
+    // 触发程序执行
+    env.execute("AggregationsFlow")
+  }
+}
 ```
 
+> 在5.6.10 Reduce之前的算子,都是可以直接作用在Stream上,因为它们不是聚合类型操作,但是5.6.10 Reduc之后你会发现,虽然可以对一个无边界的流数据直接应用聚合算子,但是它会记录下每一次的聚合结果,这每一次的聚合结果往往不是我们想要.
+> 
+> 其实reduce、fold、aggregation这些聚合算子都是需要与Window配合使用,只有配合Window使用,才能得到想要的结果.
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ## 🔥 6. Time & Window 🔥
 ### 6.1 Time
 > 在Flink流式处理中,会涉及到时间的不同概念,如下Flink时间概念图所示 : 
@@ -1737,7 +1878,7 @@ object TransformationFlow extends App {
 > 
 > **1. 滚动窗口**
 > 默认CountWindow是一个滚动窗口,只需要指定窗口大小即可,当元素key值数量达到窗口大小时,就会触发窗口的执行.
-- 1.创建CountWindow方法
+- 1.创建countWindowFlow方法
 ``` scala
 package com.geekparkhub.core.flink.workflow
 
@@ -1820,7 +1961,7 @@ streamKeyBy
 > 滑动窗口和滚动窗口的函数名是完全一致的,只是在传参数时需要传入两个参数,一个是`window_size`,一个是`sliding_size`.
 > 
 > 下面实例中sliding_size设置为2,也就是说每收到两个相同key的数据就计算一次,每一次计算的window范围是5个元素.
-- 1.创建CountWindow方法
+- 1.创建countWindowsFlow方法
 ``` scala
 package com.geekparkhub.core.flink.workflow
 
@@ -1861,7 +2002,7 @@ object WindowsFlow extends App {
 
     /**
       * 引入滑动窗口
-      * 每收到两个相同key的数据就计算一次,每一次计算的window范围是5个元素.
+      * 每收到两个相同key的数据就计算一次,每一次计算的window范围是5个元素
       */
     val streamWindow = streamKeyBy.countWindow(5, 2)
     // 将聚合数据写入文件
@@ -1901,38 +2042,378 @@ streamWindow
 #### 6.3.2 Time Window
 > TimeWindow是将指定时间范围内的所有数据组成一个window,一次对一个window内的所有数据进行计算.
 > 
+> 时间间隔可以通过`Time.milliseconds(x)`,`Time.seconds(x)`,`Time.minutes(x)`等其中一个来指定.
+> 
 > **1. 滚动窗口**
 > 
+> Flink默认时间窗口根据ProcessingTime进行窗口的划分,将Flink获取到的数据根据进入Flink的时间划分到不同的窗口中.
+- 1.创建TimeWindowFlow方法
 ``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.windowing.time.Time
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * WindowsFlow
+  * <p>
+  */
+
+object WindowsFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用TimeWindowFlow方法
+  TimeWindowFlow()
+
+  /**
+    * 定义TimeWindowFlow方法
+    */
+  def TimeWindowFlow(): Unit = {
+    // 监听端口并加载初始数据 -> (Source)
+    val stream = env.socketTextStream("systemhub", 9999)
+    // 对stream进行处理并按key聚合
+    val streamKeyBy = stream.map(x => (x, 1L)).keyBy(0)
+    /**
+      * 引入滚动时间窗口
+      * 时间间隔,可以通过`Time.milliseconds(x)`,`Time.seconds(x)`,`Time.minutes(x)`等其中一个来指定.
+      */
+    val streamTimeWindow = streamKeyBy.timeWindow(Time.seconds(5))
+    // 将聚合数据写入文件
+    val streamReduce = streamTimeWindow.reduce((x, y) => (x._1, x._2 + y._2))
+    // 打印数据 -> (Sink)
+    streamReduce.print()
+    // 触发程序执行
+    env.execute("TimeWindowFlow")
+  }
+}
 ```
-
+- 2.在本地监听服务端口
+```
+systemhub:~ system$ nc -l 9999
+```
+- 3.运行程序
+- 4.在本地服务端输入数据源
+```
+systemhub:~ system$ nc -l 9999
+TimeWindowFlow
+TimeWindowFlow
+TimeWindowFlow
+TimeWindowFlow
+TimeWindowFlow
+TimeWindowFlowTimeWindowFlow^[[B
+TimeWindowFlow^[[A
+TimeWindowFlow
+TimeWindowFlow
+systemhub:~ system$
+```
+- 5.查看运行结果
+```
+8> (TimeWindowFlow,3)
+8> (TimeWindowFlow,2)
+8> (TimeWindowFlowTimeWindowFlow,1)
+4> (TimeWindowFlow,1)
+8> (TimeWindowFlow,2)
+```
 
 > **2. 滑动窗口 (SlidingEventTimeWindows)**
 > 
+> 滑动窗口和滚动窗口的函数名是完全一致,只是在传参数时需要传入两个参数,一个是`window_size`,一个是`sliding_size`.
+> 
+> 下面实例中sliding_size设置为了2s,也就是说窗口每2s就计算一次，每一次计算的window范围是5s内的所有元素.
+- 1.创建SlidingEventTimeWindowsFlow方法
 ``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.windowing.time.Time
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * WindowsFlow
+  * <p>
+  */
+
+object WindowsFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用SlidingEventTimeWindowsFlow方法
+  SlidingEventTimeWindowsFlow()
+
+  /**
+    * 定义SlidingEventTimeWindowsFlow方法
+    */
+  def SlidingEventTimeWindowsFlow(): Unit = {
+    // 监听端口并加载初始数据 -> (Source)
+    val stream = env.socketTextStream("systemhub", 9999)
+    // 对stream进行处理并按key聚合
+    val streamKeyBy = stream.map(x => (x, 1L)).keyBy(0)
+    /**
+      * 引入滑动时间窗口
+      * 窗口每2s就计算一次,每一次计算的window范围是10s内的所有元素.
+      * 时间间隔,可以通过`Time.milliseconds(x)`,`Time.seconds(x)`,`Time.minutes(x)`等其中一个来指定.
+      */
+    val streamWindows = streamKeyBy.timeWindow(Time.seconds(10), Time.seconds(2))
+    // 将聚合数据写入文件
+    val streamReduce = streamWindows.reduce((x, y) => (x._1, x._2 + y._2))
+    // 打印数据 -> (Sink)
+    streamReduce.print()
+    // 触发程序执行
+    env.execute("SlidingEventTimeWindowsFlow")
+  }
+}
 ```
-
+- 2.在本地监听服务端口
+```
+systemhub:~ system$ nc -l 9999
+```
+- 3.运行程序
+- 4.在本地服务端输入数据源
+```
+systemhub:~ system$ nc -l 9999
+SlidingEventTimeWindowsFlow
+SlidingEventTimeWindowsFlow
+SlidingEventTimeWindowsFlow
+SlidingEventTimeWindowsFlow
+systemhub:~ system$ 
+```
+- 5.查看运行结果
+```
+7> (SlidingEventTimeWindowsFlow,3)
+7> (SlidingEventTimeWindowsFlow,3)
+7> (SlidingEventTimeWindowsFlow,3)
+7> (SlidingEventTimeWindowsFlow,3)
+7> (SlidingEventTimeWindowsFlow,3)
+7> (SlidingEventTimeWindowsFlow,1)
+7> (SlidingEventTimeWindowsFlow,1)
+7> (SlidingEventTimeWindowsFlow,1)
+7> (SlidingEventTimeWindowsFlow,1)
+7> (SlidingEventTimeWindowsFlow,1)
+```
 
 #### 6.3.3 Window Reduce
 > WindowedStream → DataStream : 给window赋一个reduce功能的函数,并返回一个聚合的结果.
 > 
+``` scala
+package com.geekparkhub.core.flink.workflow
+
+import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.windowing.time.Time
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * WindowsFlow
+  * <p>
+  */
+
+object WindowsFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用WindowReduceFlow方法
+  WindowReduceFlow()
+
+  /**
+    * 定义WindowReduceFlow方法
+    */
+  def WindowReduceFlow(): Unit = {
+    // 监听端口并加载初始数据 -> (Source)
+    val stream = env.socketTextStream("systemhub", 9999)
+    // 对stream进行处理并按key聚合
+    val streamKeyBy = stream.map(x => (x, 1L)).keyBy(0)
+    /**
+      * 引入滑动时间窗口
+      * 窗口每2s就计算一次,每一次计算的window范围是10s内的所有元素.
+      * 时间间隔,可以通过`Time.milliseconds(x)`,`Time.seconds(x)`,`Time.minutes(x)`等其中一个来指定.
+      */
+    val streamWindows = streamKeyBy.timeWindow(Time.seconds(10), Time.seconds(2))
+    // 将聚合数据写入文件
+    val streamReduce = streamWindows.reduce((x, y) => (x._1, x._2 + y._2))
+    // 打印数据 -> (Sink)
+    streamReduce.print()
+    // 触发程序执行
+    env.execute("WindowReduceFlow")
+  }
+}
+```
+
 #### 6.3.4 Window Fold
 > WindowedStream → DataStream : 给窗口赋一个fold功能的函数,并返回一个fold后的结果.
+- 1.创建WindowFoldFlow方法
 ``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.windowing.time.Time
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * WindowsFlow
+  * <p>
+  */
+
+object WindowsFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用WindowFoldFlow方法
+  WindowFoldFlow()
+
+  /**
+    * 定义WindowFoldFlow方法
+    */
+  def WindowFoldFlow(): Unit = {
+    // 监听端口并加载初始数据 -> (Source)
+    val stream = env.socketTextStream("systemhub", 9999, '\n', 3)
+    // 对stream进行处理并按key聚合
+    val streamKeyBy = stream.map(x => (x, 1)).keyBy(0)
+    /**
+      * 引入滚动时间窗口
+      * 时间间隔,可以通过`Time.milliseconds(x)`,`Time.seconds(x)`,`Time.minutes(x)`等其中一个来指定.
+      */
+    val streamTimeWindow = streamKeyBy.timeWindow(Time.seconds(5))
+    // 调用fold函数操作
+    val streamFold = streamTimeWindow.fold(100) {
+      (x, y) => x + y._2
+    }
+    // 打印数据 -> (Sink)
+    streamFold.print()
+    // 触发程序执行
+    env.execute("WindowFoldFlow")
+  }
+}
+```
+- 2.在本地监听服务端口
+```
+systemhub:~ system$ nc -l 9999
+```
+- 3.运行程序
+- 4.在本地服务端输入数据源
+```
+systemhub:~ system$ nc -l 9999
+WindowFoldFlow
+WindowFoldFlow
+WindowFoldFlow
+WindowFoldFlow
+WindowFoldFlow
+WindowFoldFlow
+WindowFoldFlow
+WindowFoldFlow
+WindowFoldFlow
+WindowFoldFlow
+systemhub:~ system$
+```
+- 5.查看运行结果
+```
+4> 103
+4> 103
+4> 101
+4> 101
+4> 102
 ```
 
 #### 6.3.5 Aggregation on Window
 > WindowedStream → DataStream : 对一个window内的所有元素做聚合操作.
 > 
 > min和minBy的区别是min返回的是最小值,而minBy返回的是包含最小值字段的元素(同样的原理适用于max和maxBy).
+- 1.创建aggregationOnWindowFlow方法
 ``` scala
+package com.geekparkhub.core.flink.workflow
 
+import org.apache.flink.streaming.api.scala._
+import org.apache.flink.streaming.api.windowing.time.Time
+
+/**
+  * Geek International Park | 极客国际公园
+  * GeekParkHub | 极客实验室
+  * Website | https://www.geekparkhub.com/
+  * Description | Open开放 · Creation创想 | OpenSource开放成就梦想 GeekParkHub共建前所未见
+  * HackerParkHub | 黑客公园
+  * Website | https://www.hackerparkhub.org/
+  * Description | 以无所畏惧的探索精神 开创未知技术与对技术的崇拜
+  * GeekDeveloper : JEEP-711
+  *
+  * @author system
+  * <p>
+  * WindowsFlow
+  * <p>
+  */
+
+object WindowsFlow extends App {
+
+  // 创建执行环境
+  val env = StreamExecutionEnvironment.getExecutionEnvironment
+
+  // 调用aggregationOnWindowFlow方法
+  aggregationOnWindowFlow()
+
+  /**
+    * 定义aggregationOnWindowFlow方法
+    */
+  def aggregationOnWindowFlow(): Unit = {
+    // 监听端口并加载初始数据 -> (Source)
+    val stream = env.socketTextStream("systemhub", 9999)
+    // 对stream进行处理并按key聚合
+    val streamKeyBy = stream.map(item => (item.split(" ")(0), item.split(" ")(1))).keyBy(0)
+    // 引入滚动窗口
+    val streamWindow = streamKeyBy.timeWindow(Time.seconds(5))
+    // 执行聚合操作
+    val streamMax = streamWindow.max(1)
+    // 打印数据 -> (Sink)
+    streamMax.print()
+    // 触发程序执行
+    env.execute("aggregationOnWindowFlow")
+  }
+}
 ```
 
-
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ## 🔥 7. EventTime & Window 🔥
 ### 7.1 EventTime 引入
 ### 7.2 Watermark
