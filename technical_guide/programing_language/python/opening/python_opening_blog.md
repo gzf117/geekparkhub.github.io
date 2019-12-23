@@ -2,7 +2,7 @@
 
 @(2019-12-23)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
-## 🐍 Python Technology 修性之道 得之淡然 失之泰然 🐍
+## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/python/opening/python.jpg)
 
@@ -43,3 +43,6 @@
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+
+
+
