@@ -1,6 +1,6 @@
 # 🙈 The way of cultivation 🙈
 
-@(Update Time:2019-12-23)[ Docs Language:[Simplified Chinese](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README_CN.md) & [English](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README.md) | Programing Language:Technology Architecture | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) ]
+@(Update Time:2019-12-24)[ Docs Language:[Simplified Chinese](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README_CN.md) & [English](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README.md) | Programing Language:Technology Architecture | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) ]
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/hello_world.jpg" alt="Road to Xiuxian" title="Road to Xiuxian">
@@ -59,7 +59,7 @@
 #### Machine learning Getting started
 * [Introduction to artificial intelligence]()
 * [Mathematical basis]()
-* [Python foundation]()
+* Python foundation |  [Python Html](https://geekparkhub.github.io/technical_guide/programing_language/python/opening/python_opening_blog.html) | [Python Markdown](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/technical_guide/programing_language/python/opening/python_opening_blog.md)
 * [Machine learning classification]()
 * [Machine learning foundation]()
 * [Machine learning model]()
