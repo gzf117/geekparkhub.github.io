@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="PYTHON_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/com" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/main" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/main/python/com" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/main/python/com/geekparkhub/core" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/main/python/com.geekparkhub.core" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/TrainingMode/src/main" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/venv" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
