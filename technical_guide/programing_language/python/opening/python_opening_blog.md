@@ -38,7 +38,7 @@
 > 
 > 此学习路线将基于Python3编程语言进行详细操作.
 > 
-> 如果你学习过```Java``` & ```Scala``` & ```GoLang``` & ```PHP``` & ```Ruby```等编程语言, 将有助于你更快了解掌握Python核心技术.
+> 如果你学习过```Java``` & ```Scala``` & ```GoLang``` & ```PHP``` & ```Ruby```等编程语言, 将有助于你更快了解掌握Python核心技术与思想.
 
 
 
@@ -192,7 +192,36 @@
 > 5.Python是缩进严格的语言, 所以在Python中不要随便写缩进.
 > 
 > 6.在Python中使用`#`表示注释,`#`后的内容都属于注释, 注释的内容将会被解释器所忽略.
-
+> 
+> `Python 基础篇 - 基本语法`
+> ``` py
+> # -*- coding:utf-8 -*-
+> #
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 基本语法
+> # @File : 01_BasicGrammar.py
+> # @Description : Python 基础篇 - 基本语法
+> 
+> # 01 即表示注释
+> 
+> # 02 print 打印语句 | Hello, World!
+> print('Hello, World!')
+> 
+> # 03 当前`\`表示换行
+> print('当前\
+> 表示换行')
+> ```
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
@@ -231,7 +260,7 @@
 
 
 
-## 9. 修仙之道 技术架构迭代 登峰造极之势
+## 8. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
 -----
