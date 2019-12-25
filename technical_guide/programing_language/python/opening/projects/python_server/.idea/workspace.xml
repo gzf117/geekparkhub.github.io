@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="4cdd7094-07f3-48f7-b482-148a3a7f8d65" name="Default Changelist" comment="" />
+    <list default="true" id="4cdd7094-07f3-48f7-b482-148a3a7f8d65" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/02_constant_variable.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/03_Identifier_naming_convention.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/01_BasicGrammar.py" beforeDir="false" afterPath="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/01_basic_grammar.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -17,7 +22,11 @@
       </list>
     </option>
   </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../../../.." />
+  </component>
   <component name="ProjectId" id="1VR3Cl0X4tAR5yVgIMlep5TQyzw" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectViewState">
     <option name="abbreviatePackageNames" value="true" />
     <option name="flattenPackages" value="true" />
@@ -29,6 +38,7 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -37,10 +47,10 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
-    <property name="settings.editor.selected.configurable" value="fileTemplates" />
+    <property name="settings.editor.selected.configurable" value="yiiguxing.plugin.translate" />
   </component>
-  <component name="RunManager">
-    <configuration name="01_BasicGrammar" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.03_Identifier_naming_convention">
+    <configuration name="01_basic_grammar" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="python_server" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -53,7 +63,51 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/01_BasicGrammar.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/01_basic_grammar.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="02_constant_variable" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="python_server" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/02_constant_variable.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="03_Identifier_naming_convention" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="python_server" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/03_Identifier_naming_convention.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -64,7 +118,9 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.01_BasicGrammar" />
+        <item itemvalue="Python.03_Identifier_naming_convention" />
+        <item itemvalue="Python.02_constant_variable" />
+        <item itemvalue="Python.01_basic_grammar" />
       </list>
     </recent_temporary>
   </component>
@@ -93,6 +149,10 @@
       <workItem from="1577201963235" duration="1116000" />
       <workItem from="1577266150162" duration="513000" />
       <workItem from="1577266678682" duration="3674000" />
+      <workItem from="1577272669695" duration="40000" />
+      <workItem from="1577272714437" duration="5000" />
+      <workItem from="1577272777816" duration="115000" />
+      <workItem from="1577272912977" duration="5081000" />
     </task>
     <servers />
   </component>
@@ -100,30 +160,50 @@
     <option name="version" value="1" />
   </component>
   <component name="WindowStateProjectService">
+    <state x="880" y="374" key="#Notifications" timestamp="1577273759926">
+      <screen x="0" y="23" width="2560" height="1371" />
+    </state>
+    <state x="880" y="374" key="#Notifications/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577273759926" />
     <state x="744" y="370" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1577202322914">
       <screen x="0" y="23" width="2560" height="1372" />
     </state>
     <state x="744" y="370" key="#com.intellij.execution.impl.EditConfigurationsDialog/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577202322914" />
-    <state width="2518" height="192" key="GridCell.Tab.0.bottom" timestamp="1577271031632">
+    <state width="2518" height="206" key="GridCell.Tab.0.bottom" timestamp="1577279515144">
       <screen x="0" y="23" width="2560" height="1371" />
     </state>
-    <state width="2518" height="192" key="GridCell.Tab.0.bottom/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577271031632" />
-    <state width="2518" height="192" key="GridCell.Tab.0.center" timestamp="1577271031631">
+    <state width="2518" height="206" key="GridCell.Tab.0.bottom/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577279515144" />
+    <state width="2518" height="206" key="GridCell.Tab.0.center" timestamp="1577279515144">
       <screen x="0" y="23" width="2560" height="1371" />
     </state>
-    <state width="2518" height="192" key="GridCell.Tab.0.center/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577271031631" />
-    <state width="2518" height="192" key="GridCell.Tab.0.left" timestamp="1577271031628">
+    <state width="2518" height="206" key="GridCell.Tab.0.center/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577279515144" />
+    <state width="2518" height="206" key="GridCell.Tab.0.left" timestamp="1577279515143">
       <screen x="0" y="23" width="2560" height="1371" />
     </state>
-    <state width="2518" height="192" key="GridCell.Tab.0.left/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577271031628" />
-    <state width="2518" height="192" key="GridCell.Tab.0.right" timestamp="1577271031632">
+    <state width="2518" height="206" key="GridCell.Tab.0.left/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577279515143" />
+    <state width="2518" height="206" key="GridCell.Tab.0.right" timestamp="1577279515144">
       <screen x="0" y="23" width="2560" height="1371" />
     </state>
-    <state width="2518" height="192" key="GridCell.Tab.0.right/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577271031632" />
-    <state x="267" y="347" width="1935" height="703" key="SettingsEditor" timestamp="1577269117699">
+    <state width="2518" height="206" key="GridCell.Tab.0.right/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577279515144" />
+    <state width="2518" height="463" key="GridCell.Tab.1.bottom" timestamp="1577277768376">
       <screen x="0" y="23" width="2560" height="1371" />
     </state>
-    <state x="267" y="347" width="1935" height="703" key="SettingsEditor/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577269117699" />
+    <state width="2518" height="463" key="GridCell.Tab.1.bottom/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577277768376" />
+    <state width="2518" height="463" key="GridCell.Tab.1.center" timestamp="1577277768375">
+      <screen x="0" y="23" width="2560" height="1371" />
+    </state>
+    <state width="2518" height="463" key="GridCell.Tab.1.center/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577277768375" />
+    <state width="2518" height="463" key="GridCell.Tab.1.left" timestamp="1577277768375">
+      <screen x="0" y="23" width="2560" height="1371" />
+    </state>
+    <state width="2518" height="463" key="GridCell.Tab.1.left/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577277768375" />
+    <state width="2518" height="463" key="GridCell.Tab.1.right" timestamp="1577277768375">
+      <screen x="0" y="23" width="2560" height="1371" />
+    </state>
+    <state width="2518" height="463" key="GridCell.Tab.1.right/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577277768375" />
+    <state x="336" y="355" width="1935" height="722" key="SettingsEditor" timestamp="1577273775834">
+      <screen x="0" y="23" width="2560" height="1371" />
+    </state>
+    <state x="336" y="355" width="1935" height="722" key="SettingsEditor/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577273775834" />
     <state x="173" y="343" width="1129" height="703" key="SettingsEditor/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577203017575" />
     <state x="562" y="498" width="1065" height="649" key="org.intellij.images.editor.actions.BackgroundImageDialog" timestamp="1577266580732">
       <screen x="0" y="23" width="2560" height="1370" />
@@ -134,7 +214,20 @@
     </state>
     <state x="880" y="373" key="scopes/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577267412677" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/python_server$01_BasicGrammar.coverage" NAME="01_BasicGrammar Coverage Results" MODIFIED="1577269500725" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
+    <SUITE FILE_PATH="coverage/python_server$01_BasicGrammar.coverage" NAME="01_BasicGrammar Coverage Results" MODIFIED="1577272797248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
+    <SUITE FILE_PATH="coverage/python_server$02_Constant_variable.coverage" NAME="02_Constant_variable Coverage Results" MODIFIED="1577275075205" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
+    <SUITE FILE_PATH="coverage/python_server$03_Identifier_naming_convention.coverage" NAME="03_Identifier_naming_convention Coverage Results" MODIFIED="1577279330212" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
   </component>
 </project>

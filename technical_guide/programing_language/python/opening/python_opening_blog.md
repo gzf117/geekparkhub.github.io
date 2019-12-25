@@ -209,26 +209,191 @@
 > # 
 > # @Author : system
 > # @Version : 0.2.5
-> # @Program : 基本语法
+> # @Program : 基本语法 | Basic grammar
 > # @File : 01_BasicGrammar.py
-> # @Description : Python 基础篇 - 基本语法
+> # @Description : Python 基础篇 - 基本语法 | Python Basics-Basic Syntax
 > 
-> # 01 即表示注释
+> # 01 即表示注释 | Means comment
 > 
-> # 02 print 打印语句 | Hello, World!
+> # 02 print 打印语句 Hello, World! | print statement Hello, World!
 > print('Hello, World!')
 > 
-> # 03 当前`\`表示换行
+> # 03 当前`\`表示换行 | Current `\` means line break
 > print('当前\
 > 表示换行')
 > ```
 
 
+## 💥 7. Python 基础篇 💥
+### 7.1 Python 常量 & 变量 & 标识符 & 命名规范
+#### 7.1.1 `常量`
+> 所谓常量就是不能变的变量, 比如常用的数学常数π就是一个常量.
+> 
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 常量 & 变量 | Constants & variables
+> # @File : 02_constant_variable.py
+> # @Description : Python 基础篇 - 常量 & 变量 | Python Basics-Constants & Variables
+> 
+> # 定义常量 | Defining constants
+> print(16)
+> 
+> # 常量演示 | Constant demo
+> print('Name is Jack')
+> ```
+    
+
+#### 7.1.2 `变量`
+> 变量不仅可以是数字，还可以是任意数据类型, 变量在程序中就是用一个变量名表示, 变量名必须是`大小写英文`、`数字`和`_`下划线的组合, 且不能用数字开头.
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 常量 & 变量 | Constants & variables
+> # @File : 02_constant_variable.py
+> # @Description : Python 基础篇 - 常量 & 变量 | Python Basics-Constants & Variables
+> 
+> # 定义变量 | Defining variables
+> name = 'Jack'
+> print(name)
+> 
+> # 变量演示 | Variables demo
+> number = 16
+> print(number * number)
+> ```
+
+
+#### 7.1.3 `标识符 & 命名规范`
+> 在Python中所有可以自主命名的内容(变量名、函数名、类名)都属于标识符.
+> `标识符规范` : 可以含有`字母`、`数字`、`_`、但是不能使用数字开头且不能使用Python中的`关键字`和`保留字`.
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 标识符 & 命名规范 | Identifiers & naming conventions
+> # @File : 03_Identifier_naming_convention.py
+> # @Description : Python 基础篇 - 标识符 & 命名规范 | Python Basics-Identifiers & Naming Conventions
+> 
+> # 定义 标识符 | Definition identifier
+> 
+> # 定义变量 | Defining variables
+> person_name = 'Jerry'
+> person_sex = 'man'
+> person_age = 20
+> 
+> 
+> # 定义函数 | Defining functions
+> def persons_info(name, sex, age):
+>     print("PersonName: " + name, ", PersonSex: " + sex, ", PersonAge:", age)
+>     return
+> 
+> 
+> # 调用函数 | call function
+> persons_info(person_name, person_sex, person_age)
+> ```
+> 
+> `命名规范`：在Python中遵循两种命名规范 : `下划线命名法`/ `帕斯卡命名法`
+> 
+> `下划线命名法` : 所有字母小写, 单词之间以_下划线分割.
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 标识符 & 命名规范 | Identifiers & naming conventions
+> # @File : 03_Identifier_naming_convention.py
+> # @Description : Python 基础篇 - 标识符 & 命名规范 | Python Basics-Identifiers & Naming Conventions
+> 
+> # 定义 命名规范 | Definition Naming Convention
+> # 定义 下划线命名法 | Defining Underscore nomenclature
+> def addition_calculation(num1, num2):
+>     print("Result =", num1 + num2)
+>     return
+> 
+> 
+> # 调用函数 | call function
+> addition_calculation(100, 100)
+> ```
+> `帕斯卡命名法` ：首字母大写, 每个单词开头字母大写, 其余字母小写.
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 标识符 & 命名规范 | Identifiers & naming conventions
+> # @File : 03_Identifier_naming_convention.py
+> # @Description : Python 基础篇 - 标识符 & 命名规范 | Python Basics-Identifiers & Naming Conventions
+> 
+> # 定义 命名规范 | Definition Naming Convention
+> # 定义 帕斯卡命名法 | Definition Pascal nomenclature
+> def MultiplicationCalculation(num1, num2):
+>     print("Result =", num1 * num2)
+>     return
+> 
+> 
+> # 调用函数 | call function
+> MultiplicationCalculation(100, 100)
+> ```
+
+
+
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 
-
-## 💥 7. Python 基础篇 💥
-### 7.1 Python 常量&变量
 ### 7.2 Python 数据类型
 ### 7.3 Python 对象
 ### 7.4 Python 变量和对象
