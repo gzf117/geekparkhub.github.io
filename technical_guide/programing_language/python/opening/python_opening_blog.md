@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2019-12-25)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2019-12-27)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -391,10 +391,235 @@
 > ```
 
 
+### 7.2 Python 数据类型
+> 计算机顾名思义就是可以做数学计算的机器, 因此计算机程序理所当然地可以处理各种数值。但是计算机能处理的远不止数值, 还可以处理文本、图形、音频、视频、网页等各种各样的数据, 不同的数据需要定义不同的数据类型。
+> 
+> 在Python中能够直接处理的数据类型有以下几种 : 
+#### 7.2.1 `整数`
+> Python可以处理任意大小的整数, 当然包括负整数, 在程序中的表示方法和数学上的写法一模一样.
+> 
+> 计算机由于使用二进制, 所以有时候用十六进制表示整数比较方便, 十六进制用`0x`前缀和0-9，a-f表示, 例如: `0xff00`, `0xa5b4c3d2`等等.
+> 
+> ```
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据类型 | type of data
+> # @File : 04_type_data.py
+> # @Description : Python 基础篇 -  数据类型 | Python Fundamentals-Data Types
+> 
+> # 定义 整数 | Definition integer
+> object_widths = 18
+> # 如果数字的长度过大, 可以使用下划线作为分隔符 | If the number is too long, you can use an underscore as a separator
+> object_lengths = 18_15_16
+> print(object_widths * object_lengths)
+> ```
+
+#### 7.2.2 `浮点数`
+> 浮点数也就是小, 之所以称为浮点数, 是因为按照科学记数法表示时, 一个浮点数的小数点位置是可变的.
+> 
+> 整数和浮点数在计算机内部存储的方式是不同的, 整数运算永远是精确的, 而浮点数运算则可能会有四舍五入的误差.
+> 
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据类型 | type of data
+> # @File : 04_type_data.py
+> # @Description : Python 基础篇 -  数据类型 | Python Fundamentals-Data Types
+> 
+> # 定义 浮点数 | Definition Floating point
+> assets = 5242414.455
+> incomes = 500.36
+> print(assets + incomes)
+> ``` 
+
+
+#### 7.2.3 `字符串` & `格式化`
+> 字符串是以单引号`'`, 双引号`"`, 三重引号`'''`括起来的任意文本.
+> 
+> 在Python中采用的格式化方式和C语言是一致的, 用`%`占位符实现, 常见的占位符有：
+> 
+> `%d`表示用整数替换占位符 / `%f`表示用浮点数替换占位符
+> 
+> `%s`表示用字符串替换占位符 / `%x`表示用十六进制整数替换占位符
+> 
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据类型 | type of data
+> # @File : 04_type_data.py
+> # @Description : Python 基础篇 -  数据类型 | Python Fundamentals-Data Types
+> 
+> # 定义 字符串 | Definition String
+> # 定义 (单引号)修饰字符串 | Define (single quote) decorated strings
+> saying = 'Le vent se lève, il faut tenter de vivre!\n'
+> 
+> # 定义 (双引号)修饰字符串 | Define (double quotes) decorated strings
+> quotes = "A man who is artistic for art often gets the most pleasure from the least important and mundane image!\n"
+> 
+> # 定义 (单引号嵌套双引号)修饰字符串 | Define (single-quoted nested double-quoted) decorated strings
+> talks = 'Arthur · Conan · Doyle: "Hard work creates talent!"\n'
+> 
+> # 定义 (三重引号)修饰长字符串 | Definition (triple quotes) to decorate long strings
+> fragment = '''We must go deep into life, 
+> Only then can you get novel effects and extraordinary cooperation, 
+> And this in itself is more irritating than any imagination!'''
+> 
+> print(saying, quotes, talks, fragment)
+> print("------------------------------------------------------\n")
+> 
+> # 定义 格式化 字符串 | Definition Format string
+> # 使用加号拼接字符串 | Use plus sign to concatenate strings
+> words = 'py' + 'thon'
+> nums = 666
+> print('words = ' + words)  # Output result: words = python
+> # 多个参数 | Multiple parameters
+> print('result = ', words, nums)  # Output result: result = 456
+> print("------------------------------------------------------\n")
+> 
+> # 在字符串中指定占位符 | Specifying placeholders in strings
+> word1 = 'odd_number= 135%s' % '7911'  # Output result: odd_number= 1357911
+> word2 = 'even_number= 24%s810%s' % ('6', '12')  # Output result: even_number= 24681012
+> word3 = 'assets= %.2f' % 555.456  # Output result: assets= 555.46
+> word4 = 'assets=  %d' % 555.95  # Output result: assets=  555
+> 
+> # 通过`f`来创建格式化字符串 | Create a formatted string with `f`
+> result = f'result= {word1} {word2}'  # Output result: result= odd_number= 1357911 even_number= 24681012
+> print(word1, word2, word3, word4, result)
+> print("------------------------------------------------------\n")
+> 
+> # 格式化 字符串综合练习 | Format string synthesis exercise
+> word = 'py' + 'thon'
+> print('人生苦短 ' + '快选 ' + word)
+> print('人生苦短', '快选', word)
+> print('人生苦短 快选 %s' % word)
+> print(f'人生苦短 快选 {word}')
+> print("------------------------------------------------------\n")
+> 
+> # 字符串 复制 (将字符串和数字相乘) | String copy (multiply strings and numbers)
+> info = 'Learning!\t'
+> info = info * 20
+> print(info)
+> print("------------------------------------------------------\n")
+> ``` 
+
+
+#### 7.2.4 `转义字符`
+> 转义字符`\`可以转义很多字符, 比如`\n`表示换行, `\t`表示制表符, 字符`\`本身也要转义, 所以`\\`表示的字符就是`\`.
+> 
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据类型 | type of data
+> # @File : 04_type_data.py
+> # @Description : Python 基础篇 -  数据类型 | Python Fundamentals-Data Types
+> 
+> # 定义 转义字符 | Definition escape character
+> talk = 'Arthur · Conan · Doyle:\t "Hard work creates talent!\\"\n'
+> print(talk)
+> print("------------------------------------------------------\n")
+> ``` 
+
+#### 7.2.5 `布尔值`
+> 布尔值和布尔代数的表示完全一致, 一个布尔值只有`True`、`False`两种值, 要么是True, 要么是False.
+> 
+> 在Python中可以直接用`True`、`False`表示布尔值 (请注意大小写).
+> 
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据类型 | type of data
+> # @File : 04_type_data.py
+> # @Description : Python 基础篇 -  数据类型 | Python Fundamentals-Data Types
+> 
+> ``` 
+
+#### 7.2.6 `空值`
+> 
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据类型 | type of data
+> # @File : 04_type_data.py
+> # @Description : Python 基础篇 -  数据类型 | Python Fundamentals-Data Types
+> 
+> 
+> ``` 
+
+
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-
-### 7.2 Python 数据类型
 ### 7.3 Python 对象
 ### 7.4 Python 变量和对象
 ### 7.5 Python 类型转换
