@@ -87,9 +87,39 @@ print(talk)
 print("------------------------------------------------------\n")
 
 # 定义 布尔值 | Definition Boolean value
+print('True=', True)  # Output result: True
+print('False=', False)  # Output result: False
+print('3 > 2=', 3 > 2)  # Output result: True
+print('3 < 2=', 3 < 2)  # Output result: False
+
+print('True and True=', True and True)  # Output result: True
+print('True and False=', True and False)  # Output result: False
+print('3 < 2 and 3 < 2=', 3 < 2 and 3 < 2)  # Output result: False
+
+print('True or True=', True or True)  # Output result: True
+print('True or False=', True or False)  # Output result: True
+print('3 < 2 or 3 < 2=', 3 < 2 or 3 < 2)  # Output result: False
+
+print('not True=', not True)  # Output result: False
+print('not False=', not False)  # Output result: True
+print('not 3 > 2=', not 3 > 2)  # Output result: False
+
+if 20 >= 18:
+    print('大于等于')
+else:
+    print('小于等于')
 
 print("------------------------------------------------------\n")
 
 # 定义 空值 | Definition Null value
-
+data = None
+print(data)
 print("------------------------------------------------------\n")
+
+# 类型检查 | Type check
+values1 = 123456  # Output result: <class 'int'>
+values2 = '123456'  # Output result: <class 'str'>
+values3 = None  # Output result: <class 'NoneType'>
+values4 = True  # Output result: <class 'bool'>
+values5 = 555.456  # Output result: <class 'float'>
+print(type(values1), type(values2), type(values3), type(values4), type(values5))

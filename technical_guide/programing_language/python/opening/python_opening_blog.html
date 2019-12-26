@@ -69,6 +69,7 @@
 <li><a href="#724-转义字符">7.2.4 转义字符</a></li>
 <li><a href="#725-布尔值">7.2.5 布尔值</a></li>
 <li><a href="#726-空值">7.2.6 空值</a></li>
+<li><a href="#727-类型检查">7.2.7 类型检查</a></li>
 </ul>
 </li>
 </ul>
@@ -742,6 +743,11 @@
   
   <p>在Python中可以直接用<code>True</code>、<code>False</code>表示布尔值 (请注意大小写).</p>
   
+  <p>布尔值可以用<code>and</code>、<code>or</code>和<code>not</code>运算, <br>
+  <code>and</code>运算是与运算, 只有所有条件都为<code>True</code>, <code>and</code>运算结果才是<code>True</code>. <br>
+  <code>or</code>运算是或运算, 只要其中有一个条件为<code>True</code>, <code>or</code>运算结果就是<code>True</code>. <br>
+  <code>not</code>运算是非运算, 它是一个单目运算符, 把<code>True</code>变成<code>False</code>, <code>False</code>变成<code>True</code>.</p>
+  
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-python hljs"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
@@ -760,12 +766,40 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 04_type_data.py</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 -  数据类型 | Python Fundamentals-Data Types</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 定义 布尔值 | Definition Boolean value</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span>print(<span class="hljs-string">'True='</span>, <span class="hljs-keyword">True</span>)  <span class="hljs-comment"># Output result: True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span>print(<span class="hljs-string">'False='</span>, <span class="hljs-keyword">False</span>)  <span class="hljs-comment"># Output result: False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>print(<span class="hljs-string">'3 &gt; 2='</span>, <span class="hljs-number">3</span> &gt; <span class="hljs-number">2</span>)  <span class="hljs-comment"># Output result: True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span>print(<span class="hljs-string">'3 &lt; 2='</span>, <span class="hljs-number">3</span> &lt; <span class="hljs-number">2</span>)  <span class="hljs-comment"># Output result: False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span>print(<span class="hljs-string">'True and True='</span>, <span class="hljs-keyword">True</span> <span class="hljs-keyword">and</span> <span class="hljs-keyword">True</span>)  <span class="hljs-comment"># Output result: True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>print(<span class="hljs-string">'True and False='</span>, <span class="hljs-keyword">True</span> <span class="hljs-keyword">and</span> <span class="hljs-keyword">False</span>)  <span class="hljs-comment"># Output result: False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>print(<span class="hljs-string">'3 &lt; 2 and 3 &lt; 2='</span>, <span class="hljs-number">3</span> &lt; <span class="hljs-number">2</span> <span class="hljs-keyword">and</span> <span class="hljs-number">3</span> &lt; <span class="hljs-number">2</span>)  <span class="hljs-comment"># Output result: False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>print(<span class="hljs-string">'True or True='</span>, <span class="hljs-keyword">True</span> <span class="hljs-keyword">or</span> <span class="hljs-keyword">True</span>)  <span class="hljs-comment"># Output result: True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>print(<span class="hljs-string">'True or False='</span>, <span class="hljs-keyword">True</span> <span class="hljs-keyword">or</span> <span class="hljs-keyword">False</span>)  <span class="hljs-comment"># Output result: True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>print(<span class="hljs-string">'3 &lt; 2 or 3 &lt; 2='</span>, <span class="hljs-number">3</span> &lt; <span class="hljs-number">2</span> <span class="hljs-keyword">or</span> <span class="hljs-number">3</span> &lt; <span class="hljs-number">2</span>)  <span class="hljs-comment"># Output result: False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>print(<span class="hljs-string">'not True'</span>, <span class="hljs-keyword">not</span> <span class="hljs-keyword">True</span>)  <span class="hljs-comment"># Output result: False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>print(<span class="hljs-string">'not False'</span>, <span class="hljs-keyword">not</span> <span class="hljs-keyword">False</span>)  <span class="hljs-comment"># Output result: True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>print(<span class="hljs-string">'not 3 &gt; 2'</span>, <span class="hljs-keyword">not</span> <span class="hljs-number">3</span> &gt; <span class="hljs-number">2</span>)  <span class="hljs-comment"># Output result: False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><span class="hljs-keyword">if</span> <span class="hljs-number">20</span> &gt;= <span class="hljs-number">18</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>    print(<span class="hljs-string">'大于等于'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><span class="hljs-keyword">else</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>    print(<span class="hljs-string">'小于等于'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>print(<span class="hljs-string">"------------------------------------------------------\n"</span>)
 </div></code></pre>
 </blockquote>
 
 <h4 id="726-空值">7.2.6 <code>空值</code></h4>
 
 <blockquote>
+  <p>空值是Python里一个特殊的值, 用<code>None</code>表示, <code>None</code>不能理解为<code>0</code>, 因为<code>0</code>是有意义的, 而<code>None</code>是一个特殊的空值.</p>
+  
+  <p>此外Python还提供了列表、字典等多种数据类型, 还允许创建自定义数据类型, 后面会继续讲到.</p>
+  
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-python hljs"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
@@ -784,7 +818,45 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 04_type_data.py</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 -  数据类型 | Python Fundamentals-Data Types</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 定义 空值 | Definition Null value</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span>data = <span class="hljs-keyword">None</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span>print(data)
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>print(<span class="hljs-string">"------------------------------------------------------\n"</span>)
+</div></code></pre>
+</blockquote>
+
+
+
+<h4 id="727-类型检查">7.2.7 <code>类型检查</code></h4>
+
+<blockquote>
+  <p>通过<code>type()</code>类型检查, 可以检查只能变量值类型, 该函数会将检查的结果作为返回值返回, 也可以通过变量来接收函数的返回值.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-python hljs"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 数据类型 | type of data</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 04_type_data.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 -  数据类型 | Python Fundamentals-Data Types</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 类型检查 | Type check</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span>values1 = <span class="hljs-number">123456</span>  <span class="hljs-comment"># Output result: &lt;class 'int'&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span>values2 = <span class="hljs-string">'123456'</span>  <span class="hljs-comment"># Output result: &lt;class 'str'&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>values3 = <span class="hljs-keyword">None</span>  <span class="hljs-comment"># Output result: &lt;class 'NoneType'&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span>values4 = <span class="hljs-keyword">True</span>  <span class="hljs-comment"># Output result: &lt;class 'bool'&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span>values5 = <span class="hljs-number">555.456</span>  <span class="hljs-comment"># Output result: &lt;class 'float'&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span>print(type(values1), type(values2), type(values3), type(values4), type(values5))
 </div></code></pre>
 </blockquote>
 

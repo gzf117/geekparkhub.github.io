@@ -572,6 +572,11 @@
 > 
 > 在Python中可以直接用`True`、`False`表示布尔值 (请注意大小写).
 > 
+> 布尔值可以用`and`、`or`和`not`运算,
+> `and`运算是与运算, 只有所有条件都为`True`, `and`运算结果才是`True`.
+> `or`运算是或运算, 只要其中有一个条件为`True`, `or`运算结果就是`True`.
+> `not`运算是非运算, 它是一个单目运算符, 把`True`变成`False`, `False`变成`True`.
+> 
 > ``` python
 > # -*- coding:utf-8 -*-
 > # 
@@ -591,10 +596,36 @@
 > # @File : 04_type_data.py
 > # @Description : Python 基础篇 -  数据类型 | Python Fundamentals-Data Types
 > 
+> # 定义 布尔值 | Definition Boolean value
+> print('True=', True)  # Output result: True
+> print('False=', False)  # Output result: False
+> print('3 > 2=', 3 > 2)  # Output result: True
+> print('3 < 2=', 3 < 2)  # Output result: False
+> 
+> print('True and True=', True and True)  # Output result: True
+> print('True and False=', True and False)  # Output result: False
+> print('3 < 2 and 3 < 2=', 3 < 2 and 3 < 2)  # Output result: False
+> 
+> print('True or True=', True or True)  # Output result: True
+> print('True or False=', True or False)  # Output result: True
+> print('3 < 2 or 3 < 2=', 3 < 2 or 3 < 2)  # Output result: False
+> 
+> print('not True', not True)  # Output result: False
+> print('not False', not False)  # Output result: True
+> print('not 3 > 2', not 3 > 2)  # Output result: False
+> 
+> if 20 >= 18:
+>     print('大于等于')
+> else:
+>     print('小于等于')
+> 
+> print("------------------------------------------------------\n")
 > ``` 
 
 #### 7.2.6 `空值`
+> 空值是Python里一个特殊的值, 用`None`表示, `None`不能理解为`0`, 因为`0`是有意义的, 而`None`是一个特殊的空值.
 > 
+> 此外Python还提供了列表、字典等多种数据类型, 还允许创建自定义数据类型, 后面会继续讲到.
 > ``` python
 > # -*- coding:utf-8 -*-
 > # 
@@ -614,7 +645,40 @@
 > # @File : 04_type_data.py
 > # @Description : Python 基础篇 -  数据类型 | Python Fundamentals-Data Types
 > 
+> # 定义 空值 | Definition Null value
+> data = None
+> print(data)
+> print("------------------------------------------------------\n")
+> ``` 
+
+#### 7.2.7 `类型检查`
+> 通过`type()`类型检查, 可以检查只能变量值类型, 该函数会将检查的结果作为返回值返回, 也可以通过变量来接收函数的返回值.
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据类型 | type of data
+> # @File : 04_type_data.py
+> # @Description : Python 基础篇 -  数据类型 | Python Fundamentals-Data Types
 > 
+> # 类型检查 | Type check
+> values1 = 123456  # Output result: <class 'int'>
+> values2 = '123456'  # Output result: <class 'str'>
+> values3 = None  # Output result: <class 'NoneType'>
+> values4 = True  # Output result: <class 'bool'>
+> values5 = 555.456  # Output result: <class 'float'>
+> print(type(values1), type(values2), type(values3), type(values4), type(values5))
 > ``` 
 
 
