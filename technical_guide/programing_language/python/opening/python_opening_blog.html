@@ -72,10 +72,13 @@
 <li><a href="#727-类型检查">7.2.7 类型检查</a></li>
 </ul>
 </li>
+<li><a href="#73-python-对象">7.3 Python 对象</a><ul>
+<li><a href="#731-对象的结构">7.3.1 对象的结构</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</a><ul>
-<li><a href="#73-python-对象">7.3 Python 对象</a></li>
 <li><a href="#74-python-变量和对象">7.4 Python 变量和对象</a></li>
 <li><a href="#75-python-类型转换">7.5 Python 类型转换</a></li>
 <li><a href="#76-python-运算符操作符">7.6 Python 运算符(操作符)</a></li>
@@ -548,6 +551,8 @@
 </div></code></pre>
 </blockquote>
 
+
+
 <h3 id="72-python-数据类型">7.2 Python 数据类型</h3>
 
 <blockquote>
@@ -591,6 +596,8 @@
 </div></code></pre>
 </blockquote>
 
+
+
 <h4 id="722-浮点数">7.2.2 <code>浮点数</code></h4>
 
 <blockquote>
@@ -622,6 +629,8 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>print(assets + incomes)
 </div></code></pre>
 </blockquote>
+
+
 
 <h4 id="723-字符串-格式化">7.2.3 <code>字符串</code> &amp; <code>格式化</code></h4>
 
@@ -706,6 +715,8 @@
 </div></code></pre>
 </blockquote>
 
+
+
 <h4 id="724-转义字符">7.2.4 <code>转义字符</code></h4>
 
 <blockquote>
@@ -735,6 +746,8 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>print(<span class="hljs-string">"------------------------------------------------------\n"</span>)
 </div></code></pre>
 </blockquote>
+
+
 
 <h4 id="725-布尔值">7.2.5 <code>布尔值</code></h4>
 
@@ -792,6 +805,8 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>print(<span class="hljs-string">"------------------------------------------------------\n"</span>)
 </div></code></pre>
 </blockquote>
+
+
 
 <h4 id="726-空值">7.2.6 <code>空值</code></h4>
 
@@ -860,11 +875,58 @@
 </div></code></pre>
 </blockquote>
 
-<h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
+
 
 <h3 id="73-python-对象">7.3 Python 对象</h3>
 
+<blockquote>
+  <p>Python是一门面向对象的编程语言, 所以一切皆对象!</p>
+  
+  <p>程序运行当中所有数据都是存储到内存当中然后再运行.</p>
+  
+  <p>对象就是内存中专门用来存储指定数据的一块区域.</p>
+</blockquote>
 
+
+
+<h4 id="731-对象的结构">7.3.1 对象的结构</h4>
+
+<blockquote>
+  <p>每个对象中都要保存三种数据<code>id</code> / <code>type</code> / <code>value</code></p>
+  
+  <p><code>id (标识)</code>:  id用来标识对象的唯一性, 每一个对象都有唯一的id, 对象一旦创建则它的id永远不能再改变.</p>
+  
+  <p><code>type (类型)</code>: 类型用来标识当前对象所属的类型, 类型决定了对象有哪些功能, 通过type()函数来查看对象的类型.</p>
+  
+  <p><code>value (值)</code>: 值就是对象中存储的具体的数据, 对象分成两大类: <code>可变对象</code> /  <code>不可变对象</code>.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-python hljs"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 对象结构 | Object structure</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 05_object_structure.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 -  对象结构 | Python Basics-Object Structure</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 对象结构 | Object structure</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span>object_structure = <span class="hljs-string">'13579'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span>print(<span class="hljs-string">'id='</span>, id(object_structure))
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>print(<span class="hljs-string">'type='</span>, type(object_structure))
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span>print(<span class="hljs-string">'value='</span>, object_structure)
+</div></code></pre>
+</blockquote>
+
+<h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 
 <h3 id="74-python-变量和对象">7.4 Python 变量和对象</h3>
 

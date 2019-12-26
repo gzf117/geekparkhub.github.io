@@ -683,8 +683,52 @@
 
 
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+
 ### 7.3 Python 对象
+> Python是一门面向对象的编程语言, 所以一切皆对象!
+> 
+> 程序运行当中所有数据都是存储到内存当中然后再运行.
+> 
+> 对象就是内存中专门用来存储指定数据的一块区域.
+
+#### 7.3.1 对象的结构
+> 每个对象中都要保存三种数据`id` / `type` / `value`
+> 
+> `id (标识)`:  id用来标识对象的唯一性, 每一个对象都有唯一的id, 对象一旦创建则它的id永远不能再改变.
+> 
+> `type (类型)`: 类型用来标识当前对象所属的类型, 类型决定了对象有哪些功能, 通过type()函数来查看对象的类型.
+> 
+> ` value (值)`: 值就是对象中存储的具体的数据, 对象分成两大类: `可变对象` /  `不可变对象`.
+> 
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 对象结构 | Object structure
+> # @File : 05_object_structure.py
+> # @Description : Python 基础篇 -  对象结构 | Python Basics-Object Structure
+> 
+> # 对象结构 | Object structure
+> object_structure = '13579'
+> print('id=', id(object_structure))
+> print('type=', type(object_structure))
+> print('value=', object_structure)
+> ```
+
+
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 7.4 Python 变量和对象
 ### 7.5 Python 类型转换
 ### 7.6 Python 运算符(操作符)
