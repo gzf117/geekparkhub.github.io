@@ -7,9 +7,9 @@
       <sourceFolder url="file://$MODULE_DIR$/main/python/com" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/main/python/com/geekparkhub/core" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/main/python/com.geekparkhub.core" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/TrainingMode/src/main" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/training_mode/src/main" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/venv" />
     </content>
     <orderEntry type="inheritedJdk" />

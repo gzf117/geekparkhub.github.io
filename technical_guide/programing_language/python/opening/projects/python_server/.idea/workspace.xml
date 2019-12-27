@@ -2,8 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4cdd7094-07f3-48f7-b482-148a3a7f8d65" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/07_operator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/01_basic_grammar.py" beforeDir="false" afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/01_basic_grammar.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/02_constant_variable.py" beforeDir="false" afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/02_constant_variable.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/03_Identifier_naming_convention.py" beforeDir="false" afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/03_Identifier_naming_convention.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/04_type_data.py" beforeDir="false" afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/04_type_data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/05_object_structure.py" beforeDir="false" afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/05_object_structure.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/06_type_conversion.py" beforeDir="false" afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/06_type_conversion.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/07_operator.py" beforeDir="false" afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/07_operator.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -198,7 +203,7 @@
       <workItem from="1577272777816" duration="115000" />
       <workItem from="1577272912977" duration="6433000" />
       <workItem from="1577348551313" duration="12616000" />
-      <workItem from="1577448687148" duration="5626000" />
+      <workItem from="1577448687148" duration="5818000" />
     </task>
     <servers />
   </component>
@@ -214,26 +219,26 @@
       <screen x="0" y="23" width="2560" height="1372" />
     </state>
     <state x="744" y="370" key="#com.intellij.execution.impl.EditConfigurationsDialog/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577202322914" />
-    <state width="2518" height="219" key="GridCell.Tab.0.bottom" timestamp="1577459334935">
+    <state width="2518" height="219" key="GridCell.Tab.0.bottom" timestamp="1577459682756">
       <screen x="0" y="23" width="2560" height="1372" />
     </state>
     <state width="2518" height="463" key="GridCell.Tab.0.bottom/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577290360881" />
-    <state width="2518" height="219" key="GridCell.Tab.0.bottom/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577459334935" />
-    <state width="2518" height="219" key="GridCell.Tab.0.center" timestamp="1577459334934">
+    <state width="2518" height="219" key="GridCell.Tab.0.bottom/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577459682756" />
+    <state width="2518" height="219" key="GridCell.Tab.0.center" timestamp="1577459682755">
       <screen x="0" y="23" width="2560" height="1372" />
     </state>
     <state width="2518" height="463" key="GridCell.Tab.0.center/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577290360880" />
-    <state width="2518" height="219" key="GridCell.Tab.0.center/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577459334934" />
-    <state width="2518" height="219" key="GridCell.Tab.0.left" timestamp="1577459334934">
+    <state width="2518" height="219" key="GridCell.Tab.0.center/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577459682755" />
+    <state width="2518" height="219" key="GridCell.Tab.0.left" timestamp="1577459682755">
       <screen x="0" y="23" width="2560" height="1372" />
     </state>
     <state width="2518" height="463" key="GridCell.Tab.0.left/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577290360879" />
-    <state width="2518" height="219" key="GridCell.Tab.0.left/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577459334934" />
-    <state width="2518" height="219" key="GridCell.Tab.0.right" timestamp="1577459334934">
+    <state width="2518" height="219" key="GridCell.Tab.0.left/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577459682755" />
+    <state width="2518" height="219" key="GridCell.Tab.0.right" timestamp="1577459682755">
       <screen x="0" y="23" width="2560" height="1372" />
     </state>
     <state width="2518" height="463" key="GridCell.Tab.0.right/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577290360880" />
-    <state width="2518" height="219" key="GridCell.Tab.0.right/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577459334934" />
+    <state width="2518" height="219" key="GridCell.Tab.0.right/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577459682755" />
     <state width="2518" height="462" key="GridCell.Tab.1.bottom" timestamp="1577377061726">
       <screen x="0" y="23" width="2560" height="1372" />
     </state>
