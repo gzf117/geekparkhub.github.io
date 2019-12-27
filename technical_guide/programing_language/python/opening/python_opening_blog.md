@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2019-12-27)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2019-12-28)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -726,12 +726,73 @@
 > print('value=', object_structure)
 > ```
 
+### 7.4 Python 变量和对象
+> 对象并没有直接存储到变量中, 在Python中变量更像是给对象起了一个别名.
+> 
+> 变量中存储的不是对象的值, 而是对象的id(内存地址).
+> 
+> 当使用变量时, 实际上就是在通过对象id在查找对象.
+> 
+> 变量中保存的对象, 只有在为变量重新赋值时才会改变.
+> 
+> 变量和变量之间是相互独立的，修改一个变量不会影响另一个变量.
+
+
+### 7.5 Python 类型转换
+> 所谓的类型转换, 将一个类型的对象转换为其他对象.
+> 
+> 类型转换不是改变对象本身的类型, 而是根据当前对象的值创建一个新对象.
+> 
+> 类型转换分为四个函数:  `int()`/ `float()` / `str()` / `bool()`
+> 
+> `int()`可以用来将其他的对象转换为整型.
+> 
+> `float()`和`int()`基本一致, 不同的是它会将对象转换为浮点数.
+> 
+> `str()`可以将对象转换为字符串.
+> 
+> `bool()`可以将对象转换为布尔值, 任何对象都可以转换为布尔值.
+> 
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 类型转换 | Type conversion
+> # @File : 06_type_conversion.py
+> # @Description : Python 基础篇 - 类型转换 | Python Basics-Type Conversion
+> 
+> # 类型转换 | Type conversion
+> data = '13579'
+> data = int(data)
+> data = float(data)
+> data = str(data)
+> data = bool(data)
+> 
+> print('id=', id(data))
+> print('type=', type(data))
+> print('value=', data)
+> ```
+
+### 7.6 Python 运算符(操作符)
+> 运算符可以对一个值或多个值进行运算或各种操作.
+> 
+> 运算符的分类: 算术运算符 / 赋值运算符 / 关系运算符 / 逻辑运算符 / 条件运算符.
+
+
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-### 7.4 Python 变量和对象
-### 7.5 Python 类型转换
-### 7.6 Python 运算符(操作符)
 ### 7.7 Python 流程控制语句
 ### 7.8 Python 函数
 ### 7.9 Python 面向对象
