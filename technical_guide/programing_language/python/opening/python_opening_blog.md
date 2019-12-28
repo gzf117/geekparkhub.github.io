@@ -893,7 +893,7 @@
 | `+ -`    |   加法减法 |
 | `>> <<`    |   右移，左移运算符 |
 | `&`    |   位 'AND' |
-| `^| `    |   位运算符 |
+| `^`    |   位运算符 |
 | `<= < > >=`    |   比较运算符 |
 | `<> == !=`    |   等于运算符 |
 | `= %= /= //= -= += *= **=`    |   赋值运算符 |
@@ -903,8 +903,136 @@
 
 
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 7.7 Python 流程控制语句
+> Python代码在执行时是按照自上向下顺序执行.
+> 
+> 通过流程控制语句, 可以改变程序的执行顺序, 也可以让指定的程序反复执行多次.
+> 
+> 流程控制语句分成两大类：`条件判断语句` / `循环语句`
+
+
+#### 7.7.1 条件判断语句
+> ``` python 
+> 语法：if 条件表达式 : 
+>             代码块
+> ```
+> 
+> 执行的流程: if语句在执行时会先对条件表达式进行求值判断.
+> 
+>  如果为True则执行if后的语句, 如果为False则不执行.
+>  
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 流程控制 | Process control
+> # @File : 08_process_control.py
+> # @Description : Python 基础篇 - 流程控制 | Python Basics - Process control
+> 
+> # 流程控制 | Process control
+> 
+> # 定义 条件判断语句 | Definition Conditional Judgment
+> if True:
+>     print("Output_1")
+>     print("Output_2")
+>     print("Output_3")
+> 
+> 
+> # 定义 身份验证函数 | Define authentication function
+> def verification(user_name_input, user_password_input, user_token_input):
+>     # print('\nPlease enter UserName....')
+>     if user_name_input == 'system' or user_name_input == 'System':
+>         print('‖-------------------------------------------------‖')
+>         print('\n‖ Username Verification Successful !', user_name_input, '..... ‖\n')
+>         print('‖-------------------------------------------------‖\n')
+>         # print('\nPlease enter Password....\n')
+>         if user_password_input == 'xxx':
+>             print('‖-------------------------------------------------‖')
+>             print('\n‖ Password Verification Successful', user_name_input, '..... ‖\n')
+>             print('‖-------------------------------------------------‖')
+>             # print('\nPlease enter Token....\n')
+>             if user_token_input == '000000':
+>                 print('‖-------------------------------------------------‖')
+>                 print('\n‖ Token Verification Successful, Welcome', user_name_input, '! ‖\n')
+>                 print('‖-------------------------------------------------‖')
+>             else:
+>                 print('\n', user_token_input, 'Token Error!')
+>         else:
+>             print('\n', user_password_input, 'Password Error!')
+>     else:
+>         print('\n', user_name_input, 'UserName Error!')
+> 
+> 
+> # 定义 参数 | Definition parameter
+> name = input('\nPlease enter UserName....\n')
+> password = input('\nPlease enter Password....\n')
+> token = input('\nPlease enter Token....\n')
+> 
+> # 调用 身份验证函数 | Transfer authentication function
+> verification(name, password, token)
+> ```
+
+#### 7.7.2 循环语句
+> 循环语句可以使指定的代码块重复指定的次数.
+> 
+> 循环类型分为三种: `while循环` /  `for循环` / `循环嵌套`.
+> 
+> 在Python 中没有`do..while`循环.
+
+##### 7.7.2.1 while循环
+> while循环 语法：
+> 
+> ``` python
+> while 判断条件(condition)：
+>     执行语句(statements)……
+> ```
+##### 7.7.2.2 for循环
+> for循环 语法：
+> 
+> ``` python
+> for iterating_var in sequence:
+>    statements(s)
+> ```
+
+##### 7.7.2.3 循环嵌套
+> Python while 循环嵌套语法：
+> ``` python
+> while expression:
+>   while expression:
+>      statement(s)
+>   statement(s)
+> ```
+> 
+> Python for 循环嵌套语法
+> ``` python
+> for iterating_var in sequence:
+>    for iterating_var in sequence:
+>       statements(s)
+>    statements(s)
+> ```
+
+##### 7.7.2.4 循环控制语句
+> 循环控制语句可以更改语句执行的顺序, Python支持以下循环控制语句:
+| 控制语句      |     描述 |
+| :-------- | --------:|
+| `break 语句`    |   在语句块执行过程中终止循环, 并且跳出整个循环. |
+| `continue 语句`    |   在语句块执行过程中终止当前循环，跳出该次循环，执行下一次循环. |
+| `pass 语句`    |   pass是空语句，是为了保持程序结构的完整性. |
+
+
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 7.8 Python 函数
 ### 7.9 Python 面向对象
 ### 7.10 Python 异常处理 & 文件
