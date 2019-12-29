@@ -38,7 +38,7 @@ def verification(user_name_input, user_password_input, user_token_input):
             print('\n‖ Password Verification Successful', user_name_input, '..... ‖\n')
             print('‖-------------------------------------------------‖')
             # print('\nPlease enter Token....\n')
-            if user_token_input == '000000':
+            if user_token_input == 000000:
                 print('‖-------------------------------------------------‖')
                 print('\n‖ Token Verification Successful, Welcome', user_name_input, '! ‖\n')
                 print('‖-------------------------------------------------‖')
@@ -53,9 +53,32 @@ def verification(user_name_input, user_password_input, user_token_input):
 # 定义 参数 | Definition parameter
 name = input('\nPlease enter UserName....\n')
 password = input('\nPlease enter Password....\n')
-token = input('\nPlease enter Token....\n')
+token = int(input('\nPlease enter Token....\n'))
 
 # 调用 身份验证函数 | Transfer authentication function
 verification(name, password, token)
 
 # 定义 循环语句 | Definition loop statement
+# while循环 | while loop
+x = 0
+while x < 10:
+    print(x, 'Life is short, choose python quickly！')
+    x += 1
+else:
+    print('End\n')
+
+# for循环 | for loop
+fruits = ['banana', 'apple', 'mango']
+for fruit in fruits:  # 第二个实例
+    print('当前水果 :', fruit)
+print('Good bye!\n')
+
+# 循环嵌套 | Loop nesting
+i = 0
+while i < 9:
+    i += 1
+    j = 0
+    while j < i:
+        j += 1
+        print(f"{j} * {i} = {i * j}\t", end=' ')
+    print()

@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2019-12-28)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2019-12-30)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -1029,6 +1029,53 @@
 | `break 语句`    |   在语句块执行过程中终止循环, 并且跳出整个循环. |
 | `continue 语句`    |   在语句块执行过程中终止当前循环，跳出该次循环，执行下一次循环. |
 | `pass 语句`    |   pass是空语句，是为了保持程序结构的完整性. |
+
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 流程控制 | Process control
+> # @File : 08_process_control.py
+> # @Description : Python 基础篇 - 流程控制 | Python Basics - Process control
+> 
+> # 流程控制 | Process control
+> 
+> # 定义 循环语句 | Definition loop statement
+> # while循环 | while loop
+> x = 0
+> while x < 10:
+>     print(x, 'Life is short, choose python quickly！')
+>     x += 1
+> else:
+>     print('End\n')
+> 
+> # for循环 | for loop
+> fruits = ['banana', 'apple', 'mango']
+> for fruit in fruits:  # 第二个实例
+>     print('当前水果 :', fruit)
+> print('Good bye!\n')
+> 
+> # 循环嵌套 | Loop nesting
+> i = 0
+> while i < 9:
+>     i += 1
+>     j = 0
+>     while j < i:
+>         j += 1
+>         print(f"{j} * {i} = {i * j}\t", end=' ')
+>     print()
+> ```
 
 
 
