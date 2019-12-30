@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2019-12-30)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2019-12-31)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -1079,10 +1079,258 @@
 
 
 
+
+### 7.8 Python 集合
+> 序列是Python中最基本的数据结构, 序列中的每个元素都分配一个数字 - 它的位置或索引, 第一个索引是0, 第二个索引是1,依此类推, 列表的索引也可以是负数,如果索引是负数, 则从后向前获取元素, -1表示倒数第一个, -2表示倒数第二个以此类推.
+> 
+> Python有6个序列的内置类型, 但最常见的是列表和元组.
+> 
+> 序列都可以进行的操作包括索引, 切片, 加, 乘, 检查成员.
+
+#### 7.8.1 列表 list
+> 列表是最常用的Python数据类型, 它可以作为一个方括号内的逗号分隔值出现.
+> 
+> 列表中可以保存多个有序的数据, 列表是用来存储对象的对象.
+> 
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据结构集合 | Data structure collection
+> # @File : 09_data_structure_collection.py
+> # @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection
+> 
+> # 定义 列表 | Definition list
+> list1 = [1, 2, 3, 4, 5]
+> 
+> # 获取列表元素长度 | Get list element length
+> print('lens=', len(list1))
+> 
+> # 访问列表中的值 | Access value in list
+> print(list1[1])
+> 
+> # 更新列表 | update list
+> list1.append(6)
+> 
+> # 删除列表元素 | Remove list element
+> del list1[2]
+> print(list1)
+> ```
+
+
+#### 7.8.2 列表切片
+> 切片指从现有列表中获取一个子列表.
+> 
+>  切片语法1：`list[起始:结束]`
+>  通过切片获取元素时会包括起始位置的元素, 不会包括结束位置的元素.
+>  
+>  切片语法2: `list[起始:结束:步长]`
+>  步长表示每次获取元素的间隔，默认值是1, 步长不能是0但是可以是负数.
+>  
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据结构集合 | Data structure collection
+> # @File : 09_data_structure_collection.py
+> # @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection
+> 
+> # 定义 列表 | Definition list
+> list1 = [1, 2, 3, 4, 5]
+> # 定义 列表切片 | Definition list slice
+> # 如果省略结束位置则会一直截取到最后 | If the end position is omitted, it will be intercepted to the end.
+> print('list1[1:]: ', list1[1:])
+> # 如果省略起始位置则会从第一个元素开始截取 | If the starting position is omitted, it will be truncated from the first element
+> print('list1[:3]: ', list1[:3])
+> # 如果起始位置和结束位置全部省略则相当于创建一个列表的副本
+> print('list1[:]: ', list1[:])
+> # 通过切片获取元素时会包括起始位置的元素,不会包括结束位置的元素
+> print('list1[1:5]: ', list1[1:5])
+> # 定义 步长 | Definition Stride
+> print('list1[1:4:1]: ', list1[1:4:1])
+> print('list1[::1]: ', list1[::-1])
+> ```
+
+#### 7.8.3 列表 脚本操作符
+> 列表对 `+` 和 `*` 的操作符与字符串相似, `+` 号用于组合列表, `*` 号用于重复列表.
+| Python 表达式      |     	结果 |   描述   |
+| :--------: | :--------:| :------: |
+| `len([1, 2, 3])`    |   3 |  长度  |
+| `[1, 2, 3] + [4, 5, 6]`    |   [1, 2, 3, 4, 5, 6] |  组合  |
+| `['Hi!'] * 4`    |   ['Hi!', 'Hi!', 'Hi!', 'Hi!'] |  重复  |
+| `3 in [1, 2, 3]` and `3 not in [1, 2, 3]`    |   True / False |  元素是否存在于列表中  |
+| `for x in [1, 2, 3]: print x,`    |   1 2 3 |  迭代  |
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据结构集合 | Data structure collection
+> # @File : 09_data_structure_collection.py
+> # @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection
+> 
+> # 定义 列表 | Definition list
+> list2 = [1, 2, 3, 4, 5, 6]
+> list3 = ['C', 'C++', 'C#', 'Html', 'Java', 'PHP', 'Python', 'Scala', 'GoLang', 'R', 'Ruby', 'SQL']
+> 
+> # 定义 元素是否存在于列表中 | Defines whether the element exists in the list
+> print('Python' in list3)
+> print('Python' not in list3)
+> 
+> # 定义 迭代 | Definition iteration
+> for data in list3:
+>     print('data=', data)
+> 
+> # 定义 组合列表 | Definition Combination list
+> list2 = [1, 2, 3, 4, 5, 6] + [7, 8, 9, 10, 11]
+> 
+> # 定义 重复列表 | Definition repeat list
+> list3 = list3 * 4
+> 
+> # 获取列表长度 | Get list length
+> print('list2 length=', len(list2))
+> print('list3 length=', len(list3))
+> ```
+
+
+#### 7.8.4 列表 函数 & 方法
+> 方法和函数基本上是一样, 只不过方法必须通过`object.方法()`的形式调用.
+> 
+> Python包含以下函数:
+| 序号      |     函数 |   描述   |
+| :--------: | :--------:| :------: |
+| 1    |   `cmp(list1, list2)` |  比较两个列表的元素  |
+| 2    |   `len(list)` |  列表元素个数  |
+| 3    |   `max(list)` |  返回列表元素最大值  |
+| 4    |   `min(list)` |  返回列表元素最小值  |
+| 5    |   `list(seq)` |  将元组转换为列表  |
+
+> Python包含以下方法:
+| 序号      |     方法 |   描述   |
+| :--------: | :--------:| :------: |
+| 1    |   `lists.append(obj)` |  在列表末尾添加新的对象  |
+| 2    |   `lists.count(obj)` |  统计某个元素在列表中出现的次数  |
+| 3    |   `lists.extend(seq)` |  在列表末尾一次性追加另一个序列中的多个值（用新列表扩展原来的列表）  |
+| 4    |   `lists.index(obj)` |  从列表中找出某个值第一个匹配项的索引位置  |
+| 5    |   `lists.insert(index, obj)` |  将对象插入列表  |
+| 6    |   `lists.pop([index=-1])` |  移除列表中的一个元素（默认最后一个元素），并且返回该元素的值  |
+| 7    |   `lists.remove(obj)` |  移除列表中某个值的第一个匹配项  |
+| 8    |   `lists.reverse()` |  反向列表中元素  |
+| 9    |   `lists.sort(cmp=None, key=None, reverse=False)` |  对原列表进行排序  |
+
+
+#### 7.8.4 序列
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据结构集合 | Data structure collection
+> # @File : 09_data_structure_collection.py
+> # @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection
+> 
+> # 定义 列表 | Definition list
+> 
+> ```
+
+#### 7.8.5 range
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据结构集合 | Data structure collection
+> # @File : 09_data_structure_collection.py
+> # @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection
+> 
+> # 定义 列表 | Definition list
+> 
+> ```
+
+#### 7.8.5 元祖
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据结构集合 | Data structure collection
+> # @File : 09_data_structure_collection.py
+> # @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection
+> 
+> # 定义 列表 | Definition list
+> 
+> ```
+
+#### 7.8.6 字典
+#### 7.8.7 集合
+
+
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-### 7.8 Python 函数
-### 7.9 Python 面向对象
-### 7.10 Python 异常处理 & 文件
+### 7.9 Python 函数
+### 7.10 Python 面向对象
+### 7.11 Python 异常处理 & 文件
 
 
 
