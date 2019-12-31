@@ -1346,6 +1346,8 @@
   <p>序列都可以进行的操作包括索引, 切片, 加, 乘, 检查成员.</p>
 </blockquote>
 
+
+
 <h4 id="781-列表-list">7.8.1 列表 list</h4>
 
 <blockquote>
@@ -1383,9 +1385,37 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-comment"># 更新列表 | update list</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>list1.append(<span class="hljs-number">6</span>)
 </div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><span class="hljs-comment"># 删除列表元素 | Remove list element</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><span class="hljs-keyword">del</span> list1[<span class="hljs-number">2</span>]
-</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>print(list1)
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><span class="hljs-comment"># 向列表指定位置插入元素 | Insert an element at a specified position in the list</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>list1.insert(<span class="hljs-number">3</span>, <span class="hljs-number">7</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><span class="hljs-comment"># 使用新的序列扩展当前序列 | Extend current sequence with new sequence</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>list1.extend([<span class="hljs-number">8</span>, <span class="hljs-number">9</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><span class="hljs-comment"># 定义 迭代列表元素 | Definition iteration</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span><span class="hljs-keyword">for</span> data <span class="hljs-keyword">in</span> list1:
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>    print(<span class="hljs-string">'data='</span>, data)
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span><span class="hljs-comment"># 删除列表元素 | Remove list element</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span><span class="hljs-keyword">del</span> list1[<span class="hljs-number">2</span>]
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span><span class="hljs-comment"># 根据索引删除指定元素并返回被删除元素的值 | Deletes the specified element based on the index and returns the value of the deleted element</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>delete_value = list1.pop(<span class="hljs-number">3</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>print(<span class="hljs-string">'delete_value='</span>, delete_value)
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span><span class="hljs-comment"># 根据指定元素删除元素值 | Delete element value based on specified element</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>list1.remove(<span class="hljs-number">5</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><span class="hljs-comment"># 将列表元素反转 | Reverse list element</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>list1.reverse()
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><span class="hljs-comment"># 对列表元素进行排序,默认为升序排序 | Sort list elements, default is ascending</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>list1.sort()
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>list1.sort(reverse=<span class="hljs-keyword">True</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span><span class="hljs-comment"># 清空列表 | clear the list</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>list1.clear()
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>print(<span class="hljs-string">'list1='</span>, list1)
 </div></code></pre>
 </blockquote>
 
@@ -1434,6 +1464,8 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>print(<span class="hljs-string">'list1[::1]: '</span>, list1[::<span class="hljs-number">-1</span>])
 </div></code></pre>
 </blockquote>
+
+
 
 <h4 id="783-列表-脚本操作符">7.8.3 列表 脚本操作符</h4>
 
@@ -1486,6 +1518,8 @@
 </div></code></pre>
 </blockquote>
 
+
+
 <h4 id="784-列表-函数-方法">7.8.4 列表 函数 &amp; 方法</h4>
 
 <blockquote>
@@ -1502,30 +1536,20 @@
 
 <table><tbody><tr style="font-weight:bold">  <td align="center">序号</td>  <td align="center">方法</td>  <td align="center">描述</td></tr><tr>  <td align="center">1</td>  <td align="center"><code>lists.append(obj)</code></td>  <td align="center">在列表末尾添加新的对象</td></tr><tr>  <td align="center">2</td>  <td align="center"><code>lists.count(obj)</code></td>  <td align="center">统计某个元素在列表中出现的次数</td></tr><tr>  <td align="center">3</td>  <td align="center"><code>lists.extend(seq)</code></td>  <td align="center">在列表末尾一次性追加另一个序列中的多个值（用新列表扩展原来的列表）</td></tr><tr>  <td align="center">4</td>  <td align="center"><code>lists.index(obj)</code></td>  <td align="center">从列表中找出某个值第一个匹配项的索引位置</td></tr><tr>  <td align="center">5</td>  <td align="center"><code>lists.insert(index, obj)</code></td>  <td align="center">将对象插入列表</td></tr><tr>  <td align="center">6</td>  <td align="center"><code>lists.pop([index=-1])</code></td>  <td align="center">移除列表中的一个元素（默认最后一个元素），并且返回该元素的值</td></tr><tr>  <td align="center">7</td>  <td align="center"><code>lists.remove(obj)</code></td>  <td align="center">移除列表中某个值的第一个匹配项</td></tr><tr>  <td align="center">8</td>  <td align="center"><code>lists.reverse()</code></td>  <td align="center">反向列表中元素</td></tr><tr>  <td align="center">9</td>  <td align="center"><code>lists.sort(cmp=None, key=None, reverse=False)</code></td>  <td align="center">对原列表进行排序</td></tr></tbody></table>
 
+
+
 <h4 id="784-序列">7.8.4 序列</h4>
 
 <blockquote>
-  <pre class="prettyprint with-line-number hljs-dark"><code class="language-python hljs"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 数据结构集合 | Data structure collection</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 09_data_structure_collection.py</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 定义 列表 | Definition list</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><wbr>
-</div></code></pre>
+  <p>序列是Python中最基本的一种数据结构, 数据结构指计算机中数据存储的方式.</p>
+  
+  <p>序列用于保存一组有序的数据, 所有的数据在序列当中都有一个唯一的位置(索引).并且序列中的数据会按照添加的顺序来分配索引.</p>
+  
+  <p>序列的分类 : </p>
+  
+  <p><code>可变序列</code>[序列中的元素可以改变] : <code>列表(list)</code></p>
+  
+  <p><code>不可变序列</code>[序列中的元素不能改变]: <code>字符串(str)</code> <code>元组(tuple)</code></p>
 </blockquote>
 
 <h4 id="785-range">7.8.5 range</h4>
@@ -1554,6 +1578,8 @@
 </div></code></pre>
 </blockquote>
 
+
+
 <h4 id="785-元祖">7.8.5 元祖</h4>
 
 <blockquote>
@@ -1580,11 +1606,15 @@
 </div></code></pre>
 </blockquote>
 
+
+
 <h4 id="786-字典">7.8.6 字典</h4>
 
 
 
 <h4 id="787-集合">7.8.7 集合</h4>
+
+
 
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 

@@ -1123,9 +1123,37 @@
 > # 更新列表 | update list
 > list1.append(6)
 > 
+> # 向列表指定位置插入元素 | Insert an element at a specified position in the list
+> list1.insert(3, 7)
+> 
+> # 使用新的序列扩展当前序列 | Extend current sequence with new sequence
+> list1.extend([8, 9])
+> 
+> # 定义 迭代列表元素 | Definition iteration
+> for data in list1:
+>     print('data=', data)
+> 
 > # 删除列表元素 | Remove list element
 > del list1[2]
-> print(list1)
+> 
+> # 根据索引删除指定元素并返回被删除元素的值 | Deletes the specified element based on the index and returns the value of the deleted element
+> delete_value = list1.pop(3)
+> print('delete_value=', delete_value)
+> 
+> # 根据指定元素删除元素值 | Delete element value based on specified element
+> list1.remove(5)
+> 
+> # 将列表元素反转 | Reverse list element
+> list1.reverse()
+> 
+> # 对列表元素进行排序,默认为升序排序 | Sort list elements, default is ascending
+> list1.sort()
+> list1.sort(reverse=True)
+> 
+> # 清空列表 | clear the list
+> list1.clear()
+> 
+> print('list1=', list1)
 > ```
 
 
@@ -1252,28 +1280,16 @@
 
 
 #### 7.8.4 序列
-> ``` python
-> # -*- coding:utf-8 -*-
-> # 
-> # Geek International Park | 极客国际公园
-> # GeekParkHub | 极客实验室
-> # Website | https://www.geekparkhub.com
-> # Description | Open · Creation | 
-> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
-> # HackerParkHub | 黑客公园
-> # Website | https://www.hackerparkhub.org
-> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
-> # GeekDeveloper : JEEP-711
-> # 
-> # @Author : system
-> # @Version : 0.2.5
-> # @Program : 数据结构集合 | Data structure collection
-> # @File : 09_data_structure_collection.py
-> # @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection
+> 序列是Python中最基本的一种数据结构, 数据结构指计算机中数据存储的方式.
 > 
-> # 定义 列表 | Definition list
+> 序列用于保存一组有序的数据, 所有的数据在序列当中都有一个唯一的位置(索引).并且序列中的数据会按照添加的顺序来分配索引.
 > 
-> ```
+> 序列的分类 : 
+> 
+> `可变序列`[序列中的元素可以改变] : `列表(list)`
+> 
+> `不可变序列`[序列中的元素不能改变]: `字符串(str)` `元组(tuple)`
+
 
 #### 7.8.5 range
 > ``` python
