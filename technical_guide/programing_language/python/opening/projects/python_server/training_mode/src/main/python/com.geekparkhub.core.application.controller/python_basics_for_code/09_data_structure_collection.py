@@ -243,3 +243,54 @@ del tuples4
 print('tuples1[0]=', tuples1[0])
 print('tuples2[0:5]=', tuples2[0:5])
 print('tuples2=', tuples2)
+
+# 定义 字典 | Definition dictionary
+# 创建 字典 | Create dictionary
+d1 = {'a': 'A', 'b': 'B', 'c': 'C', 'd': 'D', 'e': 'E', 'f': 'F', 'g': 'G', 'h': 'H'}
+d2 = dict([('a', 'A'), ('b', 'B'), ('c', 'C'), ('d', 'D'), ('e', 'E'), ('f', 'F'), ('g', 'G'), ('h', 'H')])
+d3 = {'j': 'J', 'k': 'K', 'l': 'L'}
+# 获取字典中键值对个数 | Get the number of key-value pairs in the dictionary
+print('d1_len=', len(d1))
+
+# 访问字典中的值 | Accessing values ​​in a dictionary
+print("d1['b']=", d1['b'])
+
+# 通过方法访问字典中的值 | Accessing values ​​in a dictionary via methods
+print("d1.get('b')=", d1.get('b'))
+print("d1.get('j')=", d1.get('j', 'defaults'))
+
+# 修改字典 | Modify dictionary
+d1['h'] = 'h'
+d1.setdefault('g', 'G')
+d1.setdefault('i', 'I')
+d1.update(d3)
+print('d1=', d1)
+
+# 删除字典元素 | Delete dictionary element
+del d1['a']
+d1.popitem()
+d1.pop('f')
+print("d1.pop('z')", d1.pop('z', 'defaults'))
+print('d1=', d1)
+d2.clear()
+print('d2=', d2)
+
+# 字典浅复制 | Dictionary shallow copy
+d4 = {'m': 'M', 'n': 'N', 'o': 'O', 'p': 'P', 'q': 'Q'}
+# 复制后的对象和原对象是完全独立的, 两个对象之间的变化不会影响
+d5 = d4.copy()
+print('d4=', d4, 'd4_id=', id(d4))
+print('d5=', d5, 'd5_id=', id(d5))
+
+# 遍历 字典 | Traversal dictionary
+# 调用keys()方法, 该方法将返回一个序列, 该序列中保存字典中所有的键
+for k1 in d4.keys():
+    print('key=', k1, 'value=', d4[k1])
+
+# 调用values()方法, 该方法将返回一个序列, 该序列中保存字典中所有的值
+for v1 in d4.values():
+    print('v1=', v1)
+
+# 调用items()方法, 该方法会返回一个(字典中所有项)的序列, 序列中包含双值子序列
+for k2, v2 in d4.items():
+    print('res=', k2, '=>', v2)

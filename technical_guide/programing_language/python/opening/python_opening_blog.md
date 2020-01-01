@@ -1078,8 +1078,6 @@
 > ```
 
 
-
-
 ### 7.8 Python 集合
 > 序列是Python中最基本的数据结构, 序列中的每个元素都分配一个数字 - 它的位置或索引, 第一个索引是0, 第二个索引是1,依此类推, 列表的索引也可以是负数,如果索引是负数, 则从后向前获取元素, -1表示倒数第一个, -2表示倒数第二个以此类推.
 > 
@@ -1156,8 +1154,7 @@
 > print('list1=', list1)
 > ```
 
-
-#### 7.8.2 列表切片
+##### 7.8.1.1 `列表 切片`
 > 切片指从现有列表中获取一个子列表.
 > 
 >  切片语法1：`list[起始:结束]`
@@ -1201,7 +1198,7 @@
 > print('list1[::1]: ', list1[::-1])
 > ```
 
-#### 7.8.3 列表 脚本操作符
+##### 7.8.1.2 `列表 脚本操作符`
 > 列表对 `+` 和 `*` 的操作符与字符串相似, `+` 号用于组合列表, `*` 号用于重复列表.
 | Python 表达式      |     	结果 |   描述   |
 | :--------: | :--------:| :------: |
@@ -1253,7 +1250,7 @@
 > ```
 
 
-#### 7.8.4 列表 函数 & 方法
+##### 7.8.1.3 `列表 内置函数 & 方法`
 > 方法和函数基本上是一样, 只不过方法必须通过`object.方法()`的形式调用.
 > 
 > Python包含以下函数:
@@ -1279,7 +1276,7 @@
 | 9    |   `lists.sort(cmp=None, key=None, reverse=False)` |  对原列表进行排序  |
 
 
-#### 7.8.4 序列
+#### 7.8.2 序列
 > 序列是Python中最基本的一种数据结构, 数据结构指计算机中数据存储的方式.
 > 
 > 序列用于保存一组有序的数据, 所有的数据在序列当中都有一个唯一的位置(索引).并且序列中的数据会按照添加的顺序来分配索引.
@@ -1291,7 +1288,7 @@
 > `不可变序列`[序列中的元素不能改变]: `字符串(str)` `元组(tuple)`
 
 
-#### 7.8.5 range
+#### 7.8.3 range
 >  range()是一个函数, 可以用来生成一个自然数的序列.
 >  
 >  range语法: 该函数需要三个参数  1.`起始位置(可以省略,默认是0)` | 2.`结束位置` | 3.`步长(可以省略,默认是1)`
@@ -1326,7 +1323,7 @@
 >     print('r3 =', x)
 > ```
 
-#### 7.8.5 元祖
+#### 7.8.4 元祖
 > Python的元组与列表类似, 不同之处在于元组的元素不能修改, 即含义为元组是一个不可变的序列.
 > 
 > 元组使用`()`小括号, 列表使用`[]`方括号.
@@ -1410,8 +1407,36 @@
 > ```
 
 
+#### 7.8.5 字典
+> 字典属于一种新的数据结构称为映射mapping, 字典是另一种可变容器模型且可存储任意类型对象.
+> 
+> 字典的每个键值`key=>value`对用冒号`:`分割, 每个键值对之间用逗号`,`分割, 整个字典包括在花括号`{}`中.
 
-#### 7.8.6 字典
+##### 7.8.5.1 `字典 内置函数 & 方法`
+> Python中字典包含了以下内置函数: 
+| 序号      |     函数名 |   描述   |
+| :--------: | :--------:| :------: |
+| 1    |   `cmp(dict1, dict2)` |  比较两个字典元素  |
+| 2    |   `len(dict)` |  计算字典元素个数，即键的总数  |
+| 3    |   `str(dict)` |  输出字典可打印的字符串表示  |
+| 4    |   `type(variable)` |  返回输入的变量类型，如果变量是字典就返回字典类型  |
+
+> Python中字典包含了以下内置方法: 
+| 序号      |     方法名 |   描述   |
+| :--------: | :--------:| :------: |
+| 1    |   `dict.clear()` |  删除字典内所有元素  |
+| 2    |   `dict.copy()` |  返回一个字典的浅复制  |
+| 3    |   `dict.fromkeys(seq[, val])` |  创建一个新字典，以序列 seq 中元素做字典的键，val 为字典所有键对应的初始值  |
+| 4    |   `dict.get(key, default=None)` |  返回指定键的值，如果值不在字典中返回default值  |
+| 5    |   `dict.has_key(key)` |  如果键在字典dict里返回true，否则返回false  |
+| 6    |   `dict.items()` |  以列表返回可遍历的(键, 值) 元组数组  |
+| 7    |   `dict.keys()` |  以列表返回一个字典所有的键  |
+| 8    |   `dict.setdefault(key, default=None)` |  和get()类似, 但如果键不存在于字典中，将会添加键并将值设为default  |
+| 9    |   `dict.update(dict2)` |  把字典dict2的键/值对更新到dict里  |
+| 10    |   `dict.values()` |  以列表返回字典中的所有值  |
+| 11    |   `pop(key[,default])` |  删除字典给定键 key 所对应的值，返回值为被删除的值。key值必须给出。 否则，返回default值  |
+| 12    |   popitem() |  返回并删除字典中的最后一对键和值  |
+
 > ``` python
 > # -*- coding:utf-8 -*-
 > # 
@@ -1431,13 +1456,60 @@
 > # @File : 09_data_structure_collection.py
 > # @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection
 > 
-> # 定义 列表 | Definition list
+> # 定义 字典 | Definition dictionary
+> # 创建 字典 | Create dictionary
+> d1 = {'a': 'A', 'b': 'B', 'c': 'C', 'd': 'D', 'e': 'E', 'f': 'F', 'g': 'G', 'h': 'H'}
+> d2 = dict([('a', 'A'), ('b', 'B'), ('c', 'C'), ('d', 'D'), ('e', 'E'), ('f', 'F'), ('g', 'G'), ('h', 'H')])
+> d3 = {'j': 'J', 'k': 'K', 'l': 'L'}
+> # 获取字典中键值对个数 | Get the number of key-value pairs in the dictionary
+> print('d1_len=', len(d1))
 > 
+> # 访问字典中的值 | Accessing values ​​in a dictionary
+> print("d1['b']=", d1['b'])
+> 
+> # 通过方法访问字典中的值 | Accessing values ​​in a dictionary via methods
+> print("d1.get('b')=", d1.get('b'))
+> print("d1.get('j')=", d1.get('j', 'defaults'))
+> 
+> # 修改字典 | Modify dictionary
+> d1['h'] = 'h'
+> d1.setdefault('g', 'G')
+> d1.setdefault('i', 'I')
+> d1.update(d3)
+> print('d1=', d1)
+> 
+> # 删除字典元素 | Delete dictionary element
+> del d1['a']
+> d1.popitem()
+> d1.pop('f')
+> print("d1.pop('z')", d1.pop('z', 'defaults'))
+> print('d1=', d1)
+> d2.clear()
+> print('d2=', d2)
+> 
+> # 字典浅复制 | Dictionary shallow copy
+> d4 = {'m': 'M', 'n': 'N', 'o': 'O', 'p': 'P', 'q': 'Q'}
+> # 复制后的对象和原对象是完全独立的, 两个对象之间的变化不会影响
+> d5 = d4.copy()
+> print('d4=', d4, 'd4_id=', id(d4))
+> print('d5=', d5, 'd5_id=', id(d5))
+> 
+> # 遍历 字典 | Traversal dictionary
+> # 调用keys()方法, 该方法将返回一个序列, 该序列中保存字典中所有的键
+> for k1 in d4.keys():
+>     print('key=', k1, 'value=', d4[k1])
+> 
+> # 调用values()方法, 该方法将返回一个序列, 该序列中保存字典中所有的值
+> for v1 in d4.values():
+>     print('v1=', v1)
+> 
+> # 调用items()方法, 该方法会返回一个(字典中所有项)的序列, 序列中包含双值子序列
+> for k2, v2 in d4.items():
+>     print('res=', k2, '=>', v2)
 > ```
 
 
-
-#### 7.8.7 集合
+#### 7.8.6 集合
 > ``` python
 > # -*- coding:utf-8 -*-
 > # 

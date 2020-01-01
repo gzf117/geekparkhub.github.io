@@ -94,15 +94,20 @@
 </ul>
 </li>
 <li><a href="#78-python-集合">7.8 Python 集合</a><ul>
-<li><a href="#781-列表-list">7.8.1 列表 list</a></li>
-<li><a href="#782-列表切片">7.8.2 列表切片</a></li>
-<li><a href="#783-列表-脚本操作符">7.8.3 列表 脚本操作符</a></li>
-<li><a href="#784-列表-函数-方法">7.8.4 列表 函数 &amp; 方法</a></li>
-<li><a href="#784-序列">7.8.4 序列</a></li>
-<li><a href="#785-range">7.8.5 range</a></li>
-<li><a href="#785-元祖">7.8.5 元祖</a></li>
-<li><a href="#786-字典">7.8.6 字典</a></li>
-<li><a href="#787-集合">7.8.7 集合</a></li>
+<li><a href="#781-列表-list">7.8.1 列表 list</a><ul>
+<li><a href="#7811-列表-切片">7.8.1.1 列表 切片</a></li>
+<li><a href="#7812-列表-脚本操作符">7.8.1.2 列表 脚本操作符</a></li>
+<li><a href="#7813-列表-内置函数-方法">7.8.1.3 列表 内置函数 &amp; 方法</a></li>
+</ul>
+</li>
+<li><a href="#782-序列">7.8.2 序列</a></li>
+<li><a href="#783-range">7.8.3 range</a></li>
+<li><a href="#784-元祖">7.8.4 元祖</a></li>
+<li><a href="#785-字典">7.8.5 字典</a><ul>
+<li><a href="#7851-字典-内置函数-方法">7.8.5.1 字典 内置函数 &amp; 方法</a></li>
+</ul>
+</li>
+<li><a href="#786-集合">7.8.6 集合</a></li>
 </ul>
 </li>
 </ul>
@@ -1332,8 +1337,6 @@
 </div></code></pre>
 </blockquote>
 
-
-
 <h3 id="78-python-集合">7.8 Python 集合</h3>
 
 <blockquote>
@@ -1417,9 +1420,7 @@
 </div></code></pre>
 </blockquote>
 
-
-
-<h4 id="782-列表切片">7.8.2 列表切片</h4>
+<h5 id="7811-列表-切片">7.8.1.1 <code>列表 切片</code></h5>
 
 <blockquote>
   <p>切片指从现有列表中获取一个子列表.</p>
@@ -1465,9 +1466,7 @@
 </div></code></pre>
 </blockquote>
 
-
-
-<h4 id="783-列表-脚本操作符">7.8.3 列表 脚本操作符</h4>
+<h5 id="7812-列表-脚本操作符">7.8.1.2 <code>列表 脚本操作符</code></h5>
 
 <blockquote>
   <p>列表对 <code>+</code> 和 <code>*</code> 的操作符与字符串相似, <code>+</code> 号用于组合列表, <code>*</code> 号用于重复列表.</p>
@@ -1518,9 +1517,7 @@
 </div></code></pre>
 </blockquote>
 
-
-
-<h4 id="784-列表-函数-方法">7.8.4 列表 函数 &amp; 方法</h4>
+<h5 id="7813-列表-内置函数-方法">7.8.1.3 <code>列表 内置函数 &amp; 方法</code></h5>
 
 <blockquote>
   <p>方法和函数基本上是一样, 只不过方法必须通过<code>object.方法()</code>的形式调用.</p>
@@ -1536,9 +1533,7 @@
 
 <table><tbody><tr style="font-weight:bold">  <td align="center">序号</td>  <td align="center">方法</td>  <td align="center">描述</td></tr><tr>  <td align="center">1</td>  <td align="center"><code>lists.append(obj)</code></td>  <td align="center">在列表末尾添加新的对象</td></tr><tr>  <td align="center">2</td>  <td align="center"><code>lists.count(obj)</code></td>  <td align="center">统计某个元素在列表中出现的次数</td></tr><tr>  <td align="center">3</td>  <td align="center"><code>lists.extend(seq)</code></td>  <td align="center">在列表末尾一次性追加另一个序列中的多个值（用新列表扩展原来的列表）</td></tr><tr>  <td align="center">4</td>  <td align="center"><code>lists.index(obj)</code></td>  <td align="center">从列表中找出某个值第一个匹配项的索引位置</td></tr><tr>  <td align="center">5</td>  <td align="center"><code>lists.insert(index, obj)</code></td>  <td align="center">将对象插入列表</td></tr><tr>  <td align="center">6</td>  <td align="center"><code>lists.pop([index=-1])</code></td>  <td align="center">移除列表中的一个元素（默认最后一个元素），并且返回该元素的值</td></tr><tr>  <td align="center">7</td>  <td align="center"><code>lists.remove(obj)</code></td>  <td align="center">移除列表中某个值的第一个匹配项</td></tr><tr>  <td align="center">8</td>  <td align="center"><code>lists.reverse()</code></td>  <td align="center">反向列表中元素</td></tr><tr>  <td align="center">9</td>  <td align="center"><code>lists.sort(cmp=None, key=None, reverse=False)</code></td>  <td align="center">对原列表进行排序</td></tr></tbody></table>
 
-
-
-<h4 id="784-序列">7.8.4 序列</h4>
+<h4 id="782-序列">7.8.2 序列</h4>
 
 <blockquote>
   <p>序列是Python中最基本的一种数据结构, 数据结构指计算机中数据存储的方式.</p>
@@ -1552,9 +1547,7 @@
   <p><code>不可变序列</code>[序列中的元素不能改变]: <code>字符串(str)</code> <code>元组(tuple)</code></p>
 </blockquote>
 
-
-
-<h4 id="785-range">7.8.5 range</h4>
+<h4 id="783-range">7.8.3 range</h4>
 
 <blockquote>
   <p>range()是一个函数, 可以用来生成一个自然数的序列.</p>
@@ -1591,9 +1584,7 @@
 </div></code></pre>
 </blockquote>
 
-
-
-<h4 id="785-元祖">7.8.5 元祖</h4>
+<h4 id="784-元祖">7.8.4 元祖</h4>
 
 <blockquote>
   <p>Python的元组与列表类似, 不同之处在于元组的元素不能修改, 即含义为元组是一个不可变的序列.</p>
@@ -1671,7 +1662,27 @@
 </div></code></pre>
 </blockquote>
 
-<h4 id="786-字典">7.8.6 字典</h4>
+<h4 id="785-字典">7.8.5 字典</h4>
+
+<blockquote>
+  <p>字典属于一种新的数据结构称为映射mapping, 字典是另一种可变容器模型且可存储任意类型对象.</p>
+  
+  <p>字典的每个键值<code>key=&gt;value</code>对用冒号<code>:</code>分割, 每个键值对之间用逗号<code>,</code>分割, 整个字典包括在花括号<code>{}</code>中.</p>
+</blockquote>
+
+<h5 id="7851-字典-内置函数-方法">7.8.5.1 <code>字典 内置函数 &amp; 方法</code></h5>
+
+<blockquote>
+  <p>Python中字典包含了以下内置函数: </p>
+</blockquote>
+
+<table><tbody><tr style="font-weight:bold">  <td align="center">序号</td>  <td align="center">函数名</td>  <td align="center">描述</td></tr><tr>  <td align="center">1</td>  <td align="center"><code>cmp(dict1, dict2)</code></td>  <td align="center">比较两个字典元素</td></tr><tr>  <td align="center">2</td>  <td align="center"><code>len(dict)</code></td>  <td align="center">计算字典元素个数，即键的总数</td></tr><tr>  <td align="center">3</td>  <td align="center"><code>str(dict)</code></td>  <td align="center">输出字典可打印的字符串表示</td></tr><tr>  <td align="center">4</td>  <td align="center"><code>type(variable)</code></td>  <td align="center">返回输入的变量类型，如果变量是字典就返回字典类型</td></tr></tbody></table>
+
+<blockquote>
+  <p>Python中字典包含了以下内置方法: </p>
+</blockquote>
+
+<table><tbody><tr style="font-weight:bold">  <td align="center">序号</td>  <td align="center">方法名</td>  <td align="center">描述</td></tr><tr>  <td align="center">1</td>  <td align="center"><code>dict.clear()</code></td>  <td align="center">删除字典内所有元素</td></tr><tr>  <td align="center">2</td>  <td align="center"><code>dict.copy()</code></td>  <td align="center">返回一个字典的浅复制</td></tr><tr>  <td align="center">3</td>  <td align="center"><code>dict.fromkeys(seq[, val])</code></td>  <td align="center">创建一个新字典，以序列 seq 中元素做字典的键，val 为字典所有键对应的初始值</td></tr><tr>  <td align="center">4</td>  <td align="center"><code>dict.get(key, default=None)</code></td>  <td align="center">返回指定键的值，如果值不在字典中返回default值</td></tr><tr>  <td align="center">5</td>  <td align="center"><code>dict.has_key(key)</code></td>  <td align="center">如果键在字典dict里返回true，否则返回false</td></tr><tr>  <td align="center">6</td>  <td align="center"><code>dict.items()</code></td>  <td align="center">以列表返回可遍历的(键, 值) 元组数组</td></tr><tr>  <td align="center">7</td>  <td align="center"><code>dict.keys()</code></td>  <td align="center">以列表返回一个字典所有的键</td></tr><tr>  <td align="center">8</td>  <td align="center"><code>dict.setdefault(key, default=None)</code></td>  <td align="center">和get()类似, 但如果键不存在于字典中，将会添加键并将值设为default</td></tr><tr>  <td align="center">9</td>  <td align="center"><code>dict.update(dict2)</code></td>  <td align="center">把字典dict2的键/值对更新到dict里</td></tr><tr>  <td align="center">10</td>  <td align="center"><code>dict.values()</code></td>  <td align="center">以列表返回字典中的所有值</td></tr><tr>  <td align="center">11</td>  <td align="center"><code>pop(key[,default])</code></td>  <td align="center">删除字典给定键 key 所对应的值，返回值为被删除的值。key值必须给出。 否则，返回default值</td></tr><tr>  <td align="center">12</td>  <td align="center">popitem()</td>  <td align="center">返回并删除字典中的最后一对键和值</td></tr></tbody></table>
 
 <blockquote>
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-python hljs"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
@@ -1692,12 +1703,60 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 09_data_structure_collection.py</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 定义 列表 | Definition list</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 定义 字典 | Definition dictionary</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># 创建 字典 | Create dictionary</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span>d1 = {<span class="hljs-string">'a'</span>: <span class="hljs-string">'A'</span>, <span class="hljs-string">'b'</span>: <span class="hljs-string">'B'</span>, <span class="hljs-string">'c'</span>: <span class="hljs-string">'C'</span>, <span class="hljs-string">'d'</span>: <span class="hljs-string">'D'</span>, <span class="hljs-string">'e'</span>: <span class="hljs-string">'E'</span>, <span class="hljs-string">'f'</span>: <span class="hljs-string">'F'</span>, <span class="hljs-string">'g'</span>: <span class="hljs-string">'G'</span>, <span class="hljs-string">'h'</span>: <span class="hljs-string">'H'</span>}
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>d2 = dict([(<span class="hljs-string">'a'</span>, <span class="hljs-string">'A'</span>), (<span class="hljs-string">'b'</span>, <span class="hljs-string">'B'</span>), (<span class="hljs-string">'c'</span>, <span class="hljs-string">'C'</span>), (<span class="hljs-string">'d'</span>, <span class="hljs-string">'D'</span>), (<span class="hljs-string">'e'</span>, <span class="hljs-string">'E'</span>), (<span class="hljs-string">'f'</span>, <span class="hljs-string">'F'</span>), (<span class="hljs-string">'g'</span>, <span class="hljs-string">'G'</span>), (<span class="hljs-string">'h'</span>, <span class="hljs-string">'H'</span>)])
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span>d3 = {<span class="hljs-string">'j'</span>: <span class="hljs-string">'J'</span>, <span class="hljs-string">'k'</span>: <span class="hljs-string">'K'</span>, <span class="hljs-string">'l'</span>: <span class="hljs-string">'L'</span>}
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-comment"># 获取字典中键值对个数 | Get the number of key-value pairs in the dictionary</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span>print(<span class="hljs-string">'d1_len='</span>, len(d1))
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-comment"># 访问字典中的值 | Accessing values ​​in a dictionary</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>print(<span class="hljs-string">"d1['b']="</span>, d1[<span class="hljs-string">'b'</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><span class="hljs-comment"># 通过方法访问字典中的值 | Accessing values ​​in a dictionary via methods</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>print(<span class="hljs-string">"d1.get('b')="</span>, d1.get(<span class="hljs-string">'b'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>print(<span class="hljs-string">"d1.get('j')="</span>, d1.get(<span class="hljs-string">'j'</span>, <span class="hljs-string">'defaults'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><span class="hljs-comment"># 修改字典 | Modify dictionary</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>d1[<span class="hljs-string">'h'</span>] = <span class="hljs-string">'h'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>d1.setdefault(<span class="hljs-string">'g'</span>, <span class="hljs-string">'G'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>d1.setdefault(<span class="hljs-string">'i'</span>, <span class="hljs-string">'I'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>d1.update(d3)
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>print(<span class="hljs-string">'d1='</span>, d1)
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span><span class="hljs-comment"># 删除字典元素 | Delete dictionary element</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span><span class="hljs-keyword">del</span> d1[<span class="hljs-string">'a'</span>]
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>d1.popitem()
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>d1.pop(<span class="hljs-string">'f'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>print(<span class="hljs-string">"d1.pop('z')"</span>, d1.pop(<span class="hljs-string">'z'</span>, <span class="hljs-string">'defaults'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>print(<span class="hljs-string">'d1='</span>, d1)
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>d2.clear()
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>print(<span class="hljs-string">'d2='</span>, d2)
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span><span class="hljs-comment"># 字典浅复制 | Dictionary shallow copy</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>d4 = {<span class="hljs-string">'m'</span>: <span class="hljs-string">'M'</span>, <span class="hljs-string">'n'</span>: <span class="hljs-string">'N'</span>, <span class="hljs-string">'o'</span>: <span class="hljs-string">'O'</span>, <span class="hljs-string">'p'</span>: <span class="hljs-string">'P'</span>, <span class="hljs-string">'q'</span>: <span class="hljs-string">'Q'</span>}
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span><span class="hljs-comment"># 复制后的对象和原对象是完全独立的, 两个对象之间的变化不会影响</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>d5 = d4.copy()
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>print(<span class="hljs-string">'d4='</span>, d4, <span class="hljs-string">'d4_id='</span>, id(d4))
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>print(<span class="hljs-string">'d5='</span>, d5, <span class="hljs-string">'d5_id='</span>, id(d5))
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span><span class="hljs-comment"># 遍历 字典 | Traversal dictionary</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span><span class="hljs-comment"># 调用keys()方法, 该方法将返回一个序列, 该序列中保存字典中所有的键</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span><span class="hljs-keyword">for</span> k1 <span class="hljs-keyword">in</span> d4.keys():
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span>    print(<span class="hljs-string">'key='</span>, k1, <span class="hljs-string">'value='</span>, d4[k1])
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span><span class="hljs-comment"># 调用values()方法, 该方法将返回一个序列, 该序列中保存字典中所有的值</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span><span class="hljs-keyword">for</span> v1 <span class="hljs-keyword">in</span> d4.values():
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span>    print(<span class="hljs-string">'v1='</span>, v1)
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span><span class="hljs-comment"># 调用items()方法, 该方法会返回一个(字典中所有项)的序列, 序列中包含双值子序列</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span><span class="hljs-keyword">for</span> k2, v2 <span class="hljs-keyword">in</span> d4.items():
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span>    print(<span class="hljs-string">'res='</span>, k2, <span class="hljs-string">'=&gt;'</span>, v2)
 </div></code></pre>
 </blockquote>
 
-<h4 id="787-集合">7.8.7 集合</h4>
+<h4 id="786-集合">7.8.6 集合</h4>
 
 <blockquote>
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-python hljs"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
