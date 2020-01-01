@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2019-12-31)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-1-1)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -1292,6 +1292,10 @@
 
 
 #### 7.8.5 range
+>  range()是一个函数, 可以用来生成一个自然数的序列.
+>  
+>  range语法: 该函数需要三个参数  1.`起始位置(可以省略,默认是0)` | 2.`结束位置` | 3.`步长(可以省略,默认是1)`
+>  
 > ``` python
 > # -*- coding:utf-8 -*-
 > # 
@@ -1311,11 +1315,103 @@
 > # @File : 09_data_structure_collection.py
 > # @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection
 > 
-> # 定义 列表 | Definition list
+> # 定义ragne() 生成自然数的序列函数 | Definition ragne() Sequence > function to generate natural numbers
+> r1 = range(5)
+> r2 = range(0, 10, 2)
 > 
+> print('r1=', r1, list(r1))
+> print('r2=', r2, list(r2))
+> 
+> for x in range(60):
+>     print('r3 =', x)
 > ```
 
 #### 7.8.5 元祖
+> Python的元组与列表类似, 不同之处在于元组的元素不能修改, 即含义为元组是一个不可变的序列.
+> 
+> 元组使用`()`小括号, 列表使用`[]`方括号.
+> 
+> 元组创建很简单, 只需要在括号中添加元素, 并使用逗号隔开即可.
+> 
+> ```元组运算符```: 与字符串一样，元组之间可以使用 + 号和 * 号进行运算。这就意味着他们可以组合和复制，运算后会生成一个新的元组.
+| Python 表达式      |     	结果 |   描述   |
+| :--------: | :--------:| :------: |
+| `len([1, 2, 3])`    |   3 |  长度  |
+| `[1, 2, 3] + [4, 5, 6]`    |   [1, 2, 3, 4, 5, 6] |  组合  |
+| `['Hi!'] * 4`    |   ['Hi!', 'Hi!', 'Hi!', 'Hi!'] |  重复  |
+| `3 in [1, 2, 3]` and `3 not in [1, 2, 3]`    |   True / False |  元素是否存在于列表中  |
+| `for x in [1, 2, 3]: print x,`    |   1 2 3 |  迭代  |
+
+> ```元组索引截取```: 因为元组也是一个序列, 所以可以访问元组中的指定位置的元素, 也可以截取索引中的一段元素.
+| Python 表达式      |     结果 |   描述   |
+| :--------: | :--------:| :------: |
+| `L[2]`    |   	'SPAM!' |  读取第三个元素  |
+| `L[-2]`    |   	'Spam' |  反向读取，读取倒数第二个元素  |
+| `L[1:]`    |   ('Spam', 'SPAM!') |  截取元素  |
+
+> ```元组内置函数```: 
+| 序号      |     函数 |   描述   |
+| :--------: | :--------:| :------: |
+| 1    |   `cmp(list1, list2)` |  比较两个列表的元素  |
+| 2    |   `len(list)` |  列表元素个数  |
+| 3    |   `max(list)` |  返回列表元素最大值  |
+| 4    |   `min(list)` |  返回列表元素最小值  |
+| 5    |   `tuple(seq)` |  将列表转换为元组  |
+
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据结构集合 | Data structure collection
+> # @File : 09_data_structure_collection.py
+> # @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection
+> 
+> # 定义 元祖 | Definition Tuple
+> # 创建元祖 | Create Tuple
+> tuples1 = (1, 2, 3, 4, 5, 6, 7, 8)
+> # 创建 无关闭分隔符 元祖 | Created without closing separator
+> tuples2 = 1, 2, 3, 4, 5, 6, 7, 8
+> 
+> # 定义 元祖解包 将元祖中每一个元素赋值给每一个变量
+> a, b, c, d, e, f, g, h = tuples2
+> a, b, *c = tuples1
+> print('a=', a)
+> print('b=', b)
+> print('c=', c)
+> print('d=', d)
+> print('e=', e)
+> print('f=', f)
+> print('g=', g)
+> print('h=', h)
+> 
+> # 修改元组 | Modify tuple
+> tuples3 = 9, 10, 11
+> tuples4 = tuples2 + tuples3
+> print('tuples4=', tuples4)
+> 
+> # 删除元组 | Delete tuple
+> del tuples4
+> 
+> # 访问元组 | Access tuple
+> print('tuples1[0]=', tuples1[0])
+> print('tuples2[0:5]=', tuples2[0:5])
+> print('tuples2=', tuples2)
+> ```
+
+
+
+#### 7.8.6 字典
 > ``` python
 > # -*- coding:utf-8 -*-
 > # 
@@ -1339,9 +1435,31 @@
 > 
 > ```
 
-#### 7.8.6 字典
-#### 7.8.7 集合
 
+
+#### 7.8.7 集合
+> ``` python
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据结构集合 | Data structure collection
+> # @File : 09_data_structure_collection.py
+> # @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection
+> 
+> # 定义 列表 | Definition list
+> 
+> ```
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 7.9 Python 函数
