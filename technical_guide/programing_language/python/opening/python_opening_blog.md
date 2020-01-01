@@ -1078,14 +1078,14 @@
 > ```
 
 
-### 7.8 Python 集合
+### 7.8 Python 数据结构 集合
 > 序列是Python中最基本的数据结构, 序列中的每个元素都分配一个数字 - 它的位置或索引, 第一个索引是0, 第二个索引是1,依此类推, 列表的索引也可以是负数,如果索引是负数, 则从后向前获取元素, -1表示倒数第一个, -2表示倒数第二个以此类推.
 > 
 > Python有6个序列的内置类型, 但最常见的是列表和元组.
 > 
 > 序列都可以进行的操作包括索引, 切片, 加, 乘, 检查成员.
 
-#### 7.8.1 列表 list
+#### 7.8.1 列表 (list)
 > 列表是最常用的Python数据类型, 它可以作为一个方括号内的逗号分隔值出现.
 > 
 > 列表中可以保存多个有序的数据, 列表是用来存储对象的对象.
@@ -1276,7 +1276,7 @@
 | 9    |   `lists.sort(cmp=None, key=None, reverse=False)` |  对原列表进行排序  |
 
 
-#### 7.8.2 序列
+#### 7.8.2 序列 (seq)
 > 序列是Python中最基本的一种数据结构, 数据结构指计算机中数据存储的方式.
 > 
 > 序列用于保存一组有序的数据, 所有的数据在序列当中都有一个唯一的位置(索引).并且序列中的数据会按照添加的顺序来分配索引.
@@ -1323,7 +1323,7 @@
 >     print('r3 =', x)
 > ```
 
-#### 7.8.4 元祖
+#### 7.8.4 元祖 (tuple)
 > Python的元组与列表类似, 不同之处在于元组的元素不能修改, 即含义为元组是一个不可变的序列.
 > 
 > 元组使用`()`小括号, 列表使用`[]`方括号.
@@ -1407,7 +1407,7 @@
 > ```
 
 
-#### 7.8.5 字典
+#### 7.8.5 字典 (dict)
 > 字典属于一种新的数据结构称为映射mapping, 字典是另一种可变容器模型且可存储任意类型对象.
 > 
 > 字典的每个键值`key=>value`对用冒号`:`分割, 每个键值对之间用逗号`,`分割, 整个字典包括在花括号`{}`中.
@@ -1508,8 +1508,11 @@
 >     print('res=', k2, '=>', v2)
 > ```
 
-
-#### 7.8.6 集合
+#### 7.8.6 集合 (set)
+> 集合和列表非常相似, 集合不同点在于: 
+> 
+> `1.集合中只能存储不可变对象` / `2.集合中存储的对象是无序(不是按照元素的插入顺序保存)` / `3.集合中不能出现重复的元素`
+> 
 > ``` python
 > # -*- coding:utf-8 -*-
 > # 
@@ -1529,9 +1532,91 @@
 > # @File : 09_data_structure_collection.py
 > # @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection
 > 
-> # 定义 列表 | Definition list
+> # 定义 集合 | Definition collection
+> # 创建 集合 | Create collection
+> s1 = set()  # 定义 空set集合 | Definition empty set collection
+> s2 = {'a', 'c', 'd', 'r', 'g', 'p'}
+> s3 = set([1, 2, 5, 6, 8])  # 调用set()方法将列表转换为集合
+> s4 = set([(1, 2, 3, 4), (6, 8, 7, 10)])  # 调用set()方法将元祖转换为集合
+> s5 = set({'a': 'A', 'b': 'B', 'c': 'C'})  # 调用set()方法将字典转换为集合, 但包含字典中的键
+> s6 = set('Python')  # 调用set()方法将字符串转换为集合
 > 
+> print('s1=', s1, '\t s2=', s2)
+> print('s3=', s3, '\t s4=', s4)
+> print('s5=', s5, '\t s6=', s6)
+> 
+> # 获取集合元素个数 | Get the number of collection elements
+> print('len(s5)=', len(s5))
+> 
+> # 检查集合中的指定元素 | Check specified element in collection
+> print('d' in s5)
+> 
+> # 向集合中添加元素 | Add elements to the collection
+> s2.add('k')
+> s2.update(s4)
+> s2.update(s5)
+> s2.update(s6)
+> print('s2=', s2)
+> 
+> # 删除集合 | Remove collections and elements
+> # 随机删除集合元素 | Remove collection elements randomly
+> s5.pop()
+> print('s5=', s5)
+> 
+> # 指定删除集合元素 | Specifies to delete collection elements
+> # s5.remove('a')
+> print('s5=', s5)
+> 
+> # 清空集合所有元素 | Clear all elements of the collection
+> s6.clear()
+> print('s6=', s6)
+> 
+> # 集合 浅复制 | Collection shallow copy
+> s7 = set([1, 2, 5, 6, 8])
+> # 复制后的对象和原对象是完全独立的, 两个对象之间的变化不会影响
+> s8 = s7.copy()
+> print('s7=', s7, 's7_id=', id(s7))
+> print('s8=', s8, 's8_id=', id(s8))
+> 
+> # 集合 运算 | Set operation
+> s9 = {1, 2, 3, 4, 5}
+> s10 = {1, 2, 3, 4, 5, 6, 7}
+> 
+> # `&` 交集运算 | `&` Intersection operation
+> res1 = s9 & s10
+> print('Intersection_Operation=', res1)  # Output result: Intersection_Operation= {3, 4, 5}
+> 
+> # `|` 并集运算 | `|` Union Set Operation
+> res2 = s9 | s10
+> print('Union_Set_Operation=', res2)  # Output result: Union_Set_Operation= {1, 2, 3, 4, 5, 6, 7}
+> 
+> # `-` 差集运算 | `-` Difference Set Operation
+> res3 = s9 - s10
+> print('Difference_Set_Operation=', res3)  # Output result: Difference_Set_Operation= {1, 2}
+> 
+> # `^` 异或集运算 | `^` XOR set operation
+> res4 = s9 ^ s10
+> print('XOR_Set_Operation=', res4)  # Output result: XOR_Set_Operation= {1, 2, 6, 7}
+> 
+> # `<=` 检查集合是否为另一个集合的子集 | `<=` Checks if a collection is a subset of another collection
+> # 如果a集合中的元素全部在b集合中出现, 则a集合称之为b集合的子集, b集合即使a集合的超集
+> collection_subset = s9 <= s10
+> print('Collection_Subset=', collection_subset)  # Output result: Collection_Subset= True
+> 
+> # `<` 检查集合是否为另一个集合的真子集 | `<` Checks if a set is a true subset of another set
+> # 如果超集b中含有子集a中的所有元素, 并且b中包含a中没有的元素则称之b为真超集, a是b的真子集
+> res5 = {1, 2, 3} < {1, 2, 3, 4, 5}
+> print('res5=', res5)  # res5= True
+> 
+> # `>=` 检查集合是否为另一个集合的超集 | `> =` Checks if a collection is a superset of another collection
+> res6 = s9 >= s10
+> print('res6=', res6)  # res6= False
+> 
+> # `>` 检查集合是否为另一个集合的真超集 | `>` Check if a collection is a true superset of another collection
+> res7 = s9 > s10
+> print('res7=', res7)  # res7= False
 > ```
+
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 7.9 Python 函数

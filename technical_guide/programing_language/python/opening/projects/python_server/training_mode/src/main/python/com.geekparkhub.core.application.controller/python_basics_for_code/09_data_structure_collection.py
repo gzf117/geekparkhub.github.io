@@ -97,111 +97,111 @@ print('list3 length=', len(list3))
 
 # 集合 综合演示 | Collection Comprehensive Demo
 # 定义 接收 用户名 组件 | Definition receive username component
-# user_name_input = input('\nPrompt: Please enter UserName....\n')
-# # 对用户输入用户名进行校验 | Verify user input username
-# if user_name_input == 'system' or user_name_input == 'System':
-#     print('‖-------------------------------------------------‖')
-#     print('\n‖ Prompt: Username Verification Successful !', user_name_input, '..... ‖\n')
-#     print('‖-------------------------------------------------‖\n')
-#     # 定义 接收 组件 | Definition receiving component
-#     user_password_input = input('\nPrompt: Please enter Password....\n')
-#     # 对用户输入密码进行校验 | Verify user input password
-#     if user_password_input == 'xxx':
-#         print('‖-------------------------------------------------‖')
-#         print('\n‖ Prompt: Password Verification Successful', user_name_input, '..... ‖\n')
-#         print('‖-------------------------------------------------‖')
-#         # 定义 令牌 组件 | Define the token component
-#         user_token_input = input('\nPrompt: Please enter Token....\n')
-#         # 对用户输入令牌进行校验 | Verify user input token
-#         if user_token_input == '000000':
-#             print('‖-------------------------------------------------‖')
-#             print('\n‖ Prompt: Token Verification Successful, Welcome', user_name_input, '! ‖\n')
-#             print('‖-------------------------------------------------‖\n')
-#             print(f"Prompt: Information Management System（1.Select | 2.Add | 3.Delete | 4.Quit)")
-#             # 定义 选择器 组件 | Define selector component
-#             user_value_input = input('\nPrompt: Please enter options....\n')
-#             # 定义 元数据信息 | Definition Metadata Information
-#             base_data = ['Andrew', 'Christopher', 'Ethan', 'Joshua', 'Matthew', 'Michael', 'William', 'Vivienne', 'Lillian', 'Linda', 'Rebecca']
-#             while True:
-#                 # 根据选项1执行查询数据 | Query data according to option 1
-#                 if user_value_input == '1':
-#                     for select_value in base_data:
-#                         print('Prompt: The query data is as follows:', select_value)
-#                     break
-#                 # 根据选项2执行添加数据 | Add data according to option 2
-#                 elif user_value_input == '2':
-#                     # 定义 添加数据 子组件 | Definition add data subcomponent
-#                     user_add_input = input('\nPrompt: 请输入添加选项.... (1.新增信息 | 2.指定位置新增信息)\n')
-#                     if user_add_input == '1':
-#                         user_new_data_input = input('\nPrompt: 请输入添加内容....\n')
-#                         base_data.append(user_new_data_input)
-#                         print('\nPrompt: 添加成功! 已刷新数据...\n')
-#                         for select_value in base_data:
-#                             print('Prompt: The query data is as follows:', select_value)
-#                         continue
-#                     elif user_add_input == '2':
-#                         # 定义 添加数据 (添加位置)子组件 | Definition Add data (add location) subcomponent
-#                         user_add_position_input = int(input('\nPrompt: 请输入数字插入的位置....\n'))
-#                         # 定义 添加数据 (添加数据)子组件 | Definition Add data (add data) subcomponent
-#                         user_add_data_input = input('\nPrompt: 请输入添加内容....\n')
-#                         base_data.insert(user_add_position_input, user_add_data_input)
-#                         print('\nPrompt: 添加成功! 已刷新数据...\n')
-#                         for select_value in base_data:
-#                             print('Prompt: The query data is as follows:', select_value)
-#                             continue
-#                     else:
-#                         # 输出错误警告 | Output error warning
-#                         print("Warning: Incorrect input, please try again!")
-#                 # 根据选项3执行删除数据 | Delete data according to option 3
-#                 elif user_value_input == '3':
-#                     # 定义 删除数据 子组件 | Definition delete data subcomponent
-#                     user_del_input = input('\nPrompt: 请输入删除选项.... (1.指定删除信息 | 2.清空全部信息)\n')
-#                     if user_del_input == '1':
-#                         user_remove_input = input('\nPrompt: 请输入删除内容....\n')
-#                         if user_remove_input == user_remove_input:
-#                             print('\nPrompt: ', user_remove_input, '删除成功! 已刷新数据...\n')
-#                             base_data.remove(user_remove_input)
-#                             for select_value in base_data:
-#                                 print('Prompt: The query data is as follows:', select_value)
-#                                 continue
-#                         else:
-#                             # 输出错误警告 | Output error warning
-#                             print("Warning: Incorrect input, please try again!")
-#                     elif user_del_input == '2':
-#                         user_del_data_input = input('\nDangerous operation: 请确定清空全部数据, 删除后不可恢复!!!  (y or n)\n')
-#                         if user_del_data_input == 'y':
-#                             print('已删除全部数据!')
-#                             base_data.clear()
-#                             print('\nPrompt: 已刷新数据...\n')
-#                             for select_value in base_data:
-#                                 print('Prompt: The query data is as follows:', select_value)
-#                             continue
-#                         elif user_del_data_input == 'n':
-#                             print('已取消删除全部数据!')
-#                             continue
-#                         else:
-#                             # 输出错误警告 | Output error warning
-#                             print("Warning: Incorrect input, please try again!")
-#                     else:
-#                         # 输出错误警告 | Output error warning
-#                         print("Warning: Incorrect input, please try again!")
-#                 # 根据选项4执行退出程序 | Execute exit procedure according to option 4
-#                 elif user_value_input == '4':
-#                     print('Prompt: Exited the information management system !')
-#                     break
-#                 else:
-#                     # 根据选项无匹配数值则返回程序重新输入
-#                     print("Warning: Incorrect input, please try again!")
-#         else:
-#             # 输出错误警告 | Output error warning
-#             print('\n', user_token_input, 'Warning: Token Error! Please rerun the program')
-#     else:
-#         # 输出错误警告 | Output error warning
-#         print('\n', user_password_input, 'Warning: Password Error!')
-# else:
-#     # 输出错误警告 | Output error warning
-#     print('\n', user_name_input, 'Warning: UserName Error!')
-
+user_name_input = input('\nPrompt: Please enter UserName....\n')
+# 对用户输入用户名进行校验 | Verify user input username
+if user_name_input == 'system' or user_name_input == 'System':
+    print('‖-------------------------------------------------‖')
+    print('\n‖ Prompt: Username Verification Successful !', user_name_input, '..... ‖\n')
+    print('‖-------------------------------------------------‖\n')
+    # 定义 接收 组件 | Definition receiving component
+    user_password_input = input('\nPrompt: Please enter Password....\n')
+    # 对用户输入密码进行校验 | Verify user input password
+    if user_password_input == 'xxx':
+        print('‖-------------------------------------------------‖')
+        print('\n‖ Prompt: Password Verification Successful', user_name_input, '..... ‖\n')
+        print('‖-------------------------------------------------‖')
+        # 定义 令牌 组件 | Define the token component
+        user_token_input = input('\nPrompt: Please enter Token....\n')
+        # 对用户输入令牌进行校验 | Verify user input token
+        if user_token_input == '000000':
+            print('‖-------------------------------------------------‖')
+            print('\n‖ Prompt: Token Verification Successful, Welcome', user_name_input, '! ‖\n')
+            print('‖-------------------------------------------------‖\n')
+            print(f"Prompt: Information Management System（1.Select | 2.Add | 3.Delete | 4.Quit)")
+            # 定义 选择器 组件 | Define selector component
+            user_value_input = input('\nPrompt: Please enter options....\n')
+            # 定义 元数据信息 | Definition Metadata Information
+            base_data = ['Andrew', 'Christopher', 'Ethan', 'Joshua', 'Matthew', 'Michael', 'William', 'Vivienne',
+                         'Lillian', 'Linda', 'Rebecca']
+            while True:
+                # 根据选项1执行查询数据 | Query data according to option 1
+                if user_value_input == '1':
+                    for select_value in base_data:
+                        print('Prompt: The query data is as follows:', select_value)
+                    break
+                # 根据选项2执行添加数据 | Add data according to option 2
+                elif user_value_input == '2':
+                    # 定义 添加数据 子组件 | Definition add data subcomponent
+                    user_add_input = input('\nPrompt: 请输入添加选项.... (1.新增信息 | 2.指定位置新增信息)\n')
+                    if user_add_input == '1':
+                        user_new_data_input = input('\nPrompt: 请输入添加内容....\n')
+                        base_data.append(user_new_data_input)
+                        print('\nPrompt: 添加成功! 已刷新数据...\n')
+                        for select_value in base_data:
+                            print('Prompt: The query data is as follows:', select_value)
+                        continue
+                    elif user_add_input == '2':
+                        # 定义 添加数据 (添加位置)子组件 | Definition Add data (add location) subcomponent
+                        user_add_position_input = int(input('\nPrompt: 请输入数字插入的位置....\n'))
+                        # 定义 添加数据 (添加数据)子组件 | Definition Add data (add data) subcomponent
+                        user_add_data_input = input('\nPrompt: 请输入添加内容....\n')
+                        base_data.insert(user_add_position_input, user_add_data_input)
+                        print('\nPrompt: 添加成功! 已刷新数据...\n')
+                        for select_value in base_data:
+                            print('Prompt: The query data is as follows:', select_value)
+                            continue
+                    else:
+                        # 输出错误警告 | Output error warning
+                        print("Warning: Incorrect input, please try again!")
+                # 根据选项3执行删除数据 | Delete data according to option 3
+                elif user_value_input == '3':
+                    # 定义 删除数据 子组件 | Definition delete data subcomponent
+                    user_del_input = input('\nPrompt: 请输入删除选项.... (1.指定删除信息 | 2.清空全部信息)\n')
+                    if user_del_input == '1':
+                        user_remove_input = input('\nPrompt: 请输入删除内容....\n')
+                        if user_remove_input == user_remove_input:
+                            print('\nPrompt: ', user_remove_input, '删除成功! 已刷新数据...\n')
+                            base_data.remove(user_remove_input)
+                            for select_value in base_data:
+                                print('Prompt: The query data is as follows:', select_value)
+                                continue
+                        else:
+                            # 输出错误警告 | Output error warning
+                            print("Warning: Incorrect input, please try again!")
+                    elif user_del_input == '2':
+                        user_del_data_input = input('\nDangerous operation: 请确定清空全部数据, 删除后不可恢复!!!  (y or n)\n')
+                        if user_del_data_input == 'y':
+                            print('已删除全部数据!')
+                            base_data.clear()
+                            print('\nPrompt: 已刷新数据...\n')
+                            for select_value in base_data:
+                                print('Prompt: The query data is as follows:', select_value)
+                            continue
+                        elif user_del_data_input == 'n':
+                            print('已取消删除全部数据!')
+                            continue
+                        else:
+                            # 输出错误警告 | Output error warning
+                            print("Warning: Incorrect input, please try again!")
+                    else:
+                        # 输出错误警告 | Output error warning
+                        print("Warning: Incorrect input, please try again!")
+                # 根据选项4执行退出程序 | Execute exit procedure according to option 4
+                elif user_value_input == '4':
+                    print('Prompt: Exited the information management system !')
+                    break
+                else:
+                    # 根据选项无匹配数值则返回程序重新输入
+                    print("Warning: Incorrect input, please try again!")
+        else:
+            # 输出错误警告 | Output error warning
+            print('\n', user_token_input, 'Warning: Token Error! Please rerun the program')
+    else:
+        # 输出错误警告 | Output error warning
+        print('\n', user_password_input, 'Warning: Password Error!')
+else:
+    # 输出错误警告 | Output error warning
+    print('\n', user_name_input, 'Warning: UserName Error!')
 
 # 定义ragne() 生成自然数的序列函数 | Definition ragne() Sequence function to generate natural numbers
 r1 = range(5)
@@ -294,3 +294,87 @@ for v1 in d4.values():
 # 调用items()方法, 该方法会返回一个(字典中所有项)的序列, 序列中包含双值子序列
 for k2, v2 in d4.items():
     print('res=', k2, '=>', v2)
+
+# 定义 集合 | Definition collection
+# 创建 集合 | Create collection
+s1 = set()  # 定义 空set集合 | Definition empty set collection
+s2 = {'a', 'c', 'd', 'r', 'g', 'p'}
+s3 = set([1, 2, 5, 6, 8])  # 调用set()方法将列表转换为集合
+s4 = set([(1, 2, 3, 4), (6, 8, 7, 10)])  # 调用set()方法将元祖转换为集合
+s5 = set({'a': 'A', 'b': 'B', 'c': 'C'})  # 调用set()方法将字典转换为集合, 但包含字典中的键
+s6 = set('Python')  # 调用set()方法将字符串转换为集合
+
+print('s1=', s1, '\t s2=', s2)
+print('s3=', s3, '\t s4=', s4)
+print('s5=', s5, '\t s6=', s6)
+
+# 获取集合元素个数 | Get the number of collection elements
+print('len(s5)=', len(s5))
+
+# 检查集合中的指定元素 | Check specified element in collection
+print('d' in s5)
+
+# 向集合中添加元素 | Add elements to the collection
+s2.add('k')
+s2.update(s4)
+s2.update(s5)
+s2.update(s6)
+print('s2=', s2)
+
+# 删除集合 | Remove collections and elements
+# 随机删除集合元素 | Remove collection elements randomly
+s5.pop()
+print('s5=', s5)
+
+# 指定删除集合元素 | Specifies to delete collection elements
+s5.remove('a')
+print('s5=', s5)
+
+# 清空集合所有元素 | Clear all elements of the collection
+s6.clear()
+print('s6=', s6)
+
+# 集合 浅复制 | Collection shallow copy
+s7 = set([1, 2, 5, 6, 8])
+# 复制后的对象和原对象是完全独立的, 两个对象之间的变化不会影响
+s8 = s7.copy()
+print('s7=', s7, 's7_id=', id(s7))
+print('s8=', s8, 's8_id=', id(s8))
+
+# 集合 运算 | Set operation
+s9 = {1, 2, 3, 4, 5}
+s10 = {1, 2, 3, 4, 5, 6, 7}
+
+# `&` 交集运算 | `&` Intersection operation
+res1 = s9 & s10
+print('Intersection_Operation=', res1)  # Output result: Intersection_Operation= {3, 4, 5}
+
+# `|` 并集运算 | `|` Union Set Operation
+res2 = s9 | s10
+print('Union_Set_Operation=', res2)  # Output result: Union_Set_Operation= {1, 2, 3, 4, 5, 6, 7}
+
+# `-` 差集运算 | `-` Difference Set Operation
+res3 = s9 - s10
+print('Difference_Set_Operation=', res3)  # Output result: Difference_Set_Operation= {1, 2}
+
+# `^` 异或集运算 | `^` XOR set operation
+res4 = s9 ^ s10
+print('XOR_Set_Operation=', res4)  # Output result: XOR_Set_Operation= {1, 2, 6, 7}
+
+# `<=` 检查集合是否为另一个集合的子集 | `<=` Checks if a collection is a subset of another collection
+# 如果a集合中的元素全部在b集合中出现, 则a集合称之为b集合的子集, b集合即使a集合的超集
+collection_subset = s9 <= s10
+print('Collection_Subset=', collection_subset)  # Output result: Collection_Subset= True
+
+# `<` 检查集合是否为另一个集合的真子集 | `<` Checks if a set is a true subset of another set
+# 如果超集b中含有子集a中的所有元素, 并且b中包含a中没有的元素则称之b为真超集, a是b的真子集
+res5 = {1, 2, 3} < {1, 2, 3, 4, 5}
+print('res5=', res5)  # res5= True
+
+# `>=` 检查集合是否为另一个集合的超集 | `> =` Checks if a collection is a superset of another collection
+res6 = s9 >= s10
+print('res6=', res6)  # res6= False
+
+# `>` 检查集合是否为另一个集合的真超集 | `>` Check if a collection is a true superset of another collection
+res7 = s9 > s10
+print('res7=', res7)  # res7= False
