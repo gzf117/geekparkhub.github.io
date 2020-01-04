@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4cdd7094-07f3-48f7-b482-148a3a7f8d65" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/10_function.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/09_data_structure_collection.py" beforeDir="false" afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/09_data_structure_collection.py" afterDir="false" />
     </list>
@@ -9,6 +10,20 @@
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
   </component>
   <component name="FavoritesManager">
     <favorites_list name="python_server" />
@@ -47,29 +62,7 @@
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="yiiguxing.plugin.translate" />
   </component>
-  <component name="RunManager" selected="Python.09_data_structure_collection">
-    <configuration name="05_object_structure" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="python_server" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode/05_object_structure.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.10_function">
     <configuration name="06_type_conversion" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="python_server" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -158,13 +151,35 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="10_function" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="python_server" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/10_function.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.10_function" />
         <item itemvalue="Python.09_data_structure_collection" />
         <item itemvalue="Python.08_process_control" />
         <item itemvalue="Python.07_operator" />
         <item itemvalue="Python.06_type_conversion" />
-        <item itemvalue="Python.05_object_structure" />
       </list>
     </recent_temporary>
   </component>
@@ -206,6 +221,10 @@
       <workItem from="1577848519581" duration="6427000" />
       <workItem from="1577866077880" duration="2519000" />
       <workItem from="1577869708395" duration="1589000" />
+      <workItem from="1578139096071" duration="152000" />
+      <workItem from="1578139263739" duration="760000" />
+      <workItem from="1578140073438" duration="79000" />
+      <workItem from="1578140175526" duration="5433000" />
     </task>
     <servers />
   </component>
@@ -221,34 +240,38 @@
       <screen x="0" y="23" width="2560" height="1372" />
     </state>
     <state x="744" y="370" key="#com.intellij.execution.impl.EditConfigurationsDialog/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577202322914" />
-    <state width="2518" height="277" key="GridCell.Tab.0.bottom" timestamp="1577872002017">
-      <screen x="0" y="23" width="2560" height="1372" />
+    <state width="2518" height="224" key="GridCell.Tab.0.bottom" timestamp="1578159362341">
+      <screen x="0" y="23" width="2560" height="1375" />
     </state>
     <state width="2518" height="209" key="GridCell.Tab.0.bottom/-2560.254.2560.1057/0.23.2560.1370@0.23.2560.1370" timestamp="1577631491472" />
     <state width="2518" height="209" key="GridCell.Tab.0.bottom/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577707838045" />
-    <state width="2518" height="277" key="GridCell.Tab.0.bottom/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577872002017" />
-    <state width="2518" height="558" key="GridCell.Tab.0.bottom/-2560.254.2560.1057/0.23.2560.1373@0.23.2560.1373" timestamp="1577773239519" />
-    <state width="2518" height="277" key="GridCell.Tab.0.center" timestamp="1577872002016">
-      <screen x="0" y="23" width="2560" height="1372" />
+    <state width="2518" height="224" key="GridCell.Tab.0.bottom/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1578141803105" />
+    <state width="2518" height="224" key="GridCell.Tab.0.bottom/-2560.254.2560.1057/0.23.2560.1373@0.23.2560.1373" timestamp="1578146475423" />
+    <state width="2518" height="224" key="GridCell.Tab.0.bottom/-2560.254.2560.1057/0.23.2560.1375@0.23.2560.1375" timestamp="1578159362341" />
+    <state width="2518" height="224" key="GridCell.Tab.0.center" timestamp="1578159362340">
+      <screen x="0" y="23" width="2560" height="1375" />
     </state>
     <state width="2518" height="209" key="GridCell.Tab.0.center/-2560.254.2560.1057/0.23.2560.1370@0.23.2560.1370" timestamp="1577631491471" />
     <state width="2518" height="209" key="GridCell.Tab.0.center/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577707838044" />
-    <state width="2518" height="277" key="GridCell.Tab.0.center/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577872002016" />
-    <state width="2518" height="558" key="GridCell.Tab.0.center/-2560.254.2560.1057/0.23.2560.1373@0.23.2560.1373" timestamp="1577773239518" />
-    <state width="2518" height="277" key="GridCell.Tab.0.left" timestamp="1577872002015">
-      <screen x="0" y="23" width="2560" height="1372" />
+    <state width="2518" height="224" key="GridCell.Tab.0.center/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1578141803105" />
+    <state width="2518" height="224" key="GridCell.Tab.0.center/-2560.254.2560.1057/0.23.2560.1373@0.23.2560.1373" timestamp="1578146475422" />
+    <state width="2518" height="224" key="GridCell.Tab.0.center/-2560.254.2560.1057/0.23.2560.1375@0.23.2560.1375" timestamp="1578159362340" />
+    <state width="2518" height="224" key="GridCell.Tab.0.left" timestamp="1578159362340">
+      <screen x="0" y="23" width="2560" height="1375" />
     </state>
     <state width="2518" height="209" key="GridCell.Tab.0.left/-2560.254.2560.1057/0.23.2560.1370@0.23.2560.1370" timestamp="1577631491470" />
     <state width="2518" height="209" key="GridCell.Tab.0.left/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577707838044" />
-    <state width="2518" height="277" key="GridCell.Tab.0.left/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577872002015" />
-    <state width="2518" height="558" key="GridCell.Tab.0.left/-2560.254.2560.1057/0.23.2560.1373@0.23.2560.1373" timestamp="1577773239517" />
-    <state width="2518" height="277" key="GridCell.Tab.0.right" timestamp="1577872002016">
-      <screen x="0" y="23" width="2560" height="1372" />
+    <state width="2518" height="224" key="GridCell.Tab.0.left/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1578141803104" />
+    <state width="2518" height="224" key="GridCell.Tab.0.left/-2560.254.2560.1057/0.23.2560.1373@0.23.2560.1373" timestamp="1578146475422" />
+    <state width="2518" height="224" key="GridCell.Tab.0.left/-2560.254.2560.1057/0.23.2560.1375@0.23.2560.1375" timestamp="1578159362340" />
+    <state width="2518" height="224" key="GridCell.Tab.0.right" timestamp="1578159362341">
+      <screen x="0" y="23" width="2560" height="1375" />
     </state>
     <state width="2518" height="209" key="GridCell.Tab.0.right/-2560.254.2560.1057/0.23.2560.1370@0.23.2560.1370" timestamp="1577631491471" />
     <state width="2518" height="209" key="GridCell.Tab.0.right/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577707838045" />
-    <state width="2518" height="277" key="GridCell.Tab.0.right/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577872002016" />
-    <state width="2518" height="558" key="GridCell.Tab.0.right/-2560.254.2560.1057/0.23.2560.1373@0.23.2560.1373" timestamp="1577773239518" />
+    <state width="2518" height="224" key="GridCell.Tab.0.right/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1578141803105" />
+    <state width="2518" height="224" key="GridCell.Tab.0.right/-2560.254.2560.1057/0.23.2560.1373@0.23.2560.1373" timestamp="1578146475423" />
+    <state width="2518" height="224" key="GridCell.Tab.0.right/-2560.254.2560.1057/0.23.2560.1375@0.23.2560.1375" timestamp="1578159362341" />
     <state width="2518" height="462" key="GridCell.Tab.1.bottom" timestamp="1577377061726">
       <screen x="0" y="23" width="2560" height="1372" />
     </state>
@@ -304,6 +327,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/python_server$01_BasicGrammar.coverage" NAME="01_BasicGrammar Coverage Results" MODIFIED="1577272797248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
+    <SUITE FILE_PATH="coverage/python_server$10_function.coverage" NAME="10_function Coverage Results" MODIFIED="1578159362332" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
     <SUITE FILE_PATH="coverage/python_server$05_object_structure.coverage" NAME="05_object_structure Coverage Results" MODIFIED="1577376102263" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
     <SUITE FILE_PATH="coverage/python_server$06_type_conversion.coverage" NAME="06_type_conversion Coverage Results" MODIFIED="1577451625967" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
     <SUITE FILE_PATH="coverage/python_server$07_operator.coverage" NAME="07_operator Coverage Results" MODIFIED="1577459334926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />

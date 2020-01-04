@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-1-4)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-1-5)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -1617,9 +1617,147 @@
 > print('res7=', res7)  # res7= False
 > ```
 
+### 7.9 Python 函数
+#### 7.9.1 函数 简介
+> 函数是组织好的, 可重复使用的, 用来实现单一或相关联功能的代码段.
+> 
+> 函数能提高应用的模块性和代码的重复利用率, 已经知道Python提供了许多内建函数, 比如print(), 但你也可以自己创建函数, 这被叫做用户自定义函数.
+> 
+> **1.定义一个函数**
+> 
+> 你可以定义一个由自己想要功能的函数, 以下是简单的规则：
+> 
+> 函数代码块以`def`关键词开头, 后接函数标识符名称和圆括号`()`.
+> 
+> 任何传入参数和自变量必须放在圆括号中间, 圆括号之间可以用于定义参数.
+> 
+> 函数的第一行语句可以选择性地使用文档字符串—用于存放函数说明.
+> 
+> 函数内容以冒号起始, 并且缩进.
+> 
+> `return [表达式]` 结束函数, 选择性地返回一个值给调用方, 不带表达式的return相当于返回None.
+> 
+> **2.定义 函数 语法**
+> 默认情况下, 参数值和参数名称是按函数声明中定义的顺序匹配起来的.
+> ``` py
+> def functionname( parameters ):
+>    "函数_文档字符串"
+>    function_suite
+>    return [expression]
+> ```
+> **3.函数定义与调用**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> 
+> # 定义函数 | Defining functions
+> def functions():
+>     print('\nI am a function !\n')
+> 
+> 
+> # 调用函数 | call function
+> functions()
+> ```
+
+#### 7.9.2 函数 参数 & 参数传递方式
+> 在定义函数时可以在函数名后的()中定义数量不等的形参, 多个形参之间使用英文状态下的逗号`,`隔开.
+> 
+> `形参 (形式参数)` : 定义形参就相当于在函数内部声明了变量, 但是并不赋值.
+> 
+> `实参 (实际参数)`: 如果函数定义时指定了形参, 那么在调用函数时也必须传递实参, 实参将会赋值给对应的形参, 简单来，有几个形参就得传几个实参.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> # 定义函数 | Defining functions
+> def functions1(num1, num2, num3=30):
+>     print('res=', num1 * num2 * num3)
+> 
+> 
+> # 调用函数 | call function
+> functions1(10, 20)
+> ```
+> 
+> **实参的传递方式**
+> 
+> `位置参数`: 位置参数就是将对应位置的实参复制给对应位置的形参, 第一个实参赋值给第一个形参, 第二个实参赋值给第二个形参以此类推. 例如: `functions1(10, 20)`
+> 
+> `关键字参数` : 可以不按照形参定义的顺序去传递, 而直接根据参数名去传递参数, 位置参数和关键字参数可以混合使用, 混合使用关键字和位置参数时，必须将位置参数写到前面. 例如: `functions1(10, 20, num3=30)`
+> 
+> **实参类型**
+> 
+>  函数在调用时解析器不会检查实参的类型, 实参可以传递任意类型的对象.
+>  
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> # 定义函数 | Defining functions
+> def functions2(num):
+>     # 在函数中对形参进行重新赋值, 不会影响其他的变量
+>     # a = 20
+>     # num是一个列表尝试修改列表中的元素
+>     # 如果形参执行的是一个对象，可以通过形参去修改对象时, 会影响到所有指向该对象的变量
+>     num[0] = 30
+>     print('num =', num, id(num))
+> 
+> values = 10
+> values = [1, 2, 3]
+> 
+> # 调用函数 | call function
+> functions2(values)
+> functions2(values.copy())
+> functions2(values[:])
+> ```
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-### 7.9 Python 函数
 ### 7.10 Python 面向对象
 ### 7.11 Python 异常处理 & 文件
 

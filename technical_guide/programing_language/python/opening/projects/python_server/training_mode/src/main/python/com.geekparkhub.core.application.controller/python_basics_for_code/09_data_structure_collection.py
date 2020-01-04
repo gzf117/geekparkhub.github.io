@@ -14,7 +14,7 @@
 # @Version : 0.2.5
 # @Program : 数据结构集合 | Data structure collection
 # @File : 09_data_structure_collection.py
-# @Description : Python 基础篇 - 流程控制 | 数据结构集合 | Python Basics-Flow Control | Data Structure Collection
+# @Description : Python 基础篇 - 数据结构集合 | Python Basics-Data Structure Collection
 
 # 定义 列表 | Definition list
 list1 = [1, 2, 3, 4, 5]
