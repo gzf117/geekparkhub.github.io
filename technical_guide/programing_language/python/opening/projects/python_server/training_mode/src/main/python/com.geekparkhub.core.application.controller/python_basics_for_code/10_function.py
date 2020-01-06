@@ -44,6 +44,7 @@ def functions2(num):
     num[0] = 30
     print('num =', num, id(num))
 
+
 values = 10
 values = [1, 2, 3]
 
