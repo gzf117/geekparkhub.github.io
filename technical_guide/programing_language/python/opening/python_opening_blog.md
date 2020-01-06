@@ -1710,13 +1710,13 @@
 > functions1(10, 20)
 > ```
 > 
-> **实参的传递方式**
+> **1.实参的传递方式**
 > 
 > `位置参数`: 位置参数就是将对应位置的实参复制给对应位置的形参, 第一个实参赋值给第一个形参, 第二个实参赋值给第二个形参以此类推. 例如: `functions1(10, 20)`
 > 
 > `关键字参数` : 可以不按照形参定义的顺序去传递, 而直接根据参数名去传递参数, 位置参数和关键字参数可以混合使用, 混合使用关键字和位置参数时，必须将位置参数写到前面. 例如: `functions1(10, 20, num3=30)`
 > 
-> **实参类型**
+> **2.实参类型**
 > 
 >  函数在调用时解析器不会检查实参的类型, 实参可以传递任意类型的对象.
 >  
@@ -1756,6 +1756,136 @@
 > functions2(values.copy())
 > functions2(values[:])
 > ```
+> 
+> **3.装包：不定长参数**
+> 在定义函数时候,可以在形参前添加`*`星号, 这种定义的函数中的形参将会获取所有的实参, 它将所有的实参保存到元祖中.
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> # 定义函数 | Defining functions
+> # `*num1` 将接受所为位置参数并且会将实参统一保存元祖中
+> def functions3(*nums1):
+>     print('nums1=', nums1, 'type=', type(nums1))
+> 
+> 
+> # 调用函数 | call function
+> functions3()
+> functions3(1, 3, 5, 7, 9)
+> 
+> 
+> # 定义函数 | Defining functions
+> def functions4(*nums):
+>     res = 0  # 定义初始化变量, 保存结果集
+>     for data in nums:
+>         res += data
+>     print('res=', res)
+> 
+> 
+> # 调用函数 | call function
+> functions4(6)
+> functions4(6, 6)
+> functions4(6, 6, 6)
+> functions4(6, 6, 6, 6)
+> functions4(6, 6, 6, 6, 6)
+> 
+> 
+> # 定义函数 | Defining functions
+> # `**` 形参可以接收其他关键字参数, 它将这些参数保存在字典中
+> # 字典中keys就是参数的名字, 字典中values就是参数的值
+> def functions5(**nums):
+>     print('**nums=', nums, 'type=', type(nums))
+> 
+> 
+> # 调用函数 | call function
+> functions5()
+> ```
+> 
+> **4.参数解包**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> # 定义函数 | Defining functions
+> def functions6(nums1, nums2, nums3):
+>     print('sum=', nums1 + nums2 + nums3)
+> 
+> 
+> # 定义 元祖 | Definition Tuple
+> tuples = (10, 10, 10)
+> # 调用函数 | call function
+> # 传递参数时,可以在序列类型参数前添加`*`星号,这样称之为参数解包,会自动将序列中的元素依次作为参数传递
+> functions6(*tuples)
+> 
+> 
+> # 定义函数 | Defining functions
+> def functions7(nums1, nums2, nums3):
+>     print('nums1=', nums1, 'nums2=', nums2, 'nums3=', nums3)
+> 
+> 
+> # 定义字典 | Definition Dictionary
+> dictionary = {'nums1': '1', 'nums2': '2', 'nums3': '3'}
+> # 调用函数 | call function
+> # 通过`**`对字典进行解包操作
+> functions7(**dictionary)
+> ```
+
+
+#### 7.9.3 返回值
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> ```
+
+
+
+
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 7.10 Python 面向对象
