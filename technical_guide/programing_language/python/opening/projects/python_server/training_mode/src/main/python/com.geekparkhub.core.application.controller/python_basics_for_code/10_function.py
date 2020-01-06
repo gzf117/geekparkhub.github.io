@@ -114,3 +114,48 @@ dictionary = {'nums1': '1', 'nums2': '2', 'nums3': '3'}
 # 调用函数 | call function
 # 通过`**`对字典进行解包操作
 functions7(**dictionary)
+
+
+# 定义函数 | Defining functions
+def functions8():
+    return 100
+
+
+# 调用函数 | call function
+r = functions8()
+print('r=', r)
+
+
+# 定义函数 | Defining functions
+def functions9(*nums):
+    res = 0  # 定义初始化变量, 保存结果集
+    for data in nums:
+        res += data
+        return res
+
+
+# 调用函数 | call function
+r1 = functions9(10)
+print('r1=', r1 + 10)
+
+# 调用help函数
+help(print)  # 查询print函数使用方法
+help(dict)  # 查询dict函数使用方法
+help(map)  # 查询map函数使用方法
+
+
+def functions10(value1: int, value2: bool, value3: str = 'string') -> int:
+    '''
+    自定义函数 实例
+
+    自定义函数 作用：
+
+    自定义函数 参数：
+        `value1` 作用 / 类型 / 默认值 .....
+        `value2` 作用 / 类型 / 默认值 .....
+        `value3` 作用 / 类型 / 默认值 .....
+    '''
+    print('functions10')
+
+
+help(functions10)  # 查询自定义函数使用方法

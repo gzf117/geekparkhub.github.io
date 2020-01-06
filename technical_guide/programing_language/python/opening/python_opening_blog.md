@@ -1862,6 +1862,113 @@
 
 
 #### 7.9.3 返回值
+> 返回值就是函数执行以后返回的结果.
+> 
+> 可以通过`return`关键字来指定函数的返回值.
+> 
+> 可以之间使用函数返回值,也可以通过变量来接收函数返回值.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> # 定义函数 | Defining functions
+> def functions8():
+>     return 100
+> 
+> 
+> # 调用函数 | call function
+> r = functions8()
+> print('r=', r)
+> 
+> 
+> # 定义函数 | Defining functions
+> def functions9(*nums):
+>     res = 0  # 定义初始化变量, 保存结果集
+>     for data in nums:
+>         res += data
+>         return res
+> 
+> 
+> # 调用函数 | call function
+> r1 = functions9(10)
+> print('r1=', r1 + 10)
+> ```
+
+#### 7.9.4 文档字符串 
+> `help()`是python中的内置函数, 通过此函数可以查询python中的函数使用方法, 也称之为帮助文档.
+> 
+> 使用语法：`help(函数对象)`
+> 
+> 在自定义函数时, 可以在该函数内部定义文档字符串,等价于自定义函数说明.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> # 调用help函数
+> help(print)  # 查询print函数使用方法
+> help(dict)  # 查询dict函数使用方法
+> help(map)  # 查询map函数使用方法
+> 
+> 
+> def functions10(value1: int, value2: bool, value3: str = 'string') -> int:
+>     '''
+>     自定义函数 实例
+> 
+>     自定义函数 作用：
+> 
+>     自定义函数 参数：
+>         `value1` 作用 / 类型 / 默认值 .....
+>         `value2` 作用 / 类型 / 默认值 .....
+>         `value3` 作用 / 类型 / 默认值 .....
+>     '''
+>     print('functions10')
+> 
+> 
+> help(functions10)  # 查询自定义函数使用方法
+> ```
+
+
+#### 7.9.5 作用域 & 命名空间
+> **1.作用域**：作用域是指变量生效的区域.
+> 在python中作用域分为两种：`全局作用域` / `函数作用域`.
+> 
+> 全局作用域：
+> - 全局作用域在
+> 函数作用域
+> 
+> **2.命名空间**：
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -1884,7 +1991,50 @@
 > ```
 
 
+#### 7.9.6 递归
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> ```
 
+#### 7.9.7 高阶函数
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> ```
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒

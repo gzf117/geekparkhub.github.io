@@ -116,6 +116,10 @@
 <li><a href="#791-函数-简介">7.9.1 函数 简介</a></li>
 <li><a href="#792-函数-参数-参数传递方式">7.9.2 函数 参数 &amp; 参数传递方式</a></li>
 <li><a href="#793-返回值">7.9.3 返回值</a></li>
+<li><a href="#794-文档字符串">7.9.4 文档字符串</a></li>
+<li><a href="#795-作用域-命名空间">7.9.5 作用域 &amp; 命名空间</a></li>
+<li><a href="#796-递归">7.9.6 递归</a></li>
+<li><a href="#797-高阶函数">7.9.7 高阶函数</a></li>
 </ul>
 </li>
 </ul>
@@ -2150,6 +2154,167 @@
 </blockquote>
 
 <h4 id="793-返回值">7.9.3 返回值</h4>
+
+<blockquote>
+  <p>返回值就是函数执行以后返回的结果.</p>
+  
+  <p>可以通过<code>return</code>关键字来指定函数的返回值.</p>
+  
+  <p>可以之间使用函数返回值,也可以通过变量来接收函数返回值.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 函数 | function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 10_function.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 函数 | Python Basics-Functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 定义函数 | Defining functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">functions8</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span>    <span class="hljs-keyword">return</span> <span class="hljs-number">100</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-comment"># 调用函数 | call function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span>r = functions8()
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>print(<span class="hljs-string">'r='</span>, r)
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-comment"># 定义函数 | Defining functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">functions9</span><span class="hljs-params">(*nums)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>    res = <span class="hljs-number">0</span>  <span class="hljs-comment"># 定义初始化变量, 保存结果集</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-keyword">for</span> data <span class="hljs-keyword">in</span> nums:
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>        res += data
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>        <span class="hljs-keyword">return</span> res
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><span class="hljs-comment"># 调用函数 | call function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>r1 = functions9(<span class="hljs-number">10</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>print(<span class="hljs-string">'r1='</span>, r1 + <span class="hljs-number">10</span>)
+</div></code></pre>
+</blockquote>
+
+<h4 id="794-文档字符串">7.9.4 文档字符串</h4>
+
+<blockquote>
+  <p><code>help()</code>是python中的内置函数, 通过此函数可以查询python中的函数使用方法, 也称之为帮助文档.</p>
+  
+  <p>使用语法：<code>help(函数对象)</code></p>
+  
+  <p>在自定义函数时, 可以在该函数内部定义文档字符串,等价于自定义函数说明.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 函数 | function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 10_function.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 函数 | Python Basics-Functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 调用help函数</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span>help(<span class="hljs-keyword">print</span>)  <span class="hljs-comment"># 查询print函数使用方法</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span>help(dict)  <span class="hljs-comment"># 查询dict函数使用方法</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>help(map)  <span class="hljs-comment"># 查询map函数使用方法</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">functions10</span><span class="hljs-params">(value1: int, value2: bool, value3: str = <span class="hljs-string">'string'</span>)</span> -&gt; int:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>    <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-string">    自定义函数 实例</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-string"></span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-string">    自定义函数 作用：</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><span class="hljs-string"></span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><span class="hljs-string">    自定义函数 参数：</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><span class="hljs-string">        `value1` 作用 / 类型 / 默认值 .....</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><span class="hljs-string">        `value2` 作用 / 类型 / 默认值 .....</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><span class="hljs-string">        `value3` 作用 / 类型 / 默认值 .....</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><span class="hljs-string">    '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>    print(<span class="hljs-string">'functions10'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>help(functions10)  <span class="hljs-comment"># 查询自定义函数使用方法</span>
+</div></code></pre>
+</blockquote>
+
+<h4 id="795-作用域-命名空间">7.9.5 作用域 &amp; 命名空间</h4>
+
+<blockquote>
+  <p><strong>1.作用域</strong>：作用域是指变量生效的区域. <br>
+  在python中作用域分为两种：<code>全局作用域</code> / <code>函数作用域</code>.</p>
+  
+  <p>全局作用域：</p>
+  
+  <ul><li><p>全局作用域在 <br>
+  函数作用域</p></li>
+  </ul>
+  
+  <p><strong>2.命名空间</strong>：</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 函数 | function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 10_function.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 函数 | Python Basics-Functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div></code></pre>
+</blockquote>
+
+<h4 id="796-递归">7.9.6 递归</h4>
+
+<blockquote>
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 函数 | function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 10_function.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 函数 | Python Basics-Functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div></code></pre>
+</blockquote>
+
+<h4 id="797-高阶函数">7.9.7 高阶函数</h4>
 
 <blockquote>
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
