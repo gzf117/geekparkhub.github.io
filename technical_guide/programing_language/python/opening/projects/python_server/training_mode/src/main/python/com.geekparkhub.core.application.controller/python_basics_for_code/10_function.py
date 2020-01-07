@@ -253,3 +253,33 @@ print('check_palindrome=', check_palindrome('abccba'))
 print('check_palindrome=', check_palindrome('abc'))
 print('check_palindrome=', check_palindrome('123'))
 print('check_palindrome=', check_palindrome('123321'))
+
+# 高阶函数 | higherOrderFunctions
+list_1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+
+# 定义函数 | Defining functions
+def higher_order_function(data):
+    # 定义 检查奇数函数
+    def odd_function(num):
+        if num % 2 == 0:
+            return True
+        return False
+
+    # 定义 检查 列表中大于6的数值函数
+    def more_than_the(num):
+        if num > 6:
+            return True
+        return False
+
+    new_list = []  # 定义 空集合, 用于储存奇数集合
+    for x in data:
+        if odd_function(x):
+            new_list.append(x)
+        if more_than_the(x):
+            new_list.append(x)
+    return new_list
+
+
+# 调用函数 | call function
+print('higher_order_function=', higher_order_function(list_1))

@@ -2094,28 +2094,6 @@
 > # @File : 10_function.py
 > # @Description : Python 基础篇 - 函数 | Python Basics-Functions
 > 
-> ```
-
-#### 7.9.7 高阶函数
-> ``` py
-> # -*- coding:utf-8 -*-
-> # 
-> # Geek International Park | 极客国际公园
-> # GeekParkHub | 极客实验室
-> # Website | https://www.geekparkhub.com
-> # Description | Open · Creation | 
-> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
-> # HackerParkHub | 黑客公园
-> # Website | https://www.hackerparkhub.org
-> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
-> # GeekDeveloper : JEEP-711
-> # 
-> # @Author : system
-> # @Version : 0.2.5
-> # @Program : 函数 | function
-> # @File : 10_function.py
-> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
-> 
 > # 递归 | Recursive
 > # 无穷递归: 如果此函数被调用时,容易导致程序内存溢出,效果类似于死循环
 > def functions13():
@@ -2163,6 +2141,34 @@
 > print('check_palindrome=', check_palindrome('123321'))
 > ```
 
+
+#### 7.9.7 高阶函数
+> 高阶函数英文叫`Higher-order function`.
+> 
+> 高阶函数至少符合两个特点: 接受一个或多个函数作为参数或将函数作为返回值返回的函数就称之为高阶函数.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> ```
+
+#### 7.9.8 匿名函数
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 7.10 Python 面向对象

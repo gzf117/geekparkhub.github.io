@@ -118,6 +118,7 @@
 <li><a href="#795-作用域-命名空间">7.9.5 作用域 &amp; 命名空间</a></li>
 <li><a href="#796-递归">7.9.6 递归</a></li>
 <li><a href="#797-高阶函数">7.9.7 高阶函数</a></li>
+<li><a href="#798-匿名函数">7.9.8 匿名函数</a></li>
 </ul>
 </li>
 </ul>
@@ -2401,30 +2402,6 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 10_function.py</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 函数 | Python Basics-Functions</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
-</div></code></pre>
-</blockquote>
-
-<h4 id="797-高阶函数">7.9.7 高阶函数</h4>
-
-<blockquote>
-  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 函数 | function</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 10_function.py</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 函数 | Python Basics-Functions</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 递归 | Recursive</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># 无穷递归: 如果此函数被调用时,容易导致程序内存溢出,效果类似于死循环</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">functions13</span><span class="hljs-params">()</span>:</span>
@@ -2472,6 +2449,36 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">63.</span>print(<span class="hljs-string">'check_palindrome='</span>, check_palindrome(<span class="hljs-string">'123321'</span>))
 </div></code></pre>
 </blockquote>
+
+<h4 id="797-高阶函数">7.9.7 高阶函数</h4>
+
+<blockquote>
+  <p>高阶函数英文叫<code>Higher-order function</code>.</p>
+  
+  <p>高阶函数至少符合两个特点: 接受一个或多个函数作为参数或将函数作为返回值返回的函数就称之为高阶函数.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 函数 | function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 10_function.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 函数 | Python Basics-Functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div></code></pre>
+</blockquote>
+
+<h4 id="798-匿名函数">7.9.8 匿名函数</h4>
 
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 
