@@ -1964,11 +1964,17 @@
 > **1.作用域**：作用域是指变量生效的区域.
 > 在python中作用域分为两种：`全局作用域` / `函数作用域`.
 > 
-> 全局作用域：
-> - 全局作用域在
-> 函数作用域
+> `全局作用域`：
+> - 全局作用域在程序执行时创建, 在程序执行结束时销毁.
+> - 所有函数意外的区域全都是全局作用域.
+> - 在全局作用域中定义变量，都属于全局变量, 全局变量可以在程序任意位置被访问.
 > 
-> **2.命名空间**：
+> 
+> `函数作用域`：
+> - 函数作用域在函数调用时创建, 在调用结束后销毁.
+> - 函数每一次调用时就会产生一个新的函数作用域.
+> - 在函数作用域中定义变量都是局部变量, 只能在函数内部访问.
+> 
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -1988,6 +1994,75 @@
 > # @File : 10_function.py
 > # @Description : Python 基础篇 - 函数 | Python Basics-Functions
 > 
+> # 作用域 | Scope
+> # 定义变量 用于全局作用域 | Define variables for global scope
+> variables = 10
+> 
+> 
+> # 定义函数 | Defining functions
+> def functions11():
+>     '''
+>     定义变量 用于局部作用域 | Define variables for local scope
+>     `data2`变量定义在函数内部,所以它的作用域就是在函数内部,函数外部无法访问
+>     :return:
+>     '''
+>     data2 = 10
+>     global data1  # 声明`data1`在函数内部变量为全局变量
+>     data1 = 10
+> 
+>     print('函数内部声明全局变量=', data1)
+>     print('函数内部=', data2)
+> 
+> 
+> print('函数外部=', variables)
+> functions11()
+> ```
+> 
+> **2.命名空间**：是指变量存储的位置, 每一个变量都需要存储到指定的命名空间当中.
+> - 每一个作用域都会有自身对应的命名空间.
+> - 全局命名空间用来保存全局变量, 函数命名空间用来保存函数中的变量.
+> - 命名空间实际上就是字典, 是专门用来保存变量的字典.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> # 命名空间 | Namespaces
+> '''
+> `locals()`函数用来获取当前作用域的命名空间, 返回值类型是字典类型
+> 如果在全局作用域中调用此函数则是获取全局命名空间
+> 如果在函数作用域中调用次函数则是获取函数命名空间
+> '''
+> namespaces = locals()
+> print('Namespaces=', namespaces, '\ntype=', type(namespaces))
+> 
+> 
+> # 定义函数 | Defining functions
+> def functions12():
+>     '''
+>     `globals()`函数可以用来在任意位置获取全局命名空间
+>     '''
+>     namespaces1 = globals()
+>     print('Namespaces=', namespaces1, '\ntype=', type(namespaces1))
+> 
+> 
+> # 调用函数 | call function
+> functions12()
 > ```
 
 

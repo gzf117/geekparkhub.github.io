@@ -159,3 +159,50 @@ def functions10(value1: int, value2: bool, value3: str = 'string') -> int:
 
 
 help(functions10)  # 查询自定义函数使用方法
+
+# 作用域 | Scope
+# 定义变量 用于全局作用域 | Define variables for global scope
+variables = 10
+
+
+# 定义函数 | Defining functions
+def functions11():
+    '''
+    定义变量 用于局部作用域 | Define variables for local scope
+    `data2`变量定义在函数内部,所以它的作用域就是在函数内部,函数外部无法访问
+    :return:
+    '''
+    data2 = 10
+    global data1  # 声明`data1`在函数内部变量为全局变量
+    data1 = 10
+
+    print('函数内部声明全局变量=', data1)
+    print('函数内部=', data2)
+
+
+print('函数外部=', variables)
+
+# 调用函数 | call function
+functions11()
+
+# 命名空间 | Namespaces
+'''
+`locals()`函数用来获取当前作用域的命名空间, 返回值类型是字典类型
+如果在全局作用域中调用此函数则是获取全局命名空间
+如果在函数作用域中调用次函数则是获取函数命名空间
+'''
+namespaces = locals()
+print('Namespaces=', namespaces, '\ntype=', type(namespaces))
+
+
+# 定义函数 | Defining functions
+def functions12():
+    '''
+    `globals()`函数可以用来在任意位置获取全局命名空间
+    '''
+    namespaces1 = globals()
+    print('Namespaces=', namespaces1, '\ntype=', type(namespaces1))
+
+
+# 调用函数 | call function
+functions12()
