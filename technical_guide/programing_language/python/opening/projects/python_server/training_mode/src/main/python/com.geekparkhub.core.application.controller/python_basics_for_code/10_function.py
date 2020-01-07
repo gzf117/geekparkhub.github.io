@@ -206,3 +206,50 @@ def functions12():
 
 # 调用函数 | call function
 functions12()
+
+
+# 递归 | Recursive
+# 无穷递归: 如果此函数被调用时,容易导致程序内存溢出,效果类似于死循环
+def functions13():
+    functions13()
+
+
+# 定义 递归函数 | Defining Recursive functions
+# 求任意数字的阶乘 | Find the factorial of any number
+def functions14(num: int) -> int:
+    # 定义 基线条件: 判断num是否等于1, 如果等于1则不再进行递归调用
+    if num == 1:
+        return 1
+    else:
+        # 定义 递归条件：如果num=10则返回num*自身函数(num-1)的阶乘 => 10 * 9!
+        return num * functions14(num - 1)
+
+
+# 求任意数字的幂次方 | Find the power of any number
+def functions15(num1, num2):
+    # 定义 基线条件: 求1幂运算
+    if num2 == 1:
+        return num1
+    else:
+        # 定义 递归条件
+        return num1 * functions15(num1, num2 - 1)
+
+
+# 定义 检查回文 函数 | Definition check palindrome function
+def check_palindrome(string):
+    # 定义 基线条件
+    if len(string) < 2:
+        return True
+    elif string[0] != string[-1]:
+        return False
+    # 定义 递归条件
+    return check_palindrome(string[1: 1])
+
+
+# 调用函数 | call function
+print('functions14=', functions14(10))
+print('functions15=', functions15(8, 6))
+print('check_palindrome=', check_palindrome('abccba'))
+print('check_palindrome=', check_palindrome('abc'))
+print('check_palindrome=', check_palindrome('123'))
+print('check_palindrome=', check_palindrome('123321'))

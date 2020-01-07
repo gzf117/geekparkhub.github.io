@@ -2373,6 +2373,16 @@
 <h4 id="796-递归">7.9.6 递归</h4>
 
 <blockquote>
+  <p>简单的说递归函数就是在函数中自己调用自己.</p>
+  
+  <p>递归是解决问题的一种方式, 整体思想是将一个大的问题分解为若干个小问题,直到问题无法分解时,在去解决问题.</p>
+  
+  <p>递归式函数分为两个条件：</p>
+  
+  <ul><li><p>1.<code>基线条件</code>：问题可以分解为最小问题, 当满足基线条件时,递归就不再执行.</p></li>
+  <li><p>2.<code>递归条件</code>：将问题继续分解条件.</p></li>
+  </ul>
+  
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
@@ -2393,8 +2403,6 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
 </div></code></pre>
 </blockquote>
-
-
 
 <h4 id="797-高阶函数">7.9.7 高阶函数</h4>
 
@@ -2417,10 +2425,53 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 10_function.py</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 函数 | Python Basics-Functions</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 递归 | Recursive</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># 无穷递归: 如果此函数被调用时,容易导致程序内存溢出,效果类似于死循环</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">functions13</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>    functions13()
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-comment"># 定义 递归函数 | Defining Recursive functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><span class="hljs-comment"># 求任意数字的阶乘 | Find the factorial of any number</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">functions14</span><span class="hljs-params">(num: int)</span> -&gt; int:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>    <span class="hljs-comment"># 定义 基线条件: 判断num是否等于1, 如果等于1则不再进行递归调用</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>    <span class="hljs-keyword">if</span> num == <span class="hljs-number">1</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>    <span class="hljs-keyword">else</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>        <span class="hljs-comment"># 定义 递归条件：如果num=10则返回num*自身函数(num-1)的阶乘 =&gt; 10 * 9!</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>        <span class="hljs-keyword">return</span> num * functions14(num - <span class="hljs-number">1</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><span class="hljs-comment"># 求任意数字的幂次方 | Find the power of any number</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">functions15</span><span class="hljs-params">(num1, num2)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>    <span class="hljs-comment"># 定义 基线条件: 求1幂运算</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>    <span class="hljs-keyword">if</span> num2 == <span class="hljs-number">1</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>        <span class="hljs-keyword">return</span> num1
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>    <span class="hljs-keyword">else</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>        <span class="hljs-comment"># 定义 递归条件</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>        <span class="hljs-keyword">return</span> num1 * functions15(num1, num2 - <span class="hljs-number">1</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span><span class="hljs-comment"># 定义 检查回文 函数 | Definition check palindrome function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">check_palindrome</span><span class="hljs-params">(string)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>    <span class="hljs-comment"># 定义 基线条件</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>    <span class="hljs-keyword">if</span> len(string) &lt; <span class="hljs-number">2</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>    <span class="hljs-keyword">elif</span> string[<span class="hljs-number">0</span>] != string[<span class="hljs-number">-1</span>]:
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>        <span class="hljs-keyword">return</span> <span class="hljs-keyword">False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>    <span class="hljs-comment"># 定义 递归条件</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>    <span class="hljs-keyword">return</span> check_palindrome(string[<span class="hljs-number">1</span>: <span class="hljs-number">1</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span><span class="hljs-comment"># 调用函数 | call function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>print(<span class="hljs-string">'functions14='</span>, functions14(<span class="hljs-number">10</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>print(<span class="hljs-string">'functions15='</span>, functions15(<span class="hljs-number">8</span>, <span class="hljs-number">6</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span>print(<span class="hljs-string">'check_palindrome='</span>, check_palindrome(<span class="hljs-string">'abccba'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>print(<span class="hljs-string">'check_palindrome='</span>, check_palindrome(<span class="hljs-string">'abc'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span>print(<span class="hljs-string">'check_palindrome='</span>, check_palindrome(<span class="hljs-string">'123'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span>print(<span class="hljs-string">'check_palindrome='</span>, check_palindrome(<span class="hljs-string">'123321'</span>))
 </div></code></pre>
 </blockquote>
-
-
 
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 
