@@ -2166,9 +2166,123 @@
 > # @File : 10_function.py
 > # @Description : Python 基础篇 - 函数 | Python Basics-Functions
 > 
+> # 高阶函数 | higherOrderFunctions
+> list_1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+> 
+> 
+> # 定义 检查偶数数函数 | Definition check even function
+> def even_function(num):
+>     if num % 2 == 0:
+>         return True
+>     return False
+> 
+> 
+> # 定义 检查奇数函数 | Definition check odd function
+> def odd_function(num):
+>     if num % 3 == 0:
+>         return True
+>     return False
+> 
+> 
+> # 定义 检查 列表中大于6的数值函数
+> def more_than_the(num):
+>     if num > 6:
+>         return True
+>     return False
+> 
+> 
+> # 定义函数 | Defining functions
+> def higher_order_function(functions, data):
+>     new_list = []  # 定义 空集合, 用于储存奇数集合
+>     for x in data:
+>         if functions(x):
+>             new_list.append(x)
+>     return new_list
+> 
+> 
+> # 调用函数 | call function
+> print('higher_order_function=', higher_order_function(even_function, list_1))
+> print('higher_order_function=', list(filter(odd_function, list_1)))
+> print('higher_order_function=', list(filter(more_than_the, list_1)))
 > ```
 
-#### 7.9.8 匿名函数
+
+##### 7.9.7.1 匿名函数
+> 匿名函数`lambda`函数表达式(语法糖).
+> 
+> `lambda`函数表达式专门用来创建一些简单函数, 它是函数创建的又一种方式.
+> 
+> 匿名函数一般都是作为参数使用, 其他地方一般不会使用.
+> 
+> 匿名函数语法: `lambda` 参数列表: 返回值
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> # 匿名函数 | Anonymous function
+> anonymous_function01 = (lambda a, b: a * b)
+> anonymous_function02 = (lambda a, b: a + b)(30, 30)
+> anonymous_function03 = (lambda x: x % 2 == 0)
+> anonymous_function04 = (lambda x: x % 2 != 0)
+> anonymous_function05 = (lambda x: x > 5)
+> 
+> print('anonymous_function01=', anonymous_function01)
+> print('anonymous_function02=', anonymous_function02)
+> print('anonymous_function03=', list(filter(anonymous_function03, list_1)))
+> print('anonymous_function04=', list(filter(anonymous_function04, list_1)))
+> print('anonymous_function05=', list(filter(anonymous_function05, list_1)))
+> ```
+
+
+##### 7.9.7.2 map()函数
+> map()函数可以对可迭代对象中所有元素做指定的操作, 然后将其添加到一个新的对象中返回.
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> # map函数 | map function
+> maps1 = map(lambda x: x + 1, list_1)
+> maps2 = map(lambda x: x ** 2, list_1)
+> print('maps1=', list(maps1))
+> print('maps2=', list(maps2))
+> ```
+
+
+#### 7.9.8 
+
+
+
+
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 7.10 Python 面向对象

@@ -258,28 +258,56 @@ print('check_palindrome=', check_palindrome('123321'))
 list_1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 
+# 定义 检查偶数数函数 | Definition check even function
+def even_function(num):
+    if num % 2 == 0:
+        return True
+    return False
+
+
+# 定义 检查奇数函数 | Definition check odd function
+def odd_function(num):
+    if num % 3 == 0:
+        return True
+    return False
+
+
+# 定义 检查 列表中大于6的数值函数
+def more_than_the(num):
+    if num > 6:
+        return True
+    return False
+
+
 # 定义函数 | Defining functions
-def higher_order_function(data):
-    # 定义 检查奇数函数
-    def odd_function(num):
-        if num % 2 == 0:
-            return True
-        return False
-
-    # 定义 检查 列表中大于6的数值函数
-    def more_than_the(num):
-        if num > 6:
-            return True
-        return False
-
+def higher_order_function(functions, data):
     new_list = []  # 定义 空集合, 用于储存奇数集合
     for x in data:
-        if odd_function(x):
-            new_list.append(x)
-        if more_than_the(x):
+        if functions(x):
             new_list.append(x)
     return new_list
 
 
 # 调用函数 | call function
-print('higher_order_function=', higher_order_function(list_1))
+print('higher_order_function=', higher_order_function(even_function, list_1))
+print('higher_order_function=', list(filter(odd_function, list_1)))
+print('higher_order_function=', list(filter(more_than_the, list_1)))
+
+# 匿名函数 | Anonymous function
+anonymous_function01 = (lambda a, b: a * b)
+anonymous_function02 = (lambda a, b: a + b)(30, 30)
+anonymous_function03 = (lambda x: x % 2 == 0)
+anonymous_function04 = (lambda x: x % 2 != 0)
+anonymous_function05 = (lambda x: x > 5)
+
+print('anonymous_function01=', anonymous_function01)
+print('anonymous_function02=', anonymous_function02)
+print('anonymous_function03=', list(filter(anonymous_function03, list_1)))
+print('anonymous_function04=', list(filter(anonymous_function04, list_1)))
+print('anonymous_function05=', list(filter(anonymous_function05, list_1)))
+
+# map函数 | map function
+maps1 = map(lambda x: x + 1, list_1)
+maps2 = map(lambda x: x ** 2, list_1)
+print('maps1=', list(maps1))
+print('maps2=', list(maps2))
