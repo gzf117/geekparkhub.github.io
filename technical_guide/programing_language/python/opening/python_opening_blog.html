@@ -123,9 +123,9 @@
 <li><a href="#7973-sort方法">7.9.7.3 sort()方法</a></li>
 <li><a href="#7974-sorted函数">7.9.7.4 sorted()函数</a></li>
 <li><a href="#7975-闭包">7.9.7.5 闭包</a></li>
+<li><a href="#7976-装饰器">7.9.7.6 装饰器</a></li>
 </ul>
 </li>
-<li><a href="#798">7.9.8</a></li>
 </ul>
 </li>
 </ul>
@@ -2687,6 +2687,180 @@
 <h5 id="7975-闭包">7.9.7.5 闭包</h5>
 
 <blockquote>
+  <p>将函数作为返回值返回也是一种高阶函数, 称为叫做闭包.</p>
+  
+  <p>通过闭包可以创建一些只有当前函数能访问的变量.</p>
+  
+  <p>可以将一些私有的数据藏到的闭包中.</p>
+  
+  <p>形成闭包的要件： 1.函数嵌套 / 2.将内部函数作为返回值返回 / 3.内部函数必须要使用到外部函数的变量</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 函数 | function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 10_function.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 函数 | Python Basics-Functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 闭包 | Closure</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># 定义函数 | Defining functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">functions16</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">inner</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span>        print(<span class="hljs-string">'inner !'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span>    <span class="hljs-comment"># 将内部函数作为返回值 | Using internal functions as return values</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>    <span class="hljs-keyword">return</span> inner
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-comment"># 调用函数 | call function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>print(<span class="hljs-string">'functions16='</span>, functions16())
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><span class="hljs-string">r16是一个函数, 是调用functions16()后返回的函数</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><span class="hljs-string">此函数是在functions16()内部定义, 并不是全局函数</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><span class="hljs-string">所以此函数总是能访问到functions16()函数内的变量</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>r16 = functions16()
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>r16()
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><span class="hljs-comment"># 定义函数 | Defining functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">functions17</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>    <span class="hljs-comment"># 定义 内部空集合 | Definition Internal empty collection</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>    nums = []
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>    <span class="hljs-comment"># 定义 内部函数 | Definition internal function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">functions18</span><span class="hljs-params">(num)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>        <span class="hljs-comment"># 添加集合元素 | Adding collection elements</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>        nums.append(num)
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>        <span class="hljs-comment"># 计算返回平均值 | Calculate return average</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>        <span class="hljs-keyword">return</span> sum(nums) / len(nums)
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>    <span class="hljs-comment"># 将内部函数作为返回值返回 | Return internal function as return value</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>    <span class="hljs-keyword">return</span> functions18
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span><span class="hljs-comment"># 调用函数 | call function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span><span class="hljs-comment"># 在外部无法访问内部空集合, 只有在内部可以访问, 即表示变量的私有属性</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>functions19 = functions17()
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>print(<span class="hljs-string">'functions19='</span>, functions19(<span class="hljs-number">30</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span>print(<span class="hljs-string">'functions19='</span>, functions19(<span class="hljs-number">3020</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>print(<span class="hljs-string">'functions19='</span>, functions19(<span class="hljs-number">5020</span>))
+</div></code></pre>
+</blockquote>
+
+<h5 id="7976-装饰器">7.9.7.6 装饰器</h5>
+
+<blockquote>
+  <p>装饰器既是在不修改原函数的情况下来对函数进行扩展.</p>
+  
+  <p>只需要根据现有的函数来创建一个新的函数.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 函数 | function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 10_function.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 函数 | Python Basics-Functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 装饰器 | Decorator</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># 定义函数 | Defining functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><span class="hljs-string">当前方式, 已经可以在不修改源代码的情况下对函数进行扩展</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-string">但是当前方式要求在每扩展一个函数就要手动创建一个新的函数实在是太麻烦</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-string">为了解决这个问题, 则创建一个函数, 让这个函数可以自动的帮助生产函数</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">functions20</span><span class="hljs-params">(num1, num2)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>    print(<span class="hljs-string">'res='</span>, num1 * num2)
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><span class="hljs-comment"># 定义函数 | Defining functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">functions21</span><span class="hljs-params">(num1, num2)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>    print(<span class="hljs-string">'Start Calculating...'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>    functions20(num1, num2)
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>    print(<span class="hljs-string">'End Calculation...'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span><span class="hljs-comment"># 调用函数 | call function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>functions21(<span class="hljs-number">5</span>, <span class="hljs-number">6</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span><span class="hljs-comment"># 定义函数 | Defining functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span><span class="hljs-string">此函数用来对其他函数进行扩展, 使其他函数可以在执行前后打印日志信息</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span><span class="hljs-string">函数参数：`fun` 需要扩展的函数对象</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">extension_function</span><span class="hljs-params">(fun)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>    <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span><span class="hljs-string">    定义 装饰器函数 | Define decorator function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><span class="hljs-string"></span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span><span class="hljs-string">    `decorator_function()`函数就称之为装饰器</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span><span class="hljs-string">    通过装饰器可以在不修改原来函数的情况下来对函数进行扩展</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><span class="hljs-string">    在开发中都是通过装饰器来扩展函数的功能</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><span class="hljs-string">    在定义函数时可以通过`@`装饰器来使用指定的装饰器来装饰当前的函数</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span><span class="hljs-string">    可以同时为一个函数指定多个装饰器, 这样函数将会按照从内向外的顺序被装饰</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span><span class="hljs-string"></span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span><span class="hljs-string">    非必填参数 args</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span><span class="hljs-string">    非必填参数 keywords</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span><span class="hljs-string">    :param fun:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span><span class="hljs-string">    :return:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span><span class="hljs-string">    '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">decorator_function</span><span class="hljs-params">(*args, **keywords)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span>        print(<span class="hljs-string">'Begin execution'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span>        <span class="hljs-comment"># 调用被扩展函数 | Call the extended function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span>        result = fun(*args, **keywords)
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span>        print(<span class="hljs-string">'End execution'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">69.</span>        <span class="hljs-comment"># 返回函数执行结果 | Returns the result of function execution</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">70.</span>        <span class="hljs-keyword">return</span> result
+</div><div class="hljs-line"><span class="hljs-comment line-number">71.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">72.</span>    <span class="hljs-comment"># 返回新函数 | Return new function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">73.</span>    <span class="hljs-keyword">return</span> decorator_function
+</div><div class="hljs-line"><span class="hljs-comment line-number">74.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">75.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">76.</span>funs = extension_function(functions20)
+</div><div class="hljs-line"><span class="hljs-comment line-number">77.</span>r18 = funs(<span class="hljs-number">10</span>, <span class="hljs-number">20</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">78.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">79.</span><span class="hljs-comment"># 定义 扩展函数 | Definition extension function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">80.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">81.</span><span class="hljs-string">    在定义函数时可以通过`@`装饰器来使用指定的装饰器来装饰当前的函数</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">82.</span><span class="hljs-string">    可以同时为一个函数指定多个装饰器, 这样函数将会按照从内向外的顺序被装饰</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">83.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">84.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">85.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">86.</span><span class="hljs-comment"># 引入 自定义装饰器 | Introducing custom decorators</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">87.</span><span class="hljs-meta">@extension_function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">88.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hello</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">89.</span>    print(<span class="hljs-string">'Hello World ~'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">90.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">91.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">92.</span><span class="hljs-comment"># 调用函数 | call function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">93.</span>hello()
+</div></code></pre>
+  
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
@@ -2707,10 +2881,6 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
 </div></code></pre>
 </blockquote>
-
-<h4 id="798">7.9.8</h4>
-
-
 
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 
