@@ -331,3 +331,125 @@ list_5 = 'iighrghcjshfjkewhfiwlkgoaggdljhsjdewkfk'
 print('Before sorting: ', list_5)
 print('Sorted: ', sorted(list_5, key=str))
 print('After sorting: ', list_5)
+
+
+# 闭包 | Closure
+# 定义函数 | Defining functions
+def functions16():
+    def inner():
+        print('inner !')
+
+    # 将内部函数作为返回值 | Using internal functions as return values
+    return inner
+
+
+# 调用函数 | call function
+print('functions16=', functions16())
+'''
+r16是一个函数, 是调用functions16()后返回的函数
+此函数是在functions16()内部定义, 并不是全局函数
+所以此函数总是能访问到functions16()函数内的变量
+'''
+r16 = functions16()
+r16()
+
+
+# 定义函数 | Defining functions
+def functions17():
+    # 定义 内部空集合 | Definition Internal empty collection
+    nums = []
+
+    # 定义 内部函数 | Definition internal function
+    def functions18(num):
+        # 添加集合元素 | Adding collection elements
+        nums.append(num)
+        # 计算返回平均值 | Calculate return average
+        return sum(nums) / len(nums)
+
+    # 将内部函数作为返回值返回 | Return internal function as return value
+    return functions18
+
+
+# 调用函数 | call function
+# 在外部无法访问内部空集合, 只有在内部可以访问, 即表示变量的私有属性
+functions19 = functions17()
+print('functions19=', functions19(30))
+print('functions19=', functions19(3020))
+print('functions19=', functions19(5020))
+
+# 装饰器 | Decorator
+# 定义函数 | Defining functions
+'''
+当前方式, 已经可以在不修改源代码的情况下对函数进行扩展
+但是当前方式要求在每扩展一个函数就要手动创建一个新的函数实在是太麻烦
+为了解决这个问题, 则创建一个函数, 让这个函数可以自动的帮助生产函数
+'''
+
+
+def functions20(num1, num2):
+    print('res=', num1 * num2)
+
+
+# 定义函数 | Defining functions
+def functions21(num1, num2):
+    print('Start Calculating...')
+    functions20(num1, num2)
+    print('End Calculation...')
+
+
+# 调用函数 | call function
+functions21(5, 6)
+
+# 定义函数 | Defining functions
+'''
+此函数用来对其他函数进行扩展, 使其他函数可以在执行前后打印日志信息
+函数参数：`fun` 需要扩展的函数对象
+'''
+
+
+def extension_function(fun):
+    '''
+    定义 装饰器函数 | Define decorator function
+
+    `decorator_function()`函数就称之为装饰器
+    通过装饰器可以在不修改原来函数的情况下来对函数进行扩展
+    在开发中都是通过装饰器来扩展函数的功能
+    在定义函数时可以通过`@`装饰器来使用指定的装饰器来装饰当前的函数
+    可以同时为一个函数指定多个装饰器, 这样函数将会按照从内向外的顺序被装饰
+
+    非必填参数 args
+    非必填参数 keywords
+    :param fun:
+    :return:
+    '''
+
+    def decorator_function(*args, **keywords):
+        print('Begin execution')
+        # 调用被扩展函数 | Call the extended function
+        result = fun(*args, **keywords)
+        print('End execution')
+        # 返回函数执行结果 | Returns the result of function execution
+        return result
+
+    # 返回新函数 | Return new function
+    return decorator_function
+
+
+funs = extension_function(functions20)
+r18 = funs(10, 20)
+
+# 定义 扩展函数 | Definition extension function
+'''
+    在定义函数时可以通过`@`装饰器来使用指定的装饰器来装饰当前的函数
+    可以同时为一个函数指定多个装饰器, 这样函数将会按照从内向外的顺序被装饰
+'''
+
+
+# 引入 自定义装饰器 | Introducing custom decorators
+@extension_function
+def hello():
+    print('Hello World ~')
+
+
+# 调用函数 | call function
+hello()
