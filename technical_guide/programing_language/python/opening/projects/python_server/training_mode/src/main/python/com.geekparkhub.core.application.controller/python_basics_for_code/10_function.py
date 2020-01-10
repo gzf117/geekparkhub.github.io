@@ -1,15 +1,15 @@
 # -*- coding:utf-8 -*-
-# 
+#
 # Geek International Park | 极客国际公园
 # GeekParkHub | 极客实验室
 # Website | https://www.geekparkhub.com
-# Description | Open · Creation | 
+# Description | Open · Creation |
 # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
 # HackerParkHub | 黑客公园
 # Website | https://www.hackerparkhub.org
 # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
 # GeekDeveloper : JEEP-711
-# 
+#
 # @Author : system
 # @Version : 0.2.5
 # @Program : 函数 | function
@@ -311,3 +311,23 @@ maps1 = map(lambda x: x + 1, list_1)
 maps2 = map(lambda x: x ** 2, list_1)
 print('maps1=', list(maps1))
 print('maps2=', list(maps2))
+
+# sort方法 | sort method
+list_2 = ['b', 'a', 'd', 'c']
+list_3 = ['bb', 'aaa', 'dddd', 'ccccc']
+list_2.sort()
+# list_3.sort(key=len)
+
+print('sort=', list_2)
+print('sort=', list_3)
+
+# sorted函数 | sorted function
+list_4 = [3, '1', 5, '9', 2, '4', 7, 6]
+print('Before sorting: ', list_4)
+print('Sorted: ', sorted(list_4, key=int))
+print('After sorting: ', list_4)
+
+list_5 = 'iighrghcjshfjkewhfiwlkgoaggdljhsjdewkfk'
+print('Before sorting: ', list_5)
+print('Sorted: ', sorted(list_5, key=str))
+print('After sorting: ', list_5)

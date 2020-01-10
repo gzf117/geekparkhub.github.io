@@ -2277,6 +2277,104 @@
 > print('maps2=', list(maps2))
 > ```
 
+##### 7.9.7.3 sort()方法
+> 该方法用来对列表中的元素进行排序, 默认是直接比较列表中的元素的大小.
+> 
+> 在sort()可以接收一个关键字参数,  key需要一个函数作为参数, 当设置了函数作为参数.
+> 
+> 每次都会以列表中的一个元素作为参数来调用函数, 并且使用函数的返回值来比较元素的大小
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> # sort方法 | sort method
+> list_2 = ['b', 'a', 'd', 'c']
+> list_3 = ['bb', 'aaa', 'dddd', 'ccccc']
+> list_2.sort()
+> # list_3.sort(key=len)
+> 
+> print('sort=', list_2)
+> print('sort=', list_3)
+> ```
+
+##### 7.9.7.4 sorted()函数
+> 此函数和sort()的用法基本一致, 但是sorted()可以对任意的序列进行排序, 并且使用sorted()排序不会影响原来的对象, 而是返回一个新对象.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> # sorted函数 | sorted function
+> list_4 = [3, '1', 5, '9', 2, '4', 7, 6]
+> print('Before sorting: ', list_4)
+> print('Sorted: ', sorted(list_4, key=int))
+> print('After sorting: ', list_4)
+> 
+> list_5 = 'iighrghcjshfjkewhfiwlkgoaggdljhsjdewkfk'
+> print('Before sorting: ', list_5)
+> print('Sorted: ', sorted(list_5, key=str))
+> print('After sorting: ', list_5)
+> ```
+
+
+##### 7.9.7.5 闭包
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 函数 | function
+> # @File : 10_function.py
+> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> 
+> ```
+
+
+
+
+
+
 
 #### 7.9.8 
 
