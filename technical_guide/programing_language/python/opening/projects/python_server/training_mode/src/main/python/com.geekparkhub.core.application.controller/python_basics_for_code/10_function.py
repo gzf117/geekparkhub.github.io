@@ -385,7 +385,7 @@ print('functions19=', functions19(5020))
 为了解决这个问题, 则创建一个函数, 让这个函数可以自动的帮助生产函数
 '''
 
-
+#
 def functions20(num1, num2):
     print('res=', num1 * num2)
 

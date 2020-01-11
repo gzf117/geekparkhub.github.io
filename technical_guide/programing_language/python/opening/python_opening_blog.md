@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-1-11)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-1-12)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -2522,6 +2522,30 @@
 > ```
 
 
+### 7.10 Python 面向对象
+> **1. 什么是对象**
+> - 对象是内存中专门用来存储数据的一块区域.
+> - 对象中可以存放各种数据(比如集合、数据类型、代码)等等.
+> 
+> **2. 对象由三部分组成**
+> - [1] 对象的标识 (id)
+> - [2] 对象的类型 (type)
+> - [3] 对象的值 (value)
+> 
+> **3. 面向对象 (OOP)**
+> - Python是一门面向对象的编程语言.
+> - 所谓的面向对象的语言, 简单理解就是语言中的所有操作都是通过对象来进行的.
+> 
+> **4. 面向过程编程语言** 
+> - 简单理解就是语言中的所有操作都是通过对象来进行的.
+> - 面向过程的编程语言: 面向过程指将程序的逻辑分解为一个一个的步骤,通过对每个步骤的抽象来完成程序.
+> - 面向过程的编程思想: 将一个功能分解为一个一个小的步骤, 通过完成一个一个的小的步骤来完成一个程序, 这种编程方式符合我们人类的思维, 编写起来相对比较简单, 但是以这种方式编码的往往只适用于一个功能, 如果要在实现其他功能, 即使功能相差极小, 也往往要重新编写代码, 所以它可复用性比较低, 并且难于维护.
+> 
+> **5. 面向对象编程语言**
+> - 面向对象的编程语言关注的是对象而不关注过程.
+> - 对于面向对象的语言来说, 一切都是对象.
+> - 面向对象的编程思想: 将所有的功能统一保存到对应的对象中,  要使用某个功能直接找到对应的对象即可, 这种方式的编码比较容易阅读, 并且比较易于维护, 容易复用.
+> 
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -2537,17 +2561,17 @@
 > # 
 > # @Author : system
 > # @Version : 0.2.5
-> # @Program : 函数 | function
-> # @File : 10_function.py
-> # @Description : Python 基础篇 - 函数 | Python Basics-Functions
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
 > 
 > ```
 
 
 
-
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-### 7.10 Python 面向对象
+
+
 ### 7.11 Python 异常处理 & 文件
 
 
