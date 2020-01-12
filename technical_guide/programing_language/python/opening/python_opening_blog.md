@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-1-12)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-1-13)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -2545,6 +2545,35 @@
 > - 面向对象的编程语言关注的是对象而不关注过程.
 > - 对于面向对象的语言来说, 一切都是对象.
 > - 面向对象的编程思想: 将所有的功能统一保存到对应的对象中,  要使用某个功能直接找到对应的对象即可, 这种方式的编码比较容易阅读, 并且比较易于维护, 容易复用.
+
+
+####  7.10.1 类 class
+> **1. 类的简介**
+> 目前所学习的对象都是Python内置的对象.
+> 
+> 但是内置对象并不能满足所有的需求, 所以在开发中经常需要自定义一些对象.
+> 
+> 类就是一个用来创建对象的对象, 对象是类的实例, 如果多个对象是通过一个类创建的, 则称这些对象是一类对象.
+> 
+> **2. 定义 类**
+> 定义 类的语法:
+> ```
+> class 类名([父类]):
+>     代码块
+> ```
+> 类和对象都是对现实生活中的事物或程序中的内容的抽象.
+> 
+> 实际上所有的事物都由两部分构成: 1.数据 (属性) / 2.行为 (方法)
+> 
+> 在类的代码块中可以定义变量和函数.
+> 
+> 变量会成为该类实例的公共属性, 所有的该类实例都可以通过`对象.属性名`形式访问.
+> 
+> 函数会成为该类实例的公共方法, 所有该类实例都可以通过`对象.方法名()`形式调用方法.
+> 
+> ⚠️  注意 ⚠️ : 方法调用时, 第一个参数由解析器自动传递, 所以定义方法时至少要定义一个形参.
+> 
+> 类中定义的属性和方法都是公共的, 任何该类实例都可以访问.
 > 
 > ``` py
 > # -*- coding:utf-8 -*-
@@ -2565,7 +2594,208 @@
 > # @File : 11_object_oriented.py
 > # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
 > 
+> # 定义 实例 | Definition instance
+> # 创建int实例 | Create an int instance
+> nums = int(100)
+> print('nums=', nums, type(nums))
+> 
+> 
+> # 定义 类 | Definition class
+> class CoreClass:
+>     pass
+> 
+> 
+> # 创建对象实例 | Create Object instance
+> cc = CoreClass()
+> cc1 = CoreClass()
+> cc2 = CoreClass()
+> cc3 = CoreClass()
+> print('cc=', cc, type(cc))
+> 
+> # 检查对象实例 | Check object instance
+> res1 = isinstance(cc, CoreClass)
+> res2 = isinstance(cc1, CoreClass)
+> res3 = isinstance(cc2, CoreClass)
+> res4 = isinstance(cc2, int)
+> print('res1=', res1)
+> print('res2=', res2)
+> print('res3=', res3)
+> print('res4=', res4)
+> 
+> # 定义 类 | Definition class
+> class Product():
+>     # 定义 属性 | Definition attribute
+>     product_name = 'Mobile phone'
+>     product_size = '26 * 30'
+>     product_weight = 20
+>     product_colour = 'black'
+> 
+>     # 定义 方法 | Definition method
+>     def product_info(self):
+>         print('product_info')
+> 
+> 
+> # 创建实例 | Create instance
+> p1 = Product()
+> p2 = Product()
+> 
+> # 调用 属性 | Call attribute
+> r1 = p1.product_name
+> r2 = p2.product_colour
+> print('product_name=', r1)
+> print('product_colour=', r2)
+> 
+> # 调用 方法 | Call method
+> p1.product_info()
+> p2.product_info()
 > ```
+> 
+> **3. 属性 & 方法**
+> 当调用一个对象的属性时, 解析器会先在当前对象中寻找是否含有该属性, 如果有则直接返回当前的对象的属性值, 如果没有则去当前对象的类对象中去寻找, 如果有则返回类对象的属性值, 如果类对象中依然没有则报错.
+> 
+> 类对象和实例对象中都可以保存属性&方法.
+> 
+> 如果这个属性&方法是所有的实例共享, 则应该将其保存到类对象中.
+> 如果这个属性&方法是某个实例独有, 则应该保存到实例对象中.
+> 
+> 一般情况下, 属性保存到实例对象中, 而方法需要保存到类对象中.
+> 方法每次被调用时解析器都会自动传递第一个实参, 第一个参数就是调用方法的对象本身, 一般都会将这个参数命名为`self`
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> # 定义 类 | Definition class
+> class Product:
+>     # 定义 属性 | Definition attribute
+>     product_name = 'Mobile phone'
+>     product_size = '26 * 30'
+>     product_weight = 20
+>     product_colour = 'black'
+> 
+>     # 定义 方法 | Definition method
+>     def product_info(self):
+>         print('product_info=', self.product_name, self.product_size, self.product_weight, self.product_colour)
+> 
+> 
+> # 创建实例 | Create instance
+> p1 = Product()
+> p2 = Product()
+> 
+> # 调用 属性 | Call attribute
+> r1 = p1.product_name = 'Apple Mobile phone'
+> r2 = p2.product_colour = 'Gradient color'
+> print('product_name=', r1)
+> print('product_colour=', r2)
+> 
+> # 调用 方法 | Call method
+> p1.product_info()
+> p2.product_info()
+> ```
+> 
+> **5. 对象的初始化**
+> 在类中可以定义一些特殊方法, 以`__`下划线开头, 以`__`下划线结尾的方法称之为特殊方法.
+> 
+> 特殊方法由Python解析器自动调用, 不需要开发者自己调用, 特殊方法将会在特殊的时刻自动调用.
+> 
+> **5.1. 创建对象的流程**
+> ```
+> obj = Object()的运行流程
+> 1. 创建变量
+> 2. 在内存中创建新对象
+> 3. __init__(self)方法执行
+> 4. 将对象id赋值给变量
+> ```
+> init会在对象创建以后立刻执行, init可以用来向新创建的对象中初始化属性, 调用类创建对象时, 类后面的所有参数都会依次传递到init()中.
+> 
+>`类的基本结构`
+> ```
+> class 类名([父类]) :
+> 
+>     公共属性... 
+>     
+>     # 对象初始化方法
+>     def __init__(self, ...):
+>         ...
+> 
+>     # 其他方法    
+>     def method_1(self, ...):
+>         ...
+> 
+>     def method_2(self, ...):
+>         ...
+> 
+>     ...   
+> ```
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> # 对象 初始化 | Object initialization
+> # 定义 类 | Definition class
+> class Commodity:
+>     # 定义初始化方法 | Define the initialization method
+>     def __init__(self, commodity_brand, commodity_model, commodity_colour, commodity_operating_system, commodity_ram,commodity_of_sale, commodity_price):
+>         self.commodity_brand = commodity_brand
+>         self.commodity_model = commodity_model
+>         self.commodity_colour = commodity_colour
+>         self.commodity_operating_system = commodity_operating_system
+>         self.commodity_ram = commodity_ram
+>         self.commodity_of_sale = commodity_of_sale
+>         self.commodity_price = commodity_price
+> 
+>     # 定义 自定义 方法 | Define custom method
+>     def commodity_info(self):
+>         print('Commodity Info:', self.commodity_brand,
+>               self.commodity_model, self.commodity_colour, self.commodity_operating_system, self.commodity_ram,
+>               self.commodity_of_sale, self.commodity_price)
+> 
+> 
+> # 创建实例 | Create instance
+> commodity_1 = Commodity('Apple', 'iphone X', 'White', 'Ios', '256GB', 'Global', '4500RMB')
+> commodity_2 = Commodity('Samsung', 'S3', 'Blue', 'Android', '16GB', 'Global', '900RMB')
+> commodity_3 = Commodity('Huawei', 'P30', 'Black', 'Android', '256GB', 'Global', '5600RMB')
+> 
+> # 调用 方法 | Call method
+> commodity_1.commodity_info()
+> commodity_2.commodity_info()
+> commodity_3.commodity_info()
+> ```
+
+
+
+
+
 
 
 
