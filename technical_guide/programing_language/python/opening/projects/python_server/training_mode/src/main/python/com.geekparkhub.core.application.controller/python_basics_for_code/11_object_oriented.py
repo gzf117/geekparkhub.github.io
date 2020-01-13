@@ -103,3 +103,64 @@ commodity_3 = Commodity('Huawei', 'P30', 'Black', 'Android', '256GB', 'Global', 
 commodity_1.commodity_info()
 commodity_2.commodity_info()
 commodity_3.commodity_info()
+
+
+# 面向对象 (封装) | Object-oriented (encapsulation)
+# 定义 类 | Definition class
+class Animals:
+
+    # 定义 初始化方法 | Definition initialization method
+    def __int__(self, animal_name, animal_type, animal_age, animal_diet):
+        self.hidden_animal_name = animal_name
+        self.hidden_animal_type = animal_type
+        self.hidden_animal_age = animal_age
+        self.hidden_animal_diet = animal_diet
+
+    # 自定义方法 | Custom method
+    def info(self):
+        print('info=', self.hidden_animal_name, self.hidden_animal_type, self.hidden_animal_age,
+              self.hidden_animal_diet)
+
+    '''
+    定义 getter&setter方法 | Define getter & setter method
+    get_xxx()方法 用来获取对象属性
+    set_xxx()方法 用来修改对象属性
+    '''
+
+    def get_animal_name(self):
+        return self.hidden_animal_name
+
+    def set_animal_name(self, animal_name):
+        self.hidden_animal_name = animal_name
+
+    def get_animal_type(self):
+        return self.hidden_animal_type
+
+    def set_animal_type(self, animal_type):
+        self.hidden_animal_type = animal_type
+
+    def get_animal_age(self):
+        return self.hidden_animal_age
+
+    def set_animal_age(self, animal_age):
+        if animal_age > 0:
+            self.hidden_animal_age = animal_age
+
+    def get_animal_diet(self):
+        return self.hidden_animal_diet
+
+    def set_animal_diet(self, animal_diet):
+        self.hidden_animal_diet = animal_diet
+
+
+# 创建实例 | Create instance
+animals_1 = Animals()
+
+# 为实例赋值 | Assigning values ​​to instances
+animals_1.set_animal_name('Cat')
+animals_1.set_animal_type('Feline')
+animals_1.set_animal_age(10)
+animals_1.set_animal_diet('Fish')
+
+# 调用 方法 | Call method
+animals_1.info()

@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-1-13)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-1-14)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -2793,7 +2793,106 @@
 > ```
 
 ####  7.10.2 封装
-####  7.10.3 封装
+> 封装是面向对象的三大特性之一, 封装指的是隐藏对象中一些不希望被外部所访问到的私有属性或方法.
+> 
+> 使用封装确实增加了类的定义的复杂程度, 但是它也确保了数据的安全性.
+> 
+> 将对象的属性名修改为隐藏属性名, 目的是让调用者无法随意修改对象中的属性, 增加getter&setter方法, 很好的控制的属性是否是只读性.
+> 
+> 定义私有属性需要提供`getter`&`setter`方法使外部可以访问到属性.
+> 
+> getter 获取对象中的指定属性 (get_属性名)
+> 
+> setter 用来设置对象的指定属性 (set_属性名)
+> 
+> 如果希望属性是只读则可以直接去掉setter方法, 如果希望属性不能被外部访问则可以直接去掉getter方法.
+> 
+> 提供`getter`&`setter`方法的作用: 
+> 
+> 使用setter方法设置属性, 可以增加数据的验证, 确保数据的值是正确性.
+> 
+> 使用getter方法获取属性, 使用setter方法设置属性, 可以在读取属性和修改属性的同时做一些其他的处理, getter方法还可以表示一些计算的属性.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> # 面向对象 (封装) | Object-oriented (encapsulation)
+> # 定义 类 | Definition class
+> class Animals:
+> 
+>     # 定义 初始化方法 | Definition initialization method
+>     def __int__(self, animal_name, animal_type, animal_age, animal_diet):
+>         self.hidden_animal_name = animal_name
+>         self.hidden_animal_type = animal_type
+>         self.hidden_animal_age = animal_age
+>         self.hidden_animal_diet = animal_diet
+> 
+>     # 自定义方法 | Custom method
+>     def info(self):
+>         print('info=', self.hidden_animal_name, self.hidden_animal_type, self.hidden_animal_age,  self.hidden_animal_diet)
+> 
+>    '''
+>     定义 getter&setter方法 | Define getter & setter method
+>     get_xxx()方法 用来获取对象属性
+>     set_xxx()方法 用来修改对象属性
+>     '''
+> 
+>     def get_animal_name(self):
+>         return self.hidden_animal_name
+> 
+>     def set_animal_name(self, animal_name):
+>         self.hidden_animal_name = animal_name
+> 
+>     def get_animal_type(self):
+>         return self.hidden_animal_type
+> 
+>     def set_animal_type(self, animal_type):
+>         self.hidden_animal_type = animal_type
+> 
+>     def get_animal_age(self):
+>         return self.hidden_animal_age
+> 
+>     def set_animal_age(self, animal_age):
+>         if animal_age > 0:
+>             self.hidden_animal_age = animal_age
+> 
+>     def get_animal_diet(self):
+>         return self.hidden_animal_diet
+> 
+>     def set_animal_diet(self, animal_diet):
+>         self.hidden_animal_diet = animal_diet
+> 
+> 
+> # 创建实例 | Create instance
+> animals_1 = Animals()
+> 
+> # 为实例赋值 | Assigning values ​​to instances
+> animals_1.set_animal_name('Cat')
+> animals_1.set_animal_type('Feline')
+> animals_1.set_animal_age(10)
+> animals_1.set_animal_diet('Fish')
+> 
+> # 调用 方法 | Call method
+> animals_1.info()
+> ```
+
+####  7.10.3 继承
 ####  7.10.4 重写
 ####  7.10.5 多态
 
