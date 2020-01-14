@@ -2993,6 +2993,274 @@
 
 
 ####  7.10.3 继承
+> 继承是面向对象三大特性之一, 通过继承可以使一个类获取到其他类中的属性和方法.
+> 
+> 在定义类时可以在类名后的括号中指定当前类的父类(超类、基类、super), 子类(衍生类)可以直接继承父类中的所有的属性和方法.
+> 
+> 通过继承可以直接让子类获取到父类的方法或属性, 避免编写重复性的代码, 可通过继承来对一个类进行扩展, 并且也符合OCP原则.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> # 继承 | inherit
+> # 定义 父类 | Definition father class
+> class Cars:
+>     # 定义 汽车信息 方法 | Definition car information method
+>     def car_info(self):
+>         print('Car info')
+> 
+> 
+> # 定义子类  继承父类 | Defining subclasses inheriting parent classes
+> class BMW(Cars):
+>     def bmv_info(self):
+>         print('BMW info')
+> 
+> 
+> # 创建实例 | Create instance
+> bmw = BMW()
+> 
+> # 子类实例 调用方法 | Subclass instance call method
+> bmw.car_info()
+> bmw.bmv_info()
+> 
+> # 检查对象实例 | Check object instance
+> instance_res1 = isinstance(bmw, Animals)
+> instance_res2 = isinstance(bmw, Cars)
+> instance_res3 = isinstance(bmw, BMW)
+> 
+> print('instance_res1=', instance_res1)
+> print('instance_res2=', instance_res2)
+> print('instance_res3=', instance_res3)
+> 
+> # issubclass() 检查一个类是否是另一个类的子类
+> issubclass_res1 = issubclass(BMW, Animals)
+> issubclass_res2 = issubclass(Cars, BMW)
+> issubclass_res3 = issubclass(BMW, Cars)
+> issubclass_res4 = issubclass(Cars, object)
+> issubclass_res5 = issubclass(BMW, object)
+> 
+> print('issubclass_res1=', issubclass_res1)
+> print('issubclass_res2=', issubclass_res2)
+> print('issubclass_res3=', issubclass_res3)
+> print('issubclass_res4=', issubclass_res4)
+> print('issubclass_res5=', issubclass_res5)
+> ```
+> 
+> **1. 方法重写**
+> - 如果在子类中如果有和父类同名的方法, 则通过子类实例去调用方法时, 会调用子类的方法而不是父类的方法, 这个特点就称之为方法的重写(覆盖 Override).
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> # 继承 | inherit
+> # 定义 父类 | Definition father class
+> class Cars:
+>     # 定义 汽车信息 方法 | Definition car information method
+>     def car_info(self):
+>         print('Car info')
+> 
+> 
+> # 定义子类  继承父类 | Defining subclasses inheriting parent classes
+> class BMW(Cars):
+>     def bmv_info(self):
+>         print('BMW info')
+> 
+>     # 方法重写 | Method rewrite
+>     def car_info(self):
+>         print('Car info = BMW')
+> 
+> 
+> # 创建实例 | Create instance
+> bmw = BMW()
+> 
+> # 子类实例 调用方法 | Subclass instance call method
+> bmw.car_info()
+> bmw.bmv_info()
+> ```
+> 
+> - 调用方法优先级: 当调用一个对象的方法时, 会优先去当前对象中寻找是否具有该方法, 如果有则直接调用, 如果没有, 则去当前对象的父类中寻找, 如果父类中有则直接调用父类中的方法, 如果没有, 则去父类的父类中寻找, 以此类推直到找到object, 如果依然没有找到则出现异常.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> # 调用 方法优先级 | Call method priority
+> # 定义 父类 A | Definition father class A
+> class A(object):
+>     def cores(self):
+>         print('AAA')
+> 
+> 
+> # 定义 子类 B 继承 父类 A | Definition subclass B inherits parent class A
+> class B(A):
+>     def cores(self):
+>         print('BBB')
+> 
+> 
+> # 定义 子类 C 继承 B | Definition subclass C inherits B
+> class C(B):
+>     def cores(self):
+>         print('CCC')
+> 
+> 
+> # 创建实例 | Create instance
+> c = C()
+> 
+> # 调用方法 | Calling method
+> c.cores()  # OutPut CCC
+> ```
+> 
+> **2. super()**
+> - 希望可以直接调用父类的`__init__`来初始化父类中定义的属性.
+> - `super()`可以用来获取当前类的父类, 并且通过super()返回对象调用父类方法时, 不需要传递self.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> # super()
+> # 定义 父类 | Definition father class
+> class Car:
+>     # 定义 初始化方法 | Definition initialization method
+>     def __int__(self, car_name):
+>         self._car_name = car_name
+> 
+>     # 定义 getter&setter方法 | Define getter & setter method
+>     @property
+>     def car_name(self):
+>         return self._car_name
+> 
+>     @car_name.setter
+>     def car_name(self, car_name):
+>         self._car_name = car_name
+> 
+>     # 定义 汽车信息 方法 | Definition car information method
+>     def car_info(self):
+>         print('Car info')
+> 
+> 
+> # 定义子类  继承父类 | Defining subclasses inheriting parent classes
+> # 父类中的所有方法都会被子类继承, 包括特殊方法, 但也可以重写特殊方法
+> class Bmw(Car):
+>     # 定义 初始化方法 | Definition initialization method
+>     def __init__(self, car_name, car_colour):
+>         self._car_colour = car_colour
+>         # 调用 父类方法 | Call parent method
+>         super().__int__(car_name)
+> 
+>     # 定义 getter&setter方法 | Define getter & setter method
+>     @property
+>     def car_colour(self):
+>         return self._car_colour
+> 
+>     @car_colour.setter
+>     def car_colour(self, car_colour):
+>         self._car_colour = car_colour
+> 
+>     def bmv_info(self):
+>         print('BMW info=', self._car_name, self._car_colour)
+> 
+>     # 方法重写 | Method rewrite
+>     def car_info(self):
+>         print('Car info = BMW')
+> 
+> 
+> # 创建实例 | Create instance
+> bmw = Bmw('bmw M6', 'blue')
+> 
+> # 子类实例 调用方法 | Subclass instance call method
+> bmw.car_info()
+> bmw.bmv_info()
+> ```
+> 
+> **3. 多重继承**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> ```
+
+
+
+
+
 ####  7.10.4 重写
 ####  7.10.5 多态
 

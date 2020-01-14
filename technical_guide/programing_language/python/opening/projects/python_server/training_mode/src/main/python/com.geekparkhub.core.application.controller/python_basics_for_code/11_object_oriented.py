@@ -231,3 +231,132 @@ print('animal_name=', z.animal_name)
 print('animal_type=', z.animal_type)
 print('animal_age=', z.animal_age)
 print('animal_diet=', z.animal_diet)
+
+
+# 继承 | inherit
+# 定义 父类 | Definition father class
+class Cars:
+    # 定义 汽车信息 方法 | Definition car information method
+    def car_info(self):
+        print('Car info')
+
+
+# 定义子类  继承父类 | Defining subclasses inheriting parent classes
+class BMW(Cars):
+    def bmv_info(self):
+        print('BMW info')
+
+    # 方法重写 | Method rewrite
+    def car_info(self):
+        print('Car info = BMW')
+
+
+# 创建实例 | Create instance
+bmw = BMW()
+
+# 子类实例 调用方法 | Subclass instance call method
+bmw.car_info()
+bmw.bmv_info()
+
+# 检查对象实例 | Check object instance
+instance_res1 = isinstance(bmw, Animals)
+instance_res2 = isinstance(bmw, Cars)
+instance_res3 = isinstance(bmw, BMW)
+print('instance_res1=', instance_res1)
+print('instance_res2=', instance_res2)
+print('instance_res3=', instance_res3)
+
+# issubclass() 检查一个类是否是另一个类的子类
+issubclass_res1 = issubclass(BMW, Animals)
+issubclass_res2 = issubclass(Cars, BMW)
+issubclass_res3 = issubclass(BMW, Cars)
+issubclass_res4 = issubclass(Cars, object)
+issubclass_res5 = issubclass(BMW, object)
+print('issubclass_res1=', issubclass_res1)
+print('issubclass_res2=', issubclass_res2)
+print('issubclass_res3=', issubclass_res3)
+print('issubclass_res4=', issubclass_res4)
+print('issubclass_res5=', issubclass_res5)
+
+
+# 调用 方法优先级 | Call method priority
+# 定义 父类 A | Definition father class A
+class A(object):
+    def cores(self):
+        print('AAA')
+
+
+# 定义 子类 B 继承 父类 A | Definition subclass B inherits parent class A
+class B(A):
+    def cores(self):
+        print('BBB')
+
+
+# 定义 子类 C 继承 B | Definition subclass C inherits B
+class C(B):
+    def cores(self):
+        print('CCC')
+
+
+# 创建实例 | Create instance
+c = C()
+
+# 调用方法 | Calling method
+c.cores()  # OutPut CCC
+
+
+# super()
+# 定义 父类 | Definition father class
+class Car:
+    # 定义 初始化方法 | Definition initialization method
+    def __int__(self, car_name):
+        self._car_name = car_name
+
+    # 定义 getter&setter方法 | Define getter & setter method
+    @property
+    def car_name(self):
+        return self._car_name
+
+    @car_name.setter
+    def car_name(self, car_name):
+        self._car_name = car_name
+
+    # 定义 汽车信息 方法 | Definition car information method
+    def car_info(self):
+        print('Car info')
+
+
+# 定义子类  继承父类 | Defining subclasses inheriting parent classes
+# 父类中的所有方法都会被子类继承, 包括特殊方法, 但也可以重写特殊方法
+class Bmw(Car):
+    # 定义 初始化方法 | Definition initialization method
+    def __init__(self, car_name, car_colour):
+        self._car_colour = car_colour
+        # 调用 父类方法 | Call parent method
+        super().__int__(car_name)
+
+    # 定义 getter&setter方法 | Define getter & setter method
+    @property
+    def car_colour(self):
+        return self._car_colour
+
+    @car_colour.setter
+    def car_colour(self, car_colour):
+        self._car_colour = car_colour
+
+    def bmv_info(self):
+        print('BMW info=', self._car_name, self._car_colour)
+
+    # 方法重写 | Method rewrite
+    def car_info(self):
+        print('Car info = BMW')
+
+
+# 创建实例 | Create instance
+bmw = Bmw('bmw M6', 'blue')
+
+# 子类实例 调用方法 | Subclass instance call method
+bmw.car_info()
+bmw.bmv_info()
+
+# 多重继承 | Multiple inheritance
