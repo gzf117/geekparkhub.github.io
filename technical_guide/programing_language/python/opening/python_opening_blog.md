@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-1-14)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-1-15)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -2891,6 +2891,106 @@
 > # 调用 方法 | Call method
 > animals_1.info()
 > ```
+> 
+> 可以为对象的属性使用双下划线开头，`__xxx`
+> 
+> 双下划线开头的属性是对象的隐藏属性, 隐藏属性只能在类的内部访问, 无法通过对象访问, 以`__`开头的属性是隐藏属性, 无法通过对象访问.
+> 
+> 使用`__`开头的属性, 实际上依然可以在外部访问, 一般会将一些私有属性(不希望被外部访问的属性)以`_`单下划线开头.
+> 
+> 一般情况下使用`_`单下划开头的属性都是私有属性, 没有特殊需要应避免修改私有属性.
+> 
+> **1. property装饰器**
+> - property装饰器用来将get方法转换为对象的属性.
+> - 添加为property装饰器后可以像调用属性一样使用get方法.
+> - 使用property装饰的方法, 必须和属性名保持一致性.
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> # Property 装饰器 | property decorator
+> # 定义 类 | Definition class
+> class Zoo():
+>     # 定义 初始化方法 | Definition initialization method
+>     def __int__(self, animal_name, animal_type, animal_age, animal_diet):
+>         self._animal_name = animal_name
+>         self._animal_type = animal_type
+>         self._animal_age = animal_age
+>         self._animal_diet = animal_diet
+> 
+>     # 自定义方法 | Custom method
+>     def info(self):
+>         print('info=', self._animal_name, self._animal_type, self._animal_age, self._animal_diet)
+> 
+>     # 定义 getter&setter方法 | Define getter & setter method
+>     @property
+>     def animal_name(self):
+>         return self._animal_name
+> 
+>     @property
+>     def animal_type(self):
+>         return self._animal_type
+> 
+>     @property
+>     def animal_age(self):
+>         return self._animal_age
+> 
+>     @property
+>     def animal_diet(self):
+>         return self._animal_diet
+> 
+>     @animal_name.setter
+>     def animal_name(self, animal_name):
+>         self._animal_name = animal_name
+> 
+>     @animal_type.setter
+>     def animal_type(self, animal_type):
+>         self._animal_type = animal_type
+> 
+>     @animal_age.setter
+>     def animal_age(self, animal_age):
+>         self._animal_age = animal_age
+> 
+>     @animal_diet.setter
+>     def animal_diet(self, animal_diet):
+>         self._animal_diet = animal_diet
+> 
+> 
+> # 创建实例 | Create instance
+> z = Zoo()
+> 
+> # 为实例赋值 | Assigning values ​​to instances
+> z.animal_name = 'lion'
+> z.animal_type = 'Feline'
+> z.animal_age = 12
+> z.animal_diet = 'Meat'
+> 
+> # 调用 方法 | Call method
+> z.info()
+> 
+> # 调用 属性 | # 调用 属性
+> print('animal_name=', z.animal_name)
+> print('animal_type=', z.animal_type)
+> print('animal_age=', z.animal_age)
+> print('animal_diet=', z.animal_diet)
+> ```
+
+
 
 ####  7.10.3 继承
 ####  7.10.4 重写

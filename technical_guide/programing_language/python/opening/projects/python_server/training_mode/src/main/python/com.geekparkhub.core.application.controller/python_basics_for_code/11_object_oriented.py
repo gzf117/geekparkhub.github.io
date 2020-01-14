@@ -164,3 +164,70 @@ animals_1.set_animal_diet('Fish')
 
 # 调用 方法 | Call method
 animals_1.info()
+
+
+# Property 装饰器 | property decorator
+# 定义 类 | Definition class
+class Zoo():
+    # 定义 初始化方法 | Definition initialization method
+    def __int__(self, animal_name, animal_type, animal_age, animal_diet):
+        self._animal_name = animal_name
+        self._animal_type = animal_type
+        self._animal_age = animal_age
+        self._animal_diet = animal_diet
+
+    # 自定义方法 | Custom method
+    def info(self):
+        print('info=', self._animal_name, self._animal_type, self._animal_age, self._animal_diet)
+
+    # 定义 getter&setter方法 | Define getter & setter method
+    @property
+    def animal_name(self):
+        return self._animal_name
+
+    @property
+    def animal_type(self):
+        return self._animal_type
+
+    @property
+    def animal_age(self):
+        return self._animal_age
+
+    @property
+    def animal_diet(self):
+        return self._animal_diet
+
+    @animal_name.setter
+    def animal_name(self, animal_name):
+        self._animal_name = animal_name
+
+    @animal_type.setter
+    def animal_type(self, animal_type):
+        self._animal_type = animal_type
+
+    @animal_age.setter
+    def animal_age(self, animal_age):
+        self._animal_age = animal_age
+
+    @animal_diet.setter
+    def animal_diet(self, animal_diet):
+        self._animal_diet = animal_diet
+
+
+# 创建实例 | Create instance
+z = Zoo()
+
+# 为实例赋值 | Assigning values ​​to instances
+z.animal_name = 'lion'
+z.animal_type = 'Feline'
+z.animal_age = 12
+z.animal_diet = 'Meat'
+
+# 调用 方法 | Call method
+z.info()
+
+# 调用 属性 | # 调用 属性
+print('animal_name=', z.animal_name)
+print('animal_type=', z.animal_type)
+print('animal_age=', z.animal_age)
+print('animal_diet=', z.animal_diet)
