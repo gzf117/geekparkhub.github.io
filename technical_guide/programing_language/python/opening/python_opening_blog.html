@@ -3368,7 +3368,272 @@
 
 <h4 id="7103-继承">7.10.3 继承</h4>
 
-
+<blockquote>
+  <p>继承是面向对象三大特性之一, 通过继承可以使一个类获取到其他类中的属性和方法.</p>
+  
+  <p>在定义类时可以在类名后的括号中指定当前类的父类(超类、基类、super), 子类(衍生类)可以直接继承父类中的所有的属性和方法.</p>
+  
+  <p>通过继承可以直接让子类获取到父类的方法或属性, 避免编写重复性的代码, 可通过继承来对一个类进行扩展, 并且也符合OCP原则.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 面向对象 | Object-oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 11_object_oriented.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 继承 | inherit</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># 定义 父类 | Definition father class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cars</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>    <span class="hljs-comment"># 定义 汽车信息 方法 | Definition car information method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">car_info</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span>        print(<span class="hljs-string">'Car info'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-comment"># 定义子类  继承父类 | Defining subclasses inheriting parent classes</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BMW</span><span class="hljs-params">(Cars)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">bmv_info</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        print(<span class="hljs-string">'BMW info'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><span class="hljs-comment"># 创建实例 | Create instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>bmw = BMW()
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><span class="hljs-comment"># 子类实例 调用方法 | Subclass instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>bmw.car_info()
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>bmw.bmv_info()
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><span class="hljs-comment"># 检查对象实例 | Check object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>instance_res1 = isinstance(bmw, Animals)
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>instance_res2 = isinstance(bmw, Cars)
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>instance_res3 = isinstance(bmw, BMW)
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>print(<span class="hljs-string">'instance_res1='</span>, instance_res1)
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>print(<span class="hljs-string">'instance_res2='</span>, instance_res2)
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>print(<span class="hljs-string">'instance_res3='</span>, instance_res3)
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span><span class="hljs-comment"># issubclass() 检查一个类是否是另一个类的子类</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>issubclass_res1 = issubclass(BMW, Animals)
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>issubclass_res2 = issubclass(Cars, BMW)
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>issubclass_res3 = issubclass(BMW, Cars)
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>issubclass_res4 = issubclass(Cars, object)
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>issubclass_res5 = issubclass(BMW, object)
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>print(<span class="hljs-string">'issubclass_res1='</span>, issubclass_res1)
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>print(<span class="hljs-string">'issubclass_res2='</span>, issubclass_res2)
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>print(<span class="hljs-string">'issubclass_res3='</span>, issubclass_res3)
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>print(<span class="hljs-string">'issubclass_res4='</span>, issubclass_res4)
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span>print(<span class="hljs-string">'issubclass_res5='</span>, issubclass_res5)
+</div></code></pre>
+  
+  <p><strong>1. 方法重写</strong></p>
+  
+  <ul><li><p>如果在子类中如果有和父类同名的方法, 则通过子类实例去调用方法时, 会调用子类的方法而不是父类的方法, 这个特点就称之为方法的重写(覆盖 Override).</p></li>
+  </ul>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 面向对象 | Object-oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 11_object_oriented.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 继承 | inherit</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># 定义 父类 | Definition father class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cars</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>    <span class="hljs-comment"># 定义 汽车信息 方法 | Definition car information method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">car_info</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span>        print(<span class="hljs-string">'Car info'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-comment"># 定义子类  继承父类 | Defining subclasses inheriting parent classes</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BMW</span><span class="hljs-params">(Cars)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">bmv_info</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        print(<span class="hljs-string">'BMW info'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-comment"># 方法重写 | Method rewrite</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">car_info</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>        print(<span class="hljs-string">'Car info = BMW'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><span class="hljs-comment"># 创建实例 | Create instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>bmw = BMW()
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><span class="hljs-comment"># 子类实例 调用方法 | Subclass instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>bmw.car_info()
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>bmw.bmv_info()
+</div></code></pre>
+  
+  <ul><li><p>调用方法优先级: 当调用一个对象的方法时, 会优先去当前对象中寻找是否具有该方法, 如果有则直接调用, 如果没有, 则去当前对象的父类中寻找, 如果父类中有则直接调用父类中的方法, 如果没有, 则去父类的父类中寻找, 以此类推直到找到object, 如果依然没有找到则出现异常.</p></li>
+  </ul>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 面向对象 | Object-oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 11_object_oriented.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 调用 方法优先级 | Call method priority</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># 定义 父类 A | Definition father class A</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">A</span><span class="hljs-params">(object)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cores</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span>        print(<span class="hljs-string">'AAA'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><span class="hljs-comment"># 定义 子类 B 继承 父类 A | Definition subclass B inherits parent class A</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">B</span><span class="hljs-params">(A)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cores</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>        print(<span class="hljs-string">'BBB'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><span class="hljs-comment"># 定义 子类 C 继承 B | Definition subclass C inherits B</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">C</span><span class="hljs-params">(B)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">cores</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>        print(<span class="hljs-string">'CCC'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span><span class="hljs-comment"># 创建实例 | Create instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>c = C()
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span><span class="hljs-comment"># 调用方法 | Calling method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>c.cores()  <span class="hljs-comment"># OutPut CCC</span>
+</div></code></pre>
+  
+  <p><strong>2. super()</strong></p>
+  
+  <ul><li><p>希望可以直接调用父类的<code>__init__</code>来初始化父类中定义的属性.</p></li>
+  <li><p><code>super()</code>可以用来获取当前类的父类, 并且通过super()返回对象调用父类方法时, 不需要传递self.</p></li>
+  </ul>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 面向对象 | Object-oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 11_object_oriented.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># super()</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># 定义 父类 | Definition father class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Car</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>    <span class="hljs-comment"># 定义 初始化方法 | Definition initialization method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__int__</span><span class="hljs-params">(self, car_name)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span>        self._car_name = car_name
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>    <span class="hljs-comment"># 定义 getter&amp;setter方法 | Define getter &amp; setter method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-meta">    @property</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">car_name</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>        <span class="hljs-keyword">return</span> self._car_name
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><span class="hljs-meta">    @car_name.setter</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">car_name</span><span class="hljs-params">(self, car_name)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>        self._car_name = car_name
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>    <span class="hljs-comment"># 定义 汽车信息 方法 | Definition car information method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">car_info</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>        print(<span class="hljs-string">'Car info'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><span class="hljs-comment"># 定义子类  继承父类 | Defining subclasses inheriting parent classes</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span><span class="hljs-comment"># 父类中的所有方法都会被子类继承, 包括特殊方法, 但也可以重写特殊方法</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Bmw</span><span class="hljs-params">(Car)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>    <span class="hljs-comment"># 定义 初始化方法 | Definition initialization method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, car_name, car_colour)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>        self._car_colour = car_colour
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>        <span class="hljs-comment"># 调用 父类方法 | Call parent method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>        super().__int__(car_name)
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>    <span class="hljs-comment"># 定义 getter&amp;setter方法 | Define getter &amp; setter method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span><span class="hljs-meta">    @property</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">car_colour</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>        <span class="hljs-keyword">return</span> self._car_colour
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><span class="hljs-meta">    @car_colour.setter</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">car_colour</span><span class="hljs-params">(self, car_colour)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>        self._car_colour = car_colour
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">bmv_info</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>        print(<span class="hljs-string">'BMW info='</span>, self._car_name, self._car_colour)
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>    <span class="hljs-comment"># 方法重写 | Method rewrite</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">car_info</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span>        print(<span class="hljs-string">'Car info = BMW'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span><span class="hljs-comment"># 创建实例 | Create instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span>bmw = Bmw(<span class="hljs-string">'bmw M6'</span>, <span class="hljs-string">'blue'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">69.</span><span class="hljs-comment"># 子类实例 调用方法 | Subclass instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">70.</span>bmw.car_info()
+</div><div class="hljs-line"><span class="hljs-comment line-number">71.</span>bmw.bmv_info()
+</div></code></pre>
+  
+  <p><strong>3. 多重继承</strong></p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 面向对象 | Object-oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 11_object_oriented.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div></code></pre>
+</blockquote>
 
 <h4 id="7104-重写">7.10.4 重写</h4>
 
