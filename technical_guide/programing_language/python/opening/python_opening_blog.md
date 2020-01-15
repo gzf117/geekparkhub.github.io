@@ -2545,6 +2545,11 @@
 > - 面向对象的编程语言关注的是对象而不关注过程.
 > - 对于面向对象的语言来说, 一切都是对象.
 > - 面向对象的编程思想: 将所有的功能统一保存到对应的对象中,  要使用某个功能直接找到对应的对象即可, 这种方式的编码比较容易阅读, 并且比较易于维护, 容易复用.
+> 
+> **6. 面向对象 三大特征**
+> - 封装: 确保对象中数据安性
+> - 继承: 保证对象的可扩展性
+> - 多态: 保证程序灵活性
 
 
 ####  7.10.1 类 class
@@ -3236,6 +3241,16 @@
 > ```
 > 
 > **3. 多重继承**
+> 在Python中是支持多重继承, 也就是可以为一个类同时指定多个父类.
+> 
+> 可以在类名的()括号后边添加多个类来实现多重继承.
+> 
+> 多重继承会使子类同时拥有多个父类, 并且会获取到所有父类中的方法.
+> 
+> 在开发中没有特殊的情况, 应该尽量避免使用多重继承, 因为多重继承会让代码过于复杂.
+> 
+> 如果多个父类中有同名的方法, 则会现在第一个父类中寻找, 然后找第二个, 然后找第三个, 前边父类的方法会覆盖后边父类的方法.
+> 
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -3255,16 +3270,120 @@
 > # @File : 11_object_oriented.py
 > # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
 > 
+> # 多重继承 | Multiple inheritance
+> # 定义 父类 D | Definition father class D
+> class D(object):
+>     def cores(self):
+>         print('DDD')
+> 
+> 
+> # 定义 子类E | Definition subclass E 
+> class E(object):
+>     def cores(self):
+>         print('EEE')
+> 
+> 
+> # 定义 子类 F 多重继承 D E | Definition Subclass F Multiple inheritance D E
+> class F(D, E):
+>     def cores(self):
+>         print('FFF')
+> 
+> # 获取当前类的所有父类 | Get all parent classes of the current class
+> print('F.__bases__ =', F.__bases__)
+> 
+> # 创建实例 | Create instance
+> f = F()
+> 
+> # 调用方法 | Calling method
+> f.cores()  # OutPut FFF
 > ```
 
 
-
-
-
-####  7.10.4 重写
-####  7.10.5 多态
-
-
+####  7.10.4 多态
+> 多态是面向对象的三大特征之一, 多态可以理解为对象的多种形态, 一个对象可以以不同的形态呈现.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> # 面向对象 (多态) | Object-oriented (polymorphic)
+> # 定义 类 | Definition class
+> class G:
+>     def __init(self, infos):
+>         self._infos = infos
+> 
+>     @property
+>     def infos(self):
+>         return self._infos
+> 
+>     @infos.setter
+>     def infos(self, infos):
+>         self._infos = infos
+> 
+> 
+> # 定义 类 | Definition class
+> class H:
+>     def __init(self, infos):
+>         self._infos = infos
+> 
+>     @property
+>     def infos(self):
+>         return self._infos
+> 
+>     @infos.setter
+>     def infos(self, infos):
+>         self._infos = infos
+> 
+> 
+> # 定义 类 | Definition class
+> class J:
+>     pass
+> 
+> 
+> # 创建实例 | Create instance
+> g = G()
+> h = H()
+> 
+> # 为实例赋值 | Assigning values ​​to instances
+> h.infos = 'H'
+> g.infos = 'G'
+> 
+> 
+> # 定义 全局函数 | Definition global function
+> def info(obj):
+>     # 定义 类型检查 | Definition type checking
+>     '''
+>     该函数只有obj是G类型的对象时才可以正常使用
+>     其他类型的对象都无法使用该函数, 这个函数就违反了多态,
+>     违反了多态的函数, 只适用于一种类型的对象, 无法处理其他类型对象, 这样导致函数的适应性非常差
+>     注意: isinstance()此函数在开发中一般是不会使用
+>     :param obj:
+>     :return:
+>     '''
+>     if isinstance(obj, G):
+>         print('infos =', obj.infos)
+>     else:
+>         print("no info!")
+> 
+> 
+> # 调用函数 | call function
+> info(g)
+>```
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 

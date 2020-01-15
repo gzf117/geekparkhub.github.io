@@ -233,7 +233,7 @@ print('animal_age=', z.animal_age)
 print('animal_diet=', z.animal_diet)
 
 
-# 继承 | inherit
+# 面向对象 (继承) | Object-oriented (inherited)
 # 定义 父类 | Definition father class
 class Cars:
     # 定义 汽车信息 方法 | Definition car information method
@@ -359,4 +359,95 @@ bmw = Bmw('bmw M6', 'blue')
 bmw.car_info()
 bmw.bmv_info()
 
+
 # 多重继承 | Multiple inheritance
+# 定义 父类 D | Definition father class D
+class D(object):
+    def cores(self):
+        print('DDD')
+
+
+# 定义 子类E  | Definition subclass E
+class E(object):
+    def cores(self):
+        print('EEE')
+
+
+# 定义 子类 F 多重继承 D E | Definition Subclass F Multiple inheritance D E
+class F(D, E):
+    def cores(self):
+        print('FFF')
+
+
+# 获取当前类的所有父类 | Get all parent classes of the current class
+print('F.__bases__ =', F.__bases__)
+
+# 创建实例 | Create instance
+f = F()
+
+# 调用方法 | Calling method
+f.cores()  # OutPut FFF
+
+
+# 面向对象 (多态) | Object-oriented (polymorphic)
+# 定义 类 | Definition class
+class G:
+    def __init(self, infos):
+        self._infos = infos
+
+    @property
+    def infos(self):
+        return self._infos
+
+    @infos.setter
+    def infos(self, infos):
+        self._infos = infos
+
+
+# 定义 类 | Definition class
+class H:
+    def __init(self, infos):
+        self._infos = infos
+
+    @property
+    def infos(self):
+        return self._infos
+
+    @infos.setter
+    def infos(self, infos):
+        self._infos = infos
+
+
+# 定义 类 | Definition class
+class J:
+    pass
+
+
+# 创建实例 | Create instance
+g = G()
+h = H()
+
+# 为实例赋值 | Assigning values ​​to instances
+h.infos = 'H'
+g.infos = 'G'
+
+
+# 定义 全局函数 | Definition global function
+def info(obj):
+    # 定义 类型检查 | Definition type checking
+    '''
+    该函数只有obj是G类型的对象时才可以正常使用
+    其他类型的对象都无法使用该函数, 这个函数就违反了多态,
+    违反了多态的函数, 只适用于一种类型的对象, 无法处理其他类型对象, 这样导致函数的适应性非常差
+    注意: isinstance()此函数在开发中一般是不会使用
+    :param obj:
+    :return:
+    '''
+    if isinstance(obj, G):
+        print('infos =', obj.infos)
+    else:
+        print("no info!")
+
+
+# 调用函数 | call function
+info(g)
