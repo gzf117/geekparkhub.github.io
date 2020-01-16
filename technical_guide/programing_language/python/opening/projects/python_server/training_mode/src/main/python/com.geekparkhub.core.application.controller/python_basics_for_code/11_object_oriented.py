@@ -524,3 +524,27 @@ K.core_info(k)
 
 k.core_staticmethod()
 K.core_staticmethod()
+
+
+# 垃圾回收 | Garbage collection
+# 定义 类 | Definition class
+class U:
+    # 定义 初始化方法 | Definition initialization method
+    def __init__(self):
+        self.info = 'U class'
+
+    # 定义 del特殊方法, 在对象被垃圾回收前调用该方法
+    def __del__(self):
+        print('Delete U class', self)
+
+
+# 创建实例 | Create instance
+u = U()
+
+'''
+垃圾回收 测试 | 将u实例定义为空, 此时只要没有任何变量对U对象进行引用, 则该实例在内存中就变成了垃圾, Python将自动进行垃圾回收
+'''
+a = None
+
+
+# 特殊方法 | Special method

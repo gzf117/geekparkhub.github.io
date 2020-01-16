@@ -3479,6 +3479,110 @@
 > K.core_staticmethod()
 > ```
 
+
+####  7.10.6 垃圾回收
+> 程序运行过程中产生的垃圾会影响到程序运行性能, 所以这些垃圾必须被及时清理.
+> 
+> 在程序中没有被引用的对象就称之为垃圾,当垃圾对象过多以后会影响到程序运行性能.
+> 
+> 所以必须进行及时的垃圾回收, 所谓的垃圾回收就是将垃圾对象从内存中删除.
+> 
+>Python提供了自动的垃圾回收机制, 无需手动删除, 它会自动将没有被引用的对象删除.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> # 垃圾回收 | Garbage collection
+> # 定义 类 | Definition class
+> class U:
+>     # 定义 初始化方法 | Definition initialization method
+>     def __init__(self):
+>         self.info = 'U class'
+> 
+>     # 定义 del特殊方法, 在对象被垃圾回收前调用该方法
+>     def __del__(self):
+>         print('Delete U class', self)
+> 
+> 
+> # 创建实例 | Create instance
+> u = U()
+> 
+> '''
+> 垃圾回收 测试 | 将u实例定义为空, 此时只要没有任何变量对U对象进行引用, 则该实例在> 内存中就变成了垃圾, Python将自动进行垃圾回收
+> '''
+> a = None
+> ```
+
+
+####  7.10.7 特殊方法
+> 
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> ```
+
+
+
+####  7.10.8 模块
+> 
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> ```
+
+
+
+
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 
 
