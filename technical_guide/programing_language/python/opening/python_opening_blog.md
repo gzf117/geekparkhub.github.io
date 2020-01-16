@@ -3385,6 +3385,100 @@
 > info(g)
 >```
 
+
+####  7.10.5 类中的属性 & 方法
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> # 类中的属性 & 方法 | Properties & methods in the class
+> # 定义 类 | Definition class
+> # 类中可以包含: 类属性 / 实例属性 / 类方法 / 实例方法 / 静态方法
+> class K(object):
+>     # 定义 属性 | Definition attribute
+>     '''
+>     可以直接在类中定义的属性就称之为类属性
+>     类属性可以通过类或实例进行访问
+>     但是类属性只能通过类对象进行修改, 无法通过实例对象进行修改
+>     '''
+>     res_sum = 0
+> 
+>     # 定义 初始化方法 | Definition initialization method
+>     '''
+>     通过实例对象添加的属性属于实例属性
+>     实例属性只能通过实例对象进行访问和修改, 类对象无法进行访问修改
+>     '''
+> 
+>     def __init__(self):
+>         self.infos = 'Info'
+> 
+>    # 定义 实例方法 | Defining instance methods
+>     '''
+>     在类中定义以`seIf`为第一个参数的方法称之为实例方法
+>     实例方法在调用时Python解析器会将调用对象作为`seIf`传入
+>     实例方法可以通过实例和类进行调用
+>     当通过实例调用时, 会自动将当前调用对象作为`seIf`传入
+>     当通过对象调用时, 不会自动传入`seIf`, 必须需要开发者手动传递`seIf`
+>     '''
+> 
+>     def core_info(self):
+>         print('core_info=', self)
+> 
+>     # 定义 类方法 | Definition class method
+>     '''
+>     在类内部使用`@classmethod`关键字来修饰类方法
+>     类方法中第一个参数为`cls`, `cls`参数也会被自动传递, `cls`就是当前类的对象
+>     类方法和实例方法的区别在于: 实例方法第一个参数为`seIf`, 而类方法第一个参数为`cls`
+>     类方法可以通过类进行调用, 也可以通过实例进行调用
+>     '''
+> 
+>     @classmethod
+>     def core_cls(cls):
+>         print('core_cls=', cls, cls.res_sum)
+> 
+>     # 定义 静态方法 | Definition static method
+>     '''
+>     在类中使用`@staticmethod`关键字来修饰静态方法
+>     静态方法不需要指定任何的默认参数, 静态方法可以通过类和实例进行调用
+>     静态方法基本上是和当前类无关的方法, 它只是存储当前类中的函数, 该方法一般在开发中作为工具方法使用
+>     '''
+> 
+>     @staticmethod
+>     def core_staticmethod():
+>         print('core_staticmethod')
+> 
+> 
+> # 创建实例 | Create instance
+> k = K()
+> 
+> k.res_sum = 1000
+> K.res_sum = 10000
+> 
+> print('k', k.res_sum)
+> print('K', K.res_sum)
+> 
+> k.core_info()
+> K.core_info(k)
+> 
+> k.core_staticmethod()
+> K.core_staticmethod()
+> ```
+
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 
 
