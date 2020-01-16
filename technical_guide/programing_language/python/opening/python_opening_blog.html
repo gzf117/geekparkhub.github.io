@@ -133,6 +133,10 @@
 <li><a href="#7102-封装">7.10.2 封装</a></li>
 <li><a href="#7103-继承">7.10.3 继承</a></li>
 <li><a href="#7104-多态">7.10.4 多态</a></li>
+<li><a href="#7105-类中的属性-方法">7.10.5 类中的属性 &amp; 方法</a></li>
+<li><a href="#7106-垃圾回收">7.10.6 垃圾回收</a></li>
+<li><a href="#7107-特殊方法">7.10.7 特殊方法</a></li>
+<li><a href="#7108-模块">7.10.8 模块</a></li>
 </ul>
 </li>
 </ul>
@@ -3769,6 +3773,200 @@
 </blockquote>
 
 
+
+<h4 id="7105-类中的属性-方法">7.10.5 类中的属性 &amp; 方法</h4>
+
+<blockquote>
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 面向对象 | Object-oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 11_object_oriented.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 类中的属性 &amp; 方法 | Properties &amp; methods in the class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># 定义 类 | Definition class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-comment"># 类中可以包含: 类属性 / 实例属性 / 类方法 / 实例方法 / 静态方法</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">K</span><span class="hljs-params">(object)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span>    <span class="hljs-comment"># 定义 属性 | Definition attribute</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span>    <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-string">    可以直接在类中定义的属性就称之为类属性</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><span class="hljs-string">    类属性可以通过类或实例进行访问</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-string">    但是类属性只能通过类对象进行修改, 无法通过实例对象进行修改</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-string">    '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>    res_sum = <span class="hljs-number">0</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>    <span class="hljs-comment"># 定义 初始化方法 | Definition initialization method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><span class="hljs-string">    通过实例对象添加的属性属于实例属性</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><span class="hljs-string">    实例属性只能通过实例对象进行访问和修改, 类对象无法进行访问修改</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><span class="hljs-string">    '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>        self.infos = <span class="hljs-string">'Info'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>   <span class="hljs-comment"># 定义 实例方法 | Defining instance methods</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>    <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span><span class="hljs-string">    在类中定义以`seIf`为第一个参数的方法称之为实例方法</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span><span class="hljs-string">    实例方法在调用时Python解析器会将调用对象作为`seIf`传入</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span><span class="hljs-string">    实例方法可以通过实例和类进行调用</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span><span class="hljs-string">    当通过实例调用时, 会自动将当前调用对象作为`seIf`传入</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span><span class="hljs-string">    当通过对象调用时, 不会自动传入`seIf`, 必须需要开发者手动传递`seIf`</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span><span class="hljs-string">    '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">core_info</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>        print(<span class="hljs-string">'core_info='</span>, self)
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>    <span class="hljs-comment"># 定义 类方法 | Definition class method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>    <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><span class="hljs-string">    在类内部使用`@classmethod`关键字来修饰类方法</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><span class="hljs-string">    类方法中第一个参数为`cls`, `cls`参数也会被自动传递, `cls`就是当前类的对象</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span><span class="hljs-string">    类方法和实例方法的区别在于: 实例方法第一个参数为`seIf`, 而类方法第一个参数为`cls`</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span><span class="hljs-string">    类方法可以通过类进行调用, 也可以通过实例进行调用</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span><span class="hljs-string">    '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span><span class="hljs-meta">    @classmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">core_cls</span><span class="hljs-params">(cls)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span>        print(<span class="hljs-string">'core_cls='</span>, cls, cls.res_sum)
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span>    <span class="hljs-comment"># 定义 静态方法 | Definition static method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span>    <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span><span class="hljs-string">    在类中使用`@staticmethod`关键字来修饰静态方法</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span><span class="hljs-string">    静态方法不需要指定任何的默认参数, 静态方法可以通过类和实例进行调用</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span><span class="hljs-string">    静态方法基本上是和当前类无关的方法, 它只是存储当前类中的函数, 该方法一般在开发中作为工具方法使用</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">69.</span><span class="hljs-string">    '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">70.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">71.</span><span class="hljs-meta">    @staticmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">72.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">core_staticmethod</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">73.</span>        print(<span class="hljs-string">'core_staticmethod'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">74.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">75.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">76.</span><span class="hljs-comment"># 创建实例 | Create instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">77.</span>k = K()
+</div><div class="hljs-line"><span class="hljs-comment line-number">78.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">79.</span>k.res_sum = <span class="hljs-number">1000</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">80.</span>K.res_sum = <span class="hljs-number">10000</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">81.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">82.</span>print(<span class="hljs-string">'k'</span>, k.res_sum)
+</div><div class="hljs-line"><span class="hljs-comment line-number">83.</span>print(<span class="hljs-string">'K'</span>, K.res_sum)
+</div><div class="hljs-line"><span class="hljs-comment line-number">84.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">85.</span>k.core_info()
+</div><div class="hljs-line"><span class="hljs-comment line-number">86.</span>K.core_info(k)
+</div><div class="hljs-line"><span class="hljs-comment line-number">87.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">88.</span>k.core_staticmethod()
+</div><div class="hljs-line"><span class="hljs-comment line-number">89.</span>K.core_staticmethod()
+</div></code></pre>
+</blockquote>
+
+<h4 id="7106-垃圾回收">7.10.6 垃圾回收</h4>
+
+<blockquote>
+  <p>程序运行过程中产生的垃圾会影响到程序运行性能, 所以这些垃圾必须被及时清理.</p>
+  
+  <p>在程序中没有被引用的对象就称之为垃圾,当垃圾对象过多以后会影响到程序运行性能.</p>
+  
+  <p>所以必须进行及时的垃圾回收, 所谓的垃圾回收就是将垃圾对象从内存中删除.</p>
+  
+  <p>Python提供了自动的垃圾回收机制, 无需手动删除, 它会自动将没有被引用的对象删除.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 面向对象 | Object-oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 11_object_oriented.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 垃圾回收 | Garbage collection</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># 定义 类 | Definition class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">U</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>    <span class="hljs-comment"># 定义 初始化方法 | Definition initialization method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span>        self.info = <span class="hljs-string">'U class'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>    <span class="hljs-comment"># 定义 del特殊方法, 在对象被垃圾回收前调用该方法</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__del__</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>        print(<span class="hljs-string">'Delete U class'</span>, self)
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><span class="hljs-comment"># 创建实例 | Create instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>u = U()
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><span class="hljs-string">垃圾回收 测试 | 将u实例定义为空, 此时只要没有任何变量对U对象进行引用, 则该实例在&gt; 内存中就变成了垃圾, Python将自动进行垃圾回收</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>a = <span class="hljs-keyword">None</span>
+</div></code></pre>
+</blockquote>
+
+<h4 id="7107-特殊方法">7.10.7 特殊方法</h4>
+
+<blockquote>
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 面向对象 | Object-oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 11_object_oriented.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div></code></pre>
+</blockquote>
+
+<h4 id="7108-模块">7.10.8 模块</h4>
+
+<blockquote>
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 面向对象 | Object-oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 11_object_oriented.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div></code></pre>
+</blockquote>
 
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 
