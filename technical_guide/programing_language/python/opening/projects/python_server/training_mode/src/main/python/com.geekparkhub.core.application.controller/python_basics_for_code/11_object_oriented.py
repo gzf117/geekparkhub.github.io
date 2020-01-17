@@ -548,3 +548,33 @@ a = None
 
 
 # 特殊方法 | Special method
+# 定义 类 | Definition class
+class Shape:
+    # 定义 初始化方法 | Definition initialization method
+    def __init__(self, name):
+        self.name = name
+
+    '''
+    `__str__()` 该特殊方法会在尝试将对象转换为字符串时调用
+    该作用是可以用来指定对象转换为字符串的结果
+    '''
+
+    def __str__(self):
+        return 'Shape [name= %s]' % self.name
+
+    '''
+    `__repr__()` 该特殊方法会在对当前对象使用`repr()`函数时调用
+    该作用是指定对象在`交互模式`中直接输出结果
+    '''
+
+    def __repr__(self):
+        return 'This is the graphics class!'
+
+
+# 创建实例 | Create instance
+s1 = Shape('Round')
+s2 = Shape('Rectangle')
+
+# 当打印对象时实际上打印的是对象的中特殊方法`__str__()`的返回值
+print('s1=', s1)  # s1= <__main__.Shape object at 0x10b524a60>
+print('s2=', s2)  # s2= <__main__.Shape object at 0x10b524ac0>
