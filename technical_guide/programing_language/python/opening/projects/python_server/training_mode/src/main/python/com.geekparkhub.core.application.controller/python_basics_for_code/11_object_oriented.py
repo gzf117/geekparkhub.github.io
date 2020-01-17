@@ -551,8 +551,9 @@ a = None
 # 定义 类 | Definition class
 class Shape:
     # 定义 初始化方法 | Definition initialization method
-    def __init__(self, name):
+    def __init__(self, name, lengths):
         self.name = name
+        self.lengths = lengths
 
     '''
     `__str__()` 该特殊方法会在尝试将对象转换为字符串时调用
@@ -560,21 +561,93 @@ class Shape:
     '''
 
     def __str__(self):
-        return 'Shape [name= %s]' % self.name
+        return 'Shape [Name= %s , Lengths= %d]' % (self.name, self.lengths)
 
     '''
     `__repr__()` 该特殊方法会在对当前对象使用`repr()`函数时调用
-    该作用是指定对象在`交互模式`中直接输出结果
+    该作用是指定对象在`交互模式`中直接输出返回结果
     '''
 
     def __repr__(self):
         return 'This is the graphics class!'
 
+    '''
+    其他特殊方法介绍 | Introduction of other special methods
+    
+    `object.__lt__(self, other)` 小于 < 
+    该特殊方法在对象进行小于比较时调用, 该方法返回值将作为比较结果进行返回, 
+    该方法需要携带两个参数, `self`参数则表示当前对象, `other`参数则表示和当前对象比较的对象
+    
+    `object.__le__(self, other)` 小于等于 <=
+    该特殊方法在对象进行小于等于比较时调用, 该方法返回值将作为比较结果进行返回, 
+    该方法需要携带两个参数, `self`参数则表示当前对象, `other`参数则表示和当前对象比较的对象
+    
+    `object.__eq__(self, other)` 等于 ==
+    该特殊方法在对象进行等于比较时调用, 该方法返回值将作为比较结果进行返回, 
+    该方法需要携带两个参数, `self`参数则表示当前对象, `other`参数则表示和当前对象比较的对象
+    
+    `object.__ne__(self, other)` 不等于 !=
+    该特殊方法在对象进行不等于比较时调用, 该方法返回值将作为比较结果进行返回, 
+    该方法需要携带两个参数, `self`参数则表示当前对象, `other`参数则表示和当前对象比较的对象
+    
+    
+    `object.__gt__(self, other)` 大于 >
+    该特殊方法在对象进行大于比较时调用, 该方法返回值将作为比较结果进行返回, 
+    该方法需要携带两个参数, `self`参数则表示当前对象, `other`参数则表示和当前对象比较的对象
+    
+    
+    `object.__ge__(self, other)` 大于等于 >=
+    该特殊方法在对象进行大于等于比较时调用, 该方法返回值将作为比较结果进行返回, 
+    该方法需要携带两个参数, `self`参数则表示当前对象, `other`参数则表示和当前对象比较的对象
+    '''
+
+    def __lt__(self, other):
+        return self.lengths < other.lengths
+
+    def __le__(self, other):
+        return self.lengths <= other.lengths
+
+    def __eq__(self, other):
+        return self.lengths == other.lengths
+
+    def __ne__(self, other):
+        return self.lengths != other.lengths
+
+    def __gt__(self, other):
+        return self.lengths > other.lengths
+
+    def __ge__(self, other):
+        return self.lengths >= other.lengths
+
 
 # 创建实例 | Create instance
-s1 = Shape('Round')
-s2 = Shape('Rectangle')
+s1 = Shape('Round', 158)
+s2 = Shape('Rectangle', 412)
 
 # 当打印对象时实际上打印的是对象的中特殊方法`__str__()`的返回值
 print('s1=', s1)  # s1= <__main__.Shape object at 0x10b524a60>
 print('s2=', s2)  # s2= <__main__.Shape object at 0x10b524ac0>
+
+# 小于比较
+print('s1 < s2 =', s1 < s2)  # s1 < s2 = True
+print('s2 < s1 =', s2 < s1)  # s2 < s1 = False
+
+# 小于等于比较
+print('s1 <= s2 =', s1 <= s2)  # s1 <= s2 = True
+print('s2 <= s1 =', s2 <= s1)  # s2 <= s1 = False
+
+# 等于比较
+print('s1 == s2 =', s1 == s2)  # s1 == s2 = False
+print('s2 == s1 =', s2 == s1)  # s1 == s2 = False
+
+# 不等于比较
+print('s1 != s2 =', s1 != s2)  # s1 != s2 = True
+print('s2 != s1 =', s2 != s1)  # s2 != s1 = True
+
+# 大于比较
+print('s1 > s2 =', s1 > s2)  # s1 > s2= False
+print('s2 > s1 =', s2 > s1)  # s2 > s1= True
+
+# 大于等于比较
+print('s1 >= s2 =', s1 >= s2)  # s1 >= s2 = False
+print('s2 >= s1 =', s2 >= s1)  # s2 >= s1 = True

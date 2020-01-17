@@ -3949,6 +3949,110 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 11_object_oriented.py</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 特殊方法 | Special method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># 定义 类 | Definition class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Shape</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>    <span class="hljs-comment"># 定义 初始化方法 | Definition initialization method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, name, lengths)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span>        self.name = name
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span>        self.lengths = lengths
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>    <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-string">    `__str__()` 该特殊方法会在尝试将对象转换为字符串时调用</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-string">    该作用是可以用来指定对象转换为字符串的结果</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><span class="hljs-string">    '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__str__</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>        <span class="hljs-keyword">return</span> <span class="hljs-string">'Shape [Name= %s , Lengths= %d]'</span> % (self.name, self.lengths)
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>    <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><span class="hljs-string">    `__repr__()` 该特殊方法会在对当前对象使用`repr()`函数时调用</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><span class="hljs-string">    该作用是指定对象在`交互模式`中直接输出返回结果</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span><span class="hljs-string">    '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__repr__</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>        <span class="hljs-keyword">return</span> <span class="hljs-string">'This is the graphics class!'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>    <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span><span class="hljs-string">    其他特殊方法介绍 | Introduction of other special methods</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span><span class="hljs-string"></span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span><span class="hljs-string">    `object.__lt__(self, other)` 小于 &lt; </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span><span class="hljs-string">    该特殊方法在对象进行小于比较时调用, 该方法返回值将作为比较结果进行返回, </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span><span class="hljs-string">    该方法需要携带两个参数, `self`参数则表示当前对象, `other`参数则表示和当前对象比较的对象</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span><span class="hljs-string"></span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span><span class="hljs-string">    `object.__le__(self, other)` 小于等于 &lt;=</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><span class="hljs-string">    该特殊方法在对象进行小于等于比较时调用, 该方法返回值将作为比较结果进行返回, </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span><span class="hljs-string">    该方法需要携带两个参数, `self`参数则表示当前对象, `other`参数则表示和当前对象比较的对象</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span><span class="hljs-string"></span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><span class="hljs-string">    `object.__eq__(self, other)` 等于 ==</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><span class="hljs-string">    该特殊方法在对象进行等于比较时调用, 该方法返回值将作为比较结果进行返回, </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span><span class="hljs-string">    该方法需要携带两个参数, `self`参数则表示当前对象, `other`参数则表示和当前对象比较的对象</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span><span class="hljs-string"></span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span><span class="hljs-string">    `object.__ne__(self, other)` 不等于 !=</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span><span class="hljs-string">    该特殊方法在对象进行不等于比较时调用, 该方法返回值将作为比较结果进行返回, </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span><span class="hljs-string">    该方法需要携带两个参数, `self`参数则表示当前对象, `other`参数则表示和当前对象比较的对象</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span><span class="hljs-string"></span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span><span class="hljs-string"></span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span><span class="hljs-string">    `object.__gt__(self, other)` 大于 &gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span><span class="hljs-string">    该特殊方法在对象进行大于比较时调用, 该方法返回值将作为比较结果进行返回, </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span><span class="hljs-string">    该方法需要携带两个参数, `self`参数则表示当前对象, `other`参数则表示和当前对象比较的对象</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span><span class="hljs-string"></span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span><span class="hljs-string"></span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span><span class="hljs-string">    `object.__ge__(self, other)` 大于等于 &gt;=</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">69.</span><span class="hljs-string">    该特殊方法在对象进行大于等于比较时调用, 该方法返回值将作为比较结果进行返回, </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">70.</span><span class="hljs-string">    该方法需要携带两个参数, `self`参数则表示当前对象, `other`参数则表示和当前对象比较的对象</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">71.</span><span class="hljs-string">    '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">72.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">73.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__lt__</span><span class="hljs-params">(self, other)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">74.</span>        <span class="hljs-keyword">return</span> self.lengths &lt; other.lengths
+</div><div class="hljs-line"><span class="hljs-comment line-number">75.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">76.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__le__</span><span class="hljs-params">(self, other)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">77.</span>        <span class="hljs-keyword">return</span> self.lengths &lt;= other.lengths
+</div><div class="hljs-line"><span class="hljs-comment line-number">78.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">79.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__eq__</span><span class="hljs-params">(self, other)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">80.</span>        <span class="hljs-keyword">return</span> self.lengths == other.lengths
+</div><div class="hljs-line"><span class="hljs-comment line-number">81.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">82.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__ne__</span><span class="hljs-params">(self, other)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">83.</span>        <span class="hljs-keyword">return</span> self.lengths != other.lengths
+</div><div class="hljs-line"><span class="hljs-comment line-number">84.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">85.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__gt__</span><span class="hljs-params">(self, other)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">86.</span>        <span class="hljs-keyword">return</span> self.lengths &gt; other.lengths
+</div><div class="hljs-line"><span class="hljs-comment line-number">87.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">88.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__ge__</span><span class="hljs-params">(self, other)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">89.</span>        <span class="hljs-keyword">return</span> self.lengths &gt;= other.lengths
+</div><div class="hljs-line"><span class="hljs-comment line-number">90.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">91.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">92.</span><span class="hljs-comment"># 创建实例 | Create instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">93.</span>s1 = Shape(<span class="hljs-string">'Round'</span>, <span class="hljs-number">158</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">94.</span>s2 = Shape(<span class="hljs-string">'Rectangle'</span>, <span class="hljs-number">412</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">95.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">96.</span><span class="hljs-comment"># 当打印对象时实际上打印的是对象的中特殊方法&gt; `__str__()`的返回值</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">97.</span>print(<span class="hljs-string">'s1='</span>, s1)  <span class="hljs-comment"># s1= &lt;__main__.Shape object at 0x10b524a60&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">98.</span>print(<span class="hljs-string">'s2='</span>, s2)  <span class="hljs-comment"># s2= &lt;__main__.Shape object at 0x10b524ac0&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">99.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">100.</span><span class="hljs-comment"># 小于比较</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">101.</span>print(<span class="hljs-string">'s1 &lt; s2 ='</span>, s1 &lt; s2)  <span class="hljs-comment"># s1 &lt; s2 = True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">102.</span>print(<span class="hljs-string">'s2 &lt; s1 ='</span>, s2 &lt; s1)  <span class="hljs-comment"># s2 &lt; s1 = False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">103.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">104.</span><span class="hljs-comment"># 小于等于比较</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">105.</span>print(<span class="hljs-string">'s1 &lt;= s2 ='</span>, s1 &lt;= s2)  <span class="hljs-comment"># s1 &lt;= s2 = True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">106.</span>print(<span class="hljs-string">'s2 &lt;= s1 ='</span>, s2 &lt;= s1)  <span class="hljs-comment"># s2 &lt;= s1 = False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">107.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">108.</span><span class="hljs-comment"># 等于比较</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">109.</span>print(<span class="hljs-string">'s1 == s2 ='</span>, s1 == s2)  <span class="hljs-comment"># s1 == s2 = False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">110.</span>print(<span class="hljs-string">'s2 == s1 ='</span>, s2 == s1)  <span class="hljs-comment"># s1 == s2 = False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">111.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">112.</span><span class="hljs-comment"># 不等于比较</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">113.</span>print(<span class="hljs-string">'s1 != s2 ='</span>, s1 != s2)  <span class="hljs-comment"># s1 != s2 = True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">114.</span>print(<span class="hljs-string">'s2 != s1 ='</span>, s2 != s1)  <span class="hljs-comment"># s2 != s1 = True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">115.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">116.</span><span class="hljs-comment"># 大于比较</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">117.</span>print(<span class="hljs-string">'s1 &gt; s2 ='</span>, s1 &gt; s2)  <span class="hljs-comment"># s1 &gt; s2= False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">118.</span>print(<span class="hljs-string">'s2 &gt; s1 ='</span>, s2 &gt; s1)  <span class="hljs-comment"># s2 &gt; s1= True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">119.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">120.</span><span class="hljs-comment"># 大于等于比较</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">121.</span>print(<span class="hljs-string">'s1 &gt;= s2 ='</span>, s1 &gt;= s2)  <span class="hljs-comment"># s1 &gt;= s2 = False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">122.</span>print(<span class="hljs-string">'s2 &gt;= s1 ='</span>, s2 &gt;= s1)  <span class="hljs-comment"># s2 &gt;= s1 = True</span>
 </div></code></pre>
 </blockquote>
 
