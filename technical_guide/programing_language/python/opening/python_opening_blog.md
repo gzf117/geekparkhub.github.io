@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-1-17)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-1-18)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -3635,27 +3635,27 @@
 > print('s1=', s1)  # s1= <__main__.Shape object at 0x10b524a60>
 > print('s2=', s2)  # s2= <__main__.Shape object at 0x10b524ac0>
 > 
-> # 小于比较
+> # 小于比较 | Less than comparison
 > print('s1 < s2 =', s1 < s2)  # s1 < s2 = True
 > print('s2 < s1 =', s2 < s1)  # s2 < s1 = False
 > 
-> # 小于等于比较
+> # 小于等于比较 | Less than or equal comparison
 > print('s1 <= s2 =', s1 <= s2)  # s1 <= s2 = True
 > print('s2 <= s1 =', s2 <= s1)  # s2 <= s1 = False
 > 
-> # 等于比较
+> # 等于比较 | Equal comparison
 > print('s1 == s2 =', s1 == s2)  # s1 == s2 = False
 > print('s2 == s1 =', s2 == s1)  # s1 == s2 = False
 > 
-> # 不等于比较
+> # 不等于比较 | Not equal to compare
 > print('s1 != s2 =', s1 != s2)  # s1 != s2 = True
 > print('s2 != s1 =', s2 != s1)  # s2 != s1 = True
 > 
-> # 大于比较
+> # 大于比较 | Greater than comparison
 > print('s1 > s2 =', s1 > s2)  # s1 > s2= False
 > print('s2 > s1 =', s2 > s1)  # s2 > s1= True
 > 
-> # 大于等于比较
+> # 大于等于比较 | Greater than or equal
 > print('s1 >= s2 =', s1 >= s2)  # s1 >= s2 = False
 > print('s2 >= s1 =', s2 >= s1)  # s2 >= s1 = True
 > ```
