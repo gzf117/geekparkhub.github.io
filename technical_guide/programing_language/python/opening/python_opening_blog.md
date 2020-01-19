@@ -3625,8 +3625,10 @@
 > 
 >     def __ge__(self, other):
 >         return self.lengths >= other.lengths
-> 
-> 
+>     # 可通过bool来指定对象转换为布尔值
+>     def __bool__(self):
+>         return self.lengths > 150
+>         
 > # 创建实例 | Create instance
 > s1 = Shape('Round', 158)
 > s2 = Shape('Rectangle', 412)
@@ -3658,12 +3660,49 @@
 > # 大于等于比较 | Greater than or equal
 > print('s1 >= s2 =', s1 >= s2)  # s1 >= s2 = False
 > print('s2 >= s1 =', s2 >= s1)  # s2 >= s1 = True
+> 
+> 
 > ```
 
 
-
 ####  7.10.8 模块
+> 模块化指将一个完整的程序分解为若干个小的模块.
 > 
+> 采用模块化将程序分别编写到多个文件中.
+> 
+> 采用模块化优势：1.方便开发 / 2.方便维护 / 3.模块复用 / 4.解耦合
+> 
+> 在Python中以`.py`文件就是一个模块, 创建模块实际上就是创建一个python文件.
+> 
+> 注意：模块名要符号标识符规范.
+> 
+> **引入外部模块 语法如下:**
+> 
+> `import 模块名称` 或者 `import 模块名称 as 模块别名`
+> 
+> 可以引入同一个模块多次, 但是模块实例只会创建一个等同于单实例.
+> 
+> `import`可以在程序的任意位置调用, 但是一般情况下`import`语句都会统一写在程序的开头或最上方.
+> 
+> 在每一个模块内部都有`__name__`属性, 通过该属性可以获取模块名称.
+> 
+> `__name__`属性值为`__main__`的模块是主模块, 一个程序中只会有一个主模块.
+> 
+> 主模块就是直接通过python执行的模块.
+> 
+> **引入模块部分内容, 语法如下:**
+> 
+> `from 模块名称 import 变量1, 变量2....`
+> 
+> 引入到模块中所有内容, 因会容易出现代码冲突, 一般不会使用.
+> 
+> 在模块中以单下划线开头的变量只能在模块内部访问, 在通过`import *`引入时，不会引入_开头的变量.
+> 
+> `from 模块名称 import * `
+> 
+> **引入变量使用别名, 语法如下:**
+> 
+> `from 模块名称 import 变量 as 别名`
 > 
 > ``` py
 > # -*- coding:utf-8 -*-
@@ -3684,8 +3723,171 @@
 > # @File : 11_object_oriented.py
 > # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
 > 
+> # 模块 | Module
+> # 导入外部模块 (测试模块) | Import external module (test module)
+> 
+> import module.test_module
+> import module.test_module as ts
+> 
+> print('test_module=', module.test_module)
+> print('test_module __name__ =', module.test_module.__name__)
+> print('ts=', ts)
+> print('ts __name__ =', ts.__name__)
+> print(__name__)
+> 
+> # 导入外部模块 | Import external module
+> import module.core_module as cm
+> 
+> # 调用变量 | Call variable
+> print(cm.nums1, cm.nums2)
+> 
+> # 创建实例 | Create instance
+> cm.CoreModule('CoreModule')
+> 
+> # 调用函数 | call function
+> cm.core_module_function()
+> 
+> # 引入模块部分内容 | Introducing module content
+> from module.core_module import CoreModule, core_module_function
+> 
+> # 创建实例 | Create instance
+> cm1 = CoreModule('CoreModule-1')
+> 
+> # 调用函数 | call function
+> core_module_function()
+> 
+> # 引入变量使用别名 | Introduce variables using aliases
+> from module.core_module import core_module_function as cmf
+> 
+> # 调用函数 | call function
+> cmf()
 > ```
 
+####  7.10.9 包
+> 包也是一个模块, 当模块中代码过多时或者模块需要被分解为多个模块时, 这时就需要使用到包.
+> 
+> 普通模块只是一个py文件, 而包是一个文件夹.
+> 
+> 包中必须要一个 `__init__.py` 文件, 该文件中可以包含有包中的主要内容.
+> 
+> `__pycache__` 是模块缓存文件
+> 
+> py代码在执行前需要被解析器先转换为机器码然后再执行, 所以在使用模块(包)时, 也需要将模块的代码先转换为机器码然后再交由计算机执行.
+> 
+> 而为了提高程序运行的性能, python会在编译过一次以后将代码保存到一个缓存文件中.
+> 
+> 在下次加载这个模块(包)时就可以不再重新编译而是直接加载缓存中编译好的代码即可.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 包 | Package
+> # @File : __init__.py.py
+> # @Description : Python 基础篇 - 包 | Python Basics-Packages
+> 
+> # 导入子模块 | Import submodule
+> from module.simple_calculation.addition_calculation import addition_calculation_function as acf
+> from module.simple_calculation.subtraction_calculation import subtraction_calculation_function as scf
+> from module.simple_calculation.multiplication import multiplication_function as mf
+> from module.simple_calculation.division_calculation import division_calculation_function as dcf
+> 
+> # 调用 简易加法函数 | Call simple addition function
+> acf(10, 20)
+> 
+> # 调用 简易减法函数 | Call simple subtraction function
+> scf(60, 10)
+> 
+> # 调用 简易乘法函数 | Call simple multiplication function
+> mf(10, 10)
+> 
+> # 调用 简易除法函数 | Call simple division function
+> dcf(81, 9)
+> ```
+
+
+
+####  7.10.10 Python 标准库
+> 为了实现开箱即用的思想, Python中为开发者提供一个模块的标准库.
+> 
+> [Python Module Index | Python 标准库 docs.python.org/3.8/py-modindex](https://docs.python.org/3.8/py-modindex.html)
+> 
+> 在该标准库中有诸多很强大的模块供开发者直接使用.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 面向对象 | Object-oriented
+> # @File : 11_object_oriented.py
+> # @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented
+> 
+> # Python 标准库 | Python Standard Library
+> # Global Module Index https://docs.python.org/3.8/py-modindex.html
+> # 引入模块 | Introduce module
+> '''
+> `sys`模块提供一些变量和函数, 使开发者可以获取到Python解析器信息或者通过函数来操作Python解析器
+> '''
+> import sys
+> 
+> '''
+> `pprint`模块提供了`pprint()`, 该方法可以用来对打印的数据做简单的格式化处理
+> '''
+> import pprint
+> 
+> # `sys.argv` 获取执行代码时命令行中所包含的参数
+> # 该属性类型为列表, 列表中保存当前命令所有参数
+> print(sys.argv)
+> 
+> # `sys.modules` 获取当前程序中引入的所有模块
+> # modules类型为字典, 字典key为模块名称, 字典value为模块对象
+> pprint.pprint(sys.modules)
+> 
+> # `sys.path` 列表中保存的是模块搜索路径
+> pprint.pprint(sys.path)
+> 
+> # `sys.platform` 表示当前Python运行的操作平台
+> print(sys.platform)
+> 
+> # `sys.exit()` 该函数用来退出程序
+> # sys.exit('Program Exception, End!')
+> 
+> # `os模块` 可以让开发者对操作系统进行访问
+> import os
+> 
+> # `os.environ` 通过该属性可以获取系统环境变量
+> pprint.pprint(os.environ)
+> 
+> # `os.system()` 该函数可以在操作系统中执行命令行指令
+> 
+> # macOS & Linux 操作系统 命令行指令 | macOS & Linux operating system command line instructions
+> os.system('ls -al')
+> 
+> # Windows 操作系统 命令行指令 | Windows operating system command line instructions
+> os.system('dir')
+> ```
 
 
 

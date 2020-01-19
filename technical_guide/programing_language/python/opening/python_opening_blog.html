@@ -137,6 +137,8 @@
 <li><a href="#7106-垃圾回收">7.10.6 垃圾回收</a></li>
 <li><a href="#7107-特殊方法">7.10.7 特殊方法</a></li>
 <li><a href="#7108-模块">7.10.8 模块</a></li>
+<li><a href="#7109-包">7.10.9 包</a></li>
+<li><a href="#71010-python-标准库">7.10.10 Python 标准库</a></li>
 </ul>
 </li>
 </ul>
@@ -4020,47 +4022,87 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">87.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">88.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__ge__</span><span class="hljs-params">(self, other)</span>:</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">89.</span>        <span class="hljs-keyword">return</span> self.lengths &gt;= other.lengths
-</div><div class="hljs-line"><span class="hljs-comment line-number">90.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">91.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">92.</span><span class="hljs-comment"># 创建实例 | Create instance</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">93.</span>s1 = Shape(<span class="hljs-string">'Round'</span>, <span class="hljs-number">158</span>)
-</div><div class="hljs-line"><span class="hljs-comment line-number">94.</span>s2 = Shape(<span class="hljs-string">'Rectangle'</span>, <span class="hljs-number">412</span>)
-</div><div class="hljs-line"><span class="hljs-comment line-number">95.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">96.</span><span class="hljs-comment"># 当打印对象时实际上打印的是对象的中特殊方法&gt; `__str__()`的返回值</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">97.</span>print(<span class="hljs-string">'s1='</span>, s1)  <span class="hljs-comment"># s1= &lt;__main__.Shape object at 0x10b524a60&gt;</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">98.</span>print(<span class="hljs-string">'s2='</span>, s2)  <span class="hljs-comment"># s2= &lt;__main__.Shape object at 0x10b524ac0&gt;</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">99.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">100.</span><span class="hljs-comment"># 小于比较 | Less than comparison</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">101.</span>print(<span class="hljs-string">'s1 &lt; s2 ='</span>, s1 &lt; s2)  <span class="hljs-comment"># s1 &lt; s2 = True</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">102.</span>print(<span class="hljs-string">'s2 &lt; s1 ='</span>, s2 &lt; s1)  <span class="hljs-comment"># s2 &lt; s1 = False</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">103.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">104.</span><span class="hljs-comment"># 小于等于比较 | Less than or equal comparison</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">105.</span>print(<span class="hljs-string">'s1 &lt;= s2 ='</span>, s1 &lt;= s2)  <span class="hljs-comment"># s1 &lt;= s2 = True</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">106.</span>print(<span class="hljs-string">'s2 &lt;= s1 ='</span>, s2 &lt;= s1)  <span class="hljs-comment"># s2 &lt;= s1 = False</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">107.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">108.</span><span class="hljs-comment"># 等于比较 | Equal comparison</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">109.</span>print(<span class="hljs-string">'s1 == s2 ='</span>, s1 == s2)  <span class="hljs-comment"># s1 == s2 = False</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">110.</span>print(<span class="hljs-string">'s2 == s1 ='</span>, s2 == s1)  <span class="hljs-comment"># s1 == s2 = False</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">111.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">112.</span><span class="hljs-comment"># 不等于比较 | Not equal to compare</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">113.</span>print(<span class="hljs-string">'s1 != s2 ='</span>, s1 != s2)  <span class="hljs-comment"># s1 != s2 = True</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">114.</span>print(<span class="hljs-string">'s2 != s1 ='</span>, s2 != s1)  <span class="hljs-comment"># s2 != s1 = True</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">115.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">116.</span><span class="hljs-comment"># 大于比较 | Greater than comparison</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">117.</span>print(<span class="hljs-string">'s1 &gt; s2 ='</span>, s1 &gt; s2)  <span class="hljs-comment"># s1 &gt; s2= False</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">118.</span>print(<span class="hljs-string">'s2 &gt; s1 ='</span>, s2 &gt; s1)  <span class="hljs-comment"># s2 &gt; s1= True</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">119.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">120.</span><span class="hljs-comment"># 大于等于比较 | Greater than or equal</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">121.</span>print(<span class="hljs-string">'s1 &gt;= s2 ='</span>, s1 &gt;= s2)  <span class="hljs-comment"># s1 &gt;= s2 = False</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">122.</span>print(<span class="hljs-string">'s2 &gt;= s1 ='</span>, s2 &gt;= s1)  <span class="hljs-comment"># s2 &gt;= s1 = True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">90.</span>    <span class="hljs-comment"># 可通过bool来指定对象转换为布尔值</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">91.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__bool__</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">92.</span>        <span class="hljs-keyword">return</span> self.lengths &gt; <span class="hljs-number">150</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">93.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">94.</span><span class="hljs-comment"># 创建实例 | Create instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">95.</span>s1 = Shape(<span class="hljs-string">'Round'</span>, <span class="hljs-number">158</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">96.</span>s2 = Shape(<span class="hljs-string">'Rectangle'</span>, <span class="hljs-number">412</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">97.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">98.</span><span class="hljs-comment"># 当打印对象时实际上打印的是对象的中特殊方法&gt; `__str__()`的返回值</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">99.</span>print(<span class="hljs-string">'s1='</span>, s1)  <span class="hljs-comment"># s1= &lt;__main__.Shape object at 0x10b524a60&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">100.</span>print(<span class="hljs-string">'s2='</span>, s2)  <span class="hljs-comment"># s2= &lt;__main__.Shape object at 0x10b524ac0&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">101.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">102.</span><span class="hljs-comment"># 小于比较 | Less than comparison</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">103.</span>print(<span class="hljs-string">'s1 &lt; s2 ='</span>, s1 &lt; s2)  <span class="hljs-comment"># s1 &lt; s2 = True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">104.</span>print(<span class="hljs-string">'s2 &lt; s1 ='</span>, s2 &lt; s1)  <span class="hljs-comment"># s2 &lt; s1 = False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">105.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">106.</span><span class="hljs-comment"># 小于等于比较 | Less than or equal comparison</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">107.</span>print(<span class="hljs-string">'s1 &lt;= s2 ='</span>, s1 &lt;= s2)  <span class="hljs-comment"># s1 &lt;= s2 = True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">108.</span>print(<span class="hljs-string">'s2 &lt;= s1 ='</span>, s2 &lt;= s1)  <span class="hljs-comment"># s2 &lt;= s1 = False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">109.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">110.</span><span class="hljs-comment"># 等于比较 | Equal comparison</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">111.</span>print(<span class="hljs-string">'s1 == s2 ='</span>, s1 == s2)  <span class="hljs-comment"># s1 == s2 = False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">112.</span>print(<span class="hljs-string">'s2 == s1 ='</span>, s2 == s1)  <span class="hljs-comment"># s1 == s2 = False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">113.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">114.</span><span class="hljs-comment"># 不等于比较 | Not equal to compare</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">115.</span>print(<span class="hljs-string">'s1 != s2 ='</span>, s1 != s2)  <span class="hljs-comment"># s1 != s2 = True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">116.</span>print(<span class="hljs-string">'s2 != s1 ='</span>, s2 != s1)  <span class="hljs-comment"># s2 != s1 = True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">117.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">118.</span><span class="hljs-comment"># 大于比较 | Greater than comparison</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">119.</span>print(<span class="hljs-string">'s1 &gt; s2 ='</span>, s1 &gt; s2)  <span class="hljs-comment"># s1 &gt; s2= False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">120.</span>print(<span class="hljs-string">'s2 &gt; s1 ='</span>, s2 &gt; s1)  <span class="hljs-comment"># s2 &gt; s1= True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">121.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">122.</span><span class="hljs-comment"># 大于等于比较 | Greater than or equal</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">123.</span>print(<span class="hljs-string">'s1 &gt;= s2 ='</span>, s1 &gt;= s2)  <span class="hljs-comment"># s1 &gt;= s2 = False</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">124.</span>print(<span class="hljs-string">'s2 &gt;= s1 ='</span>, s2 &gt;= s1)  <span class="hljs-comment"># s2 &gt;= s1 = True</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">125.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">126.</span><wbr>
 </div></code></pre>
 </blockquote>
-
-
 
 <h4 id="7108-模块">7.10.8 模块</h4>
 
 <blockquote>
+  <p>模块化指将一个完整的程序分解为若干个小的模块.</p>
+  
+  <p>采用模块化将程序分别编写到多个文件中.</p>
+  
+  <p>采用模块化优势：1.方便开发 / 2.方便维护 / 3.模块复用 / 4.解耦合</p>
+  
+  <p>在Python中以<code>.py</code>文件就是一个模块, 创建模块实际上就是创建一个python文件.</p>
+  
+  <p>注意：模块名要符号标识符规范.</p>
+  
+  <p><strong>引入外部模块 语法如下:</strong></p>
+  
+  <p><code>import 模块名称</code> 或者 <code>import 模块名称 as 模块别名</code></p>
+  
+  <p>可以引入同一个模块多次, 但是模块实例只会创建一个等同于单实例.</p>
+  
+  <p><code>import</code>可以在程序的任意位置调用, 但是一般情况下<code>import</code>语句都会统一写在程序的开头或最上方.</p>
+  
+  <p>在每一个模块内部都有<code>__name__</code>属性, 通过该属性可以获取模块名称.</p>
+  
+  <p><code>__name__</code>属性值为<code>__main__</code>的模块是主模块, 一个程序中只会有一个主模块.</p>
+  
+  <p>主模块就是直接通过python执行的模块.</p>
+  
+  <p><strong>引入模块部分内容, 语法如下:</strong></p>
+  
+  <p><code>from 模块名称 import 变量1, 变量2....</code></p>
+  
+  <p>引入到模块中所有内容, 因会容易出现代码冲突, 一般不会使用.</p>
+  
+  <p>在模块中以单下划线开头的变量只能在模块内部访问, 在通过<code>import *</code>引入时，不会引入_开头的变量.</p>
+  
+  <p><code>from 模块名称 import *</code></p>
+  
+  <p><strong>引入变量使用别名, 语法如下:</strong></p>
+  
+  <p><code>from 模块名称 import 变量 as 别名</code></p>
+  
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
@@ -4079,10 +4121,174 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 11_object_oriented.py</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 模块 | Module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># 导入外部模块 (测试模块) | Import external module (test module)</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><span class="hljs-keyword">import</span> module.test_module
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-keyword">import</span> module.test_module <span class="hljs-keyword">as</span> ts
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span>print(<span class="hljs-string">'test_module='</span>, module.test_module)
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>print(<span class="hljs-string">'test_module __name__ ='</span>, module.test_module.__name__)
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>print(<span class="hljs-string">'ts='</span>, ts)
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>print(<span class="hljs-string">'ts __name__ ='</span>, ts.__name__)
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>print(__name__)
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><span class="hljs-comment"># 导入外部模块 | Import external module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><span class="hljs-keyword">import</span> module.core_module <span class="hljs-keyword">as</span> cm
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><span class="hljs-comment"># 调用变量 | Call variable</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>print(cm.nums1, cm.nums2)
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><span class="hljs-comment"># 创建实例 | Create instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>cm.CoreModule(<span class="hljs-string">'CoreModule'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><span class="hljs-comment"># 调用函数 | call function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>cm.core_module_function()
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span><span class="hljs-comment"># 引入模块部分内容 | Introducing module content</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span><span class="hljs-keyword">from</span> module.core_module <span class="hljs-keyword">import</span> CoreModule, core_module_function
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span><span class="hljs-comment"># 创建实例 | Create instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>cm1 = CoreModule(<span class="hljs-string">'CoreModule-1'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span><span class="hljs-comment"># 调用函数 | call function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>core_module_function()
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span><span class="hljs-comment"># 引入变量使用别名 | Introduce variables using aliases</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span><span class="hljs-keyword">from</span> module.core_module <span class="hljs-keyword">import</span> core_module_function <span class="hljs-keyword">as</span> cmf
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><span class="hljs-comment"># 调用函数 | call function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>cmf()
 </div></code></pre>
 </blockquote>
 
+<h4 id="7109-包">7.10.9 包</h4>
 
+<blockquote>
+  <p>包也是一个模块, 当模块中代码过多时或者模块需要被分解为多个模块时, 这时就需要使用到包.</p>
+  
+  <p>普通模块只是一个py文件, 而包是一个文件夹.</p>
+  
+  <p>包中必须要一个 <code>__init__.py</code> 文件, 该文件中可以包含有包中的主要内容.</p>
+  
+  <p><code>__pycache__</code> 是模块缓存文件</p>
+  
+  <p>py代码在执行前需要被解析器先转换为机器码然后再执行, 所以在使用模块(包)时, 也需要将模块的代码先转换为机器码然后再交由计算机执行.</p>
+  
+  <p>而为了提高程序运行的性能, python会在编译过一次以后将代码保存到一个缓存文件中.</p>
+  
+  <p>在下次加载这个模块(包)时就可以不再重新编译而是直接加载缓存中编译好的代码即可.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 包 | Package</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : __init__.py.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 包 | Python Basics-Packages</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入子模块 | Import submodule</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> module.simple_calculation.addition_calculation <span class="hljs-keyword">import</span> addition_calculation_function <span class="hljs-keyword">as</span> acf
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-keyword">from</span> module.simple_calculation.subtraction_calculation <span class="hljs-keyword">import</span> subtraction_calculation_function <span class="hljs-keyword">as</span> scf
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><span class="hljs-keyword">from</span> module.simple_calculation.multiplication <span class="hljs-keyword">import</span> multiplication_function <span class="hljs-keyword">as</span> mf
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-keyword">from</span> module.simple_calculation.division_calculation <span class="hljs-keyword">import</span> division_calculation_function <span class="hljs-keyword">as</span> dcf
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-comment"># 调用 简易加法函数 | Call simple addition function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>acf(<span class="hljs-number">10</span>, <span class="hljs-number">20</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-comment"># 调用 简易减法函数 | Call simple subtraction function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>scf(<span class="hljs-number">60</span>, <span class="hljs-number">10</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><span class="hljs-comment"># 调用 简易乘法函数 | Call simple multiplication function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>mf(<span class="hljs-number">10</span>, <span class="hljs-number">10</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><span class="hljs-comment"># 调用 简易除法函数 | Call simple division function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>dcf(<span class="hljs-number">81</span>, <span class="hljs-number">9</span>)
+</div></code></pre>
+</blockquote>
+
+<h4 id="71010-python-标准库">7.10.10 Python 标准库</h4>
+
+<blockquote>
+  <p>为了实现开箱即用的思想, Python中为开发者提供一个模块的标准库.</p>
+  
+  <p><a href="https://docs.python.org/3.8/py-modindex.html" target="_blank">Python Module Index | Python 标准库 docs.python.org/3.8/py-modindex</a></p>
+  
+  <p>在该标准库中有诸多很强大的模块供开发者直接使用.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 面向对象 | Object-oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 11_object_oriented.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 基础篇 - 面向对象 | Python Basics-Object Oriented</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># Python 标准库 | Python Standard Library</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-comment"># Global Module Index https://docs.python.org/3.8/py-modindex.html</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-comment"># 引入模块 | Introduce module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-string">`sys`模块提供一些变量和函数, 使开发者可以获取到Python解析器信息或者通过函数来操作Python解析器</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-keyword">import</span> sys
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-string">`pprint`模块提供了`pprint()`, 该方法可以用来对打印的数据做简单的格式化处理</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><span class="hljs-keyword">import</span> pprint
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><span class="hljs-comment"># `sys.argv` 获取执行代码时命令行中所包含的参数</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><span class="hljs-comment"># 该属性类型为列表, 列表中保存当前命令所有参数</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>print(sys.argv)
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><span class="hljs-comment"># `sys.modules` 获取当前程序中引入的所有模块</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><span class="hljs-comment"># modules类型为字典, 字典key为模块名称, 字典value为模块对象</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>pprint.pprint(sys.modules)
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><span class="hljs-comment"># `sys.path` 列表中保存的是模块搜索路径</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>pprint.pprint(sys.path)
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span><span class="hljs-comment"># `sys.platform` 表示当前Python运行的操作平台</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>print(sys.platform)
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span><span class="hljs-comment"># `sys.exit()` 该函数用来退出程序</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span><span class="hljs-comment"># sys.exit('Program Exception, End!')</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span><span class="hljs-comment"># `os模块` 可以让开发者对操作系统进行访问</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span><span class="hljs-keyword">import</span> os
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span><span class="hljs-comment"># `os.environ` 通过该属性可以获取系统环境变量</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>pprint.pprint(os.environ)
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><span class="hljs-comment"># `os.system()` 该函数可以在操作系统中执行命令行指令</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span><span class="hljs-comment"># macOS &amp; Linux 操作系统 命令行指令 | macOS &amp; Linux operating system command line instructions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>os.system(<span class="hljs-string">'ls -al'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span><span class="hljs-comment"># Windows 操作系统 命令行指令 | Windows operating system command line instructions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>os.system(<span class="hljs-string">'dir'</span>)
+</div></code></pre>
+</blockquote>
 
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 

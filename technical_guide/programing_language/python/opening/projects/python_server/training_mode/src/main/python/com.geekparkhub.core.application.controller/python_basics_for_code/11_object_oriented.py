@@ -1,15 +1,15 @@
 # -*- coding:utf-8 -*-
-# 
+#
 # Geek International Park | 极客国际公园
 # GeekParkHub | 极客实验室
 # Website | https://www.geekparkhub.com
-# Description | Open · Creation | 
+# Description | Open · Creation |
 # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
 # HackerParkHub | 黑客公园
 # Website | https://www.hackerparkhub.org
 # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
 # GeekDeveloper : JEEP-711
-# 
+#
 # @Author : system
 # @Version : 0.2.5
 # @Program : 面向对象 | Object-oriented
@@ -619,6 +619,10 @@ class Shape:
     def __ge__(self, other):
         return self.lengths >= other.lengths
 
+    # 可通过bool来指定对象转换为布尔值
+    def __bool__(self):
+        return self.lengths > 150
+
 
 # 创建实例 | Create instance
 s1 = Shape('Round', 158)
@@ -651,3 +655,106 @@ print('s2 > s1 =', s2 > s1)  # s2 > s1= True
 # 大于等于比较 | Greater than or equal
 print('s1 >= s2 =', s1 >= s2)  # s1 >= s2 = False
 print('s2 >= s1 =', s2 >= s1)  # s2 >= s1 = True
+
+'''
+运算特殊方法 | Emulating numeric types
+object.__add__(self, other)  # 加法运算
+object.__sub__(self, other)  # 减法运算
+object.__mul__(self, other)  # 乘法运算
+object.__matmul__(self, other)  # @运算
+object.__truediv__(self, other)  # /运算
+object.__floordiv__(self, other)  # //运算
+object.__mod__(self, other)  # %运算
+object.__divmod__(self, other)  # divmod运算
+object.__pow__(self, other[, modulo])  # **运算
+object.__lshift__(self, other)  # <<运算
+object.__rshift__(self, other)  # >>运算
+object.__and__(self, other)  # &运算
+object.__xor__(self, other)  # ^运算
+object.__or__(self, other)  # |运算
+
+'''
+
+# 模块 | Module
+# 导入外部模块 (测试模块) | Import external module (test module)
+
+import module.test_module
+import module.test_module as ts
+
+print('test_module=', module.test_module)
+print('test_module __name__ =', module.test_module.__name__)
+print('ts=', ts)
+print('ts __name__ =', ts.__name__)
+print(__name__)
+
+# 导入外部模块 | Import external module
+import module.core_module as cm
+
+# 调用变量 | Call variable
+print(cm.nums1, cm.nums2)
+
+# 创建实例 | Create instance
+cm.CoreModule('CoreModule')
+
+# 调用函数 | call function
+cm.core_module_function()
+
+# 引入模块部分内容 | Introducing module content
+from module.core_module import CoreModule, core_module_function
+
+# 创建实例 | Create instance
+cm1 = CoreModule('CoreModule-1')
+
+# 调用函数 | call function
+core_module_function()
+
+# 引入变量使用别名 | Introduce variables using aliases
+from module.core_module import core_module_function as cmf
+
+# 调用函数 | call function
+cmf()
+
+# Python 标准库 | Python Standard Library
+# Global Module Index https://docs.python.org/3.8/py-modindex.html
+
+# 引入模块 | Introduce module
+'''
+`sys`模块提供一些变量和函数, 使开发者可以获取到Python解析器信息或者通过函数来操作Python解析器
+'''
+import sys
+
+'''
+`pprint`模块提供了`pprint()`, 该方法可以用来对打印的数据做简单的格式化处理
+'''
+import pprint
+
+# `sys.argv` 获取执行代码时命令行中所包含的参数
+# 该属性类型为列表, 列表中保存当前命令所有参数
+print(sys.argv)
+
+# `sys.modules` 获取当前程序中引入的所有模块
+# modules类型为字典, 字典key为模块名称, 字典value为模块对象
+pprint.pprint(sys.modules)
+
+# `sys.path` 列表中保存的是模块搜索路径
+pprint.pprint(sys.path)
+
+# `sys.platform` 表示当前Python运行的操作平台
+print(sys.platform)
+
+# `sys.exit()` 该函数用来退出程序
+# sys.exit('Program Exception, End!')
+
+# `os模块` 可以让开发者对操作系统进行访问
+import os
+
+# `os.environ` 通过该属性可以获取系统环境变量
+pprint.pprint(os.environ)
+
+# `os.system()` 该函数可以在操作系统中执行命令行指令
+
+# macOS & Linux 操作系统 命令行指令 | macOS & Linux operating system command line instructions
+os.system('ls -al')
+
+# Windows 操作系统 命令行指令 | Windows operating system command line instructions
+os.system('dir')
