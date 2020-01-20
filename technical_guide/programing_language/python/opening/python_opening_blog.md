@@ -3890,12 +3890,83 @@
 > ```
 
 
-
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-
-
 ### 7.11 Python 异常处理 & 文件
 
+#### 7.11.1 异常
+> 程序在运行过程当中不可避免的会出现一些错误, 这些错误在程序中称其为异常.
+> 
+> 程序运行过程中, 一旦出现异常将会导致程序立即终止, 异常后的代码将全部无法执行.
+
+##### 7.11.1.1 处理异常
+> 程序运行时出现异常目的并不是让程序直接终止, Python是希望在出现异常时开发者可以编写代码来对异常进行处理.
+> 
+> 处理异常语法: 
+> 
+> 说明: 可以将可能出现异常的代码放入到try语句, 这样如果代码没有错误则会正常执行,如果出现错误则会执行expect子句中的代码, 这样就可以通过代码来处理异常避免因为一个异常导致整个程序的终止.
+> 
+> ```
+> try:
+>         可能出现错误的代码块
+>     except 异常类型 as 异常名:
+>         处理异常 代码块
+>     except 异常类型 as 异常名:
+>         处理异常 代码块
+>     except 异常类型 as 异常名:
+>         处理异常 代码块
+>     else：
+>         无异常执行的代码块   
+>     finally:
+>        最终执行代码块
+> ```
+
+##### 7.11.1.2 抛出异常
+> 当在函数中出现异常时如果在函数中对异常进行处理则异常不会再继续传播,如果函数中没有对异常进行处理则异常会继续向函数调用处传播, 如果函数调用处处理了异常则不再传播, 如果没有处理则继续向调用处传播, 直到传递到全局作用域, 如果依然没有处理则程序终止并且显示异常信息.
+> 
+> 在Python为开发者提供了多个异常对象: [Built-in Exceptions](https://docs.python.org/3.8/library/exceptions.html)
+> 
+> 当程序运行过程中出现异常以后, 所有的异常信息会被保存至专门的异常对象中, 而异常传播时, 实际上就是异常对象抛给了调用处.
+
+
+##### 7.11.1.3 异常对象
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 异常处理和文件操作 | Exception Handling and File Operations
+> # @File : 12_exception_handling_and_file_operations.py
+> # @Description : Python 基础篇 - 异常处理和文件操作 | Python Basics-Exception Handling and File Operations
+> 
+> print('Before the exception')
+> try:
+>     print(10 / 0)
+> # Exception是所有异常类的父类, 所以如果except后跟的是Exception则会捕获到所有的异常
+> except Exception as e:
+>     print('Exception Info', e)
+> finally:
+>     print('无论是否出现异常, 最终该语句都会执行')
+> print('After the exception')
+> ```
+
+##### 7.11.1.4 自定义异常对象
+> 使用`raise`语句来抛出异常, `raise`语句后需要跟一个异常类或异常实例.
+
+
+#### 7.11.2 文件
+> 
+> 
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 
 
 ## 💥 8. Python 高级篇💥
