@@ -43,11 +43,26 @@ data1 = 'Open Source Open Achievement Dream, GeekParkHub Co-construction has nev
 
 # 定义 函数 | Definition function
 def fun2(values):
+    '''
+    r3语句说明:
+                    `r`表示字符串为非转义的原始字符串, 让编译器忽略反斜杠, 也就是忽略转义字符,
+                    但是这个字符串里没有反斜杠, 所以当前`r`可有可无.
+
+    参数说明:
+                第一个匹配分组 (.*)，`.*` 代表匹配除换行符之外所有字符
+                第一个匹配分组 (.*?), `.*?` 后面多个问号代表非贪婪模式, 也就是说只匹配符合条件的最少字符
+                最后 `.*` 没有括号包围, 所以不是分组, 匹配效果和第一组一样, 但是不计入匹配结果中
+                `re.M` 表示多行匹配, 影响 ^ 和 $
+                `re.I` 表示使匹配对大小写不敏感
+    :param values:
+    :return:
+    '''
     r3 = re.match(r'(.*?) .*? Open (.*) .*', values, re.M | re.I)
     if r3:
-        print('r3.group()=', r3.group())
-        print('r3.group(1)=', r3.group(1))
-        print('r3.group(2)=', r3.group(2))
+        print('r3.group()=', r3.group())  # r3.group() 等同于 r3.group(0), 表示匹配到完整文本字符
+        print('r3.group(1)=', r3.group(1))  # r3.group(1) 得到第一组匹配结果, 也就是(.*)匹配到的
+        print('r3.group(2)=', r3.group(2))  # r3.group(2) 得到第二组匹配结果, 也就是(.*?)匹配到的
+        # print('r3.group(3)=', r3.group(3))  # 因为只有匹配结果中只有两组所以如果分组为3时会报错
     else:
         print('Match failed!')
 
@@ -225,6 +240,151 @@ def fun10(values):
     print('r26=', r26)
 
 
+'''
+正则表达式对象 | Regular expression object
+re.RegexObject: `re.compile() 返回 RegexObject 对象`
+re.MatchObject: 
+                        `group() 返回被 RE 匹配的字符串`
+                        `start() 返回匹配开始的位置`
+                        `end() 返回匹配结束的位置`
+                        `span() 返回一个元组包含匹配 (开始,结束) 的位置`
+
+'''
+# 定义常量 | Defining constants
+data8 = '360523198021445754'
+
+
+# 定义 函数 | Definition function
+def fun11(values):
+    '''
+    参数说明:
+                `?` 表示匹配0个或1个由前面的正则表达式定义的片段, 非贪婪方式
+                `P` 表示命名分组, 为当前组起别名
+                '\d' 表示匹配任意数字等价于 [0-9]
+                `{3}` 表示精确匹配n个前面表达式
+    语句说明:
+                `(?P<Province>\d{3})` 表示匹配前三位数字, 并将该组命名为`Province`
+                `(?P<City>\d{3})` 表示表示匹配前三位数字, 并将该组命名为`City`
+                `(?P<BornYear>\d{4})` 表示匹配前四位数字, 并将该组命名为`BornYear`
+    :param values:
+    :return:
+    '''
+    r27 = re.search('(?P<Province>\d{3})(?P<City>\d{3})(?P<BornYear>\d{4})', values)
+    r28 = r27.groupdict()
+    print('r28=', r28)
+
+
+# 正则表达式实例 | Regular expression example
+# 匹配 字符类 | Match character class
+'''
+匹配 "Python" 或 "python" | Matches "Python" or "python"
+'''
+# 定义常量 | Defining constants
+data9 = 'Python'
+r29 = re.match(r'[Pp]', data9, re.M | re.I).group()
+print('r29=', r29)
+
+'''
+匹配 "ruby" 或 "rube" | Matches "ruby" or "rube"
+'''
+# 定义常量 | Defining constants
+data10 = 'rube'
+r30 = re.match(r'rub[ye]', data10, re.M | re.I).group()
+print('r30=', r30)
+
+'''
+匹配中括号内的任意一个字母 | Matches any letter in brackets
+'''
+# 定义常量 | Defining constants
+data11 = 'dswdwdwletters'
+r31 = re.search(r'[letter]', data11, re.M | re.I).group()
+print('r31=', r31)
+
+'''
+匹配任何数字, 类似 [0123456789] | Matches any number, like [0123456789]
+'''
+# 定义常量 | Defining constants
+data12 = '56468547564897748'
+r32 = re.search(r'[0-9]', data12, re.M | re.I).group()
+print('r32=', r32)
+
+'''
+匹配任何小写字母 | Matches any lowercase letter
+'''
+# 定义常量 | Defining constants
+data13 = 'Python'
+r33 = re.search(r'([a-z])', data13, re.M).group()
+print('r33=', r33)
+
+'''
+匹配任何大写字母 | Match any capital letter
+'''
+# 定义常量 | Defining constants
+data14 = 'Ai'
+r34 = re.search(r'([A-Z])', data14, re.M).group()
+print('r34=', r34)
+
+'''
+匹配任何字母及数字 | Match any letter and number
+'''
+# 定义常量 | Defining constants
+data15 = 'rube'
+
+'''
+除了index字母以外的所有字符 | All characters except the index letter
+'''
+# 定义常量 | Defining constants
+data16 = 'rube'
+
+'''
+匹配除了数字外的字符 | Matches characters other than numbers
+'''
+# 定义常量 | Defining constants
+data17 = 'rube'
+
+# 匹配 特殊字符类 | Match special character class
+'''
+匹配除 "\n" 之外的任何单个字符, 要匹配包括 '\n'在内的任何字符, 请使用类似 '[.\n]' 模式
+'''
+# 定义常量 | Defining constants
+data18 = 'rube'
+
+'''
+匹配一个数字字符, 等价于 [0-9] | Matches a numeric character, equivalent to [0-9]
+'''
+# 定义常量 | Defining constants
+data19 = 'rube'
+
+'''
+匹配一个非数字字符。等价于 [^0-9] " | Matches a non-numeric character. Equivalent to [^ 0-9]
+'''
+# 定义常量 | Defining constants
+data20 = 'rube'
+
+'''
+匹配任何空白字符, 包括空格、制表符、换页符等等。等价于 [ \f\n\r\t\v]
+'''
+# 定义常量 | Defining constants
+data21 = 'rube'
+
+'''
+匹配任何非空白字符, 等价于 [^ \f\n\r\t\v] | Matches any non-whitespace character, equivalent to [^ \ f \ n \ r \ t \ v]
+'''
+# 定义常量 | Defining constants
+data22 = 'rube'
+
+'''
+匹配包括下划线的任何单词字符, 等价于'[A-Za-z0-9_]' | Matches any word character including underscore, equivalent to '[A-Za-z0-9_]'
+'''
+# 定义常量 | Defining constants
+data23 = 'rube'
+
+'''
+匹配任何非单词字符, 等价于 '[^A-Za-z0-9_]' | Matches any non-word character, equivalent to '[^ A-Za-z0-9_]'
+'''
+# 定义常量 | Defining constants
+data24 = 'rube'
+
 # 定义 主模块 | Definition Main module
 if __name__ == '__main__':
     fun1()
@@ -236,3 +396,4 @@ if __name__ == '__main__':
     fun8(data5)
     fun9(data6)
     fun10(data7)
+    fun11(data8)
