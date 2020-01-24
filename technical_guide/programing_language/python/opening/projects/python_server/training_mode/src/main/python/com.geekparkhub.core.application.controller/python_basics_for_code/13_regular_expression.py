@@ -328,62 +328,84 @@ print('r34=', r34)
 匹配任何字母及数字 | Match any letter and number
 '''
 # 定义常量 | Defining constants
-data15 = 'rube'
+data15 = 'fe45dwq4'
+r35 = re.search(r'([a-zA-Z0-9])', data15, re.M | re.I).group()
+print('r35=', r35)
 
 '''
 除了index字母以外的所有字符 | All characters except the index letter
 '''
 # 定义常量 | Defining constants
-data16 = 'rube'
+data16 = '4564d4d4wq847d4dqfefindex'
+r36 = re.finditer(r'[^index]', data16)
+for x in r36:
+    print('r36=', x.group())
 
 '''
 匹配除了数字外的字符 | Matches characters other than numbers
 '''
 # 定义常量 | Defining constants
-data17 = 'rube'
+data17 = 'sfe4d55w74f4ef45wf4f45w6f4ew5f5w'
+r37 = re.findall(r'[^0-9]', data17)
+for x in r37:
+    print('r37=', x)
 
 # 匹配 特殊字符类 | Match special character class
 '''
 匹配除 "\n" 之外的任何单个字符, 要匹配包括 '\n'在内的任何字符, 请使用类似 '[.\n]' 模式
 '''
 # 定义常量 | Defining constants
-data18 = 'rube'
+data18 = 'Hello\nWorld!'
+r38 = re.search(r'[^.\n]', data18, re.M | re.I).group()
+print('r38=', r38)
 
 '''
 匹配一个数字字符, 等价于 [0-9] | Matches a numeric character, equivalent to [0-9]
 '''
 # 定义常量 | Defining constants
-data19 = 'rube'
+data19 = '78448522144455487'
+r39 = re.match(r'\d', data19).group()
+print('r39=', r39)
 
 '''
 匹配一个非数字字符。等价于 [^0-9] " | Matches a non-numeric character. Equivalent to [^ 0-9]
 '''
 # 定义常量 | Defining constants
-data20 = 'rube'
+data20 = 'das78df448few5f2214wefe4455487fewfewf'
+r40 = re.match(r'\D', data20).group()
+print('r40=', r40)
 
 '''
 匹配任何空白字符, 包括空格、制表符、换页符等等。等价于 [ \f\n\r\t\v]
 '''
 # 定义常量 | Defining constants
-data21 = 'rube'
+data21 = 'vefewr\fefew\nkkkfj\rdwdw\t4474\vsqsq'
+r41 = re.search(r'\s', data21, re.U | re.I).group()
+print('r41=', r41)
 
 '''
 匹配任何非空白字符, 等价于 [^ \f\n\r\t\v] | Matches any non-whitespace character, equivalent to [^ \ f \ n \ r \ t \ v]
 '''
 # 定义常量 | Defining constants
-data22 = 'rube'
+data22 = 'vefewr\fefew\nkkkfj\rdwdw\t4474\vsqsq'
+r42 = re.search(r'\S', data22, re.M | re.I).group()
+print('r42=', r42)
 
 '''
 匹配包括下划线的任何单词字符, 等价于'[A-Za-z0-9_]' | Matches any word character including underscore, equivalent to '[A-Za-z0-9_]'
 '''
 # 定义常量 | Defining constants
-data23 = 'rube'
+data23 = 'qsq454_qsq44dqw475d'
+r43 = re.search(r'\w', data23, re.M | re.I).group()
+print('r43=', r43)
 
 '''
 匹配任何非单词字符, 等价于 '[^A-Za-z0-9_]' | Matches any non-word character, equivalent to '[^ A-Za-z0-9_]'
 '''
 # 定义常量 | Defining constants
-data24 = 'rube'
+data24 = 'qsq45_4qsq\t44dqw4_75d'
+r44 = re.search(r'[\W]', data24, re.M | re.I).group()
+print('r44=', r44)
 
 # 定义 主模块 | Definition Main module
 if __name__ == '__main__':

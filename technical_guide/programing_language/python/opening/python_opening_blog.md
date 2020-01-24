@@ -4543,12 +4543,163 @@
 > | `\10`   |   匹配第n个分组的内容, 如果它经匹配, 否则指的是八进制字符码的表达式 |
 > 
 > **5. 正则表达式实例**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 正则表达式 | Regular expression
+> # @File : 13_regular_expression.py
+> # @Description : Python 进阶篇 - 正则表达式 | Python Advanced articles - Regular Expressions
+> 
+> # 正则表达式实例 | Regular expression example
+> # 匹配 字符类 | Match character class
+> '''
+> 匹配 "Python" 或 "python" | Matches "Python" or "python"
+> '''
+> # 定义常量 | Defining constants
+> data9 = 'Python'
+> r29 = re.match(r'[Pp]', data9, re.M | re.I).group()
+> print('r29=', r29)
+> 
+> '''
+> 匹配 "ruby" 或 "rube" | Matches "ruby" or "rube"
+> '''
+> # 定义常量 | Defining constants
+> data10 = 'rube'
+> r30 = re.match(r'rub[ye]', data10, re.M | re.I).group()
+> print('r30=', r30)
+> 
+> '''
+> 匹配中括号内的任意一个字母 | Matches any letter in brackets
+> '''
+> # 定义常量 | Defining constants
+> data11 = 'dswdwdwletters'
+> r31 = re.search(r'[letter]', data11, re.M | re.I).group()
+> print('r31=', r31)
+> 
+> '''
+> 匹配任何数字, 类似 [0123456789] | Matches any number, like [0123456789]
+> '''
+> # 定义常量 | Defining constants
+> data12 = '56468547564897748'
+> r32 = re.search(r'[0-9]', data12, re.M | re.I).group()
+> print('r32=', r32)
+> 
+> '''
+> 匹配任何小写字母 | Matches any lowercase letter
+> '''
+> # 定义常量 | Defining constants
+> data13 = 'Python'
+> r33 = re.search(r'([a-z])', data13, re.M).group()
+> print('r33=', r33)
+> 
+> '''
+> 匹配任何大写字母 | Match any capital letter
+> '''
+> # 定义常量 | Defining constants
+> data14 = 'Ai'
+> r34 = re.search(r'([A-Z])', data14, re.M).group()
+> print('r34=', r34)
+> 
+> '''
+> 匹配任何字母及数字 | Match any letter and number
+> '''
+> # 定义常量 | Defining constants
+> data15 = 'fe45dwq4'
+> r35 = re.search(r'([a-zA-Z0-9])', data15, re.M | re.I).group()
+> print('r35=', r35)
+> 
+> '''
+> 除了index字母以外的所有字符 | All characters except the index letter
+> '''
+> # 定义常量 | Defining constants
+> data16 = '4564d4d4wq847d4dqfefindex'
+> r36 = re.finditer(r'[^index]', data16)
+> for x in r36:
+>     print('r36=', x.group())
+> 
+> '''
+> 匹配除了数字外的字符 | Matches characters other than numbers
+> '''
+> # 定义常量 | Defining constants
+> data17 = 'sfe4d55w74f4ef45wf4f45w6f4ew5f5w'
+> r37 = re.findall(r'[^0-9]', data17)
+> for x in r37:
+>     print('r37=', x)
+> 
+> # 匹配 特殊字符类 | Match special character class
+> '''
+> 匹配除 "\n" 之外的任何单个字符, 要匹配包括 '\n'在内的任何字符, 请使用类似 '[.\n]' 模式
+> '''
+> # 定义常量 | Defining constants
+> data18 = 'Hello\nWorld!'
+> r38 = re.search(r'[^.\n]', data18, re.M | re.I).group()
+> print('r38=', r38)
+> 
+> '''
+> 匹配一个数字字符, 等价于 [0-9] | Matches a numeric character, equivalent to [0-9]
+> '''
+> # 定义常量 | Defining constants
+> data19 = '78448522144455487'
+> r39 = re.match(r'\d', data19).group()
+> print('r39=', r39)
+> 
+> '''
+> 匹配一个非数字字符。等价于 [^0-9] " | Matches a non-numeric character. Equivalent to [^ 0-9]
+> '''
+> # 定义常量 | Defining constants
+> data20 = 'das78df448few5f2214wefe4455487fewfewf'
+> r40 = re.match(r'\D', data20).group()
+> print('r40=', r40)
+> 
+> '''
+> 匹配任何空白字符, 包括空格、制表符、换页符等等。等价于 [ \f\n\r\t\v]
+> '''
+> # 定义常量 | Defining constants
+> data21 = 'vefewr\fefew\nkkkfj\rdwdw\t4474\vsqsq'
+> r41 = re.search(r'\s', data21, re.U | re.I).group()
+> print('r41=', r41)
+> 
+> '''
+> 匹配任何非空白字符, 等价于 [^ \f\n\r\t\v] | Matches any non-whitespace character, equivalent to [^ \ f \ n \ r \ t \ v]
+> '''
+> # 定义常量 | Defining constants
+> data22 = 'vefewr\fefew\nkkkfj\rdwdw\t4474\vsqsq'
+> r42 = re.search(r'\S', data22, re.M | re.I).group()
+> print('r42=', r42)
+> 
+> '''
+> 匹配包括下划线的任何单词字符, 等价于'[A-Za-z0-9_]' | Matches any word character including underscore, equivalent to '[A-Za-z0-9_]'
+'''
+> # 定义常量 | Defining constants
+> data23 = 'qsq454_qsq44dqw475d'
+> r43 = re.search(r'\w', data23, re.M | re.I).group()
+> print('r43=', r43)
+> 
+> '''
+> 匹配任何非单词字符, 等价于 '[^A-Za-z0-9_]' | Matches any non-word character, equivalent to '[^ A-Za-z0-9_]'
+> '''
+> # 定义常量 | Defining constants
+> data24 = 'qsq45_4qsq\t44dqw4_75d'
+> r44 = re.search(r'[\W]', data24, re.M | re.I).group()
+> print('r44=', r44)
+> ```
 
-
-
+### 8.2 Python CGI 编程
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-### 8.2 Python CGI 编程
+
 ### 8.3 Python MySQL
 ### 8.4 Python 网络编程
 ### 8.5 Python SMTP
