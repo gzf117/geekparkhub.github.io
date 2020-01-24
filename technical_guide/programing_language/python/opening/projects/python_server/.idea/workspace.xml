@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4cdd7094-07f3-48f7-b482-148a3a7f8d65" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/14_web_development.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -260,7 +259,7 @@
       <workItem from="1579739958198" duration="46000" />
       <workItem from="1579741922992" duration="35714000" />
       <workItem from="1579799632069" duration="110000" />
-      <workItem from="1579825503334" duration="7773000" />
+      <workItem from="1579825503334" duration="8941000" />
     </task>
     <servers />
   </component>
