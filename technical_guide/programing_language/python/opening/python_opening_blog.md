@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-1-25)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-1-26)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -4863,6 +4863,94 @@
 
 
 #### 8.2.4 WSGI 接口
+> 了解了HTTP协议和HTML文档, 其实就明白了一个Web应用的本质就是:
+> - 1 .浏览器发送一个HTTP请求.
+> - 2.服务器收到请求, 生成一个HTML文档.
+> - 3.服务器把HTML文档作为HTTP响应的Body发送给浏览器.
+> - 4.浏览器收到HTTP响应, 从HTTP Body取出HTML文档并显示.
+> 
+> 所以最简单的Web应用就是先把HTML用文件保存好, 用一个现成的HTTP服务器软件接收用户请求, 从文件中读取HTML，返回.
+> 正确的做法是底层代码由专门的服务器软件实现, 使用Python专注于生成HTML文档, 因为我们不希望接触到TCP连接、HTTP原始请求和响应格式, 所以需要一个统一的接口, 专心用Python编写Web业务.
+> 
+> 这个接口就是`WSGI`：(`Web Server Gateway Interface`)
+> 
+> WSGI接口定义非常简单, 它只要求Web开发者实现一个函数就可以响应HTTP请求, 下面演示最简单的Web版本的“Hello, web!”
+> **1. 定义 WSGI处理函数**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : Web开发 | Web development
+> # @File : _14_web_development.py
+> # @Description : Python 进阶篇 - Web开发 | Advanced Python - Web Development
+> 
+> # WSGI 接口 | WSGI interface
+> 
+> # 定义 HTTP处理函数 | Define HTTP handler function
+> '''
+> 参数说明:
+>             `env` 包含所有HTTP请求信息的字典对象
+>             `start_response` 发送HTTP响应的函数
+> '''
+> 
+> 
+> def wsgi_function(env, start_response):
+>     start_response('200 OK', [('Content-Type', 'text/html')])
+>     body = '<h1>Hello %s !</h1>' % (env['PATH_INFO'][1:] or 'web')
+>     return [body.encode('UTF-8')]
+> ```
+> 
+> **2. 定义 启动WSGI函数**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : Web开发 | Web development
+> # @File : __init__.py.py
+> # @Description : Python 进阶篇 - Web开发 | Advanced Python - Web Development
+> 
+> # 导入模块 | Import module
+> from wsgiref.simple_server import make_server as mk
+> from _14_web_development._14_web_development import wsgi_function as wd
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 启动WSGI服务器 | Start the WSGI server
+>     httpd = mk('', 9800, wd)
+>     print('Serving HTTP on port 9800...')
+>     httpd.serve_forever()
+> ```
+> **3. 启动 服务端口**
+> ```
+> 127.0.0.1 - - [26/] "GET /main HTTP/1.1" 200 21
+> 127.0.0.1 - - [26/] "GET /favicon.ico HTTP/1.1" 200 28
+> 127.0.0.1 - - [26/] "GET /world HTTP/1.1" 200 22
+> 127.0.0.1 - - [26/] "GET /favicon.ico HTTP/1.1" 200 28
+> 127.0.0.1 - - [26/] "GET /system HTTP/1.1" 200 23
+> ```
+
 #### 8.2.5 Web 框架
 #### 8.2.6 使用模板
 
