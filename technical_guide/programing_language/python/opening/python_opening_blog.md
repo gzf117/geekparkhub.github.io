@@ -4952,7 +4952,280 @@
 > ```
 
 #### 8.2.5 Web 框架
-#### 8.2.6 使用模板
+> 了解了WSGI框架并发现就是编写一个WSGI的处理函数, 针对每个HTTP请求进行响应.
+> 
+> 由于用Python开发一个Web框架十分容易, 所以Python有上百个开源的Web框架, 选择一个比较流行的Web框架——Flask来使用.
+> 
+> **1. 安装flask API**
+> ```
+> (venv) systemhub:python_server system$ pip install flask
+> Collecting flask
+> ```
+> 
+> **2. 编写处理程序**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : flask_server
+> # @File : flask_server.py
+> # @Description : Python 进阶篇 - Web开发 | Advanced Python - Web Development
+> 
+> # 导入模块 | Import module
+> from flask import Flask
+> from flask import request as req
+> 
+> # 初始化 | initialization
+> service = Flask(__name__)
+> '''
+> 请求类型 & 处理响应说明: 
+>     请求类型：GET请求 | 处理响应：'/'  返回Home首页
+>    请求类型：GET请求 | 处理响应：`/signin` 返回登录页, 显示登录表单
+>     请求类型：POST | 处理响应：`/signin` 处理登录表单，显示登录结果
+> '''
+> 
+> 
+> # 定义 处理Home路由 | Define Handle Home routing
+> @service.route('/', methods=['GET', 'POST'])
+> # 定义 处理响应函数 | Definition Processing Response Function
+> def home():
+>     return '''
+>     <h1>Welcome to Home</h1> 
+>     <p><a href="/signin">Sign In</a></p>
+>     '''
+> 
+> 
+> # 定义 处理登录路由 | Definition Handle Login Route
+> @service.route('/signin', methods=['GET'])
+> # 定义 处理响应函数 | Definition Processing Response Function
+> def signin_form():
+>     return '''
+>     <form action="/signin" method="post">
+>     <p><input name="UserName"/></p>
+>     <p><input name="PassWord" type="password"/></p>
+>     <p><a href="/">Return Home</a></p>
+>     <p><button type="submit">Sign In</button></p>
+>     </form>
+>     '''
+> 
+> 
+> # 定义 登录路由 | Define login routes
+> @service.route('/signin', methods=['POST'])
+> # 定义 处理响应函数 | Definition Processing Response Function
+> def signin():
+>     # 验证登录信息 | Verify login information
+>     if req.form['UserName'] == 'Admin' and req.form['PassWord'] == 'password':
+>         return '''
+>         <h3>Hello Admin!</h3> <p><a href="/">Return Home</a></p>
+>         '''
+>     return '<h3>Bad UserName or PassWord.</h3>'
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 启动运行服务 | Start running service
+>     service.run()
+> ```
+> 
+> **3. 启动 服务端口**
+> ```
+> * Serving Flask app "flask_server" (lazy loading)
+> * Environment: production
+> WARNING: This is a development server. Do not use it in a production deployment.
+> Use a production WSGI server instead.
+> * Debug mode: off
+> * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+> 127.0.0.1 - - [2] "GET / HTTP/1.1" 200 -
+> 127.0.0.1 - - [2] "GET /signin HTTP/1.1" 200 -
+> 127.0.0.1 - - [2] "POST /signin HTTP/1.1" 200 -
+> 127.0.0.1 - - [2] "GET / HTTP/1.1" 200 -
+> ```
+> 
+> 实际的Web应该拿到用户名和口令后与数据库查询再比对, 来判断用户是否能登录成功.
+> 
+> 除了Flask, 常见的Python Web框架还有: 
+> 
+> [全能型Web框架 `Django`](https://www.djangoproject.com/) | [小巧的Web框架 `web.py`](http://webpy.org/)
+> 
+> [和Flask类似的Web框架 `Bottle`](http://bottlepy.org/) | [Facebook的开源异步Web框架 `Tornado`](http://www.tornadoweb.org/)
+
+
+#### 8.2.6 Web Template
+> Web框架把WSGI中拯救出来了, 现在只需要不断地编写函数带上URL, 就可以继续开发Web App.
+> 
+> 由于在Python代码里拼字符串是不现实的, 所以模板技术出现了.
+> 
+> 使用模板, 需要预先准备一个HTML文档, 该HTML文档不是普通的HTML, 而是嵌入了一些变量和指令, 然后根据传入的数据替换后得到最终的HTML发送给用户, 该过程称之为MVC：`Model-View-Controller`: 模型-视图-控制器
+> 
+> ![enter image description here | center](https://www.liaoxuefeng.com/files/attachments/951383573211136)
+> 
+> Python处理URL的函数就是C(控制器)：Controller负责业务逻辑, 比如检查用户名是否存在, 获取用户信息等等.
+> 
+> 包含变量`{{ name }}`的模板就是V(视图层)：View负责显示逻辑, 通过简单地替换一些变量, View最终输出的就是用户看到的HTML.
+> 
+> Model是用来传给View(视图层), 这样View在替换变量的时候就可以从Model中取出相应的数据, 只是因为Python支持关键字参数, 很多Web框架允许传入关键字参数, 然后在框架内部组装出一个dict作为Model.
+> 
+> Flask通过`render_template()`函数来实现模板的渲染, 和Web框架类似Python的模板也有很多种, Flask默认支持的模板是`jinja2`
+> 
+> **1. 安装 jinja2**
+> ```
+> (venv) systemhub:python_server system$ pip install jinja2
+> ```
+> 
+> **2. 编写 模板**
+> 
+> - 2.1 home.html | 用来显示首页模板
+> 
+> ``` html
+> <!DOCTYPE html>
+> <html lang="en">
+> <head>
+>     <meta charset="UTF-8">
+>     <title>Home Page</title>
+> </head>
+> <body>
+> <h1 style="font-style:italic">Home</h1>
+> </body>
+> </html>
+> ```
+> 
+> - 2.2 login.html | 用来显示登录表单模板
+> 
+> ``` html
+> <!DOCTYPE html>
+> <html lang="en">
+> <head>
+>     <meta charset="UTF-8">
+>     <title>Please Sign In</title>
+> </head>
+> <body>
+> {% if message %}
+> <p style="color:red">{{ message }}</p>
+> {% endif %}
+> <form action="/signin" method="post">
+>     <legend>Please sign in:</legend>
+>     <p><input name="username" placeholder="Username" value="{{ username }}"></p>
+>     <p><input name="password" placeholder="Password" type="password"></p>
+>     <p><button type="submit">Sign In</button></p>
+> </form>
+> </body>
+> </html>
+> ```
+> 
+> - 2.3 main.html | 登录成功后个人主页模板
+> 
+> ```
+> <!DOCTYPE html>
+> <html lang="en">
+> <head>
+>     <meta charset="UTF-8">
+>     <title>Welcome, {{ username }}</title>
+> </head>
+> <body>
+> <p>Welcome, {{ username }}!</p>
+> </body>
+> </html>
+> ```
+> 
+> **3. 编写控制层 服务**
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : mvc_server
+> # @File : mvc_server.py
+> # @Description : Python 进阶篇 - Web开发 | Advanced Python - Web Development
+> 
+> # 导入模块 | Import module
+> from flask import Flask, request as req, render_template as rt
+> 
+> # 初始化 | initialization
+> service = Flask(__name__)
+> 
+> '''
+> 请求类型 & 处理响应说明: 
+>     请求类型：GET请求 | 处理响应：'/'  返回Home首页
+>     请求类型：GET请求 | 处理响应：`/signin` 返回登录页, 显示登录表单
+>     请求类型：POST | 处理响应：`/signin` 处理登录表单，显示登录结果
+> '''
+> 
+> 
+> # 定义 处理Home路由 | Define Handle Home routing
+> @service.route('/', methods=['GET', 'POST'])
+> # 定义 处理响应函数 | Definition Processing Response Function
+> def home():
+>     return rt('home.html')
+> 
+> 
+> # 定义 处理登录路由 | Definition Handle Login Route
+> @service.route('/signin', methods=['GET'])
+> # 定义 处理响应函数 | Definition Processing Response Function
+> def login():
+>     return rt('login.html')
+> 
+> 
+> # 定义 登录路由 | Define login routes
+> @service.route('/signin', methods=['POST'])
+> # 定义 处理响应函数 | Definition Processing Response Function
+> def signin():
+>     # 验证登录信息 | Verify login information
+>     username = req.form['username']
+>     password = req.form['password']
+>     if username == 'Admin' and password == '0000x':
+>         return rt('main.html', username=username)
+>     return rt('login.html', message='Bad username or password', username=username)
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 启动运行服务 | Start running service
+>     service.run()
+> ```
+> **4. 启动 MVC服务**
+> ```
+> * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
+>  * Serving Flask app "mvc_server" (lazy loading)
+>  * Environment: production
+>    WARNING: This is a development server. Do not use it in a production deployment.
+>    Use a production WSGI server instead.
+>  * Debug mode: off
+>  127.0.0.1 - - [26] "GET / HTTP/1.1" 200 -
+>  127.0.0.1 - - [2] "GET /signin HTTP/1.1" 200 -
+>  127.0.0.1 - - [2] "POST /signin HTTP/1.1" 200 -
+> ```
+> 
+> 通过MVC在Python代码中处理M：Model和C：Controller，而V：View是通过模板处理的, 这样就成功地把Python代码和HTML代码最大限度地分离了.
+> 
+> 使用模板的另一大好处是模板改起来很方便, 而且改完保存后刷新浏览器就能看到最新的效果.
+> 除了Jinja2, 常见的模板还有
+> - [Mako：用<% ... %>和${xxx}的一个模板](http://www.makotemplates.org/)
+> - [Cheetah：也是用<% ... %>和${xxx}的一个模板](http://www.cheetahtemplate.org/)
+> - [Django：Django是一站式框架，内置一个用{% ... %}和{{ xxx }}的模板](https://www.djangoproject.com/)
+
+
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 
