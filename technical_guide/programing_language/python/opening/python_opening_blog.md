@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-1-26)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-1-27)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -5220,16 +5220,167 @@
 > 通过MVC在Python代码中处理M：Model和C：Controller，而V：View是通过模板处理的, 这样就成功地把Python代码和HTML代码最大限度地分离了.
 > 
 > 使用模板的另一大好处是模板改起来很方便, 而且改完保存后刷新浏览器就能看到最新的效果.
-> 除了Jinja2, 常见的模板还有
+> 除了Jinja2, 常见的模板还有: 
 > - [Mako：用<% ... %>和${xxx}的一个模板](http://www.makotemplates.org/)
 > - [Cheetah：也是用<% ... %>和${xxx}的一个模板](http://www.cheetahtemplate.org/)
 > - [Django：Django是一站式框架，内置一个用{% ... %}和{{ xxx }}的模板](https://www.djangoproject.com/)
 
 
+### 8.3 Python DataBase
+#### 8.3.1 前言
+> 程序运行的时数据都是在内存中的, 当程序终止的时, 通常都需要将数据保存到磁盘上, 无论是保存到本地磁盘, 还是通过网络保存到服务器上最终都会将数据写入磁盘文件.
+> 
+> 为了便于程序保存和读取数据, 而且能直接通过条件快速查询到指定的数据, 就出现了数据库(Database)这种专门用于集中存储和查询的软件.
+> 
+> 数据库软件诞生的历史非常久远, 早在1950年数据库就诞生了, 经历了网状数据库, 层次数据库, 现在广泛使用的关系数据库是20世纪70年代基于关系模型的基础上诞生的.
+> 
+
+#### 8.3.2 SQLite
+> SQLite是一种嵌入式数据库, 它的数据库就是一个文件, 由于SQLite本身是C写的而且体积很小, 所以经常被集成到各种应用程序中, 甚至在iOS和Android的App中都可以集成.
+> 
+> Python定义了一套操作数据库的API接口, 任何数据库要连接到Python, 只需要提供符合Python标准的数据库驱动即可.
+> 
+> 由于SQLite的驱动内置在Python标准库中, 所以可以直接来操作SQLite数据库.
+> 
+> 使用Python的DB-API时, 只要搞清楚`Connection`和`Cursor`对象, 打开后一定记得关闭就可以放心地使用.
+> 
+> 使用`Cursor`对象执行`insert`, `update`, `delete`语句时, 执行结果由`rowcount`返回影响的行数就可以拿到执行结果.
+> 
+> 使用`Cursor`对象执行`select`语句时通过`featchall()`可以拿到结果集, 结果集是一个`list`, 每个元素都是一个`tuple`对应一行记录.
+> 
+> 在Python中操作数据库时, 要先导入数据库对应的驱动, 然后通过`Connection对象`和`Cursor对象`操作数据.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据库 | database
+> # @File : 15_database.py
+> # @Description : Python 进阶篇 - 数据库 | Advanced Python-Database
+> 
+> # 导入模块 | Import module
+> import sqlite3 as sl
+> import os as o
+> 
+> # 数据库 for SQLite | Database for SQLite
+> 
+> # 定义 函数 | Defining functions
+> def database_for_sqlite_insert():
+>     '''
+>     连接到SQLite数据库, 数据库文件是test.db
+>     如果文件不存在则自动在当前目录创建
+>     '''
+>     connection = sl.connect('test.db')
+> 
+>     # 创建 Cursor | Create Cursor
+>     cursor = connection.cursor()
+> 
+>     # 创建 数据表 | Create data table
+>     cursor.execute('create table user (id varchar(20) primary key, name varchar(20))')
+> 
+>     # 创建 插入语句 | Create insert statement
+>     cursor.execute('insert into user (id, name) values (\'1\', \'system\')')
+> 
+>     # 通过rowcount获得插入的行数 | Get the number of inserted rows by rowcount
+>     print('rowcount=', cursor.rowcount)
+> 
+>     # 关闭Cursor | Close Cursor
+>     cursor.close()
+> 
+>     # 提交事务 | Commit transaction
+>     connection.commit()
+> 
+>     # 关闭资源 | Close resource
+>     connection.close()
+> 
+> 
+> def database_for_sqlite_select():
+>     '''
+>     连接到SQLite数据库, 数据库文件是test.db
+>     如果文件不存在则自动在当前目录创建
+>     '''
+> 
+>     connection = sl.connect('test.db')
+> 
+>     # 创建 Cursor | Create Cursor
+>     cursor = connection.cursor()
+> 
+>     # 执行查询语句 | Execute query
+>     cursor.execute('select * from user where id=?', '1')
+> 
+>     # 获得查询结果集 | Get query result set
+>     values = cursor.fetchall()
+>     print('values=', values)
+> 
+>     # 关闭Cursor | Close Cursor
+>     cursor.close()
+> 
+>     # 关闭资源 | Close resource
+>     connection.close()
+> 
+> # 定义 类 | Definition class
+> class Student:
+>     # 定义 初始化 方法 | Define initialization method
+>     def __init__(self):
+>         db_file = o.path.join(o.path.dirname(__file__), 'student_test.db')
+>         if o.path.isfile(db_file):
+>             o.remove(db_file)
+>         # 创建 连接 | Create connection
+>         conn = sl.connect(db_file)
+>         # 创建 Cursor | Create Cursor
+>         cursor = conn.cursor()
+>         cursor.execute('create table student(id varchar(20) primary key, name varchar(20), score int)')
+>         cursor.execute(r"insert into student values ('A-001', 'Adam', 95)")
+>         cursor.execute(r"insert into student values ('A-002', 'Bart', 62)")
+>         cursor.execute(r"insert into student values ('A-003', 'Lisa', 78)")
+>         cursor.close()
+>         conn.commit()
+>         conn.close()
+> 
+>     # 定义 方法 | 返回指定分数区间的姓名, 按分数从低到高排序
+>     def get_score_in(self, low, high):
+>         global cursor, connection
+>         try:
+>             connection = sl.connect('student_test.db')
+>             cursor = connection.cursor()
+>             cursor.execute('select name from student where score >=? and score <=? order by score', (low, high))
+>             values = cursor.fetchall()
+>             return list(map(lambda v: v[0], values))
+>         except BaseException as e:
+>             print('Connection Error!', e)
+>         finally:
+>             cursor.close()
+>             connection.close()
+>     
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用 函数 | call function
+>     database_for_sqlite_insert()
+>     database_for_sqlite_select()
+>         s = Student()
+>     s.__init__()
+>     print('score: 80~95=', s.get_score_in(80, 95))
+>     print('score: 60~80=', s.get_score_in(60, 80))
+>     print('score: 60~100=', s.get_score_in(60, 100))
+> ```
+
+#### 8.3.3 MySQL
+#### 8.3.4 SQLAlchemy
+
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 
-### 8.3 Python MySQL
 ### 8.4 Python 网络编程
 ### 8.5 Python SMTP
 ### 8.6 Python 多线程
@@ -5245,7 +5396,7 @@
 
 
 
-## 8. 修仙之道 技术架构迭代 登峰造极之势
+## 9. 修仙之道 技术架构迭代 登峰造极之势
 ![Alt text](https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/technical_framework.jpg)
 
 -----
