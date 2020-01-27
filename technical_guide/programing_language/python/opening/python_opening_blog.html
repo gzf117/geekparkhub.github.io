@@ -172,10 +172,16 @@
 <li><a href="#834-sqlalchemy">8.3.4 SQLAlchemy</a></li>
 </ul>
 </li>
+<li><a href="#84-python-网络编程">8.4 Python 网络编程</a><ul>
+<li><a href="#841-前言">8.4.1 前言</a></li>
+<li><a href="#842-tcpip-简介">8.4.2 TCP/IP 简介</a></li>
+<li><a href="#843-tcp-编程">8.4.3 TCP 编程</a></li>
+<li><a href="#844-udp-编程">8.4.4 UDP 编程</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</a><ul>
-<li><a href="#84-python-网络编程">8.4 Python 网络编程</a></li>
 <li><a href="#85-python-smtp">8.5 Python SMTP</a></li>
 <li><a href="#86-python-多线程">8.6 Python 多线程</a></li>
 <li><a href="#87-python-xml-解析">8.7 Python XML 解析</a></li>
@@ -5840,15 +5846,234 @@
 
 <h4 id="833-mysql">8.3.3 MySQL</h4>
 
-
+<blockquote>
+  <p>MySQL是Web世界中使用最广泛的数据库服务器, SQLite的特点是轻量级、可嵌入, 但不能承受高并发访问, 适合桌面和移动应用, 而MySQL是为服务器端设计的数据库能承受高并发访问, 同时占用的内存也远远大于SQLite, 此外MySQL内部有多种数据库引擎, 最常用的引擎是支持数据库事务的InnoDB.</p>
+  
+  <p><strong>安装MySQL驱动</strong> <br>
+  由于MySQL服务器以独立的进程运行并通过网络对外服务, 所以需要支持Python的MySQL驱动来连接到MySQL服务器, MySQL官方提供了mysql-connector-python驱动, 但是安装的时候需要给pip命令加上参数<code>--allow-external</code></p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="hljs gams"><div class="hljs-line"><span class="hljs-comment line-number">1.</span>(venv) systemhub:python_server <span class="hljs-keyword">system</span><span class="hljs-symbol">$</span> pip install mysql-connector
+</div></code></pre>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 数据库 | database</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 15_database.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 数据库 | Advanced Python-Database</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">import</span> sqlite3 <span class="hljs-keyword">as</span> sl
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-keyword">import</span> os <span class="hljs-keyword">as</span> o
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><span class="hljs-comment"># install mysql-connector-python:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># pip3 install mysql-connector-python --allow-external mysql-connector-python</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-keyword">import</span> mysql.connector
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><span class="hljs-comment"># 数据库 for MySQL | Database for MySQL</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-comment"># 定义 函数 | Defining functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">database_for_mysql</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>    <span class="hljs-comment"># change root password to yours:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>    conn = mysql.connector.connect(user=<span class="hljs-string">'root'</span>, password=<span class="hljs-string">'password'</span>, database=<span class="hljs-string">'test'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    cursor = conn.cursor()
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>    <span class="hljs-comment"># 创建user表</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>    cursor.execute(<span class="hljs-string">'create table user (id varchar(20) primary key, name varchar(20))'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>    <span class="hljs-comment"># 插入一行记录，注意MySQL的占位符是%s:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>    cursor.execute(<span class="hljs-string">'insert into user (id, name) values (%s, %s)'</span>, (<span class="hljs-string">'1'</span>, <span class="hljs-string">'system'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>    print(<span class="hljs-string">'rowcount ='</span>, cursor.rowcount)
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>    <span class="hljs-comment"># 提交事务 | Commit transaction</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>    conn.commit()
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>   <span class="hljs-comment"># 关闭资源 | Close resource</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>    cursor.close()
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>    <span class="hljs-comment"># 运行查询</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>    cursor = conn.cursor()
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>    cursor.execute(<span class="hljs-string">'select * from user where id = %s'</span>, (<span class="hljs-string">'1'</span>,))
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>    values = cursor.fetchall()
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>    print(values)
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>    <span class="hljs-comment"># 关闭Cursor和Connection:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>    cursor.close()
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>    conn.close()
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>    <span class="hljs-comment"># 调用 函数 | call function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>    database_for_mysql()
+</div></code></pre>
+</blockquote>
 
 <h4 id="834-sqlalchemy">8.3.4 SQLAlchemy</h4>
 
-<h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
+<blockquote>
+  <p>数据库表是一个二维表, 包含多行多列, 把一个表的内容用Python的数据结构表示出来的话, 可以用一个list表示多行, list的每一个元素是tuple表示一行记录, 比如包含id和name的user表: </p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="hljs scheme"><div class="hljs-line"><span class="hljs-comment line-number">1.</span>[
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span>    (<span class="hljs-symbol">'1</span>', <span class="hljs-symbol">'system001</span>'),
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span>    (<span class="hljs-symbol">'2</span>', <span class="hljs-symbol">'system002</span>'),
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span>    (<span class="hljs-symbol">'3</span>', <span class="hljs-symbol">'system003</span>')
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span>]
+</div></code></pre>
+  
+  <p>Python的DB-API返回的数据结构就是像上面这样表示.</p>
+  
+  <p>但是用tuple表示一行很难看出表的结构, 如果把一个tuple用class实例来表示就可以更容易地看出表的结构来：</p>
+  
+  <p>Object-Relational Mapping, 把关系数据库的表结构映射到对象上简称为(对象关系映射)<code>ORM</code>.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span><span class="hljs-params">(object)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, id, name)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span>        self.id = id
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span>        self.name = name
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span>[
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span>    User(<span class="hljs-string">'1'</span>, <span class="hljs-string">'system001'</span>),
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span>    User(<span class="hljs-string">'2'</span>, <span class="hljs-string">'system002'</span>),
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span>    User(<span class="hljs-string">'3'</span>, <span class="hljs-string">'system003'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span>]
+</div></code></pre>
+  
+  <p>在Python中最有名的ORM框架是SQLAlchemy, 下面看看SQLAlchemy用法:</p>
+  
+  <p><strong>安装SQLAlchemy</strong></p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="hljs cmake"><div class="hljs-line"><span class="hljs-comment line-number">1.</span>pip <span class="hljs-keyword">install</span> sqlalchemy
+</div></code></pre>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 数据库 | database</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 15_database.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 数据库 | Advanced Python-Database</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">import</span> sqlite3 <span class="hljs-keyword">as</span> sl
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-keyword">import</span> os <span class="hljs-keyword">as</span> o
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><span class="hljs-comment"># install mysql-connector-python:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># pip3 install mysql-connector-python --allow-external mysql-connector-python</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-keyword">import</span> mysql.connector
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-keyword">from</span> sqlalchemy <span class="hljs-keyword">import</span> Column, String, create_engine
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><span class="hljs-keyword">from</span> sqlalchemy.orm <span class="hljs-keyword">import</span> sessionmaker
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-keyword">from</span> sqlalchemy.ext.declarative <span class="hljs-keyword">import</span> declarative_base
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-comment"># 数据库 for SQL Alchemy | Database for SQL Alchemy</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><span class="hljs-comment"># 定义 函数 | Defining functions</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">database_for_sqlalchemy</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-comment"># 创建对象的基类:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>    Base = declarative_base()
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>    <span class="hljs-comment"># 定义User对象:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>    <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span><span class="hljs-params">(Base)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>        <span class="hljs-comment"># 表的名字:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>        __tablename__ = <span class="hljs-string">'user'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>        <span class="hljs-comment"># 表的结构:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>        id = Column(String(<span class="hljs-number">20</span>), primary_key=<span class="hljs-keyword">True</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>        name = Column(String(<span class="hljs-number">20</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>    <span class="hljs-comment"># 初始化数据库连接:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>    engine = create_engine(<span class="hljs-string">'mysql+mysqlconnector://root:password@localhost:3306/test'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>    <span class="hljs-comment"># 创建DBSession类型:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>    DBSession = sessionmaker(bind=engine)
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>    <span class="hljs-comment"># 创建session对象:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>    session = DBSession()
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>    <span class="hljs-comment"># 创建新User对象:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>    new_user = User(id=<span class="hljs-string">'5'</span>, name=<span class="hljs-string">'Bob'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>    <span class="hljs-comment"># 添加到session:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>    session.add(new_user)
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>    <span class="hljs-comment"># 提交即保存到数据库:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>    session.commit()
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>    <span class="hljs-comment"># 关闭session:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>    session.close()
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span>    <span class="hljs-comment"># 创建Session:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>    session = DBSession()
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span>    <span class="hljs-comment"># 创建Query查询，filter是where条件，最后调用one()返回唯一行，如果调用all()则返回所有行:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span>    user = session.query(User).filter(User.id == <span class="hljs-string">'5'</span>).one()
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span>    <span class="hljs-comment"># 打印类型和对象的name属性:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span>    print(<span class="hljs-string">'type:'</span>, type(user))
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span>    print(<span class="hljs-string">'name:'</span>, user.name)
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span>    <span class="hljs-comment"># 关闭Session:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span>    session.close()
+</div><div class="hljs-line"><span class="hljs-comment line-number">69.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">70.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">71.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:    
+</div><div class="hljs-line"><span class="hljs-comment line-number">72.</span>      database_for_sqlalchemy() 
+</div></code></pre>
+</blockquote>
 
 <h3 id="84-python-网络编程">8.4 Python 网络编程</h3>
 
 
+
+<h4 id="841-前言">8.4.1 前言</h4>
+
+<blockquote>
+  <p>自从互联网诞生以来, 现在基本上所有的程序都是网络程序, 很少有单机版的程序.</p>
+  
+  <p>由于你的电脑上可能不止浏览器, 还有QQ、Skype、Dropbox、邮件客户端等, 不同的程序连接的别的计算机也会不同, 所以, 更确切地说网络通信是两台计算机上的两个进程之间的通信, 比如浏览器进程和新浪服务器上的某个Web服务进程在通信, 而QQ进程是和腾讯的某个服务器上的某个进程在通信.</p>
+  
+  <p>网络编程对所有开发语言都是一样, Python也不例外,使用Python进行网络编程就是在Python程序本身这个进程内, 连接别的服务器进程的通信端口进行通信.</p>
+  
+  <p>Python 提供了两个级别访问的网络服务:</p>
+  
+  <ul><li><p>1.低级别的网络服务支持基本的Socket, 它提供了标准的 BSD Sockets API, 可以访问底层操作系统Socket接口的全部方法.</p></li>
+  <li><p>2.高级别的网络服务模块 SocketServer, 它提供了服务器中心类, 可以简化网络服务器的开发.</p></li>
+  </ul>
+</blockquote>
+
+<h4 id="842-tcpip-简介">8.4.2 TCP/IP 简介</h4>
+
+<blockquote>
+  <p>计算机为了联网就必须规定通信协议, 早期的计算机网络都是由各厂商自己规定一套协议, IBM、Apple和Microsoft都有各自的网络协议, 互不兼容, 这就好比一群人有的说英语, 有的说中文, 有的说德语, 说同一种语言的人可以交流, 不同的语言之间就不行了.</p>
+  
+  <p>为了把全世界的所有不同类型的计算机都连接起来就必须规定一套全球通用的协议, 为了实现互联网这个目标, 互联网协议簇（Internet Protocol Suite）就是通用协议标准, Internet是由inter和net两个单词组合起来的, 原意就是连接“网络”的网络有了Internet, 任何私有网络只要支持这个协议就可以联入互联网.</p>
+  
+  <p>因为互联网协议包含了上百种协议标准, 但是最重要的两个协议是TCP和IP协议, 所以把互联网的协议简称TCP/IP协议.</p>
+  
+  <p>通信的时候双方必须知道对方的标识, 好比发邮件必须知道对方的邮件地址, 互联网上每个计算机的唯一标识就是IP地址，类似<code>123.123.123.123</code>, 如果一台计算机同时接入到两个或更多的网络, 比如路由器它就会有两个或多个IP地址, 所以IP地址对应的实际上是计算机的网络接口通常是网卡.</p>
+  
+  <p>IP协议负责把数据从一台计算机通过网络发送到另一台计算机, 数据被分割成一小块一小块, 然后通过IP包发送出去, 由于互联网链路复杂, 两台计算机之间经常有多条线路, 因此路由器就负责决定如何把一个IP包转发出去, IP包的特点是按块发送, 途径多个路由但不保证能到达也不保证顺序到达.</p>
+  
+  <p>TCP协议则是建立在IP协议之上的, TCP协议负责在两台计算机之间建立可靠连接保证数据包按顺序到达, TCP协议会通过握手建立连接, 然后对每个IP包编号, 确保对方按顺序收到, 如果包丢掉了就自动重发.</p>
+  
+  <p>许多常用的更高级的协议都是建立在TCP协议基础上的, 比如用于浏览器的HTTP协议、发送邮件的SMTP协议等.</p>
+  
+  <p>一个TCP报文除了包含要传输的数据外, 还包含源IP地址和目标IP地址, 源端口和目标端口.</p>
+  
+  <p>一个进程也可能同时与多个计算机建立链接, 因此它会申请很多端口.</p>
+  
+  <p>了解了TCP/IP协议的基本概念, IP地址和端口的概念, 下面就可以开始进行网络编程.</p>
+</blockquote>
+
+<h4 id="843-tcp-编程">8.4.3 TCP 编程</h4>
+
+<h4 id="844-udp-编程">8.4.4 UDP 编程</h4>
+
+<h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 
 <h3 id="85-python-smtp">8.5 Python SMTP</h3>
 

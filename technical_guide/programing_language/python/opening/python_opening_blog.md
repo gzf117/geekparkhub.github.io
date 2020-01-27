@@ -5376,12 +5376,222 @@
 > ```
 
 #### 8.3.3 MySQL
+> MySQL是Web世界中使用最广泛的数据库服务器, SQLite的特点是轻量级、可嵌入, 但不能承受高并发访问, 适合桌面和移动应用, 而MySQL是为服务器端设计的数据库能承受高并发访问, 同时占用的内存也远远大于SQLite, 此外MySQL内部有多种数据库引擎, 最常用的引擎是支持数据库事务的InnoDB.
+> 
+> **安装MySQL驱动**
+> 由于MySQL服务器以独立的进程运行并通过网络对外服务, 所以需要支持Python的MySQL驱动来连接到MySQL服务器, MySQL官方提供了mysql-connector-python驱动, 但是安装的时候需要给pip命令加上参数`--allow-external`
+> ```
+> (venv) systemhub:python_server system$ pip install mysql-connector
+> ```
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据库 | database
+> # @File : 15_database.py
+> # @Description : Python 进阶篇 - 数据库 | Advanced Python-Database
+> 
+> # 导入模块 | Import module
+> import sqlite3 as sl
+> import os as o
+> # install mysql-connector-python:
+> # pip3 install mysql-connector-python --allow-external mysql-connector-python
+> import mysql.connector
+> 
+> # 数据库 for MySQL | Database for MySQL
+> # 定义 函数 | Defining functions
+> def database_for_mysql():
+>     # change root password to yours:
+>     conn = mysql.connector.connect(user='root', password='password', database='test')
+> 
+>     cursor = conn.cursor()
+>     # 创建user表
+>     cursor.execute('create table user (id varchar(20) primary key, name varchar(20))')
+>     # 插入一行记录，注意MySQL的占位符是%s:
+>     cursor.execute('insert into user (id, name) values (%s, %s)', ('1', 'system'))
+>     print('rowcount =', cursor.rowcount)
+>     # 提交事务 | Commit transaction
+>     conn.commit()
+>    # 关闭资源 | Close resource
+>     cursor.close()
+> 
+>     # 运行查询
+>     cursor = conn.cursor()
+>     cursor.execute('select * from user where id = %s', ('1',))
+>     values = cursor.fetchall()
+>     print(values)
+>     # 关闭Cursor和Connection:
+>     cursor.close()
+>     conn.close()
+>     
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用 函数 | call function
+>     database_for_mysql()
+> ```
+
+
 #### 8.3.4 SQLAlchemy
+> 数据库表是一个二维表, 包含多行多列, 把一个表的内容用Python的数据结构表示出来的话, 可以用一个list表示多行, list的每一个元素是tuple表示一行记录, 比如包含id和name的user表: 
+> ```
+> [
+>     ('1', 'system001'),
+>     ('2', 'system002'),
+>     ('3', 'system003')
+> ]
+> ```
+> Python的DB-API返回的数据结构就是像上面这样表示.
+> 
+> 但是用tuple表示一行很难看出表的结构, 如果把一个tuple用class实例来表示就可以更容易地看出表的结构来：
+> 
+> Object-Relational Mapping, 把关系数据库的表结构映射到对象上简称为(对象关系映射)`ORM`.
+> 
+> ``` py
+> class User(object):
+>     def __init__(self, id, name):
+>         self.id = id
+>         self.name = name
+> 
+> [
+>     User('1', 'system001'),
+>     User('2', 'system002'),
+>     User('3', 'system003')
+> ]
+> ```
+> 
+> 在Python中最有名的ORM框架是SQLAlchemy, 下面看看SQLAlchemy用法:
+> 
+> **安装SQLAlchemy**
+> ```
+> pip install sqlalchemy
+> ```
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 数据库 | database
+> # @File : 15_database.py
+> # @Description : Python 进阶篇 - 数据库 | Advanced Python-Database
+> 
+> # 导入模块 | Import module
+> import sqlite3 as sl
+> import os as o
+> # install mysql-connector-python:
+> # pip3 install mysql-connector-python --allow-external mysql-connector-python
+> import mysql.connector
+> from sqlalchemy import Column, String, create_engine
+> from sqlalchemy.orm import sessionmaker
+> from sqlalchemy.ext.declarative import declarative_base
+> 
+> # 数据库 for SQL Alchemy | Database for SQL Alchemy
+> # 定义 函数 | Defining functions
+> def database_for_sqlalchemy():
+>     # 创建对象的基类:
+>     Base = declarative_base()
+> 
+>     # 定义User对象:
+>     class User(Base):
+>         # 表的名字:
+>         __tablename__ = 'user'
+> 
+>         # 表的结构:
+>         id = Column(String(20), primary_key=True)
+>         name = Column(String(20))
+> 
+>     # 初始化数据库连接:
+>     engine = create_engine('mysql+mysqlconnector://root:password@localhost:3306/test')
+>     # 创建DBSession类型:
+>     DBSession = sessionmaker(bind=engine)
+> 
+>     # 创建session对象:
+>     session = DBSession()
+>     # 创建新User对象:
+>     new_user = User(id='5', name='Bob')
+>     # 添加到session:
+>     session.add(new_user)
+>     # 提交即保存到数据库:
+>     session.commit()
+>     # 关闭session:
+>     session.close()
+> 
+>     # 创建Session:
+>     session = DBSession()
+>     # 创建Query查询，filter是where条件，最后调用one()返回唯一行，如果调用all()则返回所有行:
+>     user = session.query(User).filter(User.id == '5').one()
+>     # 打印类型和对象的name属性:
+>     print('type:', type(user))
+>     print('name:', user.name)
+>     # 关闭Session:
+>     session.close()
+>     
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':    
+>       database_for_sqlalchemy() 
+> ```
+
+
+### 8.4 Python 网络编程
+#### 8.4.1 前言
+> 自从互联网诞生以来, 现在基本上所有的程序都是网络程序, 很少有单机版的程序.
+> 
+> 由于你的电脑上可能不止浏览器, 还有QQ、Skype、Dropbox、邮件客户端等, 不同的程序连接的别的计算机也会不同, 所以, 更确切地说网络通信是两台计算机上的两个进程之间的通信, 比如浏览器进程和新浪服务器上的某个Web服务进程在通信, 而QQ进程是和腾讯的某个服务器上的某个进程在通信.
+> 
+> 网络编程对所有开发语言都是一样, Python也不例外,使用Python进行网络编程就是在Python程序本身这个进程内, 连接别的服务器进程的通信端口进行通信.
+> 
+> Python 提供了两个级别访问的网络服务:
+> - 1.低级别的网络服务支持基本的Socket, 它提供了标准的 BSD Sockets API, 可以访问底层操作系统Socket接口的全部方法.
+> - 2.高级别的网络服务模块 SocketServer, 它提供了服务器中心类, 可以简化网络服务器的开发.
+
+#### 8.4.2 TCP/IP 简介
+> 计算机为了联网就必须规定通信协议, 早期的计算机网络都是由各厂商自己规定一套协议, IBM、Apple和Microsoft都有各自的网络协议, 互不兼容, 这就好比一群人有的说英语, 有的说中文, 有的说德语, 说同一种语言的人可以交流, 不同的语言之间就不行了.
+> 
+> 为了把全世界的所有不同类型的计算机都连接起来就必须规定一套全球通用的协议, 为了实现互联网这个目标, 互联网协议簇（Internet Protocol Suite）就是通用协议标准, Internet是由inter和net两个单词组合起来的, 原意就是连接“网络”的网络有了Internet, 任何私有网络只要支持这个协议就可以联入互联网.
+> 
+> 因为互联网协议包含了上百种协议标准, 但是最重要的两个协议是TCP和IP协议, 所以把互联网的协议简称TCP/IP协议.
+> 
+> 通信的时候双方必须知道对方的标识, 好比发邮件必须知道对方的邮件地址, 互联网上每个计算机的唯一标识就是IP地址，类似`123.123.123.123`, 如果一台计算机同时接入到两个或更多的网络, 比如路由器它就会有两个或多个IP地址, 所以IP地址对应的实际上是计算机的网络接口通常是网卡.
+> 
+> IP协议负责把数据从一台计算机通过网络发送到另一台计算机, 数据被分割成一小块一小块, 然后通过IP包发送出去, 由于互联网链路复杂, 两台计算机之间经常有多条线路, 因此路由器就负责决定如何把一个IP包转发出去, IP包的特点是按块发送, 途径多个路由但不保证能到达也不保证顺序到达.
+> 
+> TCP协议则是建立在IP协议之上的, TCP协议负责在两台计算机之间建立可靠连接保证数据包按顺序到达, TCP协议会通过握手建立连接, 然后对每个IP包编号, 确保对方按顺序收到, 如果包丢掉了就自动重发.
+> 
+> 许多常用的更高级的协议都是建立在TCP协议基础上的, 比如用于浏览器的HTTP协议、发送邮件的SMTP协议等.
+> 
+> 一个TCP报文除了包含要传输的数据外, 还包含源IP地址和目标IP地址, 源端口和目标端口.
+> 
+> 一个进程也可能同时与多个计算机建立链接, 因此它会申请很多端口.
+> 
+> 了解了TCP/IP协议的基本概念, IP地址和端口的概念, 下面就可以开始进行网络编程.
+
+#### 8.4.3 TCP 编程
+#### 8.4.4 UDP 编程
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-
-### 8.4 Python 网络编程
 ### 8.5 Python SMTP
 ### 8.6 Python 多线程
 ### 8.7 Python XML 解析
