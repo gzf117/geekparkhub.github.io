@@ -15,3 +15,11 @@
 # @Program : 网络编程 | network programming
 # @File : __init__.py
 # @Description : Python 进阶篇 - 网络编程 | Advanced Python-Network Programming
+
+# 导入模块 | Import module
+from _16_network_programming import tcp_socket as tc
+
+# 定义 主模块 | Definition Main module
+if __name__ == '__main__':
+    # 调用 函数 | call function
+    tc.socket_function()

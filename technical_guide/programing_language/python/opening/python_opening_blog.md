@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-1-27)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-1-28)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -5595,7 +5595,77 @@
 > 
 > **2. 服务器**
 > 和客户端编程相比服务器编程就要复杂一些, 服务器进程首先要绑定一个端口并监听来自其他客户端的连接, 如果某个客户端连接过来了, 服务器就与该客户端建立Socket连接随后的通信就靠这个Socket连接了.
-
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : TCP 网络编程 | TCP network programming
+> # @File : tcp_socket.py
+> # @Description :  Python 进阶篇 - 网络编程 | Advanced Python-Network Programming
+> 
+> # 导入模块 | Import module
+> import socket as sk
+> 
+> 
+> # 定义 函数 | Defining functions
+> def socket_function():
+>     # 创建 Socket | Create Socket
+>     '''
+>     参数说明 :
+>                 `AF_INET6` 指定IPv6网络协议
+>                 `SOCK_STREAM` 指定面向流TCP协议
+>     '''
+>     s = sk.socket(sk.AF_INET6, sk.SOCK_STREAM)
+> 
+>     # 创建 连接 | Create connection
+>     '''
+>     定义 服务器IP地址&端口号
+>     '''
+>     s.connect(('58.49.227.129', 80))
+> 
+>     # 发送 数据 | send data
+>     '''
+>     向服务端发送请求
+>     '''
+>     s.send(b'GET / HTTP/1.1\r\nHost: 58.49.227.129\r\nConnection: close\r\n\r\n')
+> 
+>     # 接收 数据 | Receive data
+>     buffer = []
+>     while True:
+>         byte_size = s.recv(1024)
+>         if byte_size:
+>             buffer.append(byte_size)
+>         else:
+>             break
+>     data = b' '.join(buffer)
+> 
+>     # 关闭资源 | Close resource
+>     s.close()
+> 
+>     header, html = data.split(b'\r\n\r\n', 1)
+>     print(header.decode('UTF-8'))
+> 
+>     # 数据写入文件
+>     with open('test.html', 'wb') as f:
+>         f.write(html)
+>         
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用 函数 | call function
+>     socket_function()         
+> ```
 
 #### 8.4.4 UDP 编程
 > TCP是建立可靠连接并且通信双方都可以以流的形式发送数据, 相对TCP, UDP则是面向无连接的协议.
@@ -5605,6 +5675,106 @@
 > 虽然用UDP传输数据不可靠, 但它的优点是和TCP比, 速度快, 对于不要求可靠到达的数据就可以使用UDP协议.
 > 
 > UDP的使用与TCP类似, 但是不需要建立连接, 此外服务器绑定UDP端口和TCP端口互不冲突, 也就是说UDP的9999端口与TCP的9999端口可以各自绑定.
+> 
+> **udp_socket_server**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : UDP 网络编程 | UDP network programming
+> # @File : udp_socket_server.py
+> # @Description : Python 进阶篇 - 网络编程 | Advanced Python-Network Programming
+> 
+> # 导入模块 | Import module
+> import socket as sk
+> 
+> 
+> # 定义 服务端 函数 | Defining Server functions
+> def udp_server():
+>     # 创建 Socket | Create Socket
+>     '''
+>     参数说明 :
+>                 `AF_INET` 指定IPv4网络协议
+>                 `SOCK_STREAM` 指定面向流TCP协议
+>     '''
+>     s = sk.socket(sk.AF_INET, sk.SOCK_DGRAM)
+> 
+>     # 绑定 端口 | Bind port
+>     s.bind(('127.0.0.1', 9999))
+> 
+>     print('Bind UDP on 9999...')
+> 
+>     # 接收 数据 | Receive data
+>     while True:
+>         data, addr = s.recvfrom(1024)
+>         print('Received From %s:%s.' % addr)
+>         reply = 'Hello, %s!' % data.decode('UTF-8')
+>         s.sendto(reply.encode('UTF-8'), addr)
+> 
+> 
+> # 调用 函数 | call function
+> udp_server()
+> ```
+> 
+> **udp_socket_client**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : UDP 网络编程 | UDP network programming
+> # @File : udp_socket_client.py
+> # @Description : Python 进阶篇 - 网络编程 | Advanced Python-Network Programming
+> 
+> # 导入模块 | Import module
+> import socket as sk
+> 
+> 
+> # 定义 客户端 函数 | Defining Client functions
+> def udp_client():
+>     # 创建 Socket | Create Socket
+>     '''
+>     参数说明 :
+>                 `AF_INET` 指定IPv4网络协议
+>                 `SOCK_STREAM` 指定面向流TCP协议
+>     '''
+>     s = sk.socket(sk.AF_INET, sk.SOCK_DGRAM)
+> 
+>     lists = [b'Edward', b'System', b'Juliet', b'Romeo']
+> 
+>     for x in lists:
+>         # 发送数据 | send data
+>         s.sendto(x, ('127.0.0.1', 9999))
+>         # 接收数据 | Receive data
+>         print(s.recv(1024).decode('UTF-8'))
+>     # 关闭资源 | Close resource
+>     s.close()
+> 
+> 
+> # 调用 函数 | call function
+> udp_client()
+> ```
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
