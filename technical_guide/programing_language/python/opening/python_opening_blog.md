@@ -5221,8 +5221,8 @@
 > 
 > 使用模板的另一大好处是模板改起来很方便, 而且改完保存后刷新浏览器就能看到最新的效果.
 > 除了Jinja2, 常见的模板还有: 
-> - [Mako：用<% ... %>和${xxx}的一个模板](http://www.makotemplates.org/)
-> - [Cheetah：也是用<% ... %>和${xxx}的一个模板](http://www.cheetahtemplate.org/)
+> - [Mako：用`<% ... %>`和`${xxx}`的一个模板](http://www.makotemplates.org/)
+> - [Cheetah：也是用`<% ... %>`和`${xxx}`的一个模板](http://www.cheetahtemplate.org/)
 > - [Django：Django是一站式框架，内置一个用`{% ... %}`和`{{ xxx }}`的模板](https://www.djangoproject.com/)
 
 
