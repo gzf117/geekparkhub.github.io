@@ -5981,9 +5981,320 @@
 > ```
 
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+### 8.6 Python 进程 & 线程
+#### 8.6.1 前言
+> 现代操作系统比如Mac OS X，UNIX，Linux，Windows等都是支持“多任务”的操作系统.
+> 
+> 简单地说就是操作系统可以同时运行多个任务, 打个比方你一边在用浏览器上网, 一边在听MP3, 一边在用办公, 这就是多任务, 至少同时有3个任务正在运行, 还有很多任务悄悄地在后台同时运行着, 只是桌面上没有显示而已.
+> 
+> 真正的并行执行多任务只能在多核CPU上实现, 但是由于任务数量远远多于CPU的核心数量, 所以操作系统也会自动把很多任务轮流调度到每个核心上执行.
+> 
+> 第一种是启动多个进程, 每个进程虽然只有一个线程, 但多个进程可以一块执行多个任务.
+> 
+> 第二种方法是启动一个进程, 在一个进程内启动多个线程, 这样多个线程也可以一块执行多个任务.
+> 
+> 第三种方法就是启动多个进程, 每个进程再启动多个线程, 这样同时执行的任务就更多了, 当然这种模型更复杂, 实际很少采用.
+> 
+> **多任务实现3种方式**
+> - 1.多进程模式
+> - 2.多线程模式
+> - 3.多进程+多线程模式
+> 
+> 同时执行多个任务通常各个任务之间并不是没有关联的, 而是需要相互通信和协调, 有时任务1必须暂停等待任务2完成后才能继续执行, 有时任务3和任务4又不能同时执行, 所以多进程和多线程的程序的复杂度要远远高于我们前面写的单进程单线程的程序.
+> 
+> Python既支持多进程, 又支持多线程, 接下来将讨论如何编写这两种多任务程序.
+> 
+> 线程是最小的执行单元, 而进程由至少一个线程组成, 如何调度进程和线程, 完全由操作系统决定, 程序自己不能决定什么时候执行, 执行多长时间, 多进程和多线程的程序涉及到同步、数据共享的问题, 编写起来更复杂.
 
-### 8.6 Python 多线程
+#### 8.6.2 多进程
+> 要让Python程序实现多进程(multiprocessing), 下面先了解操作系统的相关知识.
+> 
+> Unix/Linux操作系统提供了一个fork()系统调用, 它非常特殊普通的函数调用, 调用一次, 返回一次, 但是fork()调用一次, 返回两次, 因为操作系统自动把当前进程(称为父进程)复制了一份(称为子进程), 然后分别在父进程和子进程内返回.
+> 
+> 子进程永远返回0, 而父进程返回子进程的ID, 这样做的理由是一个父进程可以fork出很多子进程, 所以父进程要记下每个子进程的ID, 而子进程只需要调用getppid()就可以拿到父进程的ID.
+> 
+> **1. 子进程**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 线程 | Thread
+> # @File : 18_thread.py
+> # @Description : Python 进阶篇 - 线程 | Advanced Python - Threads
+> 
+> # 导入模块 | Import module
+> import os as o
+> 
+> 
+> # 定义 子进程 函数 | Definition Child process function
+> def child_process_function():
+>     print('Process (%s) start...' % o.getpid())
+>     # Only works on Unix/Linux/Mac:
+>     pid = o.fork()
+>     if pid == 0:
+>         print('I am child process (%s) and my parent is %s.' % (o.getegid(), o.getppid()))
+>     else:
+>         print('I (%s) just created a child process (%s).' % (o.getpid(), pid))
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用 函数 | call function
+>     child_process_function()
+> ```
+> 
+> **2. 跨平台多进程**
+> 
+> 由于Python是跨平台, 自然也应该提供一个跨平台的多进程支持, `multiprocessing`模块就是跨平台版本的多进程模块.
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 线程 | Thread
+> # @File : 18_thread.py
+> # @Description : Python 进阶篇 - 线程 | Advanced Python - Threads
+> 
+> # 导入模块 | Import module
+> import os as o
+> from multiprocessing import Process as pes
+> 
+> # 定义 运行过程 函数 | Definition run function
+> def run_proc(name):
+>     print('Run child process %s (%s)...' % (name, o.getpid()))
+> 
+> 
+> # 定义 父进程 函数 | Definition parent process function
+> def parent_process_function():
+>     print('Parent process %s.' % o.getpid())
+>     p = pes(target=run_proc, args=('test',))
+>     print('Child process will start.')
+>     p.start()
+>     p.join()
+>     print('Child process end.')
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用 函数 | call function
+>     parent_process_function()
+> ```
+> 
+> **3. 进程池**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 线程 | Thread
+> # @File : 18_thread.py
+> # @Description : Python 进阶篇 - 线程 | Advanced Python - Threads
+> 
+> # 导入模块 | Import module
+> import os as o, time as te, random as rm
+> from multiprocessing import Process as pes, Pool as pl
+> 
+> # 定义 进程池 函数 | Define process pool function
+> def long_time_task(name):
+>     print('Run task %s (%s)...' % (name, o.getpid()))
+>     start = te.time()
+>     te.sleep(rm.random() * 3)
+>     end = te.time()
+>     print('Task %s runs %0.2f seconds.' % (name, (end - start)))
+> 
+> 
+> # 定义 子进程 函数 | Definition child process function
+> def run_task():
+>     print('Parent process %s.' % o.getpid())
+>     p = pl(4)
+>     for i in range(5):
+>         p.apply_async(long_time_task, args=(i,))
+>     print('Waiting for all subprocesses done...')
+>     p.close()
+>     p.join()
+>     print('All subprocesses done.')
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用 函数 | call function
+>     run_task()
+> ```
+> 
+> **4. 子进程**
+> 
+> 很多时候子进程并不是自身, 而是一个外部进程, 在创建了子进程后还需要控制子进程的输入和输出.
+> 
+> `subprocess`模块可以非常方便地启动一个子进程然后控制其输入和输出.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 线程 | Thread
+> # @File : 18_thread.py
+> # @Description : Python 进阶篇 - 线程 | Advanced Python - Threads
+> 
+> # 导入模块 | Import module
+> import subprocess as sp
+> 
+> # 定义 子进程 函数 | Definition child process function
+> def child_process():
+>     print('$ nslookup www.python.org')
+>     r = sp.call(['nslookup', 'www.python.org'])
+>     print('Exit code:', r)
+> 
+>     print('$ nslookup')
+>     p = sp.Popen(['nslookup'], stdin=sp.PIPE, stdout=sp.PIPE, stderr=sp.PIPE)
+>     output, err = p.communicate(b'set q=mx\npython.org\nexit\n')
+>     print(output.decode('UTF-8'))
+>     print('Exit code:', p.returncode)
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用 函数 | call function
+>     child_process()
+> ```
+> 
+> **5. 进程通信**
+> 
+> Process之间肯定是需要通信的, 操作系统提供了很多机制来实现进程间的通信, Python的multiprocessing模块包装了底层的机制, 提供了Queue、Pipes等多种方式来交换数据.
+> 
+> 在父进程中创建两个子进程, 一个往Queue里写数据, 一个从Queue里读数据.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 线程 | Thread
+> # @File : 18_thread.py
+> # @Description : Python 进阶篇 - 线程 | Advanced Python - Threads
+> 
+> # 导入模块 | Import module
+> import os as o, time as te, random as rm
+> from multiprocessing import Process as pes, Pool as pl, Queue as qu
+> import subprocess as sp
+> 
+> # 进程通信 | Process communication
+> 
+> # 定义 写数据进程 函数 | Definition data write function
+> def write_function(queue):
+>     print('Process to write: %s' % o.getpid())
+>     for value in ['A', 'B', 'C']:
+>         print('Put %s to queue...' % value)
+>         queue.put(value)
+>         te.sleep(rm.random())
+> 
+> 
+> # 定义 读数据进程 函数 | Definition data read function
+> def read_function(queue):
+>     print('Process to read: %s' % o.getpid())
+>     while True:
+>         value = queue.get(True)
+>         print('Get %s from queue.' % value)
+> 
+> 
+> # 定义 父进程队列 函数 | Define the parent process Queue function
+> def parent_process_queue():
+>     # 父进程创建Queue, 并传给各个子进程
+>     q = qu()
+>     pw = pes(target=write_function, args=(q,))
+>     pr = pes(target=read_function, args=(q,))
+>     # 启动子进程pw写入
+>     pw.start()
+>     # 启动子进程pr读取
+>     pr.start()
+>     # 等待pw结束
+>     pw.join()
+>     # pr进程里是死循环, 无法等待其结束, 只能强行终止:
+>     pr.terminate()
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用 函数 | call function
+>     parent_process_function()
+> ```
+> 
+> 在Unix/Linux下可以使用fork()调用实现多进程.
+> 
+> 要实现跨平台的多进程，可以使用multiprocessing模块.
+> 
+> 进程间通信是通过Queue、Pipes等实现.
+
+
+#### 8.6.3 多线程
+> 多任务可以由多进程完成也可以由一个进程内的多线程完成.
+> 
+> 进程是由若干线程组成的, 一个进程至少有一个线程.
+> 
+> 由于线程是操作系统直接支持的执行单元, 因此高级语言通常都内置多线程的支持, Python也不例外, 并且Python的线程是真正的`Posix Thread`, 而不是模拟出来的线程.
+> 
+> Python的标准库提供了两个模块：`_thread`和`threading`，`_thread`是低级模块, `threading`是高级模块, 对`_thread`进行了封装, 绝大多数情况下只需要使用`threading`高级模块.
+
+
+#### 8.6.4 ThreadLocal
+#### 8.6.5 进程 Vs 线程
+#### 8.6.6 分布式进程
+
+
+
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 8.7 Python XML 解析
 ### 8.8 Python GUI 编程(Tkinter)
 ### 8.9 Python JSON
