@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-1-29)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-1-30)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -6696,8 +6696,196 @@
 >     run_drawing_five_pointed_function(te)
 > ```
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
+
 ### 8.8 Python XML
+#### 8.8.1 前言
+> XML是指可扩展标记语言(eXtensible Markup Language).
+>  
+> XML被设计用来传输和存储数据.
+> XML是一套定义语义标记的规则, 这些标记将文档分成许多部件并对这些部件加以标识.
+> 
+> 它也是元标记语言, 即定义了用于定义其他与特定领域有关的、语义的、结构化的标记语言的句法语言.
+> 
+> **Python for XML解析**
+> 
+> 常见的 XML 编程接口有 DOM 和 SAX, 这两种接口处理 XML 文件的方式不同, 当然使用场合也不同.
+> 
+> Python 有三种方法解析XML, SAX, DOM, 以及 ElementTree
+> - 1.`SAX(simple API for XML)`：Python 标准库包含 SAX 解析器, SAX用事件驱动模型, 通过在解析XML的过程中触发一个个的事件并调用用户定义的回调函数来处理XML文件.
+> - 2.`DOM(Document Object Model)`：将 XML 数据在内存中解析成一个树, 通过对树的操作来操作XML.
+> - 3.`ElementTree(元素树)`：ElementTree就像一个轻量级的DOM, 具有方便友好的API, 代码可用性好, 速度快, 消耗内存少.
+
+#### 8.8.2 基于SAX解析XML
+> SAX是一种基于事件驱动API, 利用SAX解析XML文档牵涉到两个部分: 解析器和事件处理器.
+> 
+> 解析器负责读取XML文档并向事件处理器发送事件, 如元素开始跟元素结束事件, 而事件处理器则负责对事件作出响应, 对传递的XML数据进行处理.
+> 
+> [SAX API 文档 | Python SAX APIs](http://docs.python.org/library/xml.sax.html)
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : XML 解析 | XML Parsing
+> # @File : 20_xml_parsing.py
+> # @Description : Python 进阶篇 - XML 解析 | Advanced Python - XML Parsing
+> 
+> # 导入模块 | Import module
+> import xml.sax
+> 
+> 
+> # 定义 xml解析类 | Definition xml parsing class
+> class XmlParsing(xml.sax.ContentHandler):
+> 
+>     # 定义 初始化方法 | Definition initialization method
+>     def __init__(self):
+>         self.CurrentData = ""
+>         self.type = ""
+>         self.format = ""
+>         self.year = ""
+>         self.rating = ""
+>         self.stars = ""
+>         self.description = ""
+>         super().__init__()
+> 
+>     # 定义 SAX解析XML 方法 | Define SAX parsing XML method
+>     # 元素开始事件处理 | Element start event processing
+>     def startElement(self, tag, attributes):
+>         self.CurrentData = tag
+>         if tag == "movie":
+>             print('**********Movie**********')
+>             title = attributes["title"]
+>             print('Title:', title)
+> 
+>     # 元素结束事件处理 | Element end event processing
+>     def endElement(self, tag):
+>         if self.CurrentData == "type":
+>             print('Type:', self.type)
+>         elif self.CurrentData == "format":
+>             print('Format:', self.format)
+>         elif self.CurrentData == "year":
+>             print('Year:', self.year)
+>         elif self.CurrentData == "rating":
+>             print('Rating:', self.rating)
+>         elif self.CurrentData == "stars":
+>             print('Stars:', self.stars)
+>         elif self.CurrentData == "description":
+>             print('Description:', self.description, '\n')
+>         self.CurrentData = ""
+> 
+>     # 内容事件处理 | Content event processing
+>     def characters(self, content):
+>         if self.CurrentData == "type":
+>             self.type = content
+>         elif self.CurrentData == "format":
+>             self.format = content
+>         elif self.CurrentData == "year":
+>             self.year = content
+>         elif self.CurrentData == "rating":
+>             self.rating = content
+>         elif self.CurrentData == "stars":
+>             self.stars = content
+>         elif self.CurrentData == "description":
+>             self.description = content
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 定义文件路径 | Define file path
+>     FILE_PATHS = '../resources/xml_file/movies.xml'
+>     # 创建 XMLReader | Create XMLReader
+>     parser = xml.sax.make_parser()
+>     # 关闭命名空间 | turn off namepsaces
+>     parser.setFeature(xml.sax.handler.feature_namespaces, 0)
+>     # 创建实例 | Create instance
+>     x = XmlParsing()
+>     parser.setContentHandler(x)
+>     # 装载数据进行解析 | Load data for parsing
+>     parser.parse(FILE_PATHS)
+> ```
+
+#### 8.8.3 基于DOM解析XML
+> 文件对象模型(Document Object Model, 简称DOM), 是W3C组织推荐的处理可扩展置标语言的标准编程接口.
+> 
+> 一个 DOM 的解析器在解析XML文档时, 一次性读取整个文档, 把文档中所有元素保存在内存中的一个树结构里, 之后可以利用DOM 提供的不同的函数来读取或修改文档的内容和结构,也可以把修改过的内容写入xml文件.
+> 
+> [DOM API 文档 | Python DOM APIs](http://docs.python.org/library/xml.dom.html)
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : XML 解析 | XML Parsing
+> # @File : 20_xml_parsing.py
+> # @Description : Python 进阶篇 - XML 解析 | Advanced Python - XML Parsing
+> 
+> # 导入模块 | Import module
+> from xml.dom.minidom import parse as pe
+> import xml.dom.minidom as mm
+> 
+> # 定义 xml解析类 | Definition xml parsing class
+> class XmlParsing(xml.sax.ContentHandler):
+> 
+>     # 定义 DOM解析XML 方法 | Define DOM parsing XML method
+>     def dom_parsing_xml_method(self, path):
+>         # 加载数据 | Load Data
+>         dom_tree = pe(path)
+>         # 采集元素 | Collecting elements
+>         collection = dom_tree.documentElement
+>         # 条件判断 | Condition judgment
+>         if collection.hasAttribute("shelf"):
+>             print('Root element : %s ' % collection.getAttribute("shelf"))
+>         # 在集合中获取所有数据 | Get all data in a collection
+>         movies = collection.getElementsByTagName("movie")
+>         # 打印数据详细信息 | Print data details
+>         for data_info in movies:
+>             print('**********Movie**********')
+>             if data_info.hasAttribute("title"):
+>                 print('Title: %s' % data_info.getAttribute("title"))
+>             types = data_info.getElementsByTagName('type')[0]
+>             print('Type: %s' % types.childNodes[0].data)
+>             formats = data_info.getElementsByTagName('format')[0]
+>             print('Format: %s' % formats.childNodes[0].data)
+>             rating = data_info.getElementsByTagName('rating')[0]
+>             print('Rating: %s' % rating.childNodes[0].data)
+>             description = data_info.getElementsByTagName('description')[0]
+>             print('Description: %s' % description.childNodes[0].data, '\n')
+>             
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 定义文件路径 | Define file path
+>     FILE_PATHS = '../resources/xml_file/movies.xml'
+>     # 创建实例 | Create instance
+>     x = XmlParsing()
+>     # 调用方法 | Calling method
+>     x.dom_parsing_xml_method(FILE_PATHS)
+> ```
+
+
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 8.9 Python JSON
 ### 8.10 Python 异步IO
 ### 8.11 Python 高级特性
