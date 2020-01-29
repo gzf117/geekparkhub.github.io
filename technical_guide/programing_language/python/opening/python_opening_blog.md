@@ -6518,19 +6518,190 @@
 > ```
 
 
+### 8.7 Python GUI 编程 (Tkinter)
+#### 8.7.1 前言
+> Python提供了多个图形开发界面的库, 常用 Python GUI库如下:
+> - 1.`Tkinter`： Tkinter 模块(Tk接口)是 Python 的标准 Tk GUI 工具包的接口, Tk 和 Tkinter 可以在大多数的 Unix 平台下使用,同样可以应用在 Windows 和 Macintosh 系统里, Tk8.0 的后续版本可以实现本地窗口风格,并良好地运行在绝大多数平台中.
+> - 2.`wxPython`：wxPython 是一款开源软件, 是 Python 语言的一套优秀的 GUI 图形库, 允许 Python 程序员很方便的创建完整的、功能健全的 GUI 用户界面.
+> - 3.`Jython`：Jython 程序可以和 Java 无缝集成, 除了一些标准模块, Jython 使用 Java 的模块, Jython 几乎拥有标准的Python 中不依赖于 C 语言的全部模块。比如Jython 的用户界面将使用 Swing, AWT或者 SWT。Jython 可以被动态或静态地编译成 Java 字节码.
 
-
-
+#### 8.7.2 Tkinter 编程
+> Tkinter 是 Python 的标准 GUI 库, Python 使用 Tkinter 可以快速的创建 GUI 应用程序.
+> 
+> 由于 Tkinter 是内置到 python 的安装包中、只要安装好 Python 之后就能 import Tkinter 库、而且 IDLE 也是用 Tkinter 编写而成、对于简单的图形界面 Tkinter 还是能应付自如.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : GUI 编程 | GUI programming
+> # @File : 19_gui_programming.py
+> # @Description : Python 进阶篇 - GUI 编程 | Advanced Python - GUI Programming
+> 
+> # 导入模块 | Import module
+> from tkinter import *
+> import tkinter.messagebox as mb
+> import turtle as te
+> 
+> 
+> # 定义 GUI应用 类 | Define the GUI application class
+> class GUIApplication(Frame):
+> 
+>     # 定义 初始化 方法 | Define initialization method
+>     def __init__(self, master=None):
+>         Frame.__init__(self, master)
+>         self.pack()  # 调用 简单布局方法 | Call simple layout method
+>         self.create_widgets()  # 调用 创建组件方法 | Call the create component method
+> 
+>     # 定义 创建组件 方法 | Definition create component method
+>     def create_widgets(self):
+>         self.nameInput = Entry(self)
+>         self.nameInput.pack()
+>         self.alertButton = Button(self, text='Hello', command=self.text_method)
+>         self.alertButton.pack()
+> 
+>     # 定义 文本输出 方法 | Define text output method
+>     def text_method(self):
+>         name = self.nameInput.get() or 'World'
+>         mb.showinfo('Message Info', 'Hello, %s' % name)
+> 
+> 
+> # 定义 绘制长方形图形 函数 | Definition draw rectangle function
+> def drawing_rectangle_function(turtles):
+>     # 定义 笔刷宽度 | Definition brush width
+>     turtles.width(4)
+> 
+>     # 定义 前进 | Definition go ahead
+>     turtles.forward(200)
+>     # 定义 右转90度 | Definition 90 degrees right
+>     turtles.right(90)
+> 
+>     # 定义 笔刷颜色 | Definition brush color
+>     turtles.pencolor('blue')
+>     turtles.forward(100)
+>     turtles.right(90)
+> 
+>     turtles.pencolor('green')
+>     turtles.forward(200)
+>     turtles.right(90)
+> 
+>     turtles.pencolor('red')
+>     turtles.forward(100)
+>     turtles.right(90)
+> 
+>     # 定义 关闭窗口 | Definition Close window
+>     turtles.done()
+> 
+> 
+> # 定义 绘制五角星图形 函数 | Definition draw five-pointed star function
+> def drawing_five_pointed_function(turtles, num_x, num_y):
+>     turtles.pu()
+>     turtles.goto(num_x, num_y)
+>     turtles.pd()
+>     turtles.seth(0)
+>     for i in range(5):
+>         turtles.fd(40)
+>         turtles.rt(144)
+> 
+> 
+> def run_drawing_five_pointed_function(turtles):
+>     for x in range(0, 250, 50):
+>         drawing_five_pointed_function(turtles, x, 0)
+>     turtles.done()
+> 
+> 
+> # 定义 绘制 分型树图形 函数 | Definition draw fractal tree graph function
+> 
+> # 定义颜色数值 | Define color values
+> te.colormode(255)
+> 
+> te.lt(90)
+> 
+> # 定义全局变量 | Defining global variables
+> lv = 14
+> le = 120
+> s = 45
+> 
+> # 定义宽度 | Define width
+> te.width(lv)
+> 
+> r = 0
+> g = 0
+> b = 0
+> te.pencolor(r, g, b)
+> 
+> te.penup()
+> te.bk(le)
+> te.pendown()
+> te.fd(le)
+> 
+> 
+> def drawing_fractal_tree_graph_function(turtles, l, level):
+>     global r, g, b
+>     # save the current pen width
+>     w = turtles.width()
+> 
+>     # narrow the pen width
+>     turtles.width(w * 3.0 / 4.0)
+>     # set color:
+>     r = r + 1
+>     g = g + 2
+>     b = b + 3
+>     turtles.pencolor(r % 200, g % 200, b % 200)
+> 
+>     l = 3.0 / 4.0 * l
+> 
+>     turtles.lt(s)
+>     turtles.fd(l)
+> 
+>     if level < lv:
+>         drawing_fractal_tree_graph_function(turtles, l, level + 1)
+>     turtles.bk(l)
+>     turtles.rt(2 * s)
+>     turtles.fd(l)
+> 
+>     if level < lv:
+>         drawing_fractal_tree_graph_function(turtles, l, level + 1)
+>     turtles.bk(l)
+>     turtles.lt(s)
+> 
+>     # restore the previous pen width
+>     turtles.width(w)
+> 
+> 
+> te.speed("fastest")
+> drawing_fractal_tree_graph_function(te, le, 4)
+> te.done()
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建实例 | Create instance
+>     g1 = GUIApplication()
+>     # 调用 方法 | Call method
+>     g1.master.title('Application')  # 设置窗口标题信息 | Set window title information
+>     g1.mainloop()
+>     # 调用 函数 | call function
+>     drawing_rectangle_function(te)
+>     run_drawing_five_pointed_function(te)
+> ```
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-### 8.7 Python XML 解析
-### 8.8 Python GUI 编程(Tkinter)
+### 8.8 Python XML
 ### 8.9 Python JSON
 ### 8.10 Python 异步IO
-### 8.11 Python 函数式编程
-### 8.12 Python 高级特性
-### 8.13 Python 模块
-### 8.14 Python 常用内建模块 & 常用第三方模块
+### 8.11 Python 高级特性
+### 8.12 Python 常用内建模块 & 常用第三方模块
 
 
 

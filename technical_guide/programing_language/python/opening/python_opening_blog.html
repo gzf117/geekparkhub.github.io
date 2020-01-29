@@ -194,17 +194,19 @@
 <li><a href="#866-分布式进程">8.6.6 分布式进程</a></li>
 </ul>
 </li>
+<li><a href="#87-python-gui-编程-tkinter">8.7 Python GUI 编程 (Tkinter)</a><ul>
+<li><a href="#871-前言">8.7.1 前言</a></li>
+<li><a href="#872-tkinter-编程">8.7.2 Tkinter 编程</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li><a href="#尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</a><ul>
-<li><a href="#87-python-xml-解析">8.7 Python XML 解析</a></li>
-<li><a href="#88-python-gui-编程tkinter">8.8 Python GUI 编程(Tkinter)</a></li>
+<li><a href="#88-python-xml">8.8 Python XML</a></li>
 <li><a href="#89-python-json">8.9 Python JSON</a></li>
 <li><a href="#810-python-异步io">8.10 Python 异步IO</a></li>
-<li><a href="#811-python-函数式编程">8.11 Python 函数式编程</a></li>
-<li><a href="#812-python-高级特性">8.12 Python 高级特性</a></li>
-<li><a href="#813-python-模块">8.13 Python 模块</a></li>
-<li><a href="#814-python-常用内建模块-常用第三方模块">8.14 Python 常用内建模块 &amp; 常用第三方模块</a></li>
+<li><a href="#811-python-高级特性">8.11 Python 高级特性</a></li>
+<li><a href="#812-python-常用内建模块-常用第三方模块">8.12 Python 常用内建模块 &amp; 常用第三方模块</a></li>
 </ul>
 </li>
 <li><a href="#9-修仙之道-技术架构迭代-登峰造极之势">9. 修仙之道 技术架构迭代 登峰造极之势</a></li>
@@ -7074,17 +7076,201 @@
 </div></code></pre>
 </blockquote>
 
+
+
+<h3 id="87-python-gui-编程-tkinter">8.7 Python GUI 编程 (Tkinter)</h3>
+
+
+
+<h4 id="871-前言">8.7.1 前言</h4>
+
+<blockquote>
+  <p>Python提供了多个图形开发界面的库, 常用 Python GUI库如下:</p>
+  
+  <ul><li><p>1.<code>Tkinter</code>： Tkinter 模块(Tk接口)是 Python 的标准 Tk GUI 工具包的接口, Tk 和 Tkinter 可以在大多数的 Unix 平台下使用,同样可以应用在 Windows 和 Macintosh 系统里, Tk8.0 的后续版本可以实现本地窗口风格,并良好地运行在绝大多数平台中.</p></li>
+  <li><p>2.<code>wxPython</code>：wxPython 是一款开源软件, 是 Python 语言的一套优秀的 GUI 图形库, 允许 Python 程序员很方便的创建完整的、功能健全的 GUI 用户界面.</p></li>
+  <li><p>3.<code>Jython</code>：Jython 程序可以和 Java 无缝集成, 除了一些标准模块, Jython 使用 Java 的模块, Jython 几乎拥有标准的Python 中不依赖于 C 语言的全部模块。比如Jython 的用户界面将使用 Swing, AWT或者 SWT。Jython 可以被动态或静态地编译成 Java 字节码.</p></li>
+  </ul>
+</blockquote>
+
+
+
+<h4 id="872-tkinter-编程">8.7.2 Tkinter 编程</h4>
+
+<blockquote>
+  <p>Tkinter 是 Python 的标准 GUI 库, Python 使用 Tkinter 可以快速的创建 GUI 应用程序.</p>
+  
+  <p>由于 Tkinter 是内置到 python 的安装包中、只要安装好 Python 之后就能 import Tkinter 库、而且 IDLE 也是用 Tkinter 编写而成、对于简单的图形界面 Tkinter 还是能应付自如.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : GUI 编程 | GUI programming</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 19_gui_programming.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - GUI 编程 | Advanced Python - GUI Programming</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> tkinter <span class="hljs-keyword">import</span> *
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-keyword">import</span> tkinter.messagebox <span class="hljs-keyword">as</span> mb
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><span class="hljs-keyword">import</span> turtle <span class="hljs-keyword">as</span> te
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-comment"># 定义 GUI应用 类 | Define the GUI application class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">GUIApplication</span><span class="hljs-params">(Frame)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>    <span class="hljs-comment"># 定义 初始化 方法 | Define initialization method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__init__</span><span class="hljs-params">(self, master=None)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        Frame.__init__(self, master)
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>        self.pack()  <span class="hljs-comment"># 调用 简单布局方法 | Call simple layout method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>        self.create_widgets()  <span class="hljs-comment"># 调用 创建组件方法 | Call the create component method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>    <span class="hljs-comment"># 定义 创建组件 方法 | Definition create component method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">create_widgets</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>        self.nameInput = Entry(self)
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>        self.nameInput.pack()
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>        self.alertButton = Button(self, text=<span class="hljs-string">'Hello'</span>, command=self.text_method)
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>        self.alertButton.pack()
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>    <span class="hljs-comment"># 定义 文本输出 方法 | Define text output method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">text_method</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>        name = self.nameInput.get() <span class="hljs-keyword">or</span> <span class="hljs-string">'World'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>        mb.showinfo(<span class="hljs-string">'Message Info'</span>, <span class="hljs-string">'Hello, %s'</span> % name)
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span><span class="hljs-comment"># 定义 绘制长方形图形 函数 | Definition draw rectangle function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">drawing_rectangle_function</span><span class="hljs-params">(turtles)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>    <span class="hljs-comment"># 定义 笔刷宽度 | Definition brush width</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>    turtles.width(<span class="hljs-number">4</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>    <span class="hljs-comment"># 定义 前进 | Definition go ahead</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>    turtles.forward(<span class="hljs-number">200</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>    <span class="hljs-comment"># 定义 右转90度 | Definition 90 degrees right</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>    turtles.right(<span class="hljs-number">90</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>    <span class="hljs-comment"># 定义 笔刷颜色 | Definition brush color</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>    turtles.pencolor(<span class="hljs-string">'blue'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>    turtles.forward(<span class="hljs-number">100</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span>    turtles.right(<span class="hljs-number">90</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span>    turtles.pencolor(<span class="hljs-string">'green'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span>    turtles.forward(<span class="hljs-number">200</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span>    turtles.right(<span class="hljs-number">90</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span>    turtles.pencolor(<span class="hljs-string">'red'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span>    turtles.forward(<span class="hljs-number">100</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span>    turtles.right(<span class="hljs-number">90</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">69.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">70.</span>    <span class="hljs-comment"># 定义 关闭窗口 | Definition Close window</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">71.</span>    turtles.done()
+</div><div class="hljs-line"><span class="hljs-comment line-number">72.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">73.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">74.</span><span class="hljs-comment"># 定义 绘制五角星图形 函数 | Definition draw five-pointed star function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">75.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">drawing_five_pointed_function</span><span class="hljs-params">(turtles, num_x, num_y)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">76.</span>    turtles.pu()
+</div><div class="hljs-line"><span class="hljs-comment line-number">77.</span>    turtles.goto(num_x, num_y)
+</div><div class="hljs-line"><span class="hljs-comment line-number">78.</span>    turtles.pd()
+</div><div class="hljs-line"><span class="hljs-comment line-number">79.</span>    turtles.seth(<span class="hljs-number">0</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">80.</span>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">5</span>):
+</div><div class="hljs-line"><span class="hljs-comment line-number">81.</span>        turtles.fd(<span class="hljs-number">40</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">82.</span>        turtles.rt(<span class="hljs-number">144</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">83.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">84.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">85.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run_drawing_five_pointed_function</span><span class="hljs-params">(turtles)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">86.</span>    <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> range(<span class="hljs-number">0</span>, <span class="hljs-number">250</span>, <span class="hljs-number">50</span>):
+</div><div class="hljs-line"><span class="hljs-comment line-number">87.</span>        drawing_five_pointed_function(turtles, x, <span class="hljs-number">0</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">88.</span>    turtles.done()
+</div><div class="hljs-line"><span class="hljs-comment line-number">89.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">90.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">91.</span><span class="hljs-comment"># 定义 绘制 分型树图形 函数 | Definition draw fractal tree graph function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">92.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">93.</span><span class="hljs-comment"># 定义颜色数值 | Define color values</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">94.</span>te.colormode(<span class="hljs-number">255</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">95.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">96.</span>te.lt(<span class="hljs-number">90</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">97.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">98.</span><span class="hljs-comment"># 定义全局变量 | Defining global variables</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">99.</span>lv = <span class="hljs-number">14</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">100.</span>le = <span class="hljs-number">120</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">101.</span>s = <span class="hljs-number">45</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">102.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">103.</span><span class="hljs-comment"># 定义宽度 | Define width</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">104.</span>te.width(lv)
+</div><div class="hljs-line"><span class="hljs-comment line-number">105.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">106.</span>r = <span class="hljs-number">0</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">107.</span>g = <span class="hljs-number">0</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">108.</span>b = <span class="hljs-number">0</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">109.</span>te.pencolor(r, g, b)
+</div><div class="hljs-line"><span class="hljs-comment line-number">110.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">111.</span>te.penup()
+</div><div class="hljs-line"><span class="hljs-comment line-number">112.</span>te.bk(le)
+</div><div class="hljs-line"><span class="hljs-comment line-number">113.</span>te.pendown()
+</div><div class="hljs-line"><span class="hljs-comment line-number">114.</span>te.fd(le)
+</div><div class="hljs-line"><span class="hljs-comment line-number">115.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">116.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">117.</span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">drawing_fractal_tree_graph_function</span><span class="hljs-params">(turtles, l, level)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">118.</span>    <span class="hljs-keyword">global</span> r, g, b
+</div><div class="hljs-line"><span class="hljs-comment line-number">119.</span>    <span class="hljs-comment"># save the current pen width</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">120.</span>    w = turtles.width()
+</div><div class="hljs-line"><span class="hljs-comment line-number">121.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">122.</span>    <span class="hljs-comment"># narrow the pen width</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">123.</span>    turtles.width(w * <span class="hljs-number">3.0</span> / <span class="hljs-number">4.0</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">124.</span>    <span class="hljs-comment"># set color:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">125.</span>    r = r + <span class="hljs-number">1</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">126.</span>    g = g + <span class="hljs-number">2</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">127.</span>    b = b + <span class="hljs-number">3</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">128.</span>    turtles.pencolor(r % <span class="hljs-number">200</span>, g % <span class="hljs-number">200</span>, b % <span class="hljs-number">200</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">129.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">130.</span>    l = <span class="hljs-number">3.0</span> / <span class="hljs-number">4.0</span> * l
+</div><div class="hljs-line"><span class="hljs-comment line-number">131.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">132.</span>    turtles.lt(s)
+</div><div class="hljs-line"><span class="hljs-comment line-number">133.</span>    turtles.fd(l)
+</div><div class="hljs-line"><span class="hljs-comment line-number">134.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">135.</span>    <span class="hljs-keyword">if</span> level &lt; lv:
+</div><div class="hljs-line"><span class="hljs-comment line-number">136.</span>        drawing_fractal_tree_graph_function(turtles, l, level + <span class="hljs-number">1</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">137.</span>    turtles.bk(l)
+</div><div class="hljs-line"><span class="hljs-comment line-number">138.</span>    turtles.rt(<span class="hljs-number">2</span> * s)
+</div><div class="hljs-line"><span class="hljs-comment line-number">139.</span>    turtles.fd(l)
+</div><div class="hljs-line"><span class="hljs-comment line-number">140.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">141.</span>    <span class="hljs-keyword">if</span> level &lt; lv:
+</div><div class="hljs-line"><span class="hljs-comment line-number">142.</span>        drawing_fractal_tree_graph_function(turtles, l, level + <span class="hljs-number">1</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">143.</span>    turtles.bk(l)
+</div><div class="hljs-line"><span class="hljs-comment line-number">144.</span>    turtles.lt(s)
+</div><div class="hljs-line"><span class="hljs-comment line-number">145.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">146.</span>    <span class="hljs-comment"># restore the previous pen width</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">147.</span>    turtles.width(w)
+</div><div class="hljs-line"><span class="hljs-comment line-number">148.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">149.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">150.</span>te.speed(<span class="hljs-string">"fastest"</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">151.</span>drawing_fractal_tree_graph_function(te, le, <span class="hljs-number">4</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">152.</span>te.done()
+</div><div class="hljs-line"><span class="hljs-comment line-number">153.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">154.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">155.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">156.</span>    <span class="hljs-comment"># 创建实例 | Create instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">157.</span>    g1 = GUIApplication()
+</div><div class="hljs-line"><span class="hljs-comment line-number">158.</span>    <span class="hljs-comment"># 调用 方法 | Call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">159.</span>    g1.master.title(<span class="hljs-string">'Application'</span>)  <span class="hljs-comment"># 设置窗口标题信息 | Set window title information</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">160.</span>    g1.mainloop()
+</div><div class="hljs-line"><span class="hljs-comment line-number">161.</span>    <span class="hljs-comment"># 调用 函数 | call function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">162.</span>    drawing_rectangle_function(te)
+</div><div class="hljs-line"><span class="hljs-comment line-number">163.</span>    run_drawing_five_pointed_function(te)
+</div></code></pre>
+</blockquote>
+
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 
-
-
-<h3 id="87-python-xml-解析">8.7 Python XML 解析</h3>
-
-
-
-<h3 id="88-python-gui-编程tkinter">8.8 Python GUI 编程(Tkinter)</h3>
-
-
+<h3 id="88-python-xml">8.8 Python XML</h3>
 
 <h3 id="89-python-json">8.9 Python JSON</h3>
 
@@ -7094,21 +7280,9 @@
 
 
 
-<h3 id="811-python-函数式编程">8.11 Python 函数式编程</h3>
+<h3 id="811-python-高级特性">8.11 Python 高级特性</h3>
 
-
-
-<h3 id="812-python-高级特性">8.12 Python 高级特性</h3>
-
-
-
-<h3 id="813-python-模块">8.13 Python 模块</h3>
-
-
-
-<h3 id="814-python-常用内建模块-常用第三方模块">8.14 Python 常用内建模块 &amp; 常用第三方模块</h3>
-
-
+<h3 id="812-python-常用内建模块-常用第三方模块">8.12 Python 常用内建模块 &amp; 常用第三方模块</h3>
 
 <h2 id="9-修仙之道-技术架构迭代-登峰造极之势">9. 修仙之道 技术架构迭代 登峰造极之势</h2>
 
