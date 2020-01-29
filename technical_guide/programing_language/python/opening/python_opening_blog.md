@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-1-28)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-1-29)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -6285,11 +6285,239 @@
 > 由于线程是操作系统直接支持的执行单元, 因此高级语言通常都内置多线程的支持, Python也不例外, 并且Python的线程是真正的`Posix Thread`, 而不是模拟出来的线程.
 > 
 > Python的标准库提供了两个模块：`_thread`和`threading`，`_thread`是低级模块, `threading`是高级模块, 对`_thread`进行了封装, 绝大多数情况下只需要使用`threading`高级模块.
-
+> 
+> 启动一个线程就是把一个函数传入并创建Thread实例, 然后调用start()开始执行
+> ``` py
+> # -*- coding:utf-8 -*-
+> #
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation |
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> #
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 线程 | Thread
+> # @File : 18_thread.py
+> # @Description : Python 进阶篇 - 线程 | Advanced Python - Threads
+> 
+> # 导入模块 | Import module
+> import os as o, time as te, random as rm, threading as tg
+> 
+> # 多线程 | Multithreading
+> # 定义 函数 | Definition function
+> def loops():
+>     print('Thread %s is Running...' % tg.current_thread().name)
+>     x = 0
+>     while x < 5:
+>         x = x + 1
+>         print('Thread %s >>> %s' % (tg.current_thread().name, x))
+>         te.sleep(1)
+>     print('Thread %s Ended.' % tg.current_thread().name)
+> 
+> 
+> # 执行 多线程 函数 | Execute multithreaded function
+> def run_loop():
+>     print('Thread %s is Running...' % tg.current_thread().name)
+>     t = tg.Thread(target=loops, name='LoopThread')
+>     t.start()
+>     t.join()
+>     print('Thread %s Ended.' % tg.current_thread().name)
+>     
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用 函数 | call function
+>     run_loop()
+> ```
 
 #### 8.6.4 ThreadLocal
+> 在多线程环境下每个线程都有自己的数据, 一个线程使用自己的局部变量比使用全局变量好, 因为局部变量只有线程自己能看见, 不会影响其他线程而全局变量的修改必须加锁.
+> 
+> 一个ThreadLocal变量虽然是全局变量, 但每个线程都只能读写自己线程的独立副本互不干扰, ThreadLocal解决了参数在一个线程中各个函数之间互相传递的问题.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> #
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation |
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> #
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 线程 | Thread
+> # @File : 18_thread.py
+> # @Description : Python 进阶篇 - 线程 | Advanced Python - Threads
+> 
+> # 导入模块 | Import module
+> import os as o, time as te, random as rm, threading as tg
+> 
+> # 定义 本地线程 函数 | Define local thread function
+> local_school = tg.local()
+> 
+> 
+> def process_student():
+>     # 获取当前线程关联的student
+>     std = local_school.student
+>     print('Hello, %s (in %s)' % (std, tg.current_thread().name))
+> 
+> 
+> def process_thread(name):
+>     # 绑定ThreadLocal的student
+>     local_school.student = name
+>     process_student()
+> 
+> 
+> def run_native_thread():
+>     t1 = tg.Thread(target=process_thread, args=('SYSTEM',), name='Thread-A')
+>     t2 = tg.Thread(target=process_thread, args=('BOUUS',), name='Thread-B')
+>     t1.start()
+>     t2.start()
+>     t1.join()
+>     t2.join()
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用 函数 | call function
+>     run_native_thread()
+> ```
+
 #### 8.6.5 进程 Vs 线程
+> 首先要实现多任务, 通常会设计Master-Worker模式, Master负责分配任务, Worker负责执行任务, 因此多任务环境下通常是一个Master, 多个Worker.
+> 
+> 如果用多进程实现Master-Worker, 主进程就是Master, 其他进程就是Worker
+> 
+> 如果用多线程实现Master-Worker, 主线程就是Master, 其他线程就是Worker
+> 
+> 多进程模式最大的优点就是稳定性高, 因为一个子进程崩溃了, 不会影响主进程和其他子进程
+
+
 #### 8.6.6 分布式进程
+> 在Thread和Process中应当优选Process, 因为Process更稳定, 而且Process可以分布到多台机器上, 而Thread最多只能分布到同一台机器的多个CPU上.
+> 
+> Python的multiprocessing模块不但支持多进程, 其中managers子模块还支持把多进程分布到多台机器上, 一个服务进程可以作为调度者, 将任务分布到其他多个进程中依靠网络通信, 由于managers模块封装很好, 不必了解网络通信的细节, 就可以很容易地编写分布式多进程程序.
+> 
+> Python的分布式进程接口简单, 封装良好, 适合需要把繁重任务分布到多台机器的环境下.
+> 
+> 注意Queue的作用是用来传递任务和接收结果, 每个任务的描述数据量要尽量小, 比如发送一个处理日志文件的任务, 就不要发送几百兆的日志文件本身, 而是发送日志文件存放的完整路径, 由Worker进程再去共享的磁盘上读取文件.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> #
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation |
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> #
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 线程 | Thread
+> # @File : 18_thread.py
+> # @Description : Python 进阶篇 - 线程 | Advanced Python - Threads
+> 
+> # 导入模块 | Import module
+> import random as rd, time as t, queue as q, sys as s
+> from multiprocessing.managers import BaseManager as bm
+> 
+> # 定义 发送任务队列 | Definition send task queue
+> task_queue = q.Queue()
+> 
+> # 定义 接收结果队列 | Definition receive result queue
+> result_queue = q.Queue()
+> 
+> 
+> # 定义 任务Master 类 | Definition Task Master Class
+> class TaskMaster(bm):
+> 
+>     # 定义 运行任务 方法 | Define Run Task Method
+>     def run_task(self):
+>         # 将两个Queue注册到网络, callable参数关联Queue对象
+>         TaskMaster.register('get_task_queue', callable=lambda: task_queue)
+>         TaskMaster.register('get_result_queue', callable=lambda: result_queue)
+>         # 绑定5000端口, 设置验证码'abc'
+>         manager = TaskMaster(address=('', 5000), authkey=b'abc')
+>         # 启动Queue
+>         manager.start()
+>         # 获得通过网络访问的Queue对象
+>         task = manager.get_task_queue()
+>         result = manager.get_result_queue()
+>         # 追加任务
+>         for i in range(10):
+>             n = rd.randint(0, 10000)
+>             print('Put task %d...' % n)
+>             task.put(n)
+>         # 从result队列读取结果
+>         print('Try get results...')
+>         for i in range(10):
+>             r = result.get(timeout=10)
+>             print('Result: %s' % r)
+>         # 关闭任务
+>         manager.shutdown()
+>         print('master exit.')
+> 
+> 
+> # 定义 任务Worker 类 | Definition Task Worker Class
+> class TaskWorker(bm):
+> 
+>     # 定义 运行任务 方法 | Define Run Task Method
+>     def run_task(self):
+>         # 由于TaskWorker通过网络获取Queue, 注册时提供队列名称
+>         TaskWorker.register('get_task_queue')
+>         TaskWorker.register('get_result_queue')
+> 
+>         # 连接到服务器, 也就是运行TaskMaster机器
+>         server_addr = '127.0.0.1'
+>         print('Connect to server %s...' % server_addr)
+>         # 端口和验证码注意保持与TaskMaster设置完全一致
+>         m = TaskWorker(address=(server_addr, 5000), authkey=b'abc')
+>         # 网络连接
+>         m.connect()
+>         # 获取Queue对象
+>         task = m.get_task_queue()
+>         result = m.get_result_queue()
+>         # 从task队列取任务, 并把结果写入result队列
+>         for i in range(10):
+>             try:
+>                 n = task.get(timeout=1)
+>                 print('run task %d * %d...' % (n, n))
+>                 r = '%d * %d = %d' % (n, n, n * n)
+>                 t.sleep(1)
+>                 result.put(r)
+>             except q.Empty:
+>                 print('task queue is empty.')
+>         # 处理结束
+>         print('worker exit.')
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+> 
+>     # 创建实例 | Create instance
+>     tm = TaskMaster()
+>     tw = TaskWorker()
+>     
+>     # 调用 方法 | Call method
+>     tm.run_task()
+>     tw.run_task()
+> ```
+
+
 
 
 
