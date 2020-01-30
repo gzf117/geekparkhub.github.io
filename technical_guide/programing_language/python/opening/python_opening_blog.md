@@ -7243,8 +7243,139 @@
 > ```
 
 
-
 #### 8.10.3 asyncio
+> asyncio是Python 3.4版本引入的标准库, 可以直接内置了对异步IO的支持.
+> 
+> asyncio的编程模型就是一个消息循环, 从asyncio模块中直接获取一个EventLoop的引用, 然后将需要执行的协程编写到EventLoop中执行就实现了异步IO.
+> 
+> > **1. 异步并发执行**
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 异步I/O | Asynchronous I / O
+> # @File : 22_asynchronous_io.py
+> # @Description : Python 进阶篇 - 异步I/O | Advanced Python - Asynchronous I / O
+> 
+> # 导入模块 | Import module
+> import threading as tg
+> import asyncio as ao
+> 
+> # 定义 异步IO 类 | Define AsynchronousReadWrite class
+> class AsynchronousReadWrite:
+> 
+>     # 定义 asyncio 异步IO方法 | Define asyncio asynchronous IO method
+>     '''
+>     Python 3.5以下使用`asyncio.@coroutine`装饰器 修饰生成器为coroutine类型
+>     Python 3.8起已弃用`@coroutine`装饰器, 改用`async def`修饰coroutine类型
+>     '''
+> 
+>     async def asynchronous_method(self, nums):
+>         print('Hello World! (%s)' % tg.currentThread())
+>         '''
+>         Python 3.5以下使用 `yield from asyncio.sleep(nums)`调用异步睡眠
+>         '''
+>         # 异步调用睡眠
+>         await ao.sleep(nums)
+>         print('Hello Again! (%s)' % tg.currentThread())
+> 
+>     # 定义 执行 协程异步IO 方法 | Define execute coroutine asynchronous IO method
+>     def run_asyncio(self, func):
+>         # 定义 获取循环事件 | Definition Get loop event
+>         loop = ao.get_event_loop()
+>         # 定义 执行 协程 | Definition execution coroutine
+>         tasks = [func, func]
+>         loop.run_until_complete(ao.wait(tasks))
+>         # 关闭事件 | Close event
+>         loop.close()
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建 实例 | Create instance
+>     a = AsynchronousReadWrite()
+>     # 调用 方法 | Call method
+>     coroutine_method = a.asynchronous_method(3)
+>     a.run_asyncio(coroutine_method)
+> ```
+> 
+> **2. 异步获取网站服务**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 异步I/O | Asynchronous I / O
+> # @File : 22_asynchronous_io.py
+> # @Description : Python 进阶篇 - 异步I/O | Advanced Python - Asynchronous I / O
+> 
+> # 导入模块 | Import module
+> import threading as tg
+> import asyncio as ao
+> 
+> # 定义 异步IO 类 | Define AsynchronousReadWrite class
+> class AsynchronousReadWrite:
+> 
+>     # 定义 异步获取网站服务状态 方法 | Define Get website service status asynchronously
+>     async def get_website_status(self, host):
+>         print('Ge WebSite  %s...' % host, '\n')
+>         connect = ao.open_connection(host, 80)
+>         reader, writer = await connect
+>         header = 'GET / HTTP/1.0\r\nHost: %s\r\n\r\n' % host
+>         writer.write(header.encode('UTF-8'))
+>         await writer.drain()
+>         while True:
+>             line = await reader.readline()
+>             if line == b'\r\n':
+>                 break
+>             print('%s Header => %s' % (host, line.decode('UTF-8').rstrip()))
+>         # 关闭流 | Close stream
+>         writer.close()
+> 
+>     # 运行 异步获取网站服务状态 方法 | Run asynchronously to get website service status method
+>     def run_get_website(self, url):
+>         # 定义 获取循环事件 | Definition Get loop event
+>         loop = ao.get_event_loop()
+>         # 定义 执行 协程 | Definition execution coroutine
+>         tasks = [self.get_website_status(x) for x in url]
+>         loop.run_until_complete(ao.wait(tasks))
+>         # 关闭事件 | Close event
+>         loop.close()
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建 实例 | Create instance
+>     a = AsynchronousReadWrite()
+>     # 调用 方法 | Call method
+>     HOST = ['www.youtube.com', 'www.google.com', 'www.163.com', 'www.github.com', 'www.python.org']
+>     a.run_get_website(HOST)
+> ```
+
+
+
 #### 8.10.4 aasync/await
 #### 8.10.5 aiohttp
 
