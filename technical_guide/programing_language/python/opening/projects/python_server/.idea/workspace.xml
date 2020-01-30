@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4cdd7094-07f3-48f7-b482-148a3a7f8d65" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/20_xml_parsing.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/resources/xml_file/movies.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../../../../README.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../../../README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../../../../../README_CN.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../../../../../README_CN.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/21_json_parsing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../python_opening_blog.html" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_opening_blog.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../../python_opening_blog.md" beforeDir="false" afterPath="$PROJECT_DIR$/../../python_opening_blog.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +78,7 @@
       <recent name="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/14_web_development" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.20_xml_parsing">
+  <component name="RunManager" selected="Python.21_json_parsing">
     <configuration name="18_thread" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="python_server" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -150,6 +145,28 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="21_json_parsing" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="python_server" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/21_json_parsing.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="udp_socket_client" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="python_server" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -172,35 +189,13 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="udp_socket_server" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="python_server" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_16_network_programming" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_16_network_programming/udp_socket_server.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.21_json_parsing" />
         <item itemvalue="Python.20_xml_parsing" />
         <item itemvalue="Python.19_gui_programming" />
         <item itemvalue="Python.18_thread" />
         <item itemvalue="Python.udp_socket_client" />
-        <item itemvalue="Python.udp_socket_server" />
       </list>
     </recent_temporary>
   </component>
@@ -282,6 +277,7 @@
       <workItem from="1580172858751" duration="19326000" />
       <workItem from="1580268328225" duration="20299000" />
       <workItem from="1580312688079" duration="4986000" />
+      <workItem from="1580345945393" duration="6120000" />
     </task>
     <servers />
   </component>
@@ -315,13 +311,13 @@
       <screen x="0" y="23" width="1440" height="849" />
     </state>
     <state x="314" y="292" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.849@0.23.1440.849" timestamp="1579445422489" />
-    <state width="1878" height="117" key="GridCell.Tab.0.bottom" timestamp="1580319484946">
+    <state width="1878" height="218" key="GridCell.Tab.0.bottom" timestamp="1580353790543">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state width="1038" height="494" key="GridCell.Tab.0.bottom/-1080.-939.1080.1874/0.23.1440.877@-1080.-939.1080.1874" timestamp="1578825165507" />
     <state width="1038" height="494" key="GridCell.Tab.0.bottom/-1080.-939.1080.1875/0.23.1440.877@-1080.-939.1080.1875" timestamp="1578836561372" />
     <state width="1878" height="253" key="GridCell.Tab.0.bottom/-1366.0.1366.768/0.0.1920.1080@0.0.1920.1080" timestamp="1579799621627" />
-    <state width="1878" height="334" key="GridCell.Tab.0.bottom/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580313816322" />
+    <state width="1878" height="218" key="GridCell.Tab.0.bottom/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580353790543" />
     <state width="1878" height="117" key="GridCell.Tab.0.bottom/-1366.23.1366.719/0.23.1920.1057@0.23.1920.1057" timestamp="1580319484946" />
     <state width="1398" height="395" key="GridCell.Tab.0.bottom/-1440.-1478.1440.2509/0.23.1440.877@-1440.-1478.1440.2509" timestamp="1579259727141" />
     <state width="1398" height="396" key="GridCell.Tab.0.bottom/-1440.-1478.1440.2510/0.23.1440.877@-1440.-1478.1440.2510" timestamp="1579424356684" />
@@ -340,13 +336,13 @@
     <state width="1398" height="185" key="GridCell.Tab.0.bottom/0.23.1366.718/1366.23.1440.877@1366.23.1440.877" timestamp="1579756861463" />
     <state width="1398" height="185" key="GridCell.Tab.0.bottom/0.23.1366.719/1366.23.1440.877@1366.23.1440.877" timestamp="1579746700969" />
     <state width="1398" height="189" key="GridCell.Tab.0.bottom/0.23.1440.850@0.23.1440.850" timestamp="1578302122905" />
-    <state width="1878" height="117" key="GridCell.Tab.0.center" timestamp="1580319484945">
+    <state width="1878" height="218" key="GridCell.Tab.0.center" timestamp="1580353790542">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state width="1038" height="494" key="GridCell.Tab.0.center/-1080.-939.1080.1874/0.23.1440.877@-1080.-939.1080.1874" timestamp="1578825165506" />
     <state width="1038" height="494" key="GridCell.Tab.0.center/-1080.-939.1080.1875/0.23.1440.877@-1080.-939.1080.1875" timestamp="1578836561371" />
     <state width="1878" height="253" key="GridCell.Tab.0.center/-1366.0.1366.768/0.0.1920.1080@0.0.1920.1080" timestamp="1579799621474" />
-    <state width="1878" height="334" key="GridCell.Tab.0.center/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580313816321" />
+    <state width="1878" height="218" key="GridCell.Tab.0.center/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580353790542" />
     <state width="1878" height="117" key="GridCell.Tab.0.center/-1366.23.1366.719/0.23.1920.1057@0.23.1920.1057" timestamp="1580319484945" />
     <state width="1398" height="395" key="GridCell.Tab.0.center/-1440.-1478.1440.2509/0.23.1440.877@-1440.-1478.1440.2509" timestamp="1579259727137" />
     <state width="1398" height="396" key="GridCell.Tab.0.center/-1440.-1478.1440.2510/0.23.1440.877@-1440.-1478.1440.2510" timestamp="1579424356683" />
@@ -365,13 +361,13 @@
     <state width="1398" height="185" key="GridCell.Tab.0.center/0.23.1366.718/1366.23.1440.877@1366.23.1440.877" timestamp="1579756861462" />
     <state width="1398" height="185" key="GridCell.Tab.0.center/0.23.1366.719/1366.23.1440.877@1366.23.1440.877" timestamp="1579746700968" />
     <state width="1398" height="189" key="GridCell.Tab.0.center/0.23.1440.850@0.23.1440.850" timestamp="1578302122903" />
-    <state width="1878" height="117" key="GridCell.Tab.0.left" timestamp="1580319484931">
+    <state width="1878" height="218" key="GridCell.Tab.0.left" timestamp="1580353790541">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state width="1038" height="494" key="GridCell.Tab.0.left/-1080.-939.1080.1874/0.23.1440.877@-1080.-939.1080.1874" timestamp="1578825165505" />
     <state width="1038" height="494" key="GridCell.Tab.0.left/-1080.-939.1080.1875/0.23.1440.877@-1080.-939.1080.1875" timestamp="1578836561371" />
     <state width="1878" height="253" key="GridCell.Tab.0.left/-1366.0.1366.768/0.0.1920.1080@0.0.1920.1080" timestamp="1579799621472" />
-    <state width="1878" height="334" key="GridCell.Tab.0.left/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580313816321" />
+    <state width="1878" height="218" key="GridCell.Tab.0.left/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580353790541" />
     <state width="1878" height="117" key="GridCell.Tab.0.left/-1366.23.1366.719/0.23.1920.1057@0.23.1920.1057" timestamp="1580319484931" />
     <state width="1398" height="395" key="GridCell.Tab.0.left/-1440.-1478.1440.2509/0.23.1440.877@-1440.-1478.1440.2509" timestamp="1579259727137" />
     <state width="1398" height="396" key="GridCell.Tab.0.left/-1440.-1478.1440.2510/0.23.1440.877@-1440.-1478.1440.2510" timestamp="1579424356682" />
@@ -390,13 +386,13 @@
     <state width="1398" height="185" key="GridCell.Tab.0.left/0.23.1366.718/1366.23.1440.877@1366.23.1440.877" timestamp="1579756861462" />
     <state width="1398" height="185" key="GridCell.Tab.0.left/0.23.1366.719/1366.23.1440.877@1366.23.1440.877" timestamp="1579746700968" />
     <state width="1398" height="189" key="GridCell.Tab.0.left/0.23.1440.850@0.23.1440.850" timestamp="1578302122903" />
-    <state width="1878" height="117" key="GridCell.Tab.0.right" timestamp="1580319484946">
+    <state width="1878" height="218" key="GridCell.Tab.0.right" timestamp="1580353790542">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state width="1038" height="494" key="GridCell.Tab.0.right/-1080.-939.1080.1874/0.23.1440.877@-1080.-939.1080.1874" timestamp="1578825165506" />
     <state width="1038" height="494" key="GridCell.Tab.0.right/-1080.-939.1080.1875/0.23.1440.877@-1080.-939.1080.1875" timestamp="1578836561372" />
     <state width="1878" height="253" key="GridCell.Tab.0.right/-1366.0.1366.768/0.0.1920.1080@0.0.1920.1080" timestamp="1579799621625" />
-    <state width="1878" height="334" key="GridCell.Tab.0.right/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580313816322" />
+    <state width="1878" height="218" key="GridCell.Tab.0.right/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580353790542" />
     <state width="1878" height="117" key="GridCell.Tab.0.right/-1366.23.1366.719/0.23.1920.1057@0.23.1920.1057" timestamp="1580319484946" />
     <state width="1398" height="395" key="GridCell.Tab.0.right/-1440.-1478.1440.2509/0.23.1440.877@-1440.-1478.1440.2509" timestamp="1579259727140" />
     <state width="1398" height="396" key="GridCell.Tab.0.right/-1440.-1478.1440.2510/0.23.1440.877@-1440.-1478.1440.2510" timestamp="1579424356683" />
@@ -491,27 +487,28 @@
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/python_server$11_object_oriented.coverage" NAME="11_object_oriented Coverage Results" MODIFIED="1579424345385" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
     <SUITE FILE_PATH="coverage/python_server$flask_server.coverage" NAME="flask_server Coverage Results" MODIFIED="1580012015370" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_14_web_development" />
-    <SUITE FILE_PATH="coverage/python_server$06_type_conversion.coverage" NAME="06_type_conversion Coverage Results" MODIFIED="1577451625967" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
     <SUITE FILE_PATH="coverage/python_server$08_process_control.coverage" NAME="08_process_control Coverage Results" MODIFIED="1577629137970" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
     <SUITE FILE_PATH="coverage/python_server$09_data_structure_collection.coverage" NAME="09_data_structure_collection Coverage Results" MODIFIED="1577871735095" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
     <SUITE FILE_PATH="coverage/python_server$13_regular_expression.coverage" NAME="13_regular_expression Coverage Results" MODIFIED="1579830512598" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
-    <SUITE FILE_PATH="coverage/python_server$core_module.coverage" NAME="core_module Coverage Results" MODIFIED="1579417850147" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/module" />
     <SUITE FILE_PATH="coverage/python_server$04_type_data.coverage" NAME="04_type_data Coverage Results" MODIFIED="1577371973804" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
+    <SUITE FILE_PATH="coverage/python_server$18_thread.coverage" NAME="18_thread Coverage Results" MODIFIED="1580196674607" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
+    <SUITE FILE_PATH="coverage/python_server$mvc_server.coverage" NAME="mvc_server Coverage Results" MODIFIED="1580018719329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_14_web_development" />
+    <SUITE FILE_PATH="coverage/python_server$01_BasicGrammar.coverage" NAME="01_BasicGrammar Coverage Results" MODIFIED="1577272797248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
+    <SUITE FILE_PATH="coverage/python_server$12_exception_handling_and_file_operations.coverage" NAME="12_exception_handling_and_file_operations Coverage Results" MODIFIED="1579620872952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
+    <SUITE FILE_PATH="coverage/python_server$07_operator.coverage" NAME="07_operator Coverage Results" MODIFIED="1577459334926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
+    <SUITE FILE_PATH="coverage/python_server$21_json_parsing.coverage" NAME="21_json_parsing Coverage Results" MODIFIED="1580353790534" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
+    <SUITE FILE_PATH="coverage/python_server$02_Constant_variable.coverage" NAME="02_Constant_variable Coverage Results" MODIFIED="1577275075205" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
+    <SUITE FILE_PATH="coverage/python_server$06_type_conversion.coverage" NAME="06_type_conversion Coverage Results" MODIFIED="1577451625967" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
+    <SUITE FILE_PATH="coverage/python_server$core_module.coverage" NAME="core_module Coverage Results" MODIFIED="1579417850147" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/module" />
     <SUITE FILE_PATH="coverage/python_server$__init____1_.coverage" NAME="__init__ (1) Coverage Results" MODIFIED="1580007717756" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_14_web_development" />
     <SUITE FILE_PATH="coverage/python_server$__init__.coverage" NAME="__init__ Coverage Results" MODIFIED="1580178728774" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_16_network_programming" />
-    <SUITE FILE_PATH="coverage/python_server$18_thread.coverage" NAME="18_thread Coverage Results" MODIFIED="1580196674607" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
     <SUITE FILE_PATH="coverage/python_server$20_xml_parsing.coverage" NAME="20_xml_parsing Coverage Results" MODIFIED="1580319087732" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
     <SUITE FILE_PATH="coverage/python_server$03_Identifier_naming_convention.coverage" NAME="03_Identifier_naming_convention Coverage Results" MODIFIED="1577279330212" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
-    <SUITE FILE_PATH="coverage/python_server$mvc_server.coverage" NAME="mvc_server Coverage Results" MODIFIED="1580018719329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_14_web_development" />
     <SUITE FILE_PATH="coverage/python_server$19_gui_programming.coverage" NAME="19_gui_programming Coverage Results" MODIFIED="1580293300450" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
-    <SUITE FILE_PATH="coverage/python_server$01_BasicGrammar.coverage" NAME="01_BasicGrammar Coverage Results" MODIFIED="1577272797248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
     <SUITE FILE_PATH="coverage/python_server$10_function.coverage" NAME="10_function Coverage Results" MODIFIED="1578651945940" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
     <SUITE FILE_PATH="coverage/python_server$15_database.coverage" NAME="15_database Coverage Results" MODIFIED="1580100360639" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
-    <SUITE FILE_PATH="coverage/python_server$12_exception_handling_and_file_operations.coverage" NAME="12_exception_handling_and_file_operations Coverage Results" MODIFIED="1579620872952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
     <SUITE FILE_PATH="coverage/python_server$05_object_structure.coverage" NAME="05_object_structure Coverage Results" MODIFIED="1577376102263" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
-    <SUITE FILE_PATH="coverage/python_server$07_operator.coverage" NAME="07_operator Coverage Results" MODIFIED="1577459334926" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
     <SUITE FILE_PATH="coverage/python_server$udp_socket_client.coverage" NAME="udp_socket_client Coverage Results" MODIFIED="1580178825526" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_16_network_programming" />
     <SUITE FILE_PATH="coverage/python_server$udp_socket.coverage" NAME="udp_socket_server Coverage Results" MODIFIED="1580178823520" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_16_network_programming" />
-    <SUITE FILE_PATH="coverage/python_server$02_Constant_variable.coverage" NAME="02_Constant_variable Coverage Results" MODIFIED="1577275075205" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
   </component>
 </project>

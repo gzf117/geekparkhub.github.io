@@ -6884,9 +6884,281 @@
 > ```
 
 
+### 8.9 Python JSON
+#### 8.9.1 前言
+> JSON(JavaScript Object Notation)是一种轻量级的数据交换格式, 易于阅读和编写.
+> 
+> 使用Python语言来编码和解码 JSON 对象.
+
+#### 8.9.2 JSON 函数
+> 使用JSON函数需要导入json库：`import json` | [更多内容参考](https://docs.python.org/3/library/json.html)
+> 
+> `json.dumps函数`: 将Python对象编码成JSON字符串.
+> 
+> `json.loads函数`: 将已编码JSON字符串解码为Python对象.
+
+##### 8.9.2.1 json.dumps
+> **1. 函数描述**
+> 
+> json.dumps用于将Python对象编码成JSON字符串.
+> 
+> **2. 使用语法**
+> 
+> ```
+> json.dumps(obj, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, cls=None, indent=None, separators=None, encoding="utf-8", default=None, sort_keys=False, **kw)
+> ```
+> 
+> **3. Python原始类型向Json类型的转化对照表**
+> 
+> | Python数据类型 | JSON数据类型 |
+> | :--------: | :--------: |
+> | `dict`    |   object |
+> | `list, tuple` |   array |
+> | `str, unicode` |  string |
+> | `int, long, float` |  number |
+> | `True`  |  true |
+> | `False` |  false |
+> | `None` |  null |
+> 
+> **4. 数组封装JSON格式**
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : JSON 编码 解码 | # @Program : JSON 编码 解码 |
+> # @File : 21_json_parsing.py
+> # @Description : Python 进阶篇 - JSON 编码 解码 | Advanced Python - JSON encoding and decoding
+> 
+> # 导入模块 | Import module
+> import json as jn
+> 
+> '''
+> 定义数组, 将数组编码为JSON格式数据
+> Define an array, encode the array into JSON format data
+> '''
+> array_data = [{'name': 'Juliet', 'age': 18, 'gender': 'girl', 'Hobby': 'music', 'constellation': 'Libra'}]
+> 
+> 
+> # 定义 数组转换JSON 函数 | Definition array conversion JSON function
+> def array_conversion_json(values):
+>     '''
+>     数据格式化输出 | Data formatted output
+>     参数说明 | Parameter Description:
+>         `values` 表示加载元数据
+>         `sort_keys` 表示key排序选项, False返回升序, True返回降序
+>         `indent` 表示缩进长度
+>         `separators` 表示分隔符
+>     :param values:
+>     :return:
+>     '''
+>     j = jn.dumps(values, sort_keys=False, indent=1, separators=(',', ': '))
+>     print('ArrayData to JsonData=', j)
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用函数 | call function
+>     array_conversion_json(array_data)
+> ```
+
+##### 8.9.2.2 json.loads
+> **1. 函数描述**
+> 
+> json.loads用于解码JSON数据, 该函数返回Python字段的数据类型.
+> 
+> **2. 使用语法**
+> 
+> ```
+> json.loads(s[, encoding[, cls[, object_hook[, parse_float[, parse_int[, parse_constant[, object_pairs_hook[, **kw]]]]]]]])
+> ```
+> 
+> **3. Json类型转换到Python类型对照表**
+> | JSON      |     Python |
+> | :--------: | :--------:|
+> | `object`    |   dict |
+> | `array`    |   list |
+> | `string`    |   unicode |
+> | `number (int)`    |   int, long |
+> | `number (real)`    |   float |
+> | `true`    |   True |
+> | `false`    |   False |
+> | `null`    |   None |
+> 
+> **4. 解码JSON对象**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : JSON 编码 解码 | # @Program : JSON 编码 解码 |
+> # @File : 21_json_parsing.py
+> # @Description : Python 进阶篇 - JSON 编码 解码 | Advanced Python - JSON encoding and decoding
+> 
+> # 导入模块 | Import module
+> import json as jn
+> 
+> '''
+> 定义JSON, 解码JSON返回Python数据类型
+> Define JSON, decode JSON and return Python data type
+> '''
+> json_data = '{"name":"Juliet","age":18,"gender":"girl","Hobby":"music","constellation":"Libra"}'
+> 
+> # 定义 JSON 转换为Python数据类型 函数 | Define JSON to Python data type function
+> def json_conversion_data(values):
+>     text = jn.loads(values)
+>     print('JSON to Python data type=', text)
+>     
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用函数 | call function
+>     json_conversion_data(json_data)
+> ```
+
+
+#### 8.9.3 Demjson
+##### 8.9.3.1 前言
+> Demjson是Python第三方模块库, 可用于编码和解码JSON数据, 包含JSONLint格式化及校验功能.
+> 
+> 下载第三方库：[Dow For Github](https://github.com/dmeranda/demjson) | [Dow For 官方地址](http://deron.meranda.us/python/demjson/) | ```pip3 install demjson```
+
+##### 8.9.3.2 JSON 函数
+> **函数描述**
+> 
+> `encode函数`: 将Python对象编码成JSON字符串.
+> 
+> `decode函数`: 将已编码JSON字符串解码为Python对象.
+
+##### 8.9.3.3 encode
+> **1. 函数描述**
+> 
+> Python encode() 函数用于将 Python 对象编码成 JSON 字符串.
+> 
+> **2. 使用语法**
+> 
+> ``` py
+> demjson.encode(self, obj, nest_level=0)
+> ```
+> 
+> **3. 数组封装JSON格式**
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : JSON 编码 解码 | # @Program : JSON 编码 解码 |
+> # @File : 21_json_parsing.py
+> # @Description : Python 进阶篇 - JSON 编码 解码 | Advanced Python - JSON encoding and decoding
+> 
+> # 导入模块 | Import module
+> import demjson as dj
+> 
+> '''
+> 定义数组, 将数组编码为JSON格式数据
+> Define an array, encode the array into JSON format data
+> '''
+> array_data = [{'name': 'Juliet', 'age': 18, 'gender': 'girl', 'Hobby': 'music', 'constellation': 'Libra'}] 
+> 
+> # 定义 数组转换JSON 函数 | Definition array conversion JSON function
+> def array_coding_json(values):
+>     j = dj.encode(values)
+>     print('ArrayData to JsonData=', j)
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用函数 | call function
+>     array_coding_json(array_data)
+> ```
+
+
+##### 8.9.3.4 decode
+> **1. 函数描述**
+> 
+> Python encode() 函数用于将 Python 对象编码成 JSON 字符串.
+> 
+> **2. 使用语法**
+> 
+> ``` py
+> demjson.decode(self, txt)
+> ```
+> 
+> **3. 解码JSON对象**
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : JSON 编码 解码 | # @Program : JSON 编码 解码 |
+> # @File : 21_json_parsing.py
+> # @Description : Python 进阶篇 - JSON 编码 解码 | Advanced Python - JSON encoding and decoding
+> 
+> # 导入模块 | Import module
+> import demjson as dj
+> 
+> '''
+> 定义JSON, 解码JSON返回Python数据类型
+> Define JSON, decode JSON and return Python data type
+> '''
+> json_data = '{"name":"Juliet","age":18,"gender":"girl","Hobby":"music","constellation":"Libra"}'
+> 
+> # 定义 JSON 转换为Python数据类型 函数 | Define JSON to Python data type function
+> def json_coding_data(values):
+>     text = dj.decode(values)
+>     print('JSON to Python data type=', text)
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 调用函数 | call function
+>     json_coding_data(json_data)
+> ```
+
+
+
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-### 8.9 Python JSON
 ### 8.10 Python 异步IO
 ### 8.11 Python 高级特性
 ### 8.12 Python 常用内建模块 & 常用第三方模块
