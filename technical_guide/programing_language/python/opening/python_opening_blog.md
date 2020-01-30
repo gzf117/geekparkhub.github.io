@@ -7156,10 +7156,101 @@
 > ```
 
 
+### 8.10 Python 异步IO
+#### 8.10.1 前言
+> CPU的速度远远快于磁盘、网络等IO, 在一个线程中CPU执行代码的速度极快, 然而一旦遇到IO操作, 如读写文件、发送网络数据时就需要等待IO操作完成, 才能继续进行下一步操作, 这种情况称为同步IO
+> 
+> 因为一个IO操作就阻塞了当前线程, 导致其他代码无法执行, 所以必须使用多线程或者多进程来并发执行代码, 为多个用户服务, 每个用户都会分配一个线程, 如果遇到IO导致线程被挂起其他用户的线程不受影响.
+> 
+> 多线程和多进程的模型虽然解决了并发问题, 但是系统不能无上限地增加线程, 由于系统切换线程的开销也很大, 所以一旦线程数量过多, CPU的时间就花在线程切换上了, 真正运行代码的时间就少了, 结果导致性能严重下降.
+
+#### 8.10.2 协程
+> 在学习异步IO模型前先来了解协程, 协程又称微线程(Coroutine)
+> 
+> 协程的概念很早就提出来了, 但直到最近几年才在某些语言(如Lua编程语言)中得到广泛应用.
+> 
+> 子程序或者称为函数, 在所有语言中都是层级调用, 比如A调用B, B在执行过程中又调用了C, C执行完毕返回, B执行完毕返回, 最后是A执行完毕, 所以子程序调用是通过栈实现, 一个线程就是执行一个子程序.
+> 
+> 子程序调用总是一个入口, 一次返回, 调用顺序是明确的, 而协程的调用和子程序不同.
+> 
+> 协程看上去也是子程序, 但执行过程中在子程序内部可中断, 然后转而执行别的子程序, 在适当的时候再返回来接着执行.
+> 
+> Python对协程支持是通过generator实现, 在generator中, 不但可以通过for循环来迭代, 还可以不断调用next()函数获取由yield语句返回的下一个值, 但是Python的yield不但可以返回一个值, 它还可以接收调用者发出的参数.
+> 
+> 传统的生产者-消费者模型是一个线程写消息, 一个线程取消息, 通过锁机制控制队列和等待, 但一不小心就可能死锁, 如果改用协程, 生产者生产消息后直接通过yield跳转到消费者开始执行, 待消费者执行完毕后, 切换回生产者继续生产效率极高.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 异步I/O | Asynchronous I / O
+> # @File : 22_asynchronous_io.py
+> # @Description : Python 进阶篇 - 异步I/O | Advanced Python - Asynchronous I / O
+> 
+> # 定义 异步IO 类 | Define AsynchronousReadWrite class
+> class AsynchronousReadWrite:
+>     '''
+>     协程生产者&消费者执行流程：子程序就是协程的一种特例
+>         `coroutine_consumer()`方法是生成器(generator), 将coroutine_consumer传入`coroutine_producer()`方法
+>         1. 首先调用`parameter.send(None)`启动生成器.
+>         2. 然后一旦生产消息, 通过`parameter.send(n)`切换到`coroutine_consumer`执行.
+>         3. `coroutine_consumer`通过`yield`拿到消息, 处理又通过`yield`把结果回传.
+>         4. `coroutine_producer()`拿到`coroutine_consumer`处理结果, 继续生产下一条消息.
+>         5. `coroutine_producer决定不生产了, 是通过`parameter.close()`关闭`coroutine_consumer`整个过程结束.
+>         整个流程无锁, 由一个线程执行, `produce`和`consumer`协作完成任务, 所以称为“协程”, 而非线程的抢占式多任务
+>     '''
+> 
+>     # 定义 协程 消费者 方法 | Definition coroutine consumer method
+>     def coroutine_consumer(self):
+>         r = ' '
+>         while True:
+>             n = yield r
+>             if not n:
+>                 return
+>             print('[CONSUMER] Consuming %s...' % n)
+>             r = '200 OK'
+> 
+>     # 定义 协程 生产者 方法 | Definition coroutine producer method
+>     def coroutine_producer(self, parameter):
+>         parameter.send(None)
+>         n = 0
+>         while n < 5:
+>             n = n + 1
+>             print('[PRODUCER] Producing %s...' % n)
+>             r = parameter.send(n)
+>             print('[PRODUCER] Consumer Return: %s' % r)
+>         parameter.close()
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建 实例 | Create instance
+>     a = AsynchronousReadWrite()
+>     # 调用 方法 | Call method
+>     consumer = a.coroutine_consumer()
+>     a.coroutine_producer(consumer)
+> ```
+
+
+
+#### 8.10.3 asyncio
+#### 8.10.4 aasync/await
+#### 8.10.5 aiohttp
+
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-### 8.10 Python 异步IO
 ### 8.11 Python 高级特性
 ### 8.12 Python 常用内建模块 & 常用第三方模块
 
