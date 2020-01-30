@@ -7312,6 +7312,145 @@
 > ```
 > 
 > **2. 异步获取网站服务**
+> 
+> asyncio提供了完善的异步IO支持, 异步操作需要在`coroutine`中通过`yield from`完成, 多个`coroutine`可以封装成一组Task然后并发执行.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 异步I/O | Asynchronous I / O
+> # @File : 22_asynchronous_io.py
+> # @Description : Python 进阶篇 - 异步I/O | Advanced Python - Asynchronous I / O
+> 
+> # 导入模块 | Import module
+> import threading as tg
+> import asyncio as ao
+> 
+> # 定义 异步IO 类 | Define AsynchronousReadWrite class
+> class AsynchronousReadWrite:
+> 
+>     # 定义 异步获取网站服务状态 方法 | Define Get website service status asynchronously
+>     async def get_website_status(self, host):
+>         print('Ge WebSite  %s...' % host, '\n')
+>         connect = ao.open_connection(host, 80)
+>         reader, writer = await connect
+>         header = 'GET / HTTP/1.0\r\nHost: %s\r\n\r\n' % host
+>         writer.write(header.encode('UTF-8'))
+>         await writer.drain()
+>         while True:
+>             line = await reader.readline()
+>             if line == b'\r\n':
+>                 break
+>             print('%s Header => %s' % (host, line.decode('UTF-8').rstrip()))
+>         # 关闭流 | Close stream
+>         writer.close()
+> 
+>     # 运行 异步获取网站服务状态 方法 | Run asynchronously to get website service status method
+>     def run_get_website(self, url):
+>         # 定义 获取循环事件 | Definition Get loop event
+>         loop = ao.get_event_loop()
+>         # 定义 执行 协程 | Definition execution coroutine
+>         tasks = [self.get_website_status(x) for x in url]
+>         loop.run_until_complete(ao.wait(tasks))
+>         # 关闭事件 | Close event
+>         loop.close()
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建 实例 | Create instance
+>     a = AsynchronousReadWrite()
+>     # 调用 方法 | Call method
+>     HOST = ['www.youtube.com', 'www.google.com', 'www.163.com', 'www.github.com', 'www.python.org']
+>     a.run_get_website(HOST)
+> ```
+
+#### 8.10.4 async & await
+> 使用asyncio提供的`@asyncio.coroutine`可以把一个generator标记为coroutine类型, 然后在coroutine内部使用`yield from`调用另一个coroutine实现异步操作.
+> 
+> 为了简化并更好地标识异步IO, 从Python 3.5开始引入了新语法`async`和`await`, 可以让coroutine的代码更简洁易读.
+> 
+> async和await是针对coroutine的新语法, 要使用新的语法, 只需要做两步简单的替换:
+> 将`@asyncio.coroutine`替换为`async` / 将`yield from`替换为`await`
+> 
+> Python从3.5版本开始为asyncio提供了`async`和`await`的新语法, 如果使用3.4版本则仍需使用`@asyncio.coroutine`方案.
+> 
+> **1. 采用新语法 `async` & `await`异步I/O操作**
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 异步I/O | Asynchronous I / O
+> # @File : 22_asynchronous_io.py
+> # @Description : Python 进阶篇 - 异步I/O | Advanced Python - Asynchronous I / O
+> 
+> # 导入模块 | Import module
+> import threading as tg
+> import asyncio as ao
+> 
+> # 定义 异步IO 类 | Define AsynchronousReadWrite class
+> class AsynchronousReadWrite:
+> 
+>     # 定义 asyncio 异步IO方法 | Define asyncio asynchronous IO method
+>     '''
+>     Python 3.5以下使用`asyncio.@coroutine`装饰器 修饰生成器为coroutine类型
+>     Python 3.8起已弃用`@coroutine`装饰器, 改用`async def`修饰coroutine类型
+>     '''
+> 
+>     async def asynchronous_method(self, nums):
+>         print('Hello World! (%s)' % tg.currentThread())
+>         '''
+>         Python 3.5以下使用 `yield from asyncio.sleep(nums)`调用异步睡眠
+>         '''
+>         # 异步调用睡眠
+>         await ao.sleep(nums)
+>         print('Hello Again! (%s)' % tg.currentThread())
+> 
+>     # 定义 执行 协程异步IO 方法 | Define execute coroutine asynchronous IO method
+>     def run_asyncio(self, func):
+>         # 定义 获取循环事件 | Definition Get loop event
+>         loop = ao.get_event_loop()
+>         # 定义 执行 协程 | Definition execution coroutine
+>         tasks = [func, func]
+>         loop.run_until_complete(ao.wait(tasks))
+>         # 关闭事件 | Close event
+>         loop.close()
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建 实例 | Create instance
+>     a = AsynchronousReadWrite()
+>     # 调用 方法 | Call method
+>     coroutine_method = a.asynchronous_method(3)
+>     a.run_asyncio(coroutine_method)
+> ```
+> 
+> **2. 采用新语法 `async` & `await`异步I/O操作**
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -7375,10 +7514,107 @@
 > ```
 
 
-
-#### 8.10.4 aasync/await
 #### 8.10.5 aiohttp
-
+> **1. 前言**
+> 
+> `asyncio`可以实现单线程并发IO操作, 如果仅用在客户端发挥的威力不大, 如果把`asyncio`用在服务器端, 例如Web服务器，由于HTTP连接就是IO操作, 因此可以用单线程+coroutine实现多用户高并发支持.
+> 
+> `asyncio`实现了TCP、UDP、SSL等协议, `aiohttp`则是基于`asyncio`实现的HTTP框架.
+> 
+> **2. 安装 `aiohttp`**
+> 
+> pypi 镜像使用帮助, 由于海外镜像下载第三方库较慢, 至此更改为国内镜像.
+> 
+> 临时使用：
+> ```
+> pip install -i https://pypi.tuna.tsinghua.edu.cn/simple some-package
+> ```
+> 
+> 永久使用：
+> ```
+> # 升级 pip 到最新的版本 (>=10.0.0) 后进行配置：
+> pip install pip -U
+> 
+> # 如pip默认海外源网络连接较差, 可临时使国内镜像站升级pip, 升级后再将pip默认设置为国内镜像
+> pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pip -U
+> 
+> # 将pip默认设置为国内镜像
+> pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+> ```
+> 
+> 开始安装`aiohttp`
+> ```
+> (venv) systemhub:python_server system$ pip install aiohttp
+> ```
+> **基于`aiohttp`构建简易HTTP服务器**
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 异步I/O | Asynchronous I / O
+> # @File : 22_asynchronous_io.py
+> # @Description : Python 进阶篇 - 异步I/O | Advanced Python - Asynchronous I / O
+> 
+> # 导入模块 | Import module
+> import asyncio as ao
+> from aiohttp import web as wb
+> 
+> '''
+> 异步Web应用程序 | Async Web Application
+> 定义 简易HTTP服务器 方法 | Define a simple HTTP server method
+> '''
+> # 定义 路由器 | Definition router
+> routes = wb.RouteTableDef()
+> 
+> 
+> # 定义 Web应用 首页 方法 | Defining a Web Application Home Method
+> @routes.get('/')
+> async def home(request):
+>     await ao.sleep(0.5)
+>     return wb.Response(body=b'<h1>Welcome To Home!</h1>', headers={'content-type': 'text/html'})
+> 
+> 
+> # 定义 Web应用 JSON 方法 | Define web application JSON method
+> @routes.get('/json/{name}')
+> async def json_method(request):
+v    await ao.sleep(0.1)
+v    return wb.json_response({'name': request.match_info['name'] or 'index'})
+> 
+> 
+> # 定义 Web应用 主页 方法 | Define Web Application Home Method
+> @routes.get('/mains/{name}')
+> async def mains(request):
+>     await ao.sleep(0.5)
+>     return wb.Response(body="<h1>Hello %s</h1>" % request.match_info['name'], headers={'content-type': 'text/html'})
+> 
+> 
+> # 定义 Web应用 初始化 方法 | Define web application initialization method
+> async def init():
+>     # 初始化服务 | Initialize the service
+>     app_server = wb.Application()
+>     app_server.add_routes(routes)
+>     # 运行HTTP服务 | Run HTTP service
+>     runner = wb.AppRunner(app_server)
+>     await runner.setup()
+>     website = wb.TCPSite(runner, '127.0.0.1', 8000)
+>     await website.start()
+>     print('======== Running on http://127.0.0.1:8000 ========')
+>     
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     init()
+> ```
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒

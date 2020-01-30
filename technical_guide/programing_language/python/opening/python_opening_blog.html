@@ -227,7 +227,7 @@
 <li><a href="#8101-前言">8.10.1 前言</a></li>
 <li><a href="#8102-协程">8.10.2 协程</a></li>
 <li><a href="#8103-asyncio">8.10.3 asyncio</a></li>
-<li><a href="#8104-aasyncawait">8.10.4 aasync/await</a></li>
+<li><a href="#8104-async-await">8.10.4 async &amp; await</a></li>
 <li><a href="#8105-aiohttp">8.10.5 aiohttp</a></li>
 </ul>
 </li>
@@ -7952,6 +7952,8 @@
   
   <p><strong>2. 异步获取网站服务</strong></p>
   
+  <p>asyncio提供了完善的异步IO支持, 异步操作需要在<code>coroutine</code>中通过<code>yield from</code>完成, 多个<code>coroutine</code>可以封装成一组Task然后并发执行.</p>
+  
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
@@ -8014,11 +8016,249 @@
 </div></code></pre>
 </blockquote>
 
-<h4 id="8104-aasyncawait">8.10.4 aasync/await</h4>
+<h4 id="8104-async-await">8.10.4 async &amp; await</h4>
 
-
+<blockquote>
+  <p>使用asyncio提供的<code>@asyncio.coroutine</code>可以把一个generator标记为coroutine类型, 然后在coroutine内部使用<code>yield from</code>调用另一个coroutine实现异步操作.</p>
+  
+  <p>为了简化并更好地标识异步IO, 从Python 3.5开始引入了新语法<code>async</code>和<code>await</code>, 可以让coroutine的代码更简洁易读.</p>
+  
+  <p>async和await是针对coroutine的新语法, 要使用新的语法, 只需要做两步简单的替换: <br>
+  将<code>@asyncio.coroutine</code>替换为<code>async</code> / 将<code>yield from</code>替换为<code>await</code></p>
+  
+  <p>Python从3.5版本开始为asyncio提供了<code>async</code>和<code>await</code>的新语法, 如果使用3.4版本则仍需使用<code>@asyncio.coroutine</code>方案.</p>
+  
+  <p><strong>1. 采用新语法 <code>async</code> &amp; <code>await</code>异步I/O操作</strong></p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 异步I/O | Asynchronous I / O</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 22_asynchronous_io.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 异步I/O | Advanced Python - Asynchronous I / O</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">import</span> threading <span class="hljs-keyword">as</span> tg
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-keyword">import</span> asyncio <span class="hljs-keyword">as</span> ao
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># 定义 异步IO 类 | Define AsynchronousReadWrite class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AsynchronousReadWrite</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>    <span class="hljs-comment"># 定义 asyncio 异步IO方法 | Define asyncio asynchronous IO method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>    <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-string">    Python 3.5以下使用`asyncio.@coroutine`装饰器 修饰生成器为coroutine类型</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-string">    Python 3.8起已弃用`@coroutine`装饰器, 改用`async def`修饰coroutine类型</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><span class="hljs-string">    '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">asynchronous_method</span><span class="hljs-params">(self, nums)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>        print(<span class="hljs-string">'Hello World! (%s)'</span> % tg.currentThread())
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><span class="hljs-string">        Python 3.5以下使用 `yield from asyncio.sleep(nums)`调用异步睡眠</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>        <span class="hljs-comment"># 异步调用睡眠</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>        <span class="hljs-keyword">await</span> ao.sleep(nums)
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>        print(<span class="hljs-string">'Hello Again! (%s)'</span> % tg.currentThread())
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>    <span class="hljs-comment"># 定义 执行 协程异步IO 方法 | Define execute coroutine asynchronous IO method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run_asyncio</span><span class="hljs-params">(self, func)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>        <span class="hljs-comment"># 定义 获取循环事件 | Definition Get loop event</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>        loop = ao.get_event_loop()
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>        <span class="hljs-comment"># 定义 执行 协程 | Definition execution coroutine</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>        tasks = [func, func]
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>        loop.run_until_complete(ao.wait(tasks))
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>        <span class="hljs-comment"># 关闭事件 | Close event</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>        loop.close()
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>    <span class="hljs-comment"># 创建 实例 | Create instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>    a = AsynchronousReadWrite()
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>    <span class="hljs-comment"># 调用 方法 | Call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>    coroutine_method = a.asynchronous_method(<span class="hljs-number">3</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>    a.run_asyncio(coroutine_method)
+</div></code></pre>
+  
+  <p><strong>2. 采用新语法 <code>async</code> &amp; <code>await</code>异步I/O操作</strong></p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 异步I/O | Asynchronous I / O</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 22_asynchronous_io.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 异步I/O | Advanced Python - Asynchronous I / O</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">import</span> threading <span class="hljs-keyword">as</span> tg
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-keyword">import</span> asyncio <span class="hljs-keyword">as</span> ao
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># 定义 异步IO 类 | Define AsynchronousReadWrite class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AsynchronousReadWrite</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>    <span class="hljs-comment"># 定义 异步获取网站服务状态 方法 | Define Get website service status asynchronously</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>    <span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">get_website_status</span><span class="hljs-params">(self, host)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>        print(<span class="hljs-string">'Ge WebSite  %s...'</span> % host, <span class="hljs-string">'\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>        connect = ao.open_connection(host, <span class="hljs-number">80</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        reader, writer = <span class="hljs-keyword">await</span> connect
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>        header = <span class="hljs-string">'GET / HTTP/1.0\r\nHost: %s\r\n\r\n'</span> % host
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>        writer.write(header.encode(<span class="hljs-string">'UTF-8'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>        <span class="hljs-keyword">await</span> writer.drain()
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>        <span class="hljs-keyword">while</span> <span class="hljs-keyword">True</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>            line = <span class="hljs-keyword">await</span> reader.readline()
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>            <span class="hljs-keyword">if</span> line == <span class="hljs-string">b'\r\n'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>                <span class="hljs-keyword">break</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>            print(<span class="hljs-string">'%s Header =&gt; %s'</span> % (host, line.decode(<span class="hljs-string">'UTF-8'</span>).rstrip()))
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>        <span class="hljs-comment"># 关闭流 | Close stream</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>        writer.close()
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>    <span class="hljs-comment"># 运行 异步获取网站服务状态 方法 | Run asynchronously to get website service status method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">run_get_website</span><span class="hljs-params">(self, url)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>        <span class="hljs-comment"># 定义 获取循环事件 | Definition Get loop event</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>        loop = ao.get_event_loop()
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>        <span class="hljs-comment"># 定义 执行 协程 | Definition execution coroutine</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>        tasks = [self.get_website_status(x) <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> url]
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>        loop.run_until_complete(ao.wait(tasks))
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>        <span class="hljs-comment"># 关闭事件 | Close event</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>        loop.close()
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>    <span class="hljs-comment"># 创建 实例 | Create instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>    a = AsynchronousReadWrite()
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>    <span class="hljs-comment"># 调用 方法 | Call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>    HOST = [<span class="hljs-string">'www.youtube.com'</span>, <span class="hljs-string">'www.google.com'</span>, <span class="hljs-string">'www.163.com'</span>, <span class="hljs-string">'www.github.com'</span>, <span class="hljs-string">'www.python.org'</span>]
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>    a.run_get_website(HOST)
+</div></code></pre>
+</blockquote>
 
 <h4 id="8105-aiohttp">8.10.5 aiohttp</h4>
+
+<blockquote>
+  <p><strong>1. 前言</strong></p>
+  
+  <p><code>asyncio</code>可以实现单线程并发IO操作, 如果仅用在客户端发挥的威力不大, 如果把<code>asyncio</code>用在服务器端, 例如Web服务器，由于HTTP连接就是IO操作, 因此可以用单线程+coroutine实现多用户高并发支持.</p>
+  
+  <p><code>asyncio</code>实现了TCP、UDP、SSL等协议, <code>aiohttp</code>则是基于<code>asyncio</code>实现的HTTP框架.</p>
+  
+  <p><strong>2. 安装 <code>aiohttp</code></strong></p>
+  
+  <p>pypi 镜像使用帮助, 由于海外镜像下载第三方库较慢, 至此更改为国内镜像.</p>
+  
+  <p>临时使用：</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="hljs sql"><div class="hljs-line"><span class="hljs-comment line-number">1.</span>pip <span class="hljs-keyword">install</span> -i https://pypi.tuna.tsinghua.edu.cn/simple <span class="hljs-keyword">some</span>-<span class="hljs-keyword">package</span>
+</div></code></pre>
+  
+  <p>永久使用：</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="hljs vala"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-meta"># 升级 pip 到最新的版本 (&gt;=10.0.0) 后进行配置：</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span>pip install pip -U
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-meta"># 如pip默认海外源网络连接较差, 可临时使国内镜像站升级pip, 升级后再将pip默认设置为国内镜像</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span>pip install -i https:<span class="hljs-comment">//pypi.tuna.tsinghua.edu.cn/simple pip -U</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-meta"># 将pip默认设置为国内镜像</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span>pip config <span class="hljs-keyword">set</span> global.index-url https:<span class="hljs-comment">//pypi.tuna.tsinghua.edu.cn/simple</span>
+</div></code></pre>
+  
+  <p>开始安装<code>aiohttp</code></p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="hljs gams"><div class="hljs-line"><span class="hljs-comment line-number">1.</span>(venv) systemhub:python_server <span class="hljs-keyword">system</span><span class="hljs-symbol">$</span> pip install aiohttp
+</div></code></pre>
+  
+  <p><strong>基于<code>aiohttp</code>构建简易HTTP服务器</strong></p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 异步I/O | Asynchronous I / O</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 22_asynchronous_io.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 异步I/O | Advanced Python - Asynchronous I / O</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">import</span> asyncio <span class="hljs-keyword">as</span> ao
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-keyword">from</span> aiohttp <span class="hljs-keyword">import</span> web <span class="hljs-keyword">as</span> wb
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-string">异步Web应用程序 | Async Web Application</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-string">定义 简易HTTP服务器 方法 | Define a simple HTTP server method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-comment"># 定义 路由器 | Definition router</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>routes = wb.RouteTableDef()
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><span class="hljs-comment"># 定义 Web应用 首页 方法 | Defining a Web Application Home Method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><span class="hljs-meta">@routes.get('/')</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">home</span><span class="hljs-params">(request)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>    <span class="hljs-keyword">await</span> ao.sleep(<span class="hljs-number">0.5</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>    <span class="hljs-keyword">return</span> wb.Response(body=<span class="hljs-string">b'&lt;h1&gt;Welcome To Home!&lt;/h1&gt;'</span>, headers={<span class="hljs-string">'content-type'</span>: <span class="hljs-string">'text/html'</span>})
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span><span class="hljs-comment"># 定义 Web应用 JSON 方法 | Define web application JSON method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><span class="hljs-meta">@routes.get('/json/{name}')</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">json_method</span><span class="hljs-params">(request)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>v    <span class="hljs-keyword">await</span> ao.sleep(<span class="hljs-number">0.1</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>v    <span class="hljs-keyword">return</span> wb.json_response({<span class="hljs-string">'name'</span>: request.match_info[<span class="hljs-string">'name'</span>] <span class="hljs-keyword">or</span> <span class="hljs-string">'index'</span>})
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span><span class="hljs-comment"># 定义 Web应用 主页 方法 | Define Web Application Home Method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span><span class="hljs-meta">@routes.get('/mains/{name}')</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">mains</span><span class="hljs-params">(request)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>    <span class="hljs-keyword">await</span> ao.sleep(<span class="hljs-number">0.5</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>    <span class="hljs-keyword">return</span> wb.Response(body=<span class="hljs-string">"&lt;h1&gt;Hello %s&lt;/h1&gt;"</span> % request.match_info[<span class="hljs-string">'name'</span>], headers={<span class="hljs-string">'content-type'</span>: <span class="hljs-string">'text/html'</span>})
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span><span class="hljs-comment"># 定义 Web应用 初始化 方法 | Define web application initialization method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span><span class="hljs-keyword">async</span> <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">init</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>    <span class="hljs-comment"># 初始化服务 | Initialize the service</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>    app_server = wb.Application()
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>    app_server.add_routes(routes)
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>    <span class="hljs-comment"># 运行HTTP服务 | Run HTTP service</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>    runner = wb.AppRunner(app_server)
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>    <span class="hljs-keyword">await</span> runner.setup()
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span>    website = wb.TCPSite(runner, <span class="hljs-string">'127.0.0.1'</span>, <span class="hljs-number">8000</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>    <span class="hljs-keyword">await</span> website.start()
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span>    print(<span class="hljs-string">'======== Running on http://127.0.0.1:8000 ========'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span>    init()
+</div></code></pre>
+</blockquote>
 
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 

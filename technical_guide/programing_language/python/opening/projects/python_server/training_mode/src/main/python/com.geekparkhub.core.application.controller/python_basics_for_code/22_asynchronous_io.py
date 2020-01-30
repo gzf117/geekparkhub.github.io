@@ -19,6 +19,7 @@
 # 导入模块 | Import module
 import threading as tg
 import asyncio as ao
+from aiohttp import web as wb
 
 
 # 定义 异步IO 类 | Define AsynchronousReadWrite class
@@ -107,14 +108,57 @@ class AsynchronousReadWrite:
         loop.close()
 
 
+'''
+异步Web应用程序 | Async Web Application
+定义 简易HTTP服务器 方法 | Define a simple HTTP server method
+'''
+# 定义 路由器 | Definition router
+routes = wb.RouteTableDef()
+
+
+# 定义 Web应用 首页 方法 | Defining a Web Application Home Method
+@routes.get('/')
+async def home(request):
+    await ao.sleep(0.5)
+    return wb.Response(body=b'<h1>Welcome To Home!</h1>', headers={'content-type': 'text/html'})
+
+
+# 定义 Web应用 JSON 方法 | Define web application JSON method
+@routes.get('/json/{name}')
+async def json_method(request):
+    await ao.sleep(0.1)
+    return wb.json_response({'name': request.match_info['name'] or 'index'})
+
+
+# 定义 Web应用 主页 方法 | Define Web Application Home Method
+@routes.get('/mains/{name}')
+async def mains(request):
+    await ao.sleep(0.5)
+    return wb.Response(body="<h1>Hello %s</h1>" % request.match_info['name'], headers={'content-type': 'text/html'})
+
+
+# 定义 Web应用 初始化 方法 | Define web application initialization method
+async def init():
+    # 初始化服务 | Initialize the service
+    app_server = wb.Application()
+    app_server.add_routes(routes)
+    # 运行HTTP服务 | Run HTTP service
+    runner = wb.AppRunner(app_server)
+    await runner.setup()
+    website = wb.TCPSite(runner, '127.0.0.1', 8000)
+    await website.start()
+    print('======== Running on http://127.0.0.1:8000 ========')
+
+
 # 定义 主模块 | Definition Main module
 if __name__ == '__main__':
     # 创建 实例 | Create instance
     a = AsynchronousReadWrite()
     # 调用 方法 | Call method
-    # consumer = a.coroutine_consumer()
-    # a.coroutine_producer(consumer)
-    # coroutine_method = a.asynchronous_method(3)
-    # a.run_asyncio(coroutine_method)
+    consumer = a.coroutine_consumer()
+    a.coroutine_producer(consumer)
+    coroutine_method = a.asynchronous_method(3)
+    a.run_asyncio(coroutine_method)
     HOST = ['www.youtube.com', 'www.google.com', 'www.163.com', 'www.github.com', 'www.python.org']
     a.run_get_website(HOST)
+    init()

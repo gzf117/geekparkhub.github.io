@@ -22,10 +22,10 @@ import os as o
 
 # install mysql-connector-python:
 # pip3 install mysql-connector-python --allow-external mysql-connector-python
-# import mysql.connector
-# from sqlalchemy import Column, String, create_engine
-# from sqlalchemy.orm import sessionmaker
-# from sqlalchemy.ext.declarative import declarative_base
+import mysql.connector
+from sqlalchemy import Column, String, create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 
 
 # 数据库 for SQLite | Database for SQLite
@@ -122,82 +122,82 @@ class Student:
 
 # 数据库 for MySQL | Database for MySQL
 # 定义 函数 | Defining functions
-# def database_for_mysql():
-#     # change root password to yours:
-#     conn = mysql.connector.connect(user='root', password='password', database='test')
-#
-#     cursor = conn.cursor()
-#     # 创建user表
-#     cursor.execute('create table user (id varchar(20) primary key, name varchar(20))')
-#     # 插入一行记录，注意MySQL的占位符是%s:
-#     cursor.execute('insert into user (id, name) values (%s, %s)', ('1', 'system'))
-#     print('rowcount =', cursor.rowcount)
-#     # 提交事务 | Commit transaction
-#     conn.commit()
-#     # 关闭资源 | Close resource
-#     cursor.close()
-#
-#     # 运行查询
-#     cursor = conn.cursor()
-#     cursor.execute('select * from user where id = %s', ('1',))
-#     values = cursor.fetchall()
-#     print(values)
-#     # 关闭Cursor和Connection:
-#     cursor.close()
-#     conn.close()
+def database_for_mysql():
+    # change root password to yours:
+    conn = mysql.connector.connect(user='root', password='password', database='test')
+
+    cursor = conn.cursor()
+    # 创建user表
+    cursor.execute('create table user (id varchar(20) primary key, name varchar(20))')
+    # 插入一行记录，注意MySQL的占位符是%s:
+    cursor.execute('insert into user (id, name) values (%s, %s)', ('1', 'system'))
+    print('rowcount =', cursor.rowcount)
+    # 提交事务 | Commit transaction
+    conn.commit()
+    # 关闭资源 | Close resource
+    cursor.close()
+
+    # 运行查询
+    cursor = conn.cursor()
+    cursor.execute('select * from user where id = %s', ('1',))
+    values = cursor.fetchall()
+    print(values)
+    # 关闭Cursor和Connection:
+    cursor.close()
+    conn.close()
 
 
 # 数据库 for SQL Alchemy | Database for SQL Alchemy
 # 定义 函数 | Defining functions
-# def database_for_sqlalchemy():
-#     # 创建对象的基类:
-#     Base = declarative_base()
-#
-#     # 定义User对象:
-#     class User(Base):
-#         # 表的名字:
-#         __tablename__ = 'user'
-#
-#         # 表的结构:
-#         id = Column(String(20), primary_key=True)
-#         name = Column(String(20))
-#
-#     # 初始化数据库连接:
-#     engine = create_engine('mysql+mysqlconnector://root:password@localhost:3306/test')
-#     # 创建DBSession类型:
-#     DBSession = sessionmaker(bind=engine)
-#
-#     # 创建session对象:
-#     session = DBSession()
-#     # 创建新User对象:
-#     new_user = User(id='5', name='Bob')
-#     # 添加到session:
-#     session.add(new_user)
-#     # 提交即保存到数据库:
-#     session.commit()
-#     # 关闭session:
-#     session.close()
-#
-#     # 创建Session:
-#     session = DBSession()
-#     # 创建Query查询，filter是where条件，最后调用one()返回唯一行，如果调用all()则返回所有行:
-#     user = session.query(User).filter(User.id == '5').one()
-#     # 打印类型和对象的name属性:
-#     print('type:', type(user))
-#     print('name:', user.name)
-#     # 关闭Session:
-#     session.close()
+def database_for_sqlalchemy():
+    # 创建对象的基类:
+    Base = declarative_base()
+
+    # 定义User对象:
+    class User(Base):
+        # 表的名字:
+        __tablename__ = 'user'
+
+        # 表的结构:
+        id = Column(String(20), primary_key=True)
+        name = Column(String(20))
+
+    # 初始化数据库连接:
+    engine = create_engine('mysql+mysqlconnector://root:password@localhost:3306/test')
+    # 创建DBSession类型:
+    DBSession = sessionmaker(bind=engine)
+
+    # 创建session对象:
+    session = DBSession()
+    # 创建新User对象:
+    new_user = User(id='5', name='Bob')
+    # 添加到session:
+    session.add(new_user)
+    # 提交即保存到数据库:
+    session.commit()
+    # 关闭session:
+    session.close()
+
+    # 创建Session:
+    session = DBSession()
+    # 创建Query查询，filter是where条件，最后调用one()返回唯一行，如果调用all()则返回所有行:
+    user = session.query(User).filter(User.id == '5').one()
+    # 打印类型和对象的name属性:
+    print('type:', type(user))
+    print('name:', user.name)
+    # 关闭Session:
+    session.close()
 
 
 # 定义 主模块 | Definition Main module
 if __name__ == '__main__':
     # 调用 函数 | call function
-    # database_for_sqlite_insert()
-    # database_for_sqlite_select()
+    database_for_sqlite_insert()
+    database_for_sqlite_select()
     s = Student()
     s.__init__()
     print('score: 80~95=', s.get_score_in(80, 95))
     print('score: 60~80=', s.get_score_in(60, 80))
     print('score: 60~100=', s.get_score_in(60, 100))
-    # database_for_mysql()
-    # database_for_sqlalchemy()
+    database_for_mysql()
+    database_for_sqlalchemy()
