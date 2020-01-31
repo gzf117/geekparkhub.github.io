@@ -8428,17 +8428,308 @@
 
 <h4 id="8113-迭代">8.11.3 迭代</h4>
 
-
+<blockquote>
+  <p>如果给定一个list或tuple可以通过for循环来遍历这个list或tuple, 这种遍历称为迭代(Iteration).</p>
+  
+  <p>在Python中迭代是通过<code>for ... in</code>语句来完成, Python的for循环不仅可以用在list或tuple上, 还可以作用在其他可迭代对象上.</p>
+  
+  <p>任何可迭代对象都可以作用于for循环, 包括自定义的数据类型, 只要符合迭代条件就可以使用for循环.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 高级特性 | Advanced features</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 23_advanced_features.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 高级特性 | Advanced Python - Advanced Features</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> Iterable <span class="hljs-keyword">as</span> ie, Iterator <span class="hljs-keyword">as</span> it
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># 定义 迭代 类 | Define iteration class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">iterations</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span>    <span class="hljs-comment"># 定义 迭代 静态方法 | Define iterative static method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><span class="hljs-meta">    @staticmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">iterative</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>        print(<span class="hljs-string">'\n=============================== iterative Start ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>        print(<span class="hljs-string">'Iterable ? [1, 2, 3]:'</span>, isinstance([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], ie))
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        print(<span class="hljs-string">'Iterator ? [1, 2, 3]:'</span>, isinstance([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], it))
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>        print(<span class="hljs-string">'Iterable ? \'abc\':'</span>, isinstance(<span class="hljs-string">'abc'</span>, ie))
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>        print(<span class="hljs-string">'Iterator ? \'abc\':'</span>, isinstance(<span class="hljs-string">'abc'</span>, it))
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>        print(<span class="hljs-string">'Iterable ? 123:'</span>, isinstance(<span class="hljs-number">123</span>, ie))
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>        print(<span class="hljs-string">'Iterator ? 123:'</span>, isinstance(<span class="hljs-number">123</span>, it))
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>        print(<span class="hljs-string">'for x in [1, 2, 3, 4, 5]:'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>]:
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>            print(<span class="hljs-string">'iter List ='</span>, x)
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>        print(<span class="hljs-string">'for x in iter([1, 2, 3, 4, 5]):'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> iter([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>]):
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>            print(<span class="hljs-string">'iter List ='</span>, x)
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>        print(<span class="hljs-string">'next():'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>        its = iter([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>        print(<span class="hljs-string">'next(its) ='</span>, next(its))
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>        <span class="hljs-comment"># iter both key and value:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>        d = {<span class="hljs-string">'a'</span>: <span class="hljs-number">1</span>, <span class="hljs-string">'b'</span>: <span class="hljs-number">2</span>, <span class="hljs-string">'c'</span>: <span class="hljs-number">3</span>}
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>        print(<span class="hljs-string">'iter item = '</span>, d)
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>        <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> d.items():
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>            print(<span class="hljs-string">'item = '</span>, k, v)
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>        <span class="hljs-comment"># iter list with index:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>        print(<span class="hljs-string">'iter enumerate([\'A\', \'B\', \'C\']'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>        <span class="hljs-keyword">for</span> iters, value <span class="hljs-keyword">in</span> enumerate([<span class="hljs-string">'A'</span>, <span class="hljs-string">'B'</span>, <span class="hljs-string">'C'</span>]):
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>            print(<span class="hljs-string">'iter enumerate = '</span>, iters, value)
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>        <span class="hljs-comment"># iter complex list:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span>        print(<span class="hljs-string">'iter [(1, 1), (2, 4), (3, 9)]:'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span>        <span class="hljs-keyword">for</span> x, y <span class="hljs-keyword">in</span> [(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>), (<span class="hljs-number">2</span>, <span class="hljs-number">4</span>), (<span class="hljs-number">3</span>, <span class="hljs-number">9</span>)]:
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span>            print(<span class="hljs-string">'iter = '</span>, x, y)
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span>        print(<span class="hljs-string">'\n=============================== iterative End ==============================='</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">69.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">70.</span>    <span class="hljs-comment"># 创建对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">71.</span>    i = iterations()
+</div><div class="hljs-line"><span class="hljs-comment line-number">72.</span>    <span class="hljs-comment"># 对象 调用方法 | Object call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">73.</span>    i.iterative()
+</div></code></pre>
+</blockquote>
 
 <h4 id="8114-列表生成式">8.11.4 列表生成式</h4>
 
-
+<blockquote>
+  <p>列表生成式即<code>List Comprehensions</code>, 是Python内置的非常简单却强大的可以用来创建list的生成式.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 高级特性 | Advanced features</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 23_advanced_features.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 高级特性 | Advanced Python - Advanced Features</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 定义 列表生成式 类 | Definition list generation class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ListGeneration</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span>    <span class="hljs-comment"># 定义 列表生成式 静态方法 | Definition list-generating static method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><span class="hljs-meta">    @staticmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">list_generating</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span>        print(<span class="hljs-string">'\n=============================== List Generation Start ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span>        print(<span class="hljs-string">'[x * x for x in range(1, 11)] ='</span>, [x * x <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>, <span class="hljs-number">11</span>)])
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>        print(<span class="hljs-string">'[x * x for x in range(1, 11) if x % 2 == 0] = '</span>, [x * x <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>, <span class="hljs-number">11</span>) <span class="hljs-keyword">if</span> x % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>        print(<span class="hljs-string">"[m + n for m in 'ABC' for n in 'XYZ'] = "</span>, [m + n <span class="hljs-keyword">for</span> m <span class="hljs-keyword">in</span> <span class="hljs-string">'ABC'</span> <span class="hljs-keyword">for</span> n <span class="hljs-keyword">in</span> <span class="hljs-string">'XYZ'</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>        d = {<span class="hljs-string">'x'</span>: <span class="hljs-string">'A'</span>, <span class="hljs-string">'y'</span>: <span class="hljs-string">'B'</span>, <span class="hljs-string">'z'</span>: <span class="hljs-string">'C'</span>}
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        print([k + <span class="hljs-string">'='</span> + v <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> d.items()])
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>        lis = [<span class="hljs-string">'Hello'</span>, <span class="hljs-string">'World'</span>, <span class="hljs-string">'IBM'</span>, <span class="hljs-string">'Apple'</span>]
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>        print([strings.lower() <span class="hljs-keyword">for</span> strings <span class="hljs-keyword">in</span> lis])
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>        print(<span class="hljs-string">'\n=============================== List Generation End ==============================='</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>    <span class="hljs-comment"># 创建对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>    l = ListGeneration()
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>    <span class="hljs-comment"># 对象 调用方法 | Object call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>    l.list_generating()
+</div></code></pre>
+</blockquote>
 
 <h4 id="8115-生成器">8.11.5 生成器</h4>
 
-
+<blockquote>
+  <p>通过列表生成式可以直接创建一个列表, 但是受到内存限制, 列表容量肯定是有限的, 而且创建一个包含100万个元素的列表, 不仅占用很大的存储空间, 如果仅仅需要访问前面几个元素, 那后面绝大多数元素占用的空间都白白浪费了, 所以如果列表元素可以按照某种算法推算出来, 就不必创建完整的list, 从而节省大量的空间, 在Python中这种一边循环一边计算的机制, 称为生成器：<code>generator</code>.</p>
+  
+  <p>generator是非常强大的工具, 在Python中可以简单地把列表生成式改成generator, 也可以通过函数实现复杂逻辑的generator.</p>
+  
+  <p>generator的工作原理是在for循环的过程中不断计算出下一个元素, 并在适当的条件结束for循环, 对于函数改成的generator来说遇到return语句或者执行到函数体最后一行语句就是结束generator的指令, for循环随之结束.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 高级特性 | Advanced features</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 23_advanced_features.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 高级特性 | Advanced Python - Advanced Features</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 定义 生成器 类 | Definition generator class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Generators</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span>    <span class="hljs-comment"># 定义 斐波拉契数列 静态方法 | Definition Fibonacci sequence static method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-meta">    @staticmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">fibonacci</span><span class="hljs-params">(max_num)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span>        n, a, b = <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">1</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>        <span class="hljs-keyword">while</span> n &lt; max_num:
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>            <span class="hljs-keyword">yield</span> b
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>            a, b = b, a + b
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>            n = n + <span class="hljs-number">1</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        <span class="hljs-keyword">return</span> <span class="hljs-string">'Done'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-comment"># 定义 生成器 方法 | Definition generator method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">generators</span><span class="hljs-params">(self)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>        print(<span class="hljs-string">'\n=============================== Generator Start ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>        string = (x * x <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> range(<span class="hljs-number">5</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>        print(<span class="hljs-string">'Returns a Generator Object ='</span>, string)
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> string:
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>            print(<span class="hljs-string">'element ='</span>, x)
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>        <span class="hljs-comment"># 调用 斐波拉契 | Call Fibonacci</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>        f = self.fibonacci(<span class="hljs-number">10</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>        print(<span class="hljs-string">'\n`fibonacci(10)` Returns a Generator Object ='</span>, f)
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> f:
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>            print(<span class="hljs-string">'fibonacci ='</span>, x)
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>        print(<span class="hljs-string">'\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>        <span class="hljs-comment"># 调用 生成器 | Call generator</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>        gen = self.fibonacci(<span class="hljs-number">5</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>        <span class="hljs-keyword">while</span> <span class="hljs-number">1</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>            <span class="hljs-keyword">try</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>                x = next(gen)
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>                print(<span class="hljs-string">'generator ='</span>, x)
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>            <span class="hljs-keyword">except</span> StopIteration <span class="hljs-keyword">as</span> e:
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>                print(<span class="hljs-string">'Generator return value ='</span>, e.value)
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>                <span class="hljs-keyword">break</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>        print(<span class="hljs-string">'\n=============================== Generators End ==============================='</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span>    <span class="hljs-comment"># 创建对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span>    g = Generators()
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span>    <span class="hljs-comment"># 对象 调用方法 | Object call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span>    g.generators()
+</div></code></pre>
+</blockquote>
 
 <h4 id="8116-迭代器">8.11.6 迭代器</h4>
+
+<blockquote>
+  <p>可以直接作用于for循环的数据类型有以下几种:</p>
+  
+  <ul><li><p>1.集合数据类型, 如list、tuple、dict、set、str等.</p></li>
+  <li><p>2.generator, 包括生成器和带yield的generator function</p></li>
+  </ul>
+  
+  <p>可以直接作用于for循环的对象统称为可迭代对象：Iterable, 也可以使用isinstance()判断一个对象是否是Iterable对象.</p>
+  
+  <p>Python的Iterator对象表示的是一个数据流, Iterator对象可以被next()函数调用并不断返回下一个数据, 直到没有数据时抛出StopIteration错误, 可以把这个数据流看做是一个有序序列, 但却不能提前知道序列的长度, 只能不断通过next()函数实现按需计算下一个数据所以Iterator的计算是惰性的, 只有在需要返回下一个数据时它才会计算.</p>
+  
+  <p>Iterator甚至可以表示一个无限大的数据流, 例如全体自然数, 而使用list是永远不可能存储全体自然数.</p>
+  
+  <p>凡是可作用于for循环的对象都是Iterable类型, 凡是可作用于next()函数的对象都是Iterator类型, 它们表示一个惰性计算的序列, 集合数据类型如list、dict、str等是Iterable但不是Iterator, 不过可以通过iter()函数获得一个Iterator对象.</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 高级特性 | Advanced features</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 23_advanced_features.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 高级特性 | Advanced Python - Advanced Features</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> collections <span class="hljs-keyword">import</span> Iterable <span class="hljs-keyword">as</span> ie, Iterator <span class="hljs-keyword">as</span> it
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># 定义 迭代 类 | Define iteration class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">iterations</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span>    <span class="hljs-comment"># 定义 迭代 静态方法 | Define iterative static method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><span class="hljs-meta">    @staticmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">iterative</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>        print(<span class="hljs-string">'\n=============================== iterative Start ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>        print(<span class="hljs-string">'Iterable ? [1, 2, 3]:'</span>, isinstance([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], ie))
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        print(<span class="hljs-string">'Iterator ? [1, 2, 3]:'</span>, isinstance([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>], it))
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>        print(<span class="hljs-string">'Iterable ? \'abc\':'</span>, isinstance(<span class="hljs-string">'abc'</span>, ie))
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>        print(<span class="hljs-string">'Iterator ? \'abc\':'</span>, isinstance(<span class="hljs-string">'abc'</span>, it))
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>        print(<span class="hljs-string">'Iterable ? 123:'</span>, isinstance(<span class="hljs-number">123</span>, ie))
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>        print(<span class="hljs-string">'Iterator ? 123:'</span>, isinstance(<span class="hljs-number">123</span>, it))
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>        print(<span class="hljs-string">'for x in [1, 2, 3, 4, 5]:'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> [<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>]:
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>            print(<span class="hljs-string">'iter List ='</span>, x)
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>        print(<span class="hljs-string">'for x in iter([1, 2, 3, 4, 5]):'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> iter([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>]):
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>            print(<span class="hljs-string">'iter List ='</span>, x)
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>        print(<span class="hljs-string">'next():'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>        its = iter([<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>        print(<span class="hljs-string">'next(its) ='</span>, next(its))
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>        <span class="hljs-comment"># iter both key and value:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>        d = {<span class="hljs-string">'a'</span>: <span class="hljs-number">1</span>, <span class="hljs-string">'b'</span>: <span class="hljs-number">2</span>, <span class="hljs-string">'c'</span>: <span class="hljs-number">3</span>}
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>        print(<span class="hljs-string">'iter item = '</span>, d)
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>        <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> d.items():
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>            print(<span class="hljs-string">'item = '</span>, k, v)
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>        <span class="hljs-comment"># iter list with index:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>        print(<span class="hljs-string">'iter enumerate([\'A\', \'B\', \'C\']'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>        <span class="hljs-keyword">for</span> iters, value <span class="hljs-keyword">in</span> enumerate([<span class="hljs-string">'A'</span>, <span class="hljs-string">'B'</span>, <span class="hljs-string">'C'</span>]):
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>            print(<span class="hljs-string">'iter enumerate = '</span>, iters, value)
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>        <span class="hljs-comment"># iter complex list:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span>        print(<span class="hljs-string">'iter [(1, 1), (2, 4), (3, 9)]:'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span>        <span class="hljs-keyword">for</span> x, y <span class="hljs-keyword">in</span> [(<span class="hljs-number">1</span>, <span class="hljs-number">1</span>), (<span class="hljs-number">2</span>, <span class="hljs-number">4</span>), (<span class="hljs-number">3</span>, <span class="hljs-number">9</span>)]:
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span>            print(<span class="hljs-string">'iter = '</span>, x, y)
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span>        print(<span class="hljs-string">'\n=============================== iterative End ==============================='</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">69.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">70.</span>    <span class="hljs-comment"># 创建对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">71.</span>    i = iterations()
+</div><div class="hljs-line"><span class="hljs-comment line-number">72.</span>    <span class="hljs-comment"># 对象 调用方法 | Object call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">73.</span>    i.iterative()
+</div></code></pre>
+</blockquote>
 
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 

@@ -106,10 +106,124 @@ class Slice:
         return print('String Formatting =', string)
 
 
+# 导入模块 | Import module
+from collections import Iterable as ie, Iterator as it
+
+
+# 定义 迭代 类 | Define iteration class
+class iterations:
+    # 定义 迭代 静态方法 | Define iterative static method
+    @staticmethod
+    def iterative():
+        print('\n=============================== iterative Start ===============================\n')
+        print('Iterable ? [1, 2, 3]:', isinstance([1, 2, 3], ie))
+        print('Iterator ? [1, 2, 3]:', isinstance([1, 2, 3], it))
+
+        print('Iterable ? \'abc\':', isinstance('abc', ie))
+        print('Iterator ? \'abc\':', isinstance('abc', it))
+
+        print('Iterable ? 123:', isinstance(123, ie))
+        print('Iterator ? 123:', isinstance(123, it))
+
+        print('for x in [1, 2, 3, 4, 5]:')
+        for x in [1, 2, 3, 4, 5]:
+            print('iter List =', x)
+
+        print('for x in iter([1, 2, 3, 4, 5]):')
+        for x in iter([1, 2, 3, 4, 5]):
+            print('iter List =', x)
+
+        print('next():')
+        its = iter([1, 2, 3, 4, 5])
+        print('next(its) =', next(its))
+
+        # iter both key and value:
+        d = {'a': 1, 'b': 2, 'c': 3}
+        print('iter item = ', d)
+        for k, v in d.items():
+            print('item = ', k, v)
+
+        # iter list with index:
+        print('iter enumerate([\'A\', \'B\', \'C\']')
+        for iters, value in enumerate(['A', 'B', 'C']):
+            print('iter enumerate = ', iters, value)
+
+        # iter complex list:
+        print('iter [(1, 1), (2, 4), (3, 9)]:')
+        for x, y in [(1, 1), (2, 4), (3, 9)]:
+            print('iter = ', x, y)
+        print('\n=============================== iterative End ===============================')
+
+
+# 定义 列表生成式 类 | Definition list generation class
+class ListGeneration:
+    # 定义 列表生成式 静态方法 | Definition list-generating static method
+    @staticmethod
+    def list_generating():
+        print('\n=============================== List Generation Start ===============================\n')
+        print('[x * x for x in range(1, 11)] =', [x * x for x in range(1, 11)])
+        print('[x * x for x in range(1, 11) if x % 2 == 0] = ', [x * x for x in range(1, 11) if x % 2 == 0])
+        print("[m + n for m in 'ABC' for n in 'XYZ'] = ", [m + n for m in 'ABC' for n in 'XYZ'])
+
+        d = {'x': 'A', 'y': 'B', 'z': 'C'}
+        print([k + '=' + v for k, v in d.items()])
+
+        lis = ['Hello', 'World', 'IBM', 'Apple']
+        print([strings.lower() for strings in lis])
+        print('\n=============================== List Generation End ===============================')
+
+
+# 定义 生成器 类 | Definition generator class
+class Generators:
+
+    # 定义 斐波拉契数列 静态方法 | Definition Fibonacci sequence static method
+    @staticmethod
+    def fibonacci(max_num):
+        n, a, b = 0, 0, 1
+        while n < max_num:
+            yield b
+            a, b = b, a + b
+            n = n + 1
+        return 'Done'
+
+    # 定义 生成器 方法 | Definition generator method
+    def generators(self):
+        print('\n=============================== Generator Start ===============================\n')
+
+        string = (x * x for x in range(5))
+        print('Returns a Generator Object =', string)
+        for x in string:
+            print('element =', x)
+
+        # 调用 斐波拉契 | Call Fibonacci
+        f = self.fibonacci(10)
+        print('\n`fibonacci(10)` Returns a Generator Object =', f)
+        for x in f:
+            print('fibonacci =', x)
+        print('\n')
+
+        # 调用 生成器 | Call generator
+        gen = self.fibonacci(5)
+        while 1:
+            try:
+                x = next(gen)
+                print('generator =', x)
+            except StopIteration as e:
+                print('Generator return value =', e.value)
+                break
+        print('\n=============================== Generators End ===============================')
+
+
 # 定义 主模块 | Definition Main module
 if __name__ == '__main__':
     # 创建对象实例 | Create object instance
     s = Slice()
+    i = iterations()
+    l = ListGeneration()
+    g = Generators()
     # 对象 调用方法 | Object call method
     s.get_element()
     s.string_formatting()
+    i.iterative()
+    l.list_generating()
+    g.generators()

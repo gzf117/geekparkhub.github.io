@@ -7749,14 +7749,301 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 > ```
 
 
-
-
 #### 8.11.3 迭代
+> 如果给定一个list或tuple可以通过for循环来遍历这个list或tuple, 这种遍历称为迭代(Iteration).
+> 
+> 在Python中迭代是通过`for ... in`语句来完成, Python的for循环不仅可以用在list或tuple上, 还可以作用在其他可迭代对象上.
+> 
+> 任何可迭代对象都可以作用于for循环, 包括自定义的数据类型, 只要符合迭代条件就可以使用for循环.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 高级特性 | Advanced features
+> # @File : 23_advanced_features.py
+> # @Description : Python 进阶篇 - 高级特性 | Advanced Python - Advanced Features
+> 
+> # 导入模块 | Import module
+> from collections import Iterable as ie, Iterator as it
+> 
+> 
+> # 定义 迭代 类 | Define iteration class
+> class iterations:
+>     # 定义 迭代 静态方法 | Define iterative static method
+>     @staticmethod
+>     def iterative():
+>         print('\n=============================== iterative Start ===============================\n')
+>         print('Iterable ? [1, 2, 3]:', isinstance([1, 2, 3], ie))
+>         print('Iterator ? [1, 2, 3]:', isinstance([1, 2, 3], it))
+> 
+>         print('Iterable ? \'abc\':', isinstance('abc', ie))
+>         print('Iterator ? \'abc\':', isinstance('abc', it))
+> 
+>         print('Iterable ? 123:', isinstance(123, ie))
+>         print('Iterator ? 123:', isinstance(123, it))
+> 
+>         print('for x in [1, 2, 3, 4, 5]:')
+>         for x in [1, 2, 3, 4, 5]:
+>             print('iter List =', x)
+> 
+>         print('for x in iter([1, 2, 3, 4, 5]):')
+>         for x in iter([1, 2, 3, 4, 5]):
+>             print('iter List =', x)
+> 
+>         print('next():')
+>         its = iter([1, 2, 3, 4, 5])
+>         print('next(its) =', next(its))
+> 
+>         # iter both key and value:
+>         d = {'a': 1, 'b': 2, 'c': 3}
+>         print('iter item = ', d)
+>         for k, v in d.items():
+>             print('item = ', k, v)
+> 
+>         # iter list with index:
+>         print('iter enumerate([\'A\', \'B\', \'C\']')
+>         for iters, value in enumerate(['A', 'B', 'C']):
+>             print('iter enumerate = ', iters, value)
+> 
+>         # iter complex list:
+>         print('iter [(1, 1), (2, 4), (3, 9)]:')
+>         for x, y in [(1, 1), (2, 4), (3, 9)]:
+>             print('iter = ', x, y)
+>         print('\n=============================== iterative End ===============================')
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建对象实例 | Create object instance
+>     i = iterations()
+>     # 对象 调用方法 | Object call method
+>     i.iterative()
+> ```
+
 #### 8.11.4 列表生成式
+> 列表生成式即`List Comprehensions`, 是Python内置的非常简单却强大的可以用来创建list的生成式.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 高级特性 | Advanced features
+> # @File : 23_advanced_features.py
+> # @Description : Python 进阶篇 - 高级特性 | Advanced Python - Advanced Features
+> 
+> # 定义 列表生成式 类 | Definition list generation class
+> class ListGeneration:
+>     # 定义 列表生成式 静态方法 | Definition list-generating static method
+>     @staticmethod
+>     def list_generating():
+>         print('\n=============================== List Generation Start ===============================\n')
+>         print('[x * x for x in range(1, 11)] =', [x * x for x in range(1, 11)])
+>         print('[x * x for x in range(1, 11) if x % 2 == 0] = ', [x * x for x in range(1, 11) if x % 2 == 0])
+>         print("[m + n for m in 'ABC' for n in 'XYZ'] = ", [m + n for m in 'ABC' for n in 'XYZ'])
+> 
+>         d = {'x': 'A', 'y': 'B', 'z': 'C'}
+>         print([k + '=' + v for k, v in d.items()])
+> 
+>         lis = ['Hello', 'World', 'IBM', 'Apple']
+>         print([strings.lower() for strings in lis])
+>         print('\n=============================== List Generation End ===============================')
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建对象实例 | Create object instance
+>     l = ListGeneration()
+>     # 对象 调用方法 | Object call method
+>     l.list_generating()
+> ```
+
 #### 8.11.5 生成器
+> 通过列表生成式可以直接创建一个列表, 但是受到内存限制, 列表容量肯定是有限的, 而且创建一个包含100万个元素的列表, 不仅占用很大的存储空间, 如果仅仅需要访问前面几个元素, 那后面绝大多数元素占用的空间都白白浪费了, 所以如果列表元素可以按照某种算法推算出来, 就不必创建完整的list, 从而节省大量的空间, 在Python中这种一边循环一边计算的机制, 称为生成器：`generator`.
+> 
+> generator是非常强大的工具, 在Python中可以简单地把列表生成式改成generator, 也可以通过函数实现复杂逻辑的generator.
+> 
+> generator的工作原理是在for循环的过程中不断计算出下一个元素, 并在适当的条件结束for循环, 对于函数改成的generator来说遇到return语句或者执行到函数体最后一行语句就是结束generator的指令, for循环随之结束.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 高级特性 | Advanced features
+> # @File : 23_advanced_features.py
+> # @Description : Python 进阶篇 - 高级特性 | Advanced Python - Advanced Features
+> 
+> # 定义 生成器 类 | Definition generator class
+> class Generators:
+> 
+>     # 定义 斐波拉契数列 静态方法 | Definition Fibonacci sequence static method
+>     @staticmethod
+>     def fibonacci(max_num):
+>         n, a, b = 0, 0, 1
+>         while n < max_num:
+>             yield b
+>             a, b = b, a + b
+>             n = n + 1
+>         return 'Done'
+> 
+>     # 定义 生成器 方法 | Definition generator method
+>     def generators(self):
+>         print('\n=============================== Generator Start ===============================\n')
+> 
+>         string = (x * x for x in range(5))
+>         print('Returns a Generator Object =', string)
+>         for x in string:
+>             print('element =', x)
+> 
+>         # 调用 斐波拉契 | Call Fibonacci
+>         f = self.fibonacci(10)
+>         print('\n`fibonacci(10)` Returns a Generator Object =', f)
+>         for x in f:
+>             print('fibonacci =', x)
+>         print('\n')
+> 
+>         # 调用 生成器 | Call generator
+>         gen = self.fibonacci(5)
+>         while 1:
+>             try:
+>                 x = next(gen)
+>                 print('generator =', x)
+>             except StopIteration as e:
+>                 print('Generator return value =', e.value)
+>                 break
+>         print('\n=============================== Generators End ===============================')
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建对象实例 | Create object instance
+>     g = Generators()
+>     # 对象 调用方法 | Object call method
+>     g.generators()
+> ```
+
+
 #### 8.11.6 迭代器
-
-
+> 可以直接作用于for循环的数据类型有以下几种:
+> - 1.集合数据类型, 如list、tuple、dict、set、str等.
+> - 2.generator, 包括生成器和带yield的generator function
+> 
+> 可以直接作用于for循环的对象统称为可迭代对象：Iterable, 也可以使用isinstance()判断一个对象是否是Iterable对象.
+> 
+> Python的Iterator对象表示的是一个数据流, Iterator对象可以被next()函数调用并不断返回下一个数据, 直到没有数据时抛出StopIteration错误, 可以把这个数据流看做是一个有序序列, 但却不能提前知道序列的长度, 只能不断通过next()函数实现按需计算下一个数据所以Iterator的计算是惰性的, 只有在需要返回下一个数据时它才会计算.
+> 
+> Iterator甚至可以表示一个无限大的数据流, 例如全体自然数, 而使用list是永远不可能存储全体自然数.
+> 
+> 凡是可作用于for循环的对象都是Iterable类型, 凡是可作用于next()函数的对象都是Iterator类型, 它们表示一个惰性计算的序列, 集合数据类型如list、dict、str等是Iterable但不是Iterator, 不过可以通过iter()函数获得一个Iterator对象.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 高级特性 | Advanced features
+> # @File : 23_advanced_features.py
+> # @Description : Python 进阶篇 - 高级特性 | Advanced Python - Advanced Features
+> 
+> # 导入模块 | Import module
+> from collections import Iterable as ie, Iterator as it
+> 
+> 
+> # 定义 迭代 类 | Define iteration class
+> class iterations:
+>     # 定义 迭代 静态方法 | Define iterative static method
+>     @staticmethod
+>     def iterative():
+>         print('\n=============================== iterative Start ===============================\n')
+>         print('Iterable ? [1, 2, 3]:', isinstance([1, 2, 3], ie))
+>         print('Iterator ? [1, 2, 3]:', isinstance([1, 2, 3], it))
+> 
+>         print('Iterable ? \'abc\':', isinstance('abc', ie))
+>         print('Iterator ? \'abc\':', isinstance('abc', it))
+> 
+>         print('Iterable ? 123:', isinstance(123, ie))
+>         print('Iterator ? 123:', isinstance(123, it))
+> 
+>         print('for x in [1, 2, 3, 4, 5]:')
+>         for x in [1, 2, 3, 4, 5]:
+>             print('iter List =', x)
+> 
+>         print('for x in iter([1, 2, 3, 4, 5]):')
+>         for x in iter([1, 2, 3, 4, 5]):
+>             print('iter List =', x)
+> 
+>         print('next():')
+>         its = iter([1, 2, 3, 4, 5])
+>         print('next(its) =', next(its))
+> 
+>         # iter both key and value:
+>         d = {'a': 1, 'b': 2, 'c': 3}
+>         print('iter item = ', d)
+>         for k, v in d.items():
+>             print('item = ', k, v)
+> 
+>         # iter list with index:
+>         print('iter enumerate([\'A\', \'B\', \'C\']')
+>         for iters, value in enumerate(['A', 'B', 'C']):
+>             print('iter enumerate = ', iters, value)
+> 
+>         # iter complex list:
+>         print('iter [(1, 1), (2, 4), (3, 9)]:')
+>         for x, y in [(1, 1), (2, 4), (3, 9)]:
+>             print('iter = ', x, y)
+>         print('\n=============================== iterative End ===============================')
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建对象实例 | Create object instance
+>     i = iterations()
+>     # 对象 调用方法 | Object call method
+>     i.iterative()
+> ```
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
