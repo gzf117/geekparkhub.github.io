@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-1-30)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-1-31)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -7616,9 +7616,150 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 >     init()
 > ```
 
+### 8.11 Python 高级特性
+#### 8.11.1 前言
+> 掌握了Python的数据类型、语句和函数, 基本上就可以编写出很多有用的程序.
+> 
+> 比如构造一个1, 3, 5, 7, ..., 99的列表可以通过循环实现.
+> 
+> 在Python中代码不是越多越好, 而是越少越好, 代码不是越复杂越好, 而是越简单越好.
+> 
+> 基于这一思想下面将介绍Python中非常有用的高级特性, 1行代码能实现的功能决不写5行代码, 请始终牢记代码越少开发效率越高.
+
+#### 8.11.2 切片
+> 取一个list或tuple的部分元素是非常常见的操作, 因此Python提供了切片（Slice）操作符, 能大大简化这种操作, 取前3个元素用一行代码就可以完成切片.
+> 
+> 有了切片操作很多地方循环就不再需要了, Python的切片非常灵活, 一行代码就可以实现很多行循环才能完成的操作.
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 高级特性 | Advanced features
+> # @File : 23_advanced_features.py
+> # @Description : Python 进阶篇 - 高级特性 | Advanced Python - Advanced Features
+> 
+> 
+> # 定义 切片 类 | Definition slice class
+> class Slice:
+> 
+>     # 定义 获取列表元素 方法 | Definition get list element method
+>     @staticmethod
+>     def get_element():
+>         # 定义 列表 | Definition list
+>         elements = ['System', 'Karlh', 'Oracy', 'Pob', 'Tack']
+>         '''
+>         获取列表前3个元素 切片说明:
+>         `elements[0:3]` 表示 从索引0开始获取, 直到索引3为止, 但不包括索引3, 即索引 `0, 1, 2`
+>         '''
+>         print('=============================== Slice Start ===============================\n')
+>         print('elements[0:3] =', elements[0:3])
+> 
+>         '''
+>         获取列表前3个元素 切片说明:
+>         `elements[:3]` 表示 从索引0开始获取, 如果第一个索引是0, 还可以省略, 直到索引3为止, 但不包括索引3, 即索引 `0, 1, 2`
+>         '''
+>         print('elements[:3] =', elements[:3])
+> 
+>         '''
+>         从索引1开始获取出2个元素 切片说明:
+>         `elements[1:3]` 表示 从索引1开始获取, 直到索引3为止, 但不包括索引3, 即索引 `1, 2`
+>         '''
+>         print('elements[1:3] =', elements[1:3])
+> 
+>         '''
+>         倒数 切片说明: 
+>         Python支持`List[-1]`获取 倒数元素, 倒数第一个元素索引是`-1`
+>         `elements[-2:]` 表示 从元素末尾-1开始获取, 直到索引-2为止, 包括索引-2, 即索引 `-1, -2`
+>         '''
+>         print('elements[-2:] =', elements[-2:])
+> 
+>         # 定义 数列 | Definition Number List
+>         number_elements = list(range(100))
+>         print('number_elements = ', number_elements)
+> 
+>         '''
+>         获取列表前10个元素 切片说明:
+>         `elements[0:10]` 或 `elements[:10]` 表示 从索引0开始获取, 如果第一个索引是0, 还可以省略,
+>         直到索引10为止, 但不包括索引10, 即索引 `0, 1, 2, 3, 4, 5, 6, 7, 8, 9`
+>         '''
+>         print('number_elements[0:10] = ', number_elements[0:10])
+>         print('number_elements[:10] = ', number_elements[:10])
+> 
+>         '''
+>         获取列表后10个元素 切片说明:
+>         `elements[-10:]` 表示 从元素末尾-1开始获取, 直到索引-10为止, 包括索引-10, 即索引 `90, 91, 92, 93, 94, 95, 96, 97, 98, 99`
+>         '''
+>         print('number_elements[-10:] = ', number_elements[-10:])
+> 
+>         '''
+>         获取列表前11~20元素个数 切片说明:
+>         `number_elements[10:20]` 表示 从元素索引11开始获取, 直到索引20为止, 不包括索引20, 即索引 `10, 11, 12, 13, 14, 15, 16, 17, 18, 19`
+>         '''
+>         print('number_elements[10:20] = ', number_elements[10:20])
+> 
+>         '''
+>         获取列表前10个元素, 每2个元素取1个元素 切片说明:
+>         `number_elements[0:10:2]` 或 `number_elements[:10:2]` 表示 从索引0开始获取, 如果第一个索引是0, 还可以省略,直到索引10为止, 但不包括索引10, 且每两个元素取一个元素, 即索引 `0, 2, 4, 6, 8`
+>         '''
+>         print('number_elements[0:10:2] = ', number_elements[0:10:2])
+>         print('number_elements[:10:2] = ', number_elements[:10:2])
+> 
+>         '''
+>         获取列表所有元素, 每5个元素取1个元素 切片说明:
+>         `number_elements[0:100:5]` 或 `number_elements[::5]` 表示 从索引0开始获取, 直到索引10为止, 
+>         且每5个元素取1个元素, , 即索引 `0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95`
+>         '''
+>         print('number_elements[0:100:5] = ', number_elements[0:100:5])
+>         print('number_elements[::5] = ', number_elements[::5])
+>         print('\n=============================== Slice End ===============================')
+> 
+>     # 定义 字符串 格式化 方法 | Definition string formatting method
+>     @staticmethod
+>     def string_formatting():
+>         string = '      Hello World !~      '
+>         if string == ' ' or string.isspace():
+>             string = ' '
+>         else:
+>             while string[0] == ' ':
+>                 string = string[1:]
+>             while string[-1] == ' ':
+>                 string = string[:-1]
+>         return print('String Formatting =', string)
+> 
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建对象实例 | Create object instance
+>     s = Slice()
+>     # 对象 调用方法 | Object call method
+>     s.get_element()
+>     s.string_formatting()
+> ```
+
+
+
+
+#### 8.11.3 迭代
+#### 8.11.4 列表生成式
+#### 8.11.5 生成器
+#### 8.11.6 迭代器
+
+
+
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-### 8.11 Python 高级特性
 ### 8.12 Python 常用内建模块 & 常用第三方模块
 
 
