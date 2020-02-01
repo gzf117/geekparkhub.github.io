@@ -9170,6 +9170,12 @@
 <h5 id="81215-hashlib">8.12.1.5 hashlib</h5>
 
 <blockquote>
+  <p>摘要算法又称哈希算法、散列算法, 它通过一个函数把任意长度的数据转换为一个长度固定的数据串(通常用16进制的字符串表示).</p>
+  
+  <p>Python的hashlib提供了常见的摘要算法, 如MD5, SHA1等等.</p>
+  
+  <p>摘要算法在很多地方都有广泛的应用, 要注意摘要算法不是加密算法, 不能用于加密(因为无法通过摘要反推明文), 只能用于防篡改, 但是它的单向计算特性决定了可以在不存储明文口令的情况下验证用户口令.</p>
+  
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
@@ -9189,26 +9195,58 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 内建模块 &amp; 第三方模块 | Advanced Python - Built-in Modules &amp; Third-Party Modules</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime <span class="hljs-keyword">as</span> dt, timedelta <span class="hljs-keyword">as</span> td, timezone <span class="hljs-keyword">as</span> tz
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">import</span> hashlib <span class="hljs-keyword">as</span> hl
 </div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># 定义 内建模块 类 | Definition built-in module class</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BuiltInModule</span>:</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
-</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>    b = BuiltInModule()
-</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>    <span class="hljs-comment"># 定义 摘要 静态方法 | Definition summary static method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-meta">    @staticmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">summary_method</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>        print(<span class="hljs-string">'\n=============================== Summary Method Start ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        <span class="hljs-comment"># 定义 MD5 摘要算法 | Define MD5 Digest Algorithm</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><span class="hljs-string">        MD5是最常见的摘要算法, 速度很快, 生成结果是固定的128 bit字节, 通常用一个32位的16进制字符串表示.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>        md5 = hl.md5()
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>        md5.update(<span class="hljs-string">'Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.'</span>.encode(<span class="hljs-string">'UTF-8'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>        md5.update(<span class="hljs-string">'In the spirit of fearless exploration, create unknown technology and worship of technology.'</span>.encode( <span class="hljs-string">'UTF-8'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>        md5.update(<span class="hljs-string">'Advanced Python - Built-in Modules &amp; Third-Party Modules'</span>.encode(<span class="hljs-string">'UTF-8'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>       print(<span class="hljs-string">'MD5 Digest Algorithm ='</span>, md5.hexdigest())
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>        <span class="hljs-comment"># 定义 SHA1 摘要算法 | Define the SHA1 digest algorithm</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span><span class="hljs-string">        SHA1的结果是160 bit字节, 通常用一个40位的16进制字符串表示.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>        sha1 = hl.sha1()
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>        sha1.update(
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>            <span class="hljs-string">'Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.'</span>.encode(<span class="hljs-string">'UTF-8'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>        sha1.update(
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>            <span class="hljs-string">'In the spirit of fearless exploration, create unknown technology and worship of technology.'</span>.encode(
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>                <span class="hljs-string">'UTF-8'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>        sha1.update(<span class="hljs-string">'Advanced Python - Built-in Modules &amp; Third-Party Modules'</span>.encode(<span class="hljs-string">'UTF-8'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>        print(<span class="hljs-string">'SHA1 Digest Algorithm ='</span>, sha1.hexdigest())
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>        print(<span class="hljs-string">'\n=============================== Summary Method End ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>    b = BuiltInModule()
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>    b.summary_method()
 </div></code></pre>
 </blockquote>
 
 <h5 id="81216-hmac">8.12.1.6 hmac</h5>
 
 <blockquote>
+  <p>通过哈希算法可以验证一段数据是否有效, 方法就是对比该数据的哈希值, 例如判断用户口令是否正确, 用保存在数据库中的password_md5对比计算md5(password)的结果, 如果一致用户输入的口令就是正确.</p>
+  
+  <p>Python自带的hmac模块实现了标准的Hmac算法, 使用hmac和普通hash算法非常类似, hmac输出的长度和原始哈希算法的长度一致, 需要注意传入的key和message都是bytes类型, str类型需要首先编码为bytes.</p>
+  
+  <p>Python内置的hmac模块实现了标准的Hmac算法, 它利用一个key对message计算“杂凑”后的hash, 使用hmac算法比标准hash算法更安全, 因为针对相同的message, 不同的key会产生不同的hash.</p>
+  
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
@@ -9228,20 +9266,28 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 内建模块 &amp; 第三方模块 | Advanced Python - Built-in Modules &amp; Third-Party Modules</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime <span class="hljs-keyword">as</span> dt, timedelta <span class="hljs-keyword">as</span> td, timezone <span class="hljs-keyword">as</span> tz
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">import</span> hmac <span class="hljs-keyword">as</span> hm
 </div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># 定义 内建模块 类 | Definition built-in module class</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BuiltInModule</span>:</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
-</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>    b = BuiltInModule()
-</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>    <span class="hljs-comment"># 定义 hmac 静态方法 | Define hmac static method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-meta">    @staticmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">hmac_method</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>        print(<span class="hljs-string">'\n=============================== HMAC Method Start ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        message = <span class="hljs-string">b'Hello, World!'</span>  <span class="hljs-comment"># 定义 原始消息 | Definition Original Message</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>        key = <span class="hljs-string">b'secret'</span>  <span class="hljs-comment"># 定义 随机Key | Definition Random Key</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>        h = hm.new(key, message, digestmod=<span class="hljs-string">'MD5'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>        print(<span class="hljs-string">'HMAC Digest Algorithm ='</span>, h.hexdigest())
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>        print(<span class="hljs-string">'\n=============================== HMAC Method End ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>    b = BuiltInModule()
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>    b.hmac_method()
 </div></code></pre>
 </blockquote>
 

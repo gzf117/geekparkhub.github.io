@@ -8433,7 +8433,14 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 >     b.struct_method()
 > ```
 
+
 ##### 8.12.1.5 hashlib
+> 摘要算法又称哈希算法、散列算法, 它通过一个函数把任意长度的数据转换为一个长度固定的数据串(通常用16进制的字符串表示).
+> 
+> Python的hashlib提供了常见的摘要算法, 如MD5, SHA1等等.
+> 
+> 摘要算法在很多地方都有广泛的应用, 要注意摘要算法不是加密算法, 不能用于加密(因为无法通过摘要反推明文), 只能用于防篡改, 但是它的单向计算特性决定了可以在不存储明文口令的情况下验证用户口令.
+> 
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -8454,24 +8461,56 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 > # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
 > 
 > # 导入模块 | Import module
-> from datetime import datetime as dt, timedelta as td, timezone as tz
+> import hashlib as hl
 > 
 > 
 > # 定义 内建模块 类 | Definition built-in module class
 > class BuiltInModule:
 >     
+>     # 定义 摘要 静态方法 | Definition summary static method
+>     @staticmethod
+>     def summary_method():
+>         print('\n=============================== Summary Method Start ===============================\n')
+>         # 定义 MD5 摘要算法 | Define MD5 Digest Algorithm
+>         '''
+>         MD5是最常见的摘要算法, 速度很快, 生成结果是固定的128 bit字节, 通常用一个32位的16进制字符串表示.
+>         '''
+>         md5 = hl.md5()
+>         md5.update('Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.'.encode('UTF-8'))
+>         md5.update('In the spirit of fearless exploration, create unknown technology and worship of technology.'.encode( 'UTF-8'))
+>         md5.update('Advanced Python - Built-in Modules & Third-Party Modules'.encode('UTF-8'))
+>        print('MD5 Digest Algorithm =', md5.hexdigest())
 > 
+>         # 定义 SHA1 摘要算法 | Define the SHA1 digest algorithm
+>         '''
+>         SHA1的结果是160 bit字节, 通常用一个40位的16进制字符串表示.
+>         '''
+>         sha1 = hl.sha1()
+>         sha1.update(
+>             'Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.'.encode('UTF-8'))
+>         sha1.update(
+>             'In the spirit of fearless exploration, create unknown technology and worship of technology.'.encode(
+>                 'UTF-8'))
+>         sha1.update('Advanced Python - Built-in Modules & Third-Party Modules'.encode('UTF-8'))
+>         print('SHA1 Digest Algorithm =', sha1.hexdigest())
+>         print('\n=============================== Summary Method End ===============================\n')
 > 
 > # 定义 主模块 | Definition Main module
 > if __name__ == '__main__':
 >     # 创建 对象实例 | Create object instance
 >     b = BuiltInModule()
 >     # 对象实例 调用方法 | Object instance call method
->     
+>     b.summary_method()
 > ```
 
 
 ##### 8.12.1.6 hmac
+> 通过哈希算法可以验证一段数据是否有效, 方法就是对比该数据的哈希值, 例如判断用户口令是否正确, 用保存在数据库中的password_md5对比计算md5(password)的结果, 如果一致用户输入的口令就是正确.
+> 
+> Python自带的hmac模块实现了标准的Hmac算法, 使用hmac和普通hash算法非常类似, hmac输出的长度和原始哈希算法的长度一致, 需要注意传入的key和message都是bytes类型, str类型需要首先编码为bytes.
+> 
+> Python内置的hmac模块实现了标准的Hmac算法, 它利用一个key对message计算“杂凑”后的hash, 使用hmac算法比标准hash算法更安全, 因为针对相同的message, 不同的key会产生不同的hash.
+> 
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -8492,20 +8531,28 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 > # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
 > 
 > # 导入模块 | Import module
-> from datetime import datetime as dt, timedelta as td, timezone as tz
+> import hmac as hm
 > 
 > 
 > # 定义 内建模块 类 | Definition built-in module class
 > class BuiltInModule:
 >     
-> 
+>     # 定义 hmac 静态方法 | Define hmac static method
+>     @staticmethod
+>     def hmac_method():
+>         print('\n=============================== HMAC Method Start ===============================\n')
+>         message = b'Hello, World!'  # 定义 原始消息 | Definition Original Message
+>         key = b'secret'  # 定义 随机Key | Definition Random Key
+>         h = hm.new(key, message, digestmod='MD5')
+>         print('HMAC Digest Algorithm =', h.hexdigest())
+>         print('\n=============================== HMAC Method End ===============================\n')
 > 
 > # 定义 主模块 | Definition Main module
 > if __name__ == '__main__':
 >     # 创建 对象实例 | Create object instance
 >     b = BuiltInModule()
 >     # 对象实例 调用方法 | Object instance call method
->     
+>     b.hmac_method()
 > ```
 
 

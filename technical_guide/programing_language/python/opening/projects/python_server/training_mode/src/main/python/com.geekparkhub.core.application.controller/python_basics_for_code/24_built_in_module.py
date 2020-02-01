@@ -21,6 +21,8 @@ from datetime import datetime as dt, timedelta as td, timezone as tz
 from collections import namedtuple as nt, deque as dq, defaultdict as dd, OrderedDict as odd, Counter as cr
 import base64 as b64
 import struct as st
+import hashlib as hl
+import hmac as hm
 
 
 # 定义 内建模块 类 | Definition built-in module class
@@ -237,6 +239,47 @@ class BuiltInModule:
         print('BMP Number of colors Info =', unpacking_bmp[9])
         print('\n=============================== Struct Method End ===============================\n')
 
+    # 定义 摘要 静态方法 | Definition summary static method
+    @staticmethod
+    def summary_method():
+        print('\n=============================== Summary Method Start ===============================\n')
+        # 定义 MD5 摘要算法 | Define MD5 Digest Algorithm
+        '''
+        MD5是最常见的摘要算法, 速度很快, 生成结果是固定的128 bit字节, 通常用一个32位的16进制字符串表示.
+        '''
+        md5 = hl.md5()
+        md5.update('Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.'.encode(
+            'UTF-8'))
+        md5.update('In the spirit of fearless exploration, create unknown technology and worship of technology.'.encode(
+            'UTF-8'))
+        md5.update('Advanced Python - Built-in Modules & Third-Party Modules'.encode('UTF-8'))
+        print('MD5 Digest Algorithm =', md5.hexdigest())
+
+        # 定义 SHA1 摘要算法 | Define the SHA1 digest algorithm
+        '''
+        SHA1的结果是160 bit字节, 通常用一个40位的16进制字符串表示.
+        '''
+        sha1 = hl.sha1()
+        sha1.update(
+            'Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.'.encode(
+                'UTF-8'))
+        sha1.update(
+            'In the spirit of fearless exploration, create unknown technology and worship of technology.'.encode(
+                'UTF-8'))
+        sha1.update('Advanced Python - Built-in Modules & Third-Party Modules'.encode('UTF-8'))
+        print('SHA1 Digest Algorithm =', sha1.hexdigest())
+        print('\n=============================== Summary Method End ===============================\n')
+
+    # 定义 hmac 静态方法 | Define hmac static method
+    @staticmethod
+    def hmac_method():
+        print('\n=============================== HMAC Method Start ===============================\n')
+        message = b'Hello, World!'  # 定义 原始消息 | Definition Original Message
+        key = b'secret'  # 定义 随机Key | Definition Random Key
+        h = hm.new(key, message, digestmod='MD5')
+        print('HMAC Digest Algorithm =', h.hexdigest())
+        print('\n=============================== HMAC Method End ===============================\n')
+
 
 # 导入模块 | Import module
 
@@ -255,3 +298,5 @@ if __name__ == '__main__':
     b.collections_method()
     b.base64_method()
     b.struct_method()
+    b.summary_method()
+    b.hmac_method()
