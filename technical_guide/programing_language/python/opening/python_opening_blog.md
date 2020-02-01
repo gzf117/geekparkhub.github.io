@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-1-31)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-02-01)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -8046,9 +8046,34 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 > ```
 
 
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 ### 8.12 Python 常用内建模块 & 常用第三方模块
+#### 8.12.1 常用内建模块
+##### 8.12.1.1 datetime
+##### 8.12.1.2 collections
+##### 8.12.1.3 base64
+##### 8.12.1.4 struct
+##### 8.12.1.5 hashlib
+##### 8.12.1.6 hmac
+##### 8.12.1.7 itertools
+##### 8.12.1.8 contextlib
+##### 8.12.1.9 urllib
+##### 8.12.1.10 XML
+##### 8.12.1.11 HTMLParser
 
+
+#### 8.12.2 常用第三方模块
+##### 8.12.2.1 Pillow
+##### 8.12.2.2 requests
+##### 8.12.2.3 chardet
+##### 8.12.2.4 psutil
+
+
+
+
+
+
+
+## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
 
 
 
