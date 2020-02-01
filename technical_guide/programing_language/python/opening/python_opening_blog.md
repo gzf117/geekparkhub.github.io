@@ -8558,6 +8558,9 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 
 
 ##### 8.12.1.7 itertools
+> Python的内建模块itertools提供了非常有用的用于操作迭代对象的函数.
+> 
+> itertools模块提供的全部是处理迭代功能的函数, 它们的返回值不是list, 而是Iterator, 只有用for循环迭代的时候才真正计算.
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -8578,20 +8581,80 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 > # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
 > 
 > # 导入模块 | Import module
-> from datetime import datetime as dt, timedelta as td, timezone as tz
+> import itertools as its
 > 
 > 
 > # 定义 内建模块 类 | Definition built-in module class
 > class BuiltInModule:
 >     
+>     # 定义 itertools 静态方法 | Define itertools static method
+>     @staticmethod
+>     def itertools_method():
+>         print('\n=============================== itertools Method Start ===============================\n')
+>         # count()
+>         '''
+>         count() 将创建一个无限的迭代器, 所以代码会打印出自然数序列无法自动退出, 只能按Ctrl+C退出
+>         '''
+>         natuals = its.count(1)
+>         for x in natuals:
+>             print('natuals =', x)
+>             if x >= 10:
+>                 break
 > 
+>         # cycle()
+>         '''
+>         cycle() 将传入的序列无限重复循环
+>         '''
+>         cs = its.cycle('ABC')
+>         frequency = 10
+>         for c in cs:
+>             print('Infinite repeat loop Frequency = %d Values = %s ' % (frequency, c))
+>             frequency = frequency - 1
+>             if frequency == 0:
+>                 break
+> 
+>         # repeat()
+>         '''
+>         repeat()负责把一个元素无限重复循环, 不过如果提供第二个参数就可以限定重复次数
+>         '''
+>         ns = its.repeat('A', 3)
+>         for n in ns:
+>             print('Limited number of repetitions =', n)
+> 
+>         # takewhile()
+>         '''
+>         无限序列只有在for迭代时才会无限地迭代下去, 如果只是创建了一个迭代对象,
+>         它不会事先把无限个元素生成出来, 事实上也不可能在内存中创建无限多个元素.
+>         无限序列虽然可以无限迭代下去, 但是通常会通过`takewhile()`等函数根据条件判断来截取出一个有限的序列.
+>         '''
+>         natuals = its.count(1)
+>         tw = its.takewhile(lambda x: x <= 10, natuals)
+>         print('natuals =', list(tw))
+> 
+>         # chain()
+>         '''
+>         chain() 将一组迭代对象串联起来形成一个更大的迭代器
+>         '''
+>         for cn in its.chain('ABC', 'XYZ'):
+>             print('Tandem Iterator =', cn)
+> 
+>         # groupby()
+>         '''
+>         groupby() 将迭代器中相邻的重复元素挑出来放在一起
+>         '''
+>         for key1, group1 in its.groupby('AAABBBCCAAA'):
+>             print(f'Key_1 = {key1}', list(group1))
+> 
+>         for key2, group2 in its.groupby('AaaBBbcCAAa', lambda cc: cc.upper()):
+>             print(f'Key_2 = {key2}', list(group2))
+>         print('\n=============================== itertools Method End ===============================\n')
 > 
 > # 定义 主模块 | Definition Main module
 > if __name__ == '__main__':
 >     # 创建 对象实例 | Create object instance
 >     b = BuiltInModule()
 >     # 对象实例 调用方法 | Object instance call method
->     
+>     b.itertools_method()
 > ```
 
 

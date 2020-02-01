@@ -284,7 +284,7 @@
       <workItem from="1580380173174" duration="3807000" />
       <workItem from="1580441497907" duration="15121000" />
       <workItem from="1580522398520" duration="10288000" />
-      <workItem from="1580536311129" duration="12349000" />
+      <workItem from="1580536311129" duration="16770000" />
     </task>
     <servers />
   </component>
@@ -318,14 +318,14 @@
       <screen x="0" y="23" width="1440" height="849" />
     </state>
     <state x="314" y="292" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.849@0.23.1440.849" timestamp="1579445422489" />
-    <state width="1878" height="284" key="GridCell.Tab.0.bottom" timestamp="1580548955762">
+    <state width="1878" height="294" key="GridCell.Tab.0.bottom" timestamp="1580554135151">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state width="1038" height="494" key="GridCell.Tab.0.bottom/-1080.-939.1080.1874/0.23.1440.877@-1080.-939.1080.1874" timestamp="1578825165507" />
     <state width="1038" height="494" key="GridCell.Tab.0.bottom/-1080.-939.1080.1875/0.23.1440.877@-1080.-939.1080.1875" timestamp="1578836561372" />
     <state width="1878" height="253" key="GridCell.Tab.0.bottom/-1366.0.1366.768/0.0.1920.1080@0.0.1920.1080" timestamp="1579799621627" />
     <state width="1878" height="284" key="GridCell.Tab.0.bottom/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580548955762" />
-    <state width="1878" height="501" key="GridCell.Tab.0.bottom/-1366.23.1366.719/0.23.1920.1057@0.23.1920.1057" timestamp="1580380058318" />
+    <state width="1878" height="294" key="GridCell.Tab.0.bottom/-1366.23.1366.719/0.23.1920.1057@0.23.1920.1057" timestamp="1580554135151" />
     <state width="1398" height="395" key="GridCell.Tab.0.bottom/-1440.-1478.1440.2509/0.23.1440.877@-1440.-1478.1440.2509" timestamp="1579259727141" />
     <state width="1398" height="396" key="GridCell.Tab.0.bottom/-1440.-1478.1440.2510/0.23.1440.877@-1440.-1478.1440.2510" timestamp="1579424356684" />
     <state width="1398" height="396" key="GridCell.Tab.0.bottom/-1440.-1478.1440.2511/0.23.1440.877@-1440.-1478.1440.2511" timestamp="1579416237605" />
@@ -343,14 +343,14 @@
     <state width="1398" height="185" key="GridCell.Tab.0.bottom/0.23.1366.718/1366.23.1440.877@1366.23.1440.877" timestamp="1579756861463" />
     <state width="1398" height="185" key="GridCell.Tab.0.bottom/0.23.1366.719/1366.23.1440.877@1366.23.1440.877" timestamp="1579746700969" />
     <state width="1398" height="189" key="GridCell.Tab.0.bottom/0.23.1440.850@0.23.1440.850" timestamp="1578302122905" />
-    <state width="1878" height="284" key="GridCell.Tab.0.center" timestamp="1580548955762">
+    <state width="1878" height="294" key="GridCell.Tab.0.center" timestamp="1580554135150">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state width="1038" height="494" key="GridCell.Tab.0.center/-1080.-939.1080.1874/0.23.1440.877@-1080.-939.1080.1874" timestamp="1578825165506" />
     <state width="1038" height="494" key="GridCell.Tab.0.center/-1080.-939.1080.1875/0.23.1440.877@-1080.-939.1080.1875" timestamp="1578836561371" />
     <state width="1878" height="253" key="GridCell.Tab.0.center/-1366.0.1366.768/0.0.1920.1080@0.0.1920.1080" timestamp="1579799621474" />
     <state width="1878" height="284" key="GridCell.Tab.0.center/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580548955762" />
-    <state width="1878" height="501" key="GridCell.Tab.0.center/-1366.23.1366.719/0.23.1920.1057@0.23.1920.1057" timestamp="1580380058317" />
+    <state width="1878" height="294" key="GridCell.Tab.0.center/-1366.23.1366.719/0.23.1920.1057@0.23.1920.1057" timestamp="1580554135150" />
     <state width="1398" height="395" key="GridCell.Tab.0.center/-1440.-1478.1440.2509/0.23.1440.877@-1440.-1478.1440.2509" timestamp="1579259727137" />
     <state width="1398" height="396" key="GridCell.Tab.0.center/-1440.-1478.1440.2510/0.23.1440.877@-1440.-1478.1440.2510" timestamp="1579424356683" />
     <state width="1398" height="396" key="GridCell.Tab.0.center/-1440.-1478.1440.2511/0.23.1440.877@-1440.-1478.1440.2511" timestamp="1579416237604" />
@@ -368,14 +368,14 @@
     <state width="1398" height="185" key="GridCell.Tab.0.center/0.23.1366.718/1366.23.1440.877@1366.23.1440.877" timestamp="1579756861462" />
     <state width="1398" height="185" key="GridCell.Tab.0.center/0.23.1366.719/1366.23.1440.877@1366.23.1440.877" timestamp="1579746700968" />
     <state width="1398" height="189" key="GridCell.Tab.0.center/0.23.1440.850@0.23.1440.850" timestamp="1578302122903" />
-    <state width="1878" height="284" key="GridCell.Tab.0.left" timestamp="1580548955761">
+    <state width="1878" height="294" key="GridCell.Tab.0.left" timestamp="1580554135150">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state width="1038" height="494" key="GridCell.Tab.0.left/-1080.-939.1080.1874/0.23.1440.877@-1080.-939.1080.1874" timestamp="1578825165505" />
     <state width="1038" height="494" key="GridCell.Tab.0.left/-1080.-939.1080.1875/0.23.1440.877@-1080.-939.1080.1875" timestamp="1578836561371" />
     <state width="1878" height="253" key="GridCell.Tab.0.left/-1366.0.1366.768/0.0.1920.1080@0.0.1920.1080" timestamp="1579799621472" />
     <state width="1878" height="284" key="GridCell.Tab.0.left/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580548955761" />
-    <state width="1878" height="501" key="GridCell.Tab.0.left/-1366.23.1366.719/0.23.1920.1057@0.23.1920.1057" timestamp="1580380058317" />
+    <state width="1878" height="294" key="GridCell.Tab.0.left/-1366.23.1366.719/0.23.1920.1057@0.23.1920.1057" timestamp="1580554135150" />
     <state width="1398" height="395" key="GridCell.Tab.0.left/-1440.-1478.1440.2509/0.23.1440.877@-1440.-1478.1440.2509" timestamp="1579259727137" />
     <state width="1398" height="396" key="GridCell.Tab.0.left/-1440.-1478.1440.2510/0.23.1440.877@-1440.-1478.1440.2510" timestamp="1579424356682" />
     <state width="1398" height="396" key="GridCell.Tab.0.left/-1440.-1478.1440.2511/0.23.1440.877@-1440.-1478.1440.2511" timestamp="1579416237603" />
@@ -393,14 +393,14 @@
     <state width="1398" height="185" key="GridCell.Tab.0.left/0.23.1366.718/1366.23.1440.877@1366.23.1440.877" timestamp="1579756861462" />
     <state width="1398" height="185" key="GridCell.Tab.0.left/0.23.1366.719/1366.23.1440.877@1366.23.1440.877" timestamp="1579746700968" />
     <state width="1398" height="189" key="GridCell.Tab.0.left/0.23.1440.850@0.23.1440.850" timestamp="1578302122903" />
-    <state width="1878" height="284" key="GridCell.Tab.0.right" timestamp="1580548955762">
+    <state width="1878" height="294" key="GridCell.Tab.0.right" timestamp="1580554135150">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state width="1038" height="494" key="GridCell.Tab.0.right/-1080.-939.1080.1874/0.23.1440.877@-1080.-939.1080.1874" timestamp="1578825165506" />
     <state width="1038" height="494" key="GridCell.Tab.0.right/-1080.-939.1080.1875/0.23.1440.877@-1080.-939.1080.1875" timestamp="1578836561372" />
     <state width="1878" height="253" key="GridCell.Tab.0.right/-1366.0.1366.768/0.0.1920.1080@0.0.1920.1080" timestamp="1579799621625" />
     <state width="1878" height="284" key="GridCell.Tab.0.right/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580548955762" />
-    <state width="1878" height="501" key="GridCell.Tab.0.right/-1366.23.1366.719/0.23.1920.1057@0.23.1920.1057" timestamp="1580380058318" />
+    <state width="1878" height="294" key="GridCell.Tab.0.right/-1366.23.1366.719/0.23.1920.1057@0.23.1920.1057" timestamp="1580554135150" />
     <state width="1398" height="395" key="GridCell.Tab.0.right/-1440.-1478.1440.2509/0.23.1440.877@-1440.-1478.1440.2509" timestamp="1579259727140" />
     <state width="1398" height="396" key="GridCell.Tab.0.right/-1440.-1478.1440.2510/0.23.1440.877@-1440.-1478.1440.2510" timestamp="1579424356683" />
     <state width="1398" height="396" key="GridCell.Tab.0.right/-1440.-1478.1440.2511/0.23.1440.877@-1440.-1478.1440.2511" timestamp="1579416237604" />
@@ -501,7 +501,7 @@
     <SUITE FILE_PATH="coverage/python_server$13_regular_expression.coverage" NAME="13_regular_expression Coverage Results" MODIFIED="1579830512598" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
     <SUITE FILE_PATH="coverage/python_server$04_type_data.coverage" NAME="04_type_data Coverage Results" MODIFIED="1577371973804" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
     <SUITE FILE_PATH="coverage/python_server$18_thread.coverage" NAME="18_thread Coverage Results" MODIFIED="1580196674607" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
-    <SUITE FILE_PATH="coverage/python_server$24_built_in_module.coverage" NAME="24_built_in_module Coverage Results" MODIFIED="1580548955754" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
+    <SUITE FILE_PATH="coverage/python_server$24_built_in_module.coverage" NAME="24_built_in_module Coverage Results" MODIFIED="1580554135144" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
     <SUITE FILE_PATH="coverage/python_server$mvc_server.coverage" NAME="mvc_server Coverage Results" MODIFIED="1580018719329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_14_web_development" />
     <SUITE FILE_PATH="coverage/python_server$01_BasicGrammar.coverage" NAME="01_BasicGrammar Coverage Results" MODIFIED="1577272797248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
     <SUITE FILE_PATH="coverage/python_server$12_exception_handling_and_file_operations.coverage" NAME="12_exception_handling_and_file_operations Coverage Results" MODIFIED="1579620872952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />

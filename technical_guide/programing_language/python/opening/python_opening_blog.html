@@ -9294,6 +9294,10 @@
 <h5 id="81217-itertools">8.12.1.7 itertools</h5>
 
 <blockquote>
+  <p>Python的内建模块itertools提供了非常有用的用于操作迭代对象的函数.</p>
+  
+  <p>itertools模块提供的全部是处理迭代功能的函数, 它们的返回值不是list, 而是Iterator, 只有用for循环迭代的时候才真正计算.</p>
+  
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
@@ -9313,20 +9317,80 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 内建模块 &amp; 第三方模块 | Advanced Python - Built-in Modules &amp; Third-Party Modules</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime <span class="hljs-keyword">as</span> dt, timedelta <span class="hljs-keyword">as</span> td, timezone <span class="hljs-keyword">as</span> tz
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">import</span> itertools <span class="hljs-keyword">as</span> its
 </div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># 定义 内建模块 类 | Definition built-in module class</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BuiltInModule</span>:</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
-</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>    b = BuiltInModule()
-</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>    <span class="hljs-comment"># 定义 itertools 静态方法 | Define itertools static method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-meta">    @staticmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">itertools_method</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>        print(<span class="hljs-string">'\n=============================== itertools Method Start ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        <span class="hljs-comment"># count()</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><span class="hljs-string">        count() 将创建一个无限的迭代器, 所以代码会打印出自然数序列无法自动退出, 只能按Ctrl+C退出</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>        natuals = its.count(<span class="hljs-number">1</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>        <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> natuals:
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>            print(<span class="hljs-string">'natuals ='</span>, x)
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>            <span class="hljs-keyword">if</span> x &gt;= <span class="hljs-number">10</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>                <span class="hljs-keyword">break</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>        <span class="hljs-comment"># cycle()</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span><span class="hljs-string">        cycle() 将传入的序列无限重复循环</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>        cs = its.cycle(<span class="hljs-string">'ABC'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>        frequency = <span class="hljs-number">10</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>        <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> cs:
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>            print(<span class="hljs-string">'Infinite repeat loop Frequency = %d Values = %s '</span> % (frequency, c))
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>            frequency = frequency - <span class="hljs-number">1</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>            <span class="hljs-keyword">if</span> frequency == <span class="hljs-number">0</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>                <span class="hljs-keyword">break</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>        <span class="hljs-comment"># repeat()</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><span class="hljs-string">        repeat()负责把一个元素无限重复循环, 不过如果提供第二个参数就可以限定重复次数</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>        ns = its.repeat(<span class="hljs-string">'A'</span>, <span class="hljs-number">3</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>        <span class="hljs-keyword">for</span> n <span class="hljs-keyword">in</span> ns:
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>            print(<span class="hljs-string">'Limited number of repetitions ='</span>, n)
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span>        <span class="hljs-comment"># takewhile()</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span><span class="hljs-string">        无限序列只有在for迭代时才会无限地迭代下去, 如果只是创建了一个迭代对象,</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span><span class="hljs-string">        它不会事先把无限个元素生成出来, 事实上也不可能在内存中创建无限多个元素.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span><span class="hljs-string">        无限序列虽然可以无限迭代下去, 但是通常会通过`takewhile()`等函数根据条件判断来截取出一个有限的序列.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span>        natuals = its.count(<span class="hljs-number">1</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span>        tw = its.takewhile(<span class="hljs-keyword">lambda</span> x: x &lt;= <span class="hljs-number">10</span>, natuals)
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span>        print(<span class="hljs-string">'natuals ='</span>, list(tw))
+</div><div class="hljs-line"><span class="hljs-comment line-number">69.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">70.</span>        <span class="hljs-comment"># chain()</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">71.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">72.</span><span class="hljs-string">        chain() 将一组迭代对象串联起来形成一个更大的迭代器</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">73.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">74.</span>        <span class="hljs-keyword">for</span> cn <span class="hljs-keyword">in</span> its.chain(<span class="hljs-string">'ABC'</span>, <span class="hljs-string">'XYZ'</span>):
+</div><div class="hljs-line"><span class="hljs-comment line-number">75.</span>            print(<span class="hljs-string">'Tandem Iterator ='</span>, cn)
+</div><div class="hljs-line"><span class="hljs-comment line-number">76.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">77.</span>        <span class="hljs-comment"># groupby()</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">78.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">79.</span><span class="hljs-string">        groupby() 将迭代器中相邻的重复元素挑出来放在一起</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">80.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">81.</span>        <span class="hljs-keyword">for</span> key1, group1 <span class="hljs-keyword">in</span> its.groupby(<span class="hljs-string">'AAABBBCCAAA'</span>):
+</div><div class="hljs-line"><span class="hljs-comment line-number">82.</span>            print(f<span class="hljs-string">'Key_1 = {key1}'</span>, list(group1))
+</div><div class="hljs-line"><span class="hljs-comment line-number">83.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">84.</span>        <span class="hljs-keyword">for</span> key2, group2 <span class="hljs-keyword">in</span> its.groupby(<span class="hljs-string">'AaaBBbcCAAa'</span>, <span class="hljs-keyword">lambda</span> cc: cc.upper()):
+</div><div class="hljs-line"><span class="hljs-comment line-number">85.</span>            print(f<span class="hljs-string">'Key_2 = {key2}'</span>, list(group2))
+</div><div class="hljs-line"><span class="hljs-comment line-number">86.</span>        print(<span class="hljs-string">'\n=============================== itertools Method End ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">87.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">88.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">89.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">90.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">91.</span>    b = BuiltInModule()
+</div><div class="hljs-line"><span class="hljs-comment line-number">92.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">93.</span>    b.itertools_method()
 </div></code></pre>
 </blockquote>
 
