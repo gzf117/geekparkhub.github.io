@@ -20,6 +20,7 @@
 from datetime import datetime as dt, timedelta as td, timezone as tz
 from collections import namedtuple as nt, deque as dq, defaultdict as dd, OrderedDict as odd, Counter as cr
 import base64 as b64
+import struct as st
 
 
 # 定义 内建模块 类 | Definition built-in module class
@@ -194,6 +195,48 @@ class BuiltInModule:
 
         print('\n=============================== Base64 Method End ===============================\n')
 
+    # 定义 结构 静态方法 | Definition structure static method
+    @staticmethod
+    def struct_method():
+        print('\n=============================== Struct Method Start ===============================\n')
+        # 将任意数据类型转换为字节类型 | Convert any data type to byte type
+        '''
+        struct中pack函数把任意数据类型变成bytes, `pack`的第一个参数是处理指令
+        `>I`参数说明：`>` 表示字节顺序是big-endian, 也就是网络序, `I`表示4字节无符号整数, 后面的参数个数要和处理指令一致.
+        根据`>IH`的说明, 后面的bytes依次变为 `I`为4字节无符号整数 `H`为2字节无符号整数.
+        '''
+        # 包装为字节类型 | Packed as a byte type
+        packing_byte_type = st.pack('>I', 10240099)
+        print('Packing ByteType (`10240099`)=', packing_byte_type)
+
+        # 解包为数据类型 | Unpacked as a data type
+        unpacking_data_type = st.unpack('>IH', b'\xf0\xf0\xf0\xf0\x80\x80')
+        print("Unpacking DataType =", unpacking_data_type)
+
+        '''
+        BMP 说明：
+        bmp是Windows操作系统中一种非常简单位图的文件格式.
+        BMP格式采用小端方式存储数据, 文件头的结构按顺序如下
+        
+        BMP结构按顺序 说明：
+        两个字节：`BM`表示Windows位图, `BA`表示OS/2位图. | 一个4字节整数：表示位图大小
+        一个4字节整数：保留位, 始终为0 | 一个4字节整数：实际图像的偏移量
+        一个4字节整数：Header的字节数 | 一个4字节整数：图像宽度
+        一个4字节整数：图像高度 | 一个2字节整数：始终为1 | 一个2字节整数：颜色数
+        '''
+        bmp_header = b'\x42\x4d\x38\x8c\x0a\x00\x00\x00\x00\x00\x36\x00\x00\x00\x28\x00\x00\x00\x80\x02\x00\x00\x68' \
+                     b'\x01\x00\x00\x01\x00\x18\x00'
+        unpacking_bmp = st.unpack('<ccIIIIIIHH', bmp_header)
+        print('BMP All Info =', unpacking_bmp)
+        print('BMP Type Info =', unpacking_bmp[0], unpacking_bmp[1])
+        print('BMP Size Info =', unpacking_bmp[2])
+        print('BMP Reserved bit Info =', unpacking_bmp[3])
+        print('BMP Offset Info =', unpacking_bmp[4])
+        print('BMP Header bytes Info =', unpacking_bmp[5])
+        print('BMP width * height Info = ', unpacking_bmp[6], '*', unpacking_bmp[7])
+        print('BMP Number of colors Info =', unpacking_bmp[9])
+        print('\n=============================== Struct Method End ===============================\n')
+
 
 # 导入模块 | Import module
 
@@ -211,3 +254,4 @@ if __name__ == '__main__':
     b.datetime_method()
     b.collections_method()
     b.base64_method()
+    b.struct_method()

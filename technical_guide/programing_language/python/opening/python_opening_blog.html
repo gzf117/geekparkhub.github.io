@@ -9087,6 +9087,10 @@
 <h5 id="81214-struct">8.12.1.4 struct</h5>
 
 <blockquote>
+  <p>Python没有专门处理字节的数据类型, 但由于<code>b'str'</code>可以表示字节, 所以字节数组＝二进制str, 而在C语言中可以很方便地用struct、union来处理字节, 以及字节和int，float的转换.</p>
+  
+  <p>Python提供了一个struct模块来解决bytes和其他二进制数据类型的转换.</p>
+  
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
@@ -9106,20 +9110,60 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 内建模块 &amp; 第三方模块 | Advanced Python - Built-in Modules &amp; Third-Party Modules</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime <span class="hljs-keyword">as</span> dt, timedelta <span class="hljs-keyword">as</span> td, timezone <span class="hljs-keyword">as</span> tz
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">import</span> struct <span class="hljs-keyword">as</span> st
 </div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># 定义 内建模块 类 | Definition built-in module class</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BuiltInModule</span>:</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
-</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>    b = BuiltInModule()
-</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>    <span class="hljs-comment"># 定义 结构 静态方法 | Definition structure static method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-meta">    @staticmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">struct_method</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>        print(<span class="hljs-string">'\n=============================== Struct Method Start ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        <span class="hljs-comment"># 将任意数据类型转换为字节类型 | Convert any data type to byte type</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><span class="hljs-string">        struct中pack函数把任意数据类型变成bytes, `pack`的第一个参数是处理指令</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><span class="hljs-string">        `&gt;I`参数说明：`&gt;` 表示字节顺序是big-endian, 也就是网络序, `I`表示4字节无符号整数, 后面的参数个数要和处理指令一致.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><span class="hljs-string">        根据`&gt;IH`的说明, 后面的bytes依次变为 `I`为4字节无符号整数 `H`为2字节无符号整数.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>        <span class="hljs-comment"># 包装为字节类型 | Packed as a byte type</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>        packing_byte_type = st.pack(<span class="hljs-string">'&gt;I'</span>, <span class="hljs-number">10240099</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>        print(<span class="hljs-string">'Packing ByteType (`10240099`)='</span>, packing_byte_type)
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>        <span class="hljs-comment"># 解包为数据类型 | Unpacked as a data type</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>        unpacking_data_type = st.unpack(<span class="hljs-string">'&gt;IH'</span>, <span class="hljs-string">b'\xf0\xf0\xf0\xf0\x80\x80'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>        print(<span class="hljs-string">"Unpacking DataType ="</span>, unpacking_data_type)
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span><span class="hljs-string">        BMP 说明：</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span><span class="hljs-string">        bmp是Windows操作系统中一种非常简单位图的文件格式.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span><span class="hljs-string">        BMP格式采用小端方式存储数据, 文件头的结构按顺序如下</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span><span class="hljs-string"></span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span><span class="hljs-string">        BMP结构按顺序 说明：</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span><span class="hljs-string">        两个字节：`BM`表示Windows位图, `BA`表示OS/2位图. | 一个4字节整数：表示位图大小</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span><span class="hljs-string">        一个4字节整数：保留位, 始终为0 | 一个4字节整数：实际图像的偏移量</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span><span class="hljs-string">        一个4字节整数：Header的字节数 | 一个4字节整数：图像宽度</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span><span class="hljs-string">        一个4字节整数：图像高度 | 一个2字节整数：始终为1 | 一个2字节整数：颜色数</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>        bmp_header = <span class="hljs-string">b'\x42\x4d\x38\x8c\x0a\x00\x00\x00\x00\x00\x36\x00\x00\x00\x28\x00\x00\x00\x80\x02\x00\x00\x68'</span> \
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>                     <span class="hljs-string">b'\x01\x00\x00\x01\x00\x18\x00'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>        unpacking_bmp = st.unpack(<span class="hljs-string">'&lt;ccIIIIIIHH'</span>, bmp_header)
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>        print(<span class="hljs-string">'BMP All Info ='</span>, unpacking_bmp)
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>        print(<span class="hljs-string">'BMP Type Info ='</span>, unpacking_bmp[<span class="hljs-number">0</span>], unpacking_bmp[<span class="hljs-number">1</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span>        print(<span class="hljs-string">'BMP Size Info ='</span>, unpacking_bmp[<span class="hljs-number">2</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>        print(<span class="hljs-string">'BMP Reserved bit Info ='</span>, unpacking_bmp[<span class="hljs-number">3</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span>        print(<span class="hljs-string">'BMP Offset Info ='</span>, unpacking_bmp[<span class="hljs-number">4</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span>        print(<span class="hljs-string">'BMP Header bytes Info ='</span>, unpacking_bmp[<span class="hljs-number">5</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span>        print(<span class="hljs-string">'BMP width * height Info = '</span>, unpacking_bmp[<span class="hljs-number">6</span>], <span class="hljs-string">'*'</span>, unpacking_bmp[<span class="hljs-number">7</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span>        print(<span class="hljs-string">'BMP Number of colors Info ='</span>, unpacking_bmp[<span class="hljs-number">9</span>])
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span>        print(<span class="hljs-string">'\n=============================== Struct Method End ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">69.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">70.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">71.</span>    b = BuiltInModule()
+</div><div class="hljs-line"><span class="hljs-comment line-number">72.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">73.</span>    b.struct_method()
 </div></code></pre>
 </blockquote>
 
