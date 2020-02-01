@@ -19,6 +19,7 @@
 # 导入模块 | Import module
 from datetime import datetime as dt, timedelta as td, timezone as tz
 from collections import namedtuple as nt, deque as dq, defaultdict as dd, OrderedDict as odd, Counter as cr
+import base64 as b64
 
 
 # 定义 内建模块 类 | Definition built-in module class
@@ -164,6 +165,35 @@ class BuiltInModule:
 
         print('\n=============================== Collections Method End ===============================\n')
 
+    # 定义 base64 静态方法 | Defining a base64 static method
+    @staticmethod
+    def base64_method():
+        print('\n=============================== Base64 Method Start ===============================\n')
+        # Base64 编码 | Base64 encoding
+        base64_encoding = b64.b64encode('BASE64 编码'.encode('UTF-8'))
+        print('Base64 encoding =', base64_encoding)
+        # Base64 解码 | Base64 decoding
+        base64_decoding = b64.b64decode(base64_encoding).decode('UTF-8')
+        print('Base64 decoding =', base64_decoding)
+
+        '''
+        由于标准的Base64编码后可能出现字符+和/, 在URL中就不能直接作为参数, 
+        所以又有一种"url safe"的base64编码,  其实就是把字符+和/分别变成-和_
+        '''
+        # Base64 编码 for Url Safe | Base64 encoding for Url Safe
+        base64_encoding_for_urlsafe_1 = b64.urlsafe_b64encode(b'i\xb7\x1d\xfb\xef\xff')
+        base64_encoding_for_urlsafe_2 = b64.urlsafe_b64encode('Base64 encoding for Url Safe'.encode('UTF-8'))
+        print('Base64 encoding for Url Safe 1 =', base64_encoding_for_urlsafe_1)
+        print('Base64 encoding for Url Safe 2 =', base64_encoding_for_urlsafe_2)
+
+        # Base64 解码 for Url Safe | Base64 decoding for Url Safe
+        base64_decoding_for_urlsafe_1 = b64.urlsafe_b64decode(base64_encoding_for_urlsafe_1)
+        base64_decoding_for_urlsafe_2 = b64.urlsafe_b64decode(base64_encoding_for_urlsafe_2).decode('UTF-8')
+        print('Base64 decoding for Url Safe 1 =', base64_decoding_for_urlsafe_1)
+        print('Base64 decoding for Url Safe 2 =', base64_decoding_for_urlsafe_2)
+
+        print('\n=============================== Base64 Method End ===============================\n')
+
 
 # 导入模块 | Import module
 
@@ -180,3 +210,4 @@ if __name__ == '__main__':
     # 对象实例 调用方法 | Object instance call method
     b.datetime_method()
     b.collections_method()
+    b.base64_method()

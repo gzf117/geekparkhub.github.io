@@ -8271,6 +8271,24 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 
 
 ##### 8.12.1.3 base64
+> Base64是一种用64个字符来表示任意二进制数据的方法.
+> 
+> 用记事本打开exe、jpg、pdf这些文件时都会看到一大堆乱码, 因为二进制文件包含很多无法显示和打印的字符, 所以如果要让记事本这样的文本处理软件能处理二进制数据就需要一个二进制到字符串的转换方法, Base64是一种最常见的二进制编码方法.
+> 
+> Base64原理很简单, 首先准备一个包含64个字符的数组, 然后对二进制数据进行处理, 每3个字节一组, 一共是3x8=24bit, 划为4组, 每组正好6个bit.
+> ```
+> ['A', 'B', 'C', ... 'a', 'b', 'c', ... '0', '1', ... '+', '/']
+> ```
+> ![enter image description here | center](https://www.liaoxuefeng.com/files/attachments/949444125467040)
+> 
+> 这样得到4个数字作为索引然后查表, 获得相应的4个字符就是编码后的字符串.
+> 
+> 所以Base64编码会把3字节的二进制数据编码为4字节的文本数据, 长度增加33%, 好处是编码后的文本数据可以在邮件正文、网页等直接显示.
+> 
+> 如果要编码的二进制数据不是3的倍数, 最后会剩下1个或2个字节怎么办, Base64用`\x00`字节在末尾补足后, 再在编码的末尾加上1个或2个`=`号表示补了多少字节, 解码的时候会自动去掉.
+> 
+> Python内置base64可以直接进行base64的编解码, Base64是一种任意二进制到文本字符串的编码方法, 常用于在URL、Cookie、网页中传输少量二进制数据, Base64适用于小段内容的编码, 比如数字证书签名、Cookie的内容等.
+> 
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -8291,20 +8309,47 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 > # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
 > 
 > # 导入模块 | Import module
-> from datetime import datetime as dt, timedelta as td, timezone as tz
+> import base64 as b64
 > 
 > 
 > # 定义 内建模块 类 | Definition built-in module class
 > class BuiltInModule:
 >     
+>     # 定义 base64 静态方法 | Defining a base64 static method
+>     @staticmethod
+>     def base64_method():
+>         print('\n=============================== Base64 Method Start ===============================\n')
+>         # Base64 编码 | Base64 encoding
+>         base64_encoding = b64.b64encode('BASE64 编码'.encode('UTF-8'))
+>         print('Base64 encoding =', base64_encoding)
+>         # Base64 解码 | Base64 decoding
+>         base64_decoding = b64.b64decode(base64_encoding).decode('UTF-8')
+>         print('Base64 decoding =', base64_decoding)
 > 
+>         '''
+>         由于标准的Base64编码后可能出现字符+和/, 在URL中就不能直接作为参数, 
+>         所以又有一种"url safe"的base64编码,  其实就是把字符+和/分别变成-和_
+>         '''
+>         # Base64 编码 for Url Safe | Base64 encoding for Url Safe
+>         base64_encoding_for_urlsafe_1 = b64.urlsafe_b64encode(b'i\xb7\x1d\xfb\xef\xff')
+>         base64_encoding_for_urlsafe_2 = b64.urlsafe_b64encode('Base64 encoding for Url Safe'.encode('UTF-8'))
+>         print('Base64 encoding for Url Safe 1 =', base64_encoding_for_urlsafe_1)
+>         print('Base64 encoding for Url Safe 2 =', base64_encoding_for_urlsafe_2)
+> 
+>         # Base64 解码 for Url Safe | Base64 decoding for Url Safe
+>         base64_decoding_for_urlsafe_1 = b64.urlsafe_b64decode(base64_encoding_for_urlsafe_1)
+>         base64_decoding_for_urlsafe_2 = b64.urlsafe_b64decode(base64_encoding_for_urlsafe_2).decode('UTF-8')
+>         print('Base64 decoding for Url Safe 1 =', base64_decoding_for_urlsafe_1)
+>         print('Base64 decoding for Url Safe 2 =', base64_decoding_for_urlsafe_2)
+> 
+>         print('\n=============================== Base64 Method End ===============================\n')
 > 
 > # 定义 主模块 | Definition Main module
 > if __name__ == '__main__':
 >     # 创建 对象实例 | Create object instance
 >     b = BuiltInModule()
 >     # 对象实例 调用方法 | Object instance call method
->     
+>     b.base64_method()
 > ```
 
 ##### 8.12.1.4 struct
