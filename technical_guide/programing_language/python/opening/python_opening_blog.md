@@ -8659,6 +8659,8 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 
 
 ##### 8.12.1.8 contextlib
+> 在Python中读写文件这样的资源要特别注意, 必须在使用完毕后正确关闭它们, 正确关闭文件资源的一个方法是使用`try...finally`.
+> 
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -8679,21 +8681,77 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 > # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
 > 
 > # 导入模块 | Import module
-> from datetime import datetime as dt, timedelta as td, timezone as tz
+> from contextlib import contextmanager as cm
+> from contextlib import closing as cg
+> from urllib.request import urlopen as uo
 > 
 > 
-> # 定义 内建模块 类 | Definition built-in module class
-> class BuiltInModule:
+> # 定义 上下文库 | Definition context library
+> class BuiltInModuleForContextLibrary(object):
+>     # 定义 初始化 方法 | Define initialization method
+>     def __init__(self, name):
+>         self.name = name
+> 
+>     # 自定义 方法 | Custom method
+>     def query(self):
+>         print('Query info about %s...' % self.name)
+> 
+> 
+> '''
+> `@contextmanager`这个decorator接受一个generator, 用yield语句把`with ... as var`把变量输出, 然后with语句就可以正常执行
+> 代码执行顺序 说明：
+> 1.with语句首先执行yield之前的语句,因此打印出<h1>
+> 2.yield调用会执行with语句内部的所有语句, 因此打印出Hello和World
+> 3.最后执行yield之后的语句打印出</h1>
+> 因此`@contextmanager`通过编写generator来简化上下文管理
+> '''
+> 
+> 
+> @cm
+> def create_query(name):
+>     print('Begin')
+>     q = BuiltInModuleForContextLibrary(name)
+>     yield q
+>     print('End')
+> 
+> 
+> # `@contextmanager`实现在某段代码执行前后自动执行特定代码
+> @cm
+> def tag(name):
+>     print("<%s>" % name)
+>     yield
+>     print("</%s>" % name)
+> 
+> 
+> with tag("h1"):
+>     print("Hello")
+>     print("World")
+> 
+> '''
+> 如果一个对象没有实现上下文就不能把它用于with语句, 这个时候可以用closing()来把该对象变为上下文对象, 
+> 例如用with语句使用urlopen(), closing也是一个经过`@contextmanager`装饰的generator, 作用就是把任意对象变为上下文对象并支持with语句
+> '''
+> with cg(uo('http://www.baidu.com')) as page:
+>     for line in page:
+>         print('line =', line)
+> 
+> 
+> @cm
+> def closing(thing):
+>     try:
+>         yield thing
+>     finally:
+>         thing.close()
 >     
 > 
 > 
 > # 定义 主模块 | Definition Main module
 > if __name__ == '__main__':
->     # 创建 对象实例 | Create object instance
->     b = BuiltInModule()
->     # 对象实例 调用方法 | Object instance call method
->     
+>     # 调用 函数 | call function
+>     create_query('1')
+>     closing('2')
 > ```
+
 
 
 ##### 8.12.1.9 urllib
