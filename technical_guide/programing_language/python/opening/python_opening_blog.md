@@ -9127,19 +9127,175 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 > 更好的方案是使用requests, 它是一个Python第三方库处理URL资源特别方便.
 > 
 > **安装 requests**
+> 
 > 如果安装了Anaconda, requests就已经可以使用, 否则需要在命令行下通过pip安装
 > ```
 > pip install requests
 > ```
-
+> 
+> **使用 requests**
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 内建模块 & 第三方模块 | Built-in modules & third-party modules
+> # @File : 24_built_in_module.py
+> # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
+> 
+> # 导入模块 | Import module
+> import requests as reqs
+> 
+> # 定义 第三方模块 类 | Defining third-party module classes
+> class ThirdPartyModule:
+> 
+>     # 定义 requests 静态方法 | Define requests static method
+>     @staticmethod
+>     def requests_method():
+>         print('\n=============================== Requests Method Start ===============================\n')
+>         # GET访问页面 | GET access page
+>         url = 'https://www.baidu.com/'
+>         cs = {'token': '12345', 'status': 'working'}
+>         # 指定超时, 传入以秒为单位的timeout参数
+>         r1 = reqs.get(url, cookies=cs, timeout=2.5)
+>         print('Request Status =', r1.status_code)
+>         print('Return Context =\n', r1.text)
+>         # 获取指定Cookie | Get the specified cookie
+>         # print('Cookies =', r1.cookies['ts'])
+> 
+>         # 携带参数访问页面 | Visit page with parameters
+>         r2 = reqs.get(url + 's?', params={'wd': 'Python'})
+>         print('Detection Encoding =', r2.encoding)
+>         print('Request Link =', r2.url)
+>         print('Return Context =', r2.content)
+> 
+>         # 访问 JSON | Access JSON
+>         json_url = 'http://www.kuaidi100.com/query?type=yuantong&postid=11111111111&format=json'
+>         r3 = reqs.get(json_url)
+>         print('Return JSON Context', r3.json())
+> 
+>         # 携带headers参数访问页面 | Visit the page with the headers parameter
+>         r4 = reqs.get(url, headers={'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit'})
+>         print('Return Context =\n', r4.content)
+>         # 获取响应头 | Get response header
+>         print('Response Header =', r4.headers)
+> 
+> 
+>         # POST请求 | POST request
+>         r5 = reqs.post('https://accounts.douban.com/login',
+>                        data={'form_email': 'xxx@example.org', 'form_password': 'xxxxxx'})
+>         print('Return Context =\n', r5.content)
+>         '''
+>         requests默认使用application/x-www-form-urlencoded对POST数据编码, 如果要传递JSON数据可以直接传入json参数.
+>         '''
+>         params = {'key': 'value'}
+>         r6 = reqs.post('https://graph.baidu.com/upload?tn=pc&from=pc', json=params)  # 内部自动序列化为JSON
+>         print('Return Context =\n', r6.content)
+> 
+>         # 上传文件 | upload files
+>         '''
+>         在读取文件时注意务必使用'rb'即二进制模式读取这样获取的bytes长度才是文件的长度
+>         post()方法替换为put()，delete()等，就可以以PUT或DELETE方式请求资源
+>         '''
+>         upload_files = {'file': open('../resources/row_file/demo.jpg', 'rb')}
+>         r7 = reqs.post('https://graph.baidu.com/upload?tn=pc&from=pc', files=upload_files)
+>         print('Return Context =\n', r7.content)
+> 
+>         print('\n=============================== Requests Method End ===============================\n')
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建 对象实例 | Create object instance
+>     t = ThirdPartyModule()
+>     # 对象实例 调用方法 | Object instance call method
+>     t.requests_method()
+> ```
 
 
 ##### 8.12.2.3 chardet
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 内建模块 & 第三方模块 | Built-in modules & third-party modules
+> # @File : 24_built_in_module.py
+> # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
+> 
+> # 导入模块 | Import module
+> from PIL import Image as ims, ImageFilter as imf, ImageDraw as imd, ImageFont as imft
+> import random as rd
+> 
+> 
+> # 定义 第三方模块 类 | Defining third-party module classes
+> class ThirdPartyModule:
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建 对象实例 | Create object instance
+>     t = ThirdPartyModule()
+>     # 对象实例 调用方法 | Object instance call method
+>     t.operating_image_method()
+> ```
+
+
+
 ##### 8.12.2.4 psutil
-
-
-## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒
-
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 内建模块 & 第三方模块 | Built-in modules & third-party modules
+> # @File : 24_built_in_module.py
+> # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
+> 
+> # 导入模块 | Import module
+> from PIL import Image as ims, ImageFilter as imf, ImageDraw as imd, ImageFont as imft
+> import random as rd
+> 
+> 
+> # 定义 第三方模块 类 | Defining third-party module classes
+> class ThirdPartyModule:
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建 对象实例 | Create object instance
+>     t = ThirdPartyModule()
+>     # 对象实例 调用方法 | Object instance call method
+>     t.operating_image_method()
+> ```
 
 
 ## 9. 修仙之道 技术架构迭代 登峰造极之势

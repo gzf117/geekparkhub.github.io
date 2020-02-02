@@ -518,6 +518,7 @@ class HTMLParsers(hp):
 # 导入模块 | Import module
 from PIL import Image as ims, ImageFilter as imf, ImageDraw as imd, ImageFont as imft
 import random as rd
+import requests as reqs
 
 
 # 定义 第三方模块 类 | Defining third-party module classes
@@ -610,7 +611,59 @@ class ThirdPartyModule:
             print('Captcha picture Saved successfully!')
         print('\n=============================== Operating image Method End ===============================\n')
 
-    # 定义 静态方法
+    # 定义 requests 静态方法 | Define requests static method
+    @staticmethod
+    def requests_method():
+        print('\n=============================== Requests Method Start ===============================\n')
+        # GET访问页面 | GET access page
+        url = 'https://www.baidu.com/'
+        cs = {'token': '12345', 'status': 'working'}
+        # 指定超时, 传入以秒为单位的timeout参数
+        r1 = reqs.get(url, cookies=cs, timeout=2.5)
+        print('Request Status =', r1.status_code)
+        print('Return Context =\n', r1.text)
+        # 获取指定Cookie | Get the specified cookie
+        # print('Cookies =', r1.cookies['ts'])
+
+        # 携带参数访问页面 | Visit page with parameters
+        r2 = reqs.get(url + 's?', params={'wd': 'Python'})
+        print('Detection Encoding =', r2.encoding)
+        print('Request Link =', r2.url)
+        print('Return Context =', r2.content)
+
+        # 访问 JSON | Access JSON
+        json_url = 'http://www.kuaidi100.com/query?type=yuantong&postid=11111111111&format=json'
+        r3 = reqs.get(json_url)
+        print('Return JSON Context', r3.json())
+
+        # 携带headers参数访问页面 | Visit the page with the headers parameter
+        r4 = reqs.get(url, headers={'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit'})
+        print('Return Context =\n', r4.content)
+        # 获取响应头 | Get response header
+        print('Response Header =', r4.headers)
+
+
+        # POST请求 | POST request
+        r5 = reqs.post('https://accounts.douban.com/login',
+                       data={'form_email': 'xxx@example.org', 'form_password': 'xxxxxx'})
+        print('Return Context =\n', r5.content)
+        '''
+        requests默认使用application/x-www-form-urlencoded对POST数据编码, 如果要传递JSON数据可以直接传入json参数.
+        '''
+        params = {'key': 'value'}
+        r6 = reqs.post('https://graph.baidu.com/upload?tn=pc&from=pc', json=params)  # 内部自动序列化为JSON
+        print('Return Context =\n', r6.content)
+
+        # 上传文件 | upload files
+        '''
+        在读取文件时注意务必使用'rb'即二进制模式读取这样获取的bytes长度才是文件的长度
+        post()方法替换为put()，delete()等，就可以以PUT或DELETE方式请求资源
+        '''
+        upload_files = {'file': open('../resources/row_file/demo.jpg', 'rb')}
+        r7 = reqs.post('https://graph.baidu.com/upload?tn=pc&from=pc', files=upload_files)
+        print('Return Context =\n', r7.content)
+
+        print('\n=============================== Requests Method End ===============================\n')
 
 
 # 定义 主模块 | Definition Main module
@@ -630,7 +683,8 @@ if __name__ == '__main__':
     # b.hmac_method()
     # b.itertools_method()
     # b.request_library_method()
-    t.operating_image_method()
+    # t.operating_image_method()
+    t.requests_method()
     # # 调用 函数 | call function
     # create_query('1')
     # closing('2')

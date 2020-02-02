@@ -264,7 +264,6 @@
 </li>
 </ul>
 </li>
-<li><a href="#尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</a></li>
 <li><a href="#9-修仙之道-技术架构迭代-登峰造极之势">9. 修仙之道 技术架构迭代 登峰造极之势</a></li>
 <li><a href="#如何对该开源文档进行贡献">💡如何对该开源文档进行贡献💡</a><ul>
 <li><a href="#希望每一篇文章都能够对读者们提供帮助与提升这乃是每一位笔者的初衷">希望每一篇文章都能够对读者们提供帮助与提升,这乃是每一位笔者的初衷</a></li>
@@ -9884,22 +9883,177 @@
   
   <p>更好的方案是使用requests, 它是一个Python第三方库处理URL资源特别方便.</p>
   
-  <p><strong>安装 requests</strong> <br>
-  如果安装了Anaconda, requests就已经可以使用, 否则需要在命令行下通过pip安装</p>
+  <p><strong>安装 requests</strong></p>
+  
+  <p>如果安装了Anaconda, requests就已经可以使用, 否则需要在命令行下通过pip安装</p>
   
   <pre class="prettyprint with-line-number hljs-dark"><code class="hljs cmake"><div class="hljs-line"><span class="hljs-comment line-number">1.</span>pip <span class="hljs-keyword">install</span> requests
+</div></code></pre>
+  
+  <p><strong>使用 requests</strong></p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 内建模块 &amp; 第三方模块 | Built-in modules &amp; third-party modules</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 24_built_in_module.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 内建模块 &amp; 第三方模块 | Advanced Python - Built-in Modules &amp; Third-Party Modules</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">import</span> requests <span class="hljs-keyword">as</span> reqs
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><span class="hljs-comment"># 定义 第三方模块 类 | Defining third-party module classes</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ThirdPartyModule</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span>    <span class="hljs-comment"># 定义 requests 静态方法 | Define requests static method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><span class="hljs-meta">    @staticmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">requests_method</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>        print(<span class="hljs-string">'\n=============================== Requests Method Start ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>        <span class="hljs-comment"># GET访问页面 | GET access page</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        url = <span class="hljs-string">'https://www.baidu.com/'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>        cs = {<span class="hljs-string">'token'</span>: <span class="hljs-string">'12345'</span>, <span class="hljs-string">'status'</span>: <span class="hljs-string">'working'</span>}
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>        <span class="hljs-comment"># 指定超时, 传入以秒为单位的timeout参数</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>        r1 = reqs.get(url, cookies=cs, timeout=<span class="hljs-number">2.5</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>        print(<span class="hljs-string">'Request Status ='</span>, r1.status_code)
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>        print(<span class="hljs-string">'Return Context =\n'</span>, r1.text)
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>        <span class="hljs-comment"># 获取指定Cookie | Get the specified cookie</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>        <span class="hljs-comment"># print('Cookies =', r1.cookies['ts'])</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>        <span class="hljs-comment"># 携带参数访问页面 | Visit page with parameters</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>        r2 = reqs.get(url + <span class="hljs-string">'s?'</span>, params={<span class="hljs-string">'wd'</span>: <span class="hljs-string">'Python'</span>})
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>        print(<span class="hljs-string">'Detection Encoding ='</span>, r2.encoding)
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>        print(<span class="hljs-string">'Request Link ='</span>, r2.url)
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>        print(<span class="hljs-string">'Return Context ='</span>, r2.content)
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>        <span class="hljs-comment"># 访问 JSON | Access JSON</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>        json_url = <span class="hljs-string">'http://www.kuaidi100.com/query?type=yuantong&amp;postid=11111111111&amp;format=json'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>        r3 = reqs.get(json_url)
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>        print(<span class="hljs-string">'Return JSON Context'</span>, r3.json())
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>        <span class="hljs-comment"># 携带headers参数访问页面 | Visit the page with the headers parameter</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>        r4 = reqs.get(url, headers={<span class="hljs-string">'User-Agent'</span>: <span class="hljs-string">'Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit'</span>})
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>        print(<span class="hljs-string">'Return Context =\n'</span>, r4.content)
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>        <span class="hljs-comment"># 获取响应头 | Get response header</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>        print(<span class="hljs-string">'Response Header ='</span>, r4.headers)
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>        <span class="hljs-comment"># POST请求 | POST request</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>        r5 = reqs.post(<span class="hljs-string">'https://accounts.douban.com/login'</span>,
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>                       data={<span class="hljs-string">'form_email'</span>: <span class="hljs-string">'xxx@example.org'</span>, <span class="hljs-string">'form_password'</span>: <span class="hljs-string">'xxxxxx'</span>})
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span>        print(<span class="hljs-string">'Return Context =\n'</span>, r5.content)
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span><span class="hljs-string">        requests默认使用application/x-www-form-urlencoded对POST数据编码, 如果要传递JSON数据可以直接传入json参数.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span>        params = {<span class="hljs-string">'key'</span>: <span class="hljs-string">'value'</span>}
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span>        r6 = reqs.post(<span class="hljs-string">'https://graph.baidu.com/upload?tn=pc&amp;from=pc'</span>, json=params)  <span class="hljs-comment"># 内部自动序列化为JSON</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span>        print(<span class="hljs-string">'Return Context =\n'</span>, r6.content)
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span>        <span class="hljs-comment"># 上传文件 | upload files</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">69.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">70.</span><span class="hljs-string">        在读取文件时注意务必使用'rb'即二进制模式读取这样获取的bytes长度才是文件的长度</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">71.</span><span class="hljs-string">        post()方法替换为put()，delete()等，就可以以PUT或DELETE方式请求资源</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">72.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">73.</span>        upload_files = {<span class="hljs-string">'file'</span>: open(<span class="hljs-string">'../resources/row_file/demo.jpg'</span>, <span class="hljs-string">'rb'</span>)}
+</div><div class="hljs-line"><span class="hljs-comment line-number">74.</span>        r7 = reqs.post(<span class="hljs-string">'https://graph.baidu.com/upload?tn=pc&amp;from=pc'</span>, files=upload_files)
+</div><div class="hljs-line"><span class="hljs-comment line-number">75.</span>        print(<span class="hljs-string">'Return Context =\n'</span>, r7.content)
+</div><div class="hljs-line"><span class="hljs-comment line-number">76.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">77.</span>        print(<span class="hljs-string">'\n=============================== Requests Method End ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">78.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">79.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">80.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">81.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">82.</span>    t = ThirdPartyModule()
+</div><div class="hljs-line"><span class="hljs-comment line-number">83.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">84.</span>    t.requests_method()
 </div></code></pre>
 </blockquote>
 
 <h5 id="81223-chardet">8.12.2.3 chardet</h5>
 
-
+<blockquote>
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 内建模块 &amp; 第三方模块 | Built-in modules &amp; third-party modules</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 24_built_in_module.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 内建模块 &amp; 第三方模块 | Advanced Python - Built-in Modules &amp; Third-Party Modules</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image <span class="hljs-keyword">as</span> ims, ImageFilter <span class="hljs-keyword">as</span> imf, ImageDraw <span class="hljs-keyword">as</span> imd, ImageFont <span class="hljs-keyword">as</span> imft
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-keyword">import</span> random <span class="hljs-keyword">as</span> rd
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-comment"># 定义 第三方模块 类 | Defining third-party module classes</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ThirdPartyModule</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>    t = ThirdPartyModule()
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    t.operating_image_method()
+</div></code></pre>
+</blockquote>
 
 <h5 id="81224-psutil">8.12.2.4 psutil</h5>
 
-<h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
-
-
+<blockquote>
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 内建模块 &amp; 第三方模块 | Built-in modules &amp; third-party modules</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 24_built_in_module.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 内建模块 &amp; 第三方模块 | Advanced Python - Built-in Modules &amp; Third-Party Modules</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image <span class="hljs-keyword">as</span> ims, ImageFilter <span class="hljs-keyword">as</span> imf, ImageDraw <span class="hljs-keyword">as</span> imd, ImageFont <span class="hljs-keyword">as</span> imft
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-keyword">import</span> random <span class="hljs-keyword">as</span> rd
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-comment"># 定义 第三方模块 类 | Defining third-party module classes</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ThirdPartyModule</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>    t = ThirdPartyModule()
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    t.operating_image_method()
+</div></code></pre>
+</blockquote>
 
 <h2 id="9-修仙之道-技术架构迭代-登峰造极之势">9. 修仙之道 技术架构迭代 登峰造极之势</h2>
 
