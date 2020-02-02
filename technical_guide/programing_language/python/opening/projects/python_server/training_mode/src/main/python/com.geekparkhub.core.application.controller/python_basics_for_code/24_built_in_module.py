@@ -516,10 +516,101 @@ class HTMLParsers(hp):
 
 
 # 导入模块 | Import module
+from PIL import Image as ims, ImageFilter as imf, ImageDraw as imd, ImageFont as imft
+import random as rd
+
 
 # 定义 第三方模块 类 | Defining third-party module classes
 class ThirdPartyModule:
-    pass
+
+    # 定义 操作图像 静态方法 | Definition Operating image Static method
+    @staticmethod
+    def operating_image_method():
+        print('\n=============================== Operating image Method Start ===============================\n')
+        # 定义 抛出异常代码块 | Definition throw exception code block
+        try:
+            # 获取图片路径 | Get image path
+            FILE_PATHS = '../resources/row_file/demo.jpg'
+            SAVE_FILE_PATHS = '../resources/row_file/demo_thumbnail.jpg'
+            SAVE_BLUR_FILE_PATHS = '../resources/row_file/demo_blur.jpg'
+            im = ims.open(FILE_PATHS)
+            # 获取图像尺寸 | Get image size
+            w, h = im.size
+            print('Original image Size = %s * %s' % (w, h))
+
+            # 将图片尺寸缩放至50% | Scale image size to 50%
+            im.thumbnail((w // 2, h // 2))
+            print('Resize image To: %s * %s' % (w // 2, h // 2))
+            # 将缩放后的图像保存为jpeg格式 | Save the scaled image in jpeg format
+            im.save(SAVE_FILE_PATHS, 'jpeg')
+
+            # 应用模糊滤镜 | Apply blur filter
+            im2 = im.filter(imf.BLUR)
+            im2.save(SAVE_BLUR_FILE_PATHS, 'jpeg')
+        except Exception as e:
+            print('Error message details =', e)
+        finally:
+            # 信息输出 | Information output
+            print('Zoom picture Saved successfully!')
+            print('Blur picture Saved successfully!')
+
+        '''
+        生成字母验证码图片 | Generate Letter Verification Picture
+        '''
+
+        # 定义 随机字母 函数 | Definition random letters function
+        def rnd_char():
+            return chr(rd.randint(50, 60))
+
+        # 定义 随机颜色样式1 函数 | Definition random color style 1 function
+        def rnd_color1():
+            return (rd.randint(64, 255), rd.randint(64, 255), rd.randint(64, 255))
+
+        # 定义 随机颜色样式2 函数 | Definition random color style 2 function
+        def rnd_color2():
+            return (rd.randint(32, 127), rd.randint(32, 127), rd.randint(32, 127))
+
+        # 定义 抛出异常代码块 | Definition throw exception code block
+        try:
+            # 定义 变量 验证码 宽度 | Definition variable captcha width
+            photo_width = 64 * 4
+
+            # 定义 变量 验证码 高度 | Definition variable captcha height
+            photo_height = 60
+
+            # 定义 验证码图片 | Definition Captcha Picture
+            image = ims.new('RGB', (photo_width, photo_height), (255, 255, 255))
+
+            # 定义 字体对象 | Definition font object
+            FONT_PATHS = '../resources/font_file/Comic_Sans_MS_Bold.ttf'
+            font = imft.truetype(FONT_PATHS, 36)
+
+            # 创建绘图对象 | Create drawing objects
+            draw = imd.Draw(image)
+
+            # 填充像素 | Fill pixel
+            for x in range(photo_width):
+                for y in range(photo_width):
+                    draw.point((x, y), fill=rnd_color1())
+
+            # 输出文字 | Output text
+            for txt in range(6):
+                draw.text((60 * txt + 5, 10), rnd_char(), font=font, fill=rnd_color2())
+
+            # 应用模糊滤镜 | Apply blur filter
+            image = image.filter(imf.BLUR)
+
+            # 定义 保存 验证码路径 | Definition Save Captcha Path
+            SAVE_CODE_FILE_PATHS = '../resources/row_file/demo_code.jpg'
+            image.save(SAVE_CODE_FILE_PATHS, 'jpeg')
+        except Exception as e:
+            print('Error message details =', e)
+        finally:
+            # 信息输出 | Information output
+            print('Captcha picture Saved successfully!')
+        print('\n=============================== Operating image Method End ===============================\n')
+
+    # 定义 静态方法
 
 
 # 定义 主模块 | Definition Main module
@@ -527,34 +618,35 @@ if __name__ == '__main__':
     # 创建 对象实例 | Create object instance
     b = BuiltInModule()
     t = ThirdPartyModule()
-    handler = DefaultSaxHandler()
-    parser = pc()
-    parsers = HTMLParsers()
-    # 对象实例 调用方法 | Object instance call method
-    b.datetime_method()
-    b.collections_method()
-    b.base64_method()
-    b.struct_method()
-    b.summary_method()
-    b.hmac_method()
-    b.itertools_method()
-    b.request_library_method()
-    # 调用 函数 | call function
-    create_query('1')
-    closing('2')
-
-    parser.StartElementHandler = handler.start_element
-    parser.EndElementHandler = handler.end_element
-    parser.CharacterDataHandler = handler.char_data
-    parser.Parse(xml)
-
-    '''
-    feed()方法可以多次调用, 可以一部分一部分追加
-    特殊字符有两种， 一种是英文表示的`&nbsp;`, 一种是数字表示的`&#1234;`, 这两种字符都可以通过Parser进行解析
-    '''
-    parsers.feed('''<html>
-    <head></head>
-    <body>
-    <!-- test html parser -->
-        <p>Some <a href=\"#\">html</a> HTML&nbsp;tutorial...<br>END</p>
-    </body></html>''')
+    # handler = DefaultSaxHandler()
+    # parser = pc()
+    # parsers = HTMLParsers()
+    # # 对象实例 调用方法 | Object instance call method
+    # b.datetime_method()
+    # b.collections_method()
+    # b.base64_method()
+    # b.struct_method()
+    # b.summary_method()
+    # b.hmac_method()
+    # b.itertools_method()
+    # b.request_library_method()
+    t.operating_image_method()
+    # # 调用 函数 | call function
+    # create_query('1')
+    # closing('2')
+    #
+    # parser.StartElementHandler = handler.start_element
+    # parser.EndElementHandler = handler.end_element
+    # parser.CharacterDataHandler = handler.char_data
+    # parser.Parse(xml)
+    #
+    # '''
+    # feed()方法可以多次调用, 可以一部分一部分追加
+    # 特殊字符有两种， 一种是英文表示的`&nbsp;`, 一种是数字表示的`&#1234;`, 这两种字符都可以通过Parser进行解析
+    # '''
+    # parsers.feed('''<html>
+    # <head></head>
+    # <body>
+    # <!-- test html parser -->
+    #     <p>Some <a href=\"#\">html</a> HTML&nbsp;tutorial...<br>END</p>
+    # </body></html>''')

@@ -2,6 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4cdd7094-07f3-48f7-b482-148a3a7f8d65" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/resources/font_file/Comic_Sans_MS_Bold.ttf" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/resources/row_file/demo_blur.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/resources/row_file/demo_code.jpg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/resources/row_file/demo_thumbnail.jpg" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/24_built_in_module.py" beforeDir="false" afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/24_built_in_module.py" afterDir="false" />
     </list>
@@ -41,7 +45,9 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../../../.." />
   </component>
   <component name="ProjectId" id="1VR3Cl0X4tAR5yVgIMlep5TQyzw" />
-  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="abbreviatePackageNames" value="true" />
     <option name="flattenPackages" value="true" />
@@ -51,11 +57,12 @@
     <option name="showMembers" value="true" />
   </component>
   <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="DefaultHtmlFileTemplate" value="HTML File" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_16_network_programming" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/resources/font_file" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -68,14 +75,15 @@
     <property name="settings.editor.selected.configurable" value="MTCustomThemeConfigurable" />
   </component>
   <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_16_network_programming" />
-      <recent name="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/resources/row_file" />
-      <recent name="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/resources/file" />
-    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_14_web_development" />
       <recent name="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/14_web_development" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/resources/font_file" />
+      <recent name="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_16_network_programming" />
+      <recent name="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/resources/row_file" />
+      <recent name="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/resources/file" />
     </key>
   </component>
   <component name="RunManager" selected="Python.24_built_in_module">
@@ -286,12 +294,15 @@
       <workItem from="1580522398520" duration="10288000" />
       <workItem from="1580536311129" duration="18995000" />
       <workItem from="1580606205874" duration="4321000" />
-      <workItem from="1580612638480" duration="9815000" />
+      <workItem from="1580612638480" duration="16600000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="237" y="141" key="#HTTP_Proxy" timestamp="1580104493903">
@@ -312,15 +323,16 @@
     </state>
     <state x="-1090" y="-622" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog/-1440.-1478.1440.2510/0.23.1440.877@-1440.-1478.1440.2510" timestamp="1578909921034" />
     <state x="1716" y="102" key="#com.intellij.openapi.keymap.impl.ui.EditKeymapsDialog/0.23.1366.718/1366.23.1440.877@1366.23.1440.877" timestamp="1579614846639" />
-    <state x="698" y="305" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1580174674930">
+    <state x="698" y="305" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1580633163948">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state x="698" y="305" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580174674930" />
+    <state x="698" y="305" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.23.1920.1057/-1440.23.1440.850@0.23.1920.1057" timestamp="1580633163948" />
     <state x="314" y="292" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1" timestamp="1579445422489">
       <screen x="0" y="23" width="1440" height="849" />
     </state>
     <state x="314" y="292" key="ANALYSIS_DLG_com.intellij.analysis.BaseAnalysisAction$1/0.23.1440.849@0.23.1440.849" timestamp="1579445422489" />
-    <state width="1878" height="244" key="GridCell.Tab.0.bottom" timestamp="1580624533794">
+    <state width="1878" height="229" key="GridCell.Tab.0.bottom" timestamp="1580633165737">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state width="1038" height="494" key="GridCell.Tab.0.bottom/-1080.-939.1080.1874/0.23.1440.877@-1080.-939.1080.1874" timestamp="1578825165507" />
@@ -346,8 +358,8 @@
     <state width="1398" height="185" key="GridCell.Tab.0.bottom/0.23.1366.719/1366.23.1440.877@1366.23.1440.877" timestamp="1579746700969" />
     <state width="1398" height="189" key="GridCell.Tab.0.bottom/0.23.1440.850@0.23.1440.850" timestamp="1578302122905" />
     <state width="1878" height="227" key="GridCell.Tab.0.bottom/0.23.1920.1022/-1440.23.1440.877@0.23.1920.1022" timestamp="1580619037592" />
-    <state width="1878" height="244" key="GridCell.Tab.0.bottom/0.23.1920.1057/-1440.23.1440.850@0.23.1920.1057" timestamp="1580624533794" />
-    <state width="1878" height="244" key="GridCell.Tab.0.center" timestamp="1580624533793">
+    <state width="1878" height="229" key="GridCell.Tab.0.bottom/0.23.1920.1057/-1440.23.1440.850@0.23.1920.1057" timestamp="1580633165737" />
+    <state width="1878" height="229" key="GridCell.Tab.0.center" timestamp="1580633165737">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state width="1038" height="494" key="GridCell.Tab.0.center/-1080.-939.1080.1874/0.23.1440.877@-1080.-939.1080.1874" timestamp="1578825165506" />
@@ -373,8 +385,8 @@
     <state width="1398" height="185" key="GridCell.Tab.0.center/0.23.1366.719/1366.23.1440.877@1366.23.1440.877" timestamp="1579746700968" />
     <state width="1398" height="189" key="GridCell.Tab.0.center/0.23.1440.850@0.23.1440.850" timestamp="1578302122903" />
     <state width="1878" height="227" key="GridCell.Tab.0.center/0.23.1920.1022/-1440.23.1440.877@0.23.1920.1022" timestamp="1580619037591" />
-    <state width="1878" height="244" key="GridCell.Tab.0.center/0.23.1920.1057/-1440.23.1440.850@0.23.1920.1057" timestamp="1580624533793" />
-    <state width="1878" height="244" key="GridCell.Tab.0.left" timestamp="1580624533792">
+    <state width="1878" height="229" key="GridCell.Tab.0.center/0.23.1920.1057/-1440.23.1440.850@0.23.1920.1057" timestamp="1580633165737" />
+    <state width="1878" height="229" key="GridCell.Tab.0.left" timestamp="1580633165736">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state width="1038" height="494" key="GridCell.Tab.0.left/-1080.-939.1080.1874/0.23.1440.877@-1080.-939.1080.1874" timestamp="1578825165505" />
@@ -400,8 +412,8 @@
     <state width="1398" height="185" key="GridCell.Tab.0.left/0.23.1366.719/1366.23.1440.877@1366.23.1440.877" timestamp="1579746700968" />
     <state width="1398" height="189" key="GridCell.Tab.0.left/0.23.1440.850@0.23.1440.850" timestamp="1578302122903" />
     <state width="1878" height="227" key="GridCell.Tab.0.left/0.23.1920.1022/-1440.23.1440.877@0.23.1920.1022" timestamp="1580619037590" />
-    <state width="1878" height="244" key="GridCell.Tab.0.left/0.23.1920.1057/-1440.23.1440.850@0.23.1920.1057" timestamp="1580624533792" />
-    <state width="1878" height="244" key="GridCell.Tab.0.right" timestamp="1580624533794">
+    <state width="1878" height="229" key="GridCell.Tab.0.left/0.23.1920.1057/-1440.23.1440.850@0.23.1920.1057" timestamp="1580633165736" />
+    <state width="1878" height="229" key="GridCell.Tab.0.right" timestamp="1580633165737">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
     <state width="1038" height="494" key="GridCell.Tab.0.right/-1080.-939.1080.1874/0.23.1440.877@-1080.-939.1080.1874" timestamp="1578825165506" />
@@ -427,7 +439,7 @@
     <state width="1398" height="185" key="GridCell.Tab.0.right/0.23.1366.719/1366.23.1440.877@1366.23.1440.877" timestamp="1579746700969" />
     <state width="1398" height="189" key="GridCell.Tab.0.right/0.23.1440.850@0.23.1440.850" timestamp="1578302122904" />
     <state width="1878" height="227" key="GridCell.Tab.0.right/0.23.1920.1022/-1440.23.1440.877@0.23.1920.1022" timestamp="1580619037592" />
-    <state width="1878" height="244" key="GridCell.Tab.0.right/0.23.1920.1057/-1440.23.1440.850@0.23.1920.1057" timestamp="1580624533794" />
+    <state width="1878" height="229" key="GridCell.Tab.0.right/0.23.1920.1057/-1440.23.1440.850@0.23.1920.1057" timestamp="1580633165737" />
     <state width="1878" height="336" key="GridCell.Tab.1.bottom" timestamp="1580539419722">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
@@ -511,7 +523,7 @@
     <SUITE FILE_PATH="coverage/python_server$13_regular_expression.coverage" NAME="13_regular_expression Coverage Results" MODIFIED="1579830512598" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
     <SUITE FILE_PATH="coverage/python_server$04_type_data.coverage" NAME="04_type_data Coverage Results" MODIFIED="1577371973804" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
     <SUITE FILE_PATH="coverage/python_server$18_thread.coverage" NAME="18_thread Coverage Results" MODIFIED="1580196674607" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
-    <SUITE FILE_PATH="coverage/python_server$24_built_in_module.coverage" NAME="24_built_in_module Coverage Results" MODIFIED="1580621725792" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
+    <SUITE FILE_PATH="coverage/python_server$24_built_in_module.coverage" NAME="24_built_in_module Coverage Results" MODIFIED="1580633165728" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />
     <SUITE FILE_PATH="coverage/python_server$mvc_server.coverage" NAME="mvc_server Coverage Results" MODIFIED="1580018719329" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/_14_web_development" />
     <SUITE FILE_PATH="coverage/python_server$01_BasicGrammar.coverage" NAME="01_BasicGrammar Coverage Results" MODIFIED="1577272797248" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/TrainingMode/src/main/python/com.geekparkhub.core.application.controller/PythonBasicsForCode" />
     <SUITE FILE_PATH="coverage/python_server$12_exception_handling_and_file_operations.coverage" NAME="12_exception_handling_and_file_operations Coverage Results" MODIFIED="1579620872952" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code" />

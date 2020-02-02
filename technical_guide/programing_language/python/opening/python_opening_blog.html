@@ -9726,15 +9726,170 @@
 
 <h4 id="8122-常用第三方模块">8.12.2 常用第三方模块</h4>
 
-
+<blockquote>
+  <p>除了内建的模块外Python还有大量的第三方模块, 基本上所有的第三方模块都会在<a href="https://pypi.python.org/" target="_blank">PyPI - the Python Package Index</a>上注册, 只要找到对应的模块名称即可用pip安装.</p>
+</blockquote>
 
 <h5 id="81221-pillow">8.12.2.1 Pillow</h5>
 
-
+<blockquote>
+  <p>PIL：Python Imaging Library, 是Python平台中图像处理标准库, PIL不仅功能非常强大,API非常简单易用. <br>
+  由于PIL仅支持到Python 2.7， 加上年久失修于是一群志愿者在PIL的基础上创建了兼容的版本, 名字叫Pillow, 支持最新Python 3.x, 又加入了许多新特性, 因此可以直接安装使用Pillow.</p>
+  
+  <p><strong>安装 Pillow</strong></p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="hljs cmake"><div class="hljs-line"><span class="hljs-comment line-number">1.</span>pip <span class="hljs-keyword">install</span> pillow
+</div></code></pre>
+  
+  <p><strong>Pillow 官方文档</strong></p>
+  
+  <p><a href="https://pillow.readthedocs.org/" target="_blank">https://pillow.readthedocs.org/</a></p>
+  
+  <p>PIL提供了操作图像的强大功能可以通过简单的代码完成复杂的图像处理.</p>
+  
+  <p><strong>参考源码</strong></p>
+  
+  <p><a href="https://github.com/michaelliao/learn-python3/blob/master/samples/packages/pil/use_pil_resize.py" target="_blank">https://github.com/michaelliao/learn-python3/blob/master/samples/packages/pil/use_pil_resize.py</a></p>
+  
+  <p><a href="https://github.com/michaelliao/learn-python3/blob/master/samples/packages/pil/use_pil_blur.py" target="_blank">https://github.com/michaelliao/learn-python3/blob/master/samples/packages/pil/use_pil_blur.py</a></p>
+  
+  <p><a href="https://github.com/michaelliao/learn-python3/blob/master/samples/packages/pil/use_pil_draw.py" target="_blank">https://github.com/michaelliao/learn-python3/blob/master/samples/packages/pil/use_pil_draw.py</a></p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">4.</span><span class="hljs-comment"># GeekParkHub | 极客实验室</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">5.</span><span class="hljs-comment"># Website | https://www.geekparkhub.com</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">6.</span><span class="hljs-comment"># Description | Open · Creation | </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">7.</span><span class="hljs-comment"># Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">8.</span><span class="hljs-comment"># HackerParkHub | 黑客公园</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">9.</span><span class="hljs-comment"># Website | https://www.hackerparkhub.org</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">10.</span><span class="hljs-comment"># Description | In the spirit of fearless exploration, create unknown technology and worship of technology.</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">11.</span><span class="hljs-comment"># GeekDeveloper : JEEP-711</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">12.</span><span class="hljs-comment"># </span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">13.</span><span class="hljs-comment"># @Author : system</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">14.</span><span class="hljs-comment"># @Version : 0.2.5</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">15.</span><span class="hljs-comment"># @Program : 内建模块 &amp; 第三方模块 | Built-in modules &amp; third-party modules</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">16.</span><span class="hljs-comment"># @File : 24_built_in_module.py</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 内建模块 &amp; 第三方模块 | Advanced Python - Built-in Modules &amp; Third-Party Modules</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image <span class="hljs-keyword">as</span> ims, ImageFilter <span class="hljs-keyword">as</span> imf, ImageDraw <span class="hljs-keyword">as</span> imd, ImageFont <span class="hljs-keyword">as</span> imft
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-keyword">import</span> random <span class="hljs-keyword">as</span> rd
+</div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-comment"># 定义 第三方模块 类 | Defining third-party module classes</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ThirdPartyModule</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>    <span class="hljs-comment"># 定义 操作图像 静态方法 | Definition Operating image Static method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-meta">    @staticmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">operating_image_method</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        print(<span class="hljs-string">'\n=============================== Operating image Method Start ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>        <span class="hljs-comment"># 定义 抛出异常代码块 | Definition throw exception code block</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>        <span class="hljs-keyword">try</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>            <span class="hljs-comment"># 获取图片路径 | Get image path</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>            FILE_PATHS = <span class="hljs-string">'../resources/row_file/demo.jpg'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>            SAVE_FILE_PATHS = <span class="hljs-string">'../resources/row_file/demo_thumbnail.jpg'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>            SAVE_BLUR_FILE_PATHS = <span class="hljs-string">'../resources/row_file/demo_blur.jpg'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>            im = ims.open(FILE_PATHS)
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>            <span class="hljs-comment"># 获取图像尺寸 | Get image size</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>            w, h = im.size
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>            print(<span class="hljs-string">'Original image Size = %s * %s'</span> % (w, h))
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>            <span class="hljs-comment"># 将图片尺寸缩放至50% | Scale image size to 50%</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>            im.thumbnail((w // <span class="hljs-number">2</span>, h // <span class="hljs-number">2</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>            print(<span class="hljs-string">'Resize image To: %s * %s'</span> % (w // <span class="hljs-number">2</span>, h // <span class="hljs-number">2</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>            <span class="hljs-comment"># 将缩放后的图像保存为jpeg格式 | Save the scaled image in jpeg format</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>            im.save(SAVE_FILE_PATHS, <span class="hljs-string">'jpeg'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>            <span class="hljs-comment"># 应用模糊滤镜 | Apply blur filter</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>            im2 = im.filter(imf.BLUR)
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>            im2.save(SAVE_BLUR_FILE_PATHS, <span class="hljs-string">'jpeg'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>        <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>            print(<span class="hljs-string">'Error message details ='</span>, e)
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>        <span class="hljs-keyword">finally</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>            <span class="hljs-comment"># 信息输出 | Information output</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>            print(<span class="hljs-string">'Zoom picture Saved successfully!'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>            print(<span class="hljs-string">'Blur picture Saved successfully!'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span><span class="hljs-string">        生成字母验证码图片 | Generate Letter Verification Picture</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span>        <span class="hljs-comment"># 定义 随机字母 函数 | Definition random letters function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span>        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rnd_char</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span>            <span class="hljs-keyword">return</span> chr(rd.randint(<span class="hljs-number">50</span>, <span class="hljs-number">60</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span>        <span class="hljs-comment"># 定义 随机颜色样式1 函数 | Definition random color style 1 function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span>        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rnd_color1</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span>            <span class="hljs-keyword">return</span> (rd.randint(<span class="hljs-number">64</span>, <span class="hljs-number">255</span>), rd.randint(<span class="hljs-number">64</span>, <span class="hljs-number">255</span>), rd.randint(<span class="hljs-number">64</span>, <span class="hljs-number">255</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">69.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">70.</span>        <span class="hljs-comment"># 定义 随机颜色样式2 函数 | Definition random color style 2 function</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">71.</span>        <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">rnd_color2</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">72.</span>            <span class="hljs-keyword">return</span> (rd.randint(<span class="hljs-number">32</span>, <span class="hljs-number">127</span>), rd.randint(<span class="hljs-number">32</span>, <span class="hljs-number">127</span>), rd.randint(<span class="hljs-number">32</span>, <span class="hljs-number">127</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">73.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">74.</span>        <span class="hljs-comment"># 定义 抛出异常代码块 | Definition throw exception code block</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">75.</span>        <span class="hljs-keyword">try</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">76.</span>            <span class="hljs-comment"># 定义 变量 验证码 宽度 | Definition variable captcha width</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">77.</span>            photo_width = <span class="hljs-number">64</span> * <span class="hljs-number">4</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">78.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">79.</span>            <span class="hljs-comment"># 定义 变量 验证码 高度 | Definition variable captcha height</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">80.</span>            photo_height = <span class="hljs-number">60</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">81.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">82.</span>            <span class="hljs-comment"># 定义 验证码图片 | Definition Captcha Picture</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">83.</span>            image = ims.new(<span class="hljs-string">'RGB'</span>, (photo_width, photo_height), (<span class="hljs-number">255</span>, <span class="hljs-number">255</span>, <span class="hljs-number">255</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">84.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">85.</span>            <span class="hljs-comment"># 定义 字体对象 | Definition font object</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">86.</span>            FONT_PATHS = <span class="hljs-string">'../resources/font_file/Comic_Sans_MS_Bold.ttf'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">87.</span>            font = imft.truetype(FONT_PATHS, <span class="hljs-number">36</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">88.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">89.</span>            <span class="hljs-comment"># 创建绘图对象 | Create drawing objects</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">90.</span>            draw = imd.Draw(image)
+</div><div class="hljs-line"><span class="hljs-comment line-number">91.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">92.</span>            <span class="hljs-comment"># 填充像素 | Fill pixel</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">93.</span>            <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> range(photo_width):
+</div><div class="hljs-line"><span class="hljs-comment line-number">94.</span>                <span class="hljs-keyword">for</span> y <span class="hljs-keyword">in</span> range(photo_width):
+</div><div class="hljs-line"><span class="hljs-comment line-number">95.</span>                    draw.point((x, y), fill=rnd_color1())
+</div><div class="hljs-line"><span class="hljs-comment line-number">96.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">97.</span>            <span class="hljs-comment"># 输出文字 | Output text</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">98.</span>            <span class="hljs-keyword">for</span> txt <span class="hljs-keyword">in</span> range(<span class="hljs-number">6</span>):
+</div><div class="hljs-line"><span class="hljs-comment line-number">99.</span>                draw.text((<span class="hljs-number">60</span> * txt + <span class="hljs-number">5</span>, <span class="hljs-number">10</span>), rnd_char(), font=font, fill=rnd_color2())
+</div><div class="hljs-line"><span class="hljs-comment line-number">100.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">101.</span>            <span class="hljs-comment"># 应用模糊滤镜 | Apply blur filter</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">102.</span>            image = image.filter(imf.BLUR)
+</div><div class="hljs-line"><span class="hljs-comment line-number">103.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">104.</span>            <span class="hljs-comment"># 定义 保存 验证码路径 | Definition Save Captcha Path</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">105.</span>            SAVE_CODE_FILE_PATHS = <span class="hljs-string">'../resources/row_file/demo_code.jpg'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">106.</span>            image.save(SAVE_CODE_FILE_PATHS, <span class="hljs-string">'jpeg'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">107.</span>        <span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:
+</div><div class="hljs-line"><span class="hljs-comment line-number">108.</span>            print(<span class="hljs-string">'Error message details ='</span>, e)
+</div><div class="hljs-line"><span class="hljs-comment line-number">109.</span>        <span class="hljs-keyword">finally</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">110.</span>            <span class="hljs-comment"># 信息输出 | Information output</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">111.</span>            print(<span class="hljs-string">'Captcha picture Saved successfully!'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">112.</span>        print(<span class="hljs-string">'\n=============================== Operating image Method End ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">113.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">114.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">115.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">116.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">117.</span>    t = ThirdPartyModule()
+</div><div class="hljs-line"><span class="hljs-comment line-number">118.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">119.</span>    t.operating_image_method()
+</div></code></pre>
+</blockquote>
 
 <h5 id="81222-requests">8.12.2.2 requests</h5>
 
-
+<blockquote>
+  <p>Python内置的urllib模块用于访问网络资源, 但是它用起来比较麻烦, 而且缺少很多实用的高级功能.</p>
+  
+  <p>更好的方案是使用requests, 它是一个Python第三方库处理URL资源特别方便.</p>
+  
+  <p><strong>安装 requests</strong> <br>
+  如果安装了Anaconda, requests就已经可以使用, 否则需要在命令行下通过pip安装</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="hljs cmake"><div class="hljs-line"><span class="hljs-comment line-number">1.</span>pip <span class="hljs-keyword">install</span> requests
+</div></code></pre>
+</blockquote>
 
 <h5 id="81223-chardet">8.12.2.3 chardet</h5>
 

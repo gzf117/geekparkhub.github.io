@@ -8973,8 +8973,167 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 
 
 #### 8.12.2 常用第三方模块
+> 除了内建的模块外Python还有大量的第三方模块, 基本上所有的第三方模块都会在[PyPI - the Python Package Index](https://pypi.python.org/)上注册, 只要找到对应的模块名称即可用pip安装.
+
 ##### 8.12.2.1 Pillow
+> PIL：Python Imaging Library, 是Python平台中图像处理标准库, PIL不仅功能非常强大,API非常简单易用.
+> 由于PIL仅支持到Python 2.7， 加上年久失修于是一群志愿者在PIL的基础上创建了兼容的版本, 名字叫Pillow, 支持最新Python 3.x, 又加入了许多新特性, 因此可以直接安装使用Pillow.
+> 
+> **安装 Pillow**
+> ```
+> pip install pillow
+> ```
+> 
+> **Pillow 官方文档**
+> 
+> https://pillow.readthedocs.org/
+> 
+> PIL提供了操作图像的强大功能可以通过简单的代码完成复杂的图像处理.
+> 
+> **参考源码**
+> 
+> https://github.com/michaelliao/learn-python3/blob/master/samples/packages/pil/use_pil_resize.py
+> 
+> https://github.com/michaelliao/learn-python3/blob/master/samples/packages/pil/use_pil_blur.py
+> 
+> https://github.com/michaelliao/learn-python3/blob/master/samples/packages/pil/use_pil_draw.py
+> 
+> ``` py
+> # -*- coding:utf-8 -*-
+> # 
+> # Geek International Park | 极客国际公园
+> # GeekParkHub | 极客实验室
+> # Website | https://www.geekparkhub.com
+> # Description | Open · Creation | 
+> # Open Source Open Achievement Dream, GeekParkHub Co-construction has never been seen before.
+> # HackerParkHub | 黑客公园
+> # Website | https://www.hackerparkhub.org
+> # Description | In the spirit of fearless exploration, create unknown technology and worship of technology.
+> # GeekDeveloper : JEEP-711
+> # 
+> # @Author : system
+> # @Version : 0.2.5
+> # @Program : 内建模块 & 第三方模块 | Built-in modules & third-party modules
+> # @File : 24_built_in_module.py
+> # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
+> 
+> # 导入模块 | Import module
+> from PIL import Image as ims, ImageFilter as imf, ImageDraw as imd, ImageFont as imft
+> import random as rd
+> 
+> 
+> # 定义 第三方模块 类 | Defining third-party module classes
+> class ThirdPartyModule:
+> 
+>     # 定义 操作图像 静态方法 | Definition Operating image Static method
+>     @staticmethod
+>     def operating_image_method():
+>         print('\n=============================== Operating image Method Start ===============================\n')
+>         # 定义 抛出异常代码块 | Definition throw exception code block
+>         try:
+>             # 获取图片路径 | Get image path
+>             FILE_PATHS = '../resources/row_file/demo.jpg'
+>             SAVE_FILE_PATHS = '../resources/row_file/demo_thumbnail.jpg'
+>             SAVE_BLUR_FILE_PATHS = '../resources/row_file/demo_blur.jpg'
+>             im = ims.open(FILE_PATHS)
+>             # 获取图像尺寸 | Get image size
+>             w, h = im.size
+>             print('Original image Size = %s * %s' % (w, h))
+> 
+>             # 将图片尺寸缩放至50% | Scale image size to 50%
+>             im.thumbnail((w // 2, h // 2))
+>             print('Resize image To: %s * %s' % (w // 2, h // 2))
+>             # 将缩放后的图像保存为jpeg格式 | Save the scaled image in jpeg format
+>             im.save(SAVE_FILE_PATHS, 'jpeg')
+> 
+>             # 应用模糊滤镜 | Apply blur filter
+>             im2 = im.filter(imf.BLUR)
+>             im2.save(SAVE_BLUR_FILE_PATHS, 'jpeg')
+>         except Exception as e:
+>             print('Error message details =', e)
+>         finally:
+>             # 信息输出 | Information output
+>             print('Zoom picture Saved successfully!')
+>             print('Blur picture Saved successfully!')
+> 
+>         '''
+>         生成字母验证码图片 | Generate Letter Verification Picture
+>         '''
+> 
+>         # 定义 随机字母 函数 | Definition random letters function
+>         def rnd_char():
+>             return chr(rd.randint(50, 60))
+> 
+>         # 定义 随机颜色样式1 函数 | Definition random color style 1 function
+>         def rnd_color1():
+>             return (rd.randint(64, 255), rd.randint(64, 255), rd.randint(64, 255))
+> 
+>         # 定义 随机颜色样式2 函数 | Definition random color style 2 function
+>         def rnd_color2():
+>             return (rd.randint(32, 127), rd.randint(32, 127), rd.randint(32, 127))
+> 
+>         # 定义 抛出异常代码块 | Definition throw exception code block
+>         try:
+>             # 定义 变量 验证码 宽度 | Definition variable captcha width
+>             photo_width = 64 * 4
+> 
+>             # 定义 变量 验证码 高度 | Definition variable captcha height
+>             photo_height = 60
+> 
+>             # 定义 验证码图片 | Definition Captcha Picture
+>             image = ims.new('RGB', (photo_width, photo_height), (255, 255, 255))
+> 
+>             # 定义 字体对象 | Definition font object
+>             FONT_PATHS = '../resources/font_file/Comic_Sans_MS_Bold.ttf'
+>             font = imft.truetype(FONT_PATHS, 36)
+> 
+>             # 创建绘图对象 | Create drawing objects
+>             draw = imd.Draw(image)
+> 
+>             # 填充像素 | Fill pixel
+>             for x in range(photo_width):
+>                 for y in range(photo_width):
+>                     draw.point((x, y), fill=rnd_color1())
+> 
+>             # 输出文字 | Output text
+>             for txt in range(6):
+>                 draw.text((60 * txt + 5, 10), rnd_char(), font=font, fill=rnd_color2())
+> 
+>             # 应用模糊滤镜 | Apply blur filter
+>             image = image.filter(imf.BLUR)
+> 
+>             # 定义 保存 验证码路径 | Definition Save Captcha Path
+>             SAVE_CODE_FILE_PATHS = '../resources/row_file/demo_code.jpg'
+>             image.save(SAVE_CODE_FILE_PATHS, 'jpeg')
+>         except Exception as e:
+>             print('Error message details =', e)
+>         finally:
+>             # 信息输出 | Information output
+>             print('Captcha picture Saved successfully!')
+>         print('\n=============================== Operating image Method End ===============================\n')
+> 
+> # 定义 主模块 | Definition Main module
+> if __name__ == '__main__':
+>     # 创建 对象实例 | Create object instance
+>     t = ThirdPartyModule()
+>     # 对象实例 调用方法 | Object instance call method
+>     t.operating_image_method()
+> ```
+
+
 ##### 8.12.2.2 requests
+> Python内置的urllib模块用于访问网络资源, 但是它用起来比较麻烦, 而且缺少很多实用的高级功能.
+> 
+> 更好的方案是使用requests, 它是一个Python第三方库处理URL资源特别方便.
+> 
+> **安装 requests**
+> 如果安装了Anaconda, requests就已经可以使用, 否则需要在命令行下通过pip安装
+> ```
+> pip install requests
+> ```
+
+
+
 ##### 8.12.2.3 chardet
 ##### 8.12.2.4 psutil
 
