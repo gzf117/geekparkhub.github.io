@@ -9982,6 +9982,23 @@
 <h5 id="81223-chardet">8.12.2.3 chardet</h5>
 
 <blockquote>
+  <p>字符串编码一直是令人非常头疼的问题, 尤其是在处理一些不规范的第三方网页的时候, 虽然Python提供了Unicode表示的str和bytes两种数据类型, 并且可以通过encode()和decode()方法转换.</p>
+  
+  <p>对于未知编码的bytes要把它转换成str, 需要先“猜测”编码, 猜测的方式是先收集各种编码的特征字符, 根据特征字符判断，就能有很大概率“猜对”.</p>
+  
+  <p>chardet第三方库正好就派上了用场, 用它来检测编码简单易用.</p>
+  
+  <p><strong>安装 chardet</strong></p>
+  
+  <p>如果安装了Anaconda, chardet可以使用, 否则需要在命令行下通过pip安装</p>
+  
+  <pre class="prettyprint with-line-number hljs-dark"><code class="hljs cmake"><div class="hljs-line"><span class="hljs-comment line-number">1.</span>pip <span class="hljs-keyword">install</span> chardet
+</div></code></pre>
+  
+  <p><strong>使用 chardet</strong></p>
+  
+  <p>hardet支持检测的编码列表请参考官方文档<a href="https://chardet.readthedocs.io/en/latest/supported-encodings.html" target="_blank">Supported encodings</a></p>
+  
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
@@ -10001,19 +10018,49 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 内建模块 &amp; 第三方模块 | Advanced Python - Built-in Modules &amp; Third-Party Modules</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> PIL <span class="hljs-keyword">import</span> Image <span class="hljs-keyword">as</span> ims, ImageFilter <span class="hljs-keyword">as</span> imf, ImageDraw <span class="hljs-keyword">as</span> imd, ImageFont <span class="hljs-keyword">as</span> imft
-</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-keyword">import</span> random <span class="hljs-keyword">as</span> rd
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">import</span> chardet <span class="hljs-keyword">as</span> chd
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-comment"># 定义 第三方模块 类 | Defining third-party module classes</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ThirdPartyModule</span>:</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
-</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>    t = ThirdPartyModule()
-</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    t.operating_image_method()
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># 定义 第三方模块 类 | Defining third-party module classes</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ThirdPartyModule</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>    <span class="hljs-comment"># 定义 字符串编码 静态方法 | Definition string encoding static method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-meta">    @staticmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">chardet_method</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>        print(<span class="hljs-string">'\n=============================== Chardet Method Start ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        <span class="hljs-comment"># 检测编码 | Detection code</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><span class="hljs-string">        检测出的编码是`ascii`, `confidence`字段表示检测的概率是1.0 (即100%)</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>        detection_code = chd.detect(<span class="hljs-string">b'Hello, world!'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>        print(<span class="hljs-string">'Detection Code ='</span>, detection_code)
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>        <span class="hljs-comment"># 检测GBK中文编码 | Detect GBK Chinese encoding</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>        <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><span class="hljs-string">        检测的编码是GB2312, 因GBK是GB2312的超集, 两者是同一种编码, 检测正确的概率是99%, language字段指出的语言是'Chinese'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><span class="hljs-string">        '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>        text = <span class="hljs-string">'Python 进阶篇 - 内建模块 &amp; 第三方模块'</span>.encode(<span class="hljs-string">'gbk'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>        detection_gbk = chd.detect(text)
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>        print(<span class="hljs-string">'Detection GBK ='</span>, detection_gbk)
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>        <span class="hljs-comment"># 检测 UTF-8编码 | Detecting UTF-8 encoding</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>        text2 = <span class="hljs-string">'检测 UTF-8编码'</span>.encode(<span class="hljs-string">'utf-8'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>        detection_utf8 = chd.detect(text2)
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>        print(<span class="hljs-string">'Detection UTF-8 ='</span>, detection_utf8)
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>        <span class="hljs-comment"># 检查 日文编码 | Check Japanese encoding</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>        text3 = <span class="hljs-string">'最新の主要ニュース'</span>.encode(<span class="hljs-string">'euc-jp'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>        detection_jp = chd.detect(text3)
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>        print(<span class="hljs-string">'Detection Japanese ='</span>, detection_jp)
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>        print(<span class="hljs-string">'\n=============================== Chardet Method Start ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span>    t = ThirdPartyModule()
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span>    t.chardet_method()
 </div></code></pre>
 </blockquote>
 

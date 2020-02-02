@@ -519,6 +519,7 @@ class HTMLParsers(hp):
 from PIL import Image as ims, ImageFilter as imf, ImageDraw as imd, ImageFont as imft
 import random as rd
 import requests as reqs
+import chardet as chd
 
 
 # 定义 第三方模块 类 | Defining third-party module classes
@@ -642,7 +643,6 @@ class ThirdPartyModule:
         # 获取响应头 | Get response header
         print('Response Header =', r4.headers)
 
-
         # POST请求 | POST request
         r5 = reqs.post('https://accounts.douban.com/login',
                        data={'form_email': 'xxx@example.org', 'form_password': 'xxxxxx'})
@@ -665,6 +665,37 @@ class ThirdPartyModule:
 
         print('\n=============================== Requests Method End ===============================\n')
 
+    # 定义 字符串编码 静态方法 | Definition string encoding static method
+    @staticmethod
+    def chardet_method():
+        print('\n=============================== Chardet Method Start ===============================\n')
+        # 检测编码 | Detection code
+        '''
+        检测出的编码是`ascii`, `confidence`字段表示检测的概率是1.0 (即100%)
+        '''
+        detection_code = chd.detect(b'Hello, world!')
+        print('Detection Code =', detection_code)
+
+        # 检测GBK中文编码 | Detect GBK Chinese encoding
+        '''
+        检测的编码是GB2312, 因GBK是GB2312的超集, 两者是同一种编码, 检测正确的概率是99%, language字段指出的语言是'Chinese'
+        '''
+        text = 'Python 进阶篇 - 内建模块 & 第三方模块'.encode('gbk')
+        detection_gbk = chd.detect(text)
+        print('Detection GBK =', detection_gbk)
+
+        # 检测 UTF-8编码 | Detecting UTF-8 encoding
+        text2 = '检测 UTF-8编码'.encode('utf-8')
+        detection_utf8 = chd.detect(text2)
+        print('Detection UTF-8 =', detection_utf8)
+
+        # 检查 日文编码 | Check Japanese encoding
+        text3 = '最新の主要ニュース'.encode('euc-jp')
+        detection_jp = chd.detect(text3)
+        print('Detection Japanese =', detection_jp)
+
+        print('\n=============================== Chardet Method Start ===============================\n')
+
 
 # 定义 主模块 | Definition Main module
 if __name__ == '__main__':
@@ -684,7 +715,8 @@ if __name__ == '__main__':
     # b.itertools_method()
     # b.request_library_method()
     # t.operating_image_method()
-    t.requests_method()
+    # t.requests_method()
+    t.chardet_method()
     # # 调用 函数 | call function
     # create_query('1')
     # closing('2')

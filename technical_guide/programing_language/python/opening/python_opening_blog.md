@@ -9224,6 +9224,23 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 
 
 ##### 8.12.2.3 chardet
+> 字符串编码一直是令人非常头疼的问题, 尤其是在处理一些不规范的第三方网页的时候, 虽然Python提供了Unicode表示的str和bytes两种数据类型, 并且可以通过encode()和decode()方法转换.
+> 
+> 对于未知编码的bytes要把它转换成str, 需要先“猜测”编码, 猜测的方式是先收集各种编码的特征字符, 根据特征字符判断，就能有很大概率“猜对”.
+> 
+> chardet第三方库正好就派上了用场, 用它来检测编码简单易用.
+> 
+> **安装 chardet**
+> 
+> 如果安装了Anaconda, chardet可以使用, 否则需要在命令行下通过pip安装
+> ```
+> pip install chardet
+> ```
+> 
+> **使用 chardet**
+> 
+> hardet支持检测的编码列表请参考官方文档[Supported encodings](https://chardet.readthedocs.io/en/latest/supported-encodings.html)
+> 
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -9244,19 +9261,49 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 > # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
 > 
 > # 导入模块 | Import module
-> from PIL import Image as ims, ImageFilter as imf, ImageDraw as imd, ImageFont as imft
-> import random as rd
+> import chardet as chd
 > 
 > 
 > # 定义 第三方模块 类 | Defining third-party module classes
 > class ThirdPartyModule:
+> 
+>     # 定义 字符串编码 静态方法 | Definition string encoding static method
+>     @staticmethod
+>     def chardet_method():
+>         print('\n=============================== Chardet Method Start ===============================\n')
+>         # 检测编码 | Detection code
+>         '''
+>         检测出的编码是`ascii`, `confidence`字段表示检测的概率是1.0 (即100%)
+>         '''
+>         detection_code = chd.detect(b'Hello, world!')
+>         print('Detection Code =', detection_code)
+> 
+>         # 检测GBK中文编码 | Detect GBK Chinese encoding
+>         '''
+>         检测的编码是GB2312, 因GBK是GB2312的超集, 两者是同一种编码, 检测正确的概率是99%, language字段指出的语言是'Chinese'
+>         '''
+>         text = 'Python 进阶篇 - 内建模块 & 第三方模块'.encode('gbk')
+>         detection_gbk = chd.detect(text)
+>         print('Detection GBK =', detection_gbk)
+> 
+>         # 检测 UTF-8编码 | Detecting UTF-8 encoding
+>         text2 = '检测 UTF-8编码'.encode('utf-8')
+>         detection_utf8 = chd.detect(text2)
+>         print('Detection UTF-8 =', detection_utf8)
+> 
+>         # 检查 日文编码 | Check Japanese encoding
+>         text3 = '最新の主要ニュース'.encode('euc-jp')
+>         detection_jp = chd.detect(text3)
+>         print('Detection Japanese =', detection_jp)
+> 
+>         print('\n=============================== Chardet Method Start ===============================\n')
 > 
 > # 定义 主模块 | Definition Main module
 > if __name__ == '__main__':
 >     # 创建 对象实例 | Create object instance
 >     t = ThirdPartyModule()
 >     # 对象实例 调用方法 | Object instance call method
->     t.operating_image_method()
+>     t.chardet_method()
 > ```
 
 
