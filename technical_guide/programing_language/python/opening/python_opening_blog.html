@@ -9595,6 +9595,10 @@
 <h5 id="812110-xml">8.12.1.10 XML</h5>
 
 <blockquote>
+  <p>XML虽然比JSON复杂, 在Web中应用也不如以前多了, 不过仍有很多地方在用, 所以有必要了解如何操作XML.</p>
+  
+  <p>操作XML有两种方法：DOM和SAX, DOM会把整个XML读入内存, 解析为树, 因此占用内存大, 解析慢, 优点是可以任意遍历树的节点, SAX是流模式, 边读边解析, 占用内存小, 解析快, 缺点是需要自己处理事件.</p>
+  
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
@@ -9614,28 +9618,47 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 内建模块 &amp; 第三方模块 | Advanced Python - Built-in Modules &amp; Third-Party Modules</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime <span class="hljs-keyword">as</span> dt, timedelta <span class="hljs-keyword">as</span> td, timezone <span class="hljs-keyword">as</span> tz
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> xml.parsers.expat <span class="hljs-keyword">import</span> ParserCreate <span class="hljs-keyword">as</span> pc
 </div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># 定义 内建模块 类 | Definition built-in module class</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BuiltInModule</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># 定义 SAX 解析类 | Define the SAX parsing class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">DefaultSaxHandler</span><span class="hljs-params">(object)</span>:</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
-</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>    b = BuiltInModule()
-</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">start_element</span><span class="hljs-params">(self, name, attrs)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>        print(<span class="hljs-string">'sax:start_element: %s, attrs: %s'</span> % (name, str(attrs)))
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">end_element</span><span class="hljs-params">(self, name)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        print(<span class="hljs-string">'sax:end_element: %s'</span> % name)
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">char_data</span><span class="hljs-params">(self, text)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>        print(<span class="hljs-string">'sax:char_data: %s'</span> % text)
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>xml = <span class="hljs-string">r'''&lt;?xml version="1.0"?&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span><span class="hljs-string">&lt;ol&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span><span class="hljs-string">    &lt;li&gt;&lt;a href="/python"&gt;Python&lt;/a&gt;&lt;/li&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><span class="hljs-string">    &lt;li&gt;&lt;a href="/ruby"&gt;Ruby&lt;/a&gt;&lt;/li&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span><span class="hljs-string">&lt;/ol&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span><span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>     handler = DefaultSaxHandler()
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>     parser = pc()
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>     parser.StartElementHandler = handler.start_element
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>     parser.EndElementHandler = handler.end_element
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>     parser.CharacterDataHandler = handler.char_data
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>     parser.Parse(xml)
 </div></code></pre>
 </blockquote>
-
-
 
 <h5 id="812111-htmlparser">8.12.1.11 HTMLParser</h5>
 
 <blockquote>
+  <p>HTML本质上是XML的子集, 但是HTML的语法没有XML那么严格, 所以不能用标准的DOM或SAX来解析HTML, Python提供了HTMLParser来非常方便地解析HTML, 利用HTMLParser可以将网页中的文本、图像等进行解析.</p>
+  
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">3.</span><span class="hljs-comment"># Geek International Park | 极客国际公园</span>
@@ -9655,24 +9678,51 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 内建模块 &amp; 第三方模块 | Advanced Python - Built-in Modules &amp; Third-Party Modules</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> datetime <span class="hljs-keyword">import</span> datetime <span class="hljs-keyword">as</span> dt, timedelta <span class="hljs-keyword">as</span> td, timezone <span class="hljs-keyword">as</span> tz
-</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> html.parser <span class="hljs-keyword">import</span> HTMLParser <span class="hljs-keyword">as</span> hp
+</div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><span class="hljs-keyword">from</span> html.entities <span class="hljs-keyword">import</span> name2codepoint <span class="hljs-keyword">as</span> nc
 </div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># 定义 内建模块 类 | Definition built-in module class</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BuiltInModule</span>:</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-comment"># 定义 HTML解析类 | Define HTML parsing class</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HTMLParsers</span><span class="hljs-params">(hp)</span>:</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
-</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>    b = BuiltInModule()
-</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_starttag</span><span class="hljs-params">(self, tag, attrs)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>        print(<span class="hljs-string">'&lt;%s&gt;'</span> % tag)
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_endtag</span><span class="hljs-params">(self, tag)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>        print(<span class="hljs-string">'&lt;/%s&gt;'</span> % tag)
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_startendtag</span><span class="hljs-params">(self, tag, attrs)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>        print(<span class="hljs-string">'&lt;%s/&gt;'</span> % tag)
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_data</span><span class="hljs-params">(self, data)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>        print(data)
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_comment</span><span class="hljs-params">(self, data)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>        print(<span class="hljs-string">'&lt;!--'</span>, data, <span class="hljs-string">'--&gt;'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_entityref</span><span class="hljs-params">(self, name)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>        print(<span class="hljs-string">'&amp;%s;'</span> % name)
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">handle_charref</span><span class="hljs-params">(self, name)</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>        print(<span class="hljs-string">'&amp;#%s;'</span> % name)
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>    parsers = HTMLParsers()
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>    <span class="hljs-string">'''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span><span class="hljs-string">    feed()方法可以多次调用, 可以一部分一部分追加</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span><span class="hljs-string">    特殊字符有两种， 一种是英文表示的`&nbsp;`, 一种是数字表示的`Ӓ`, 这两种字符都可以通过Parser进行解析</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span><span class="hljs-string">    '''</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>    parsers.feed(<span class="hljs-string">'''&lt;html&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span><span class="hljs-string">    &lt;head&gt;&lt;/head&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span><span class="hljs-string">    &lt;body&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span><span class="hljs-string">    &lt;!-- test html parser --&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span><span class="hljs-string">        &lt;p&gt;Some &lt;a href=\"#\"&gt;html&lt;/a&gt; HTML&nbsp;tutorial...&lt;br&gt;END&lt;/p&gt;</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span><span class="hljs-string">    &lt;/body&gt;&lt;/html&gt;'''</span>)
 </div></code></pre>
 </blockquote>
-
-
 
 <h4 id="8122-常用第三方模块">8.12.2 常用第三方模块</h4>
 
@@ -9691,8 +9741,6 @@
 
 
 <h5 id="81224-psutil">8.12.2.4 psutil</h5>
-
-
 
 <h2 id="尚未解锁-正在探索中-尽情期待-blog更新">🔒 尚未解锁 正在探索中… 尽情期待 Blog更新! 🔒</h2>
 
