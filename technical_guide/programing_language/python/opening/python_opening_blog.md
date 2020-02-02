@@ -8755,7 +8755,8 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 
 
 ##### 8.12.1.9 urllib
-> urllib提供了一系列用于操作URL的功能
+> urllib提供了一系列用于操作URL的功能, urllib提供的功能就是利用程序去执行各种HTTP请求, 如果要模拟浏览器完成特定功能就需要把请求伪装成浏览器, 伪装的方法是先监控浏览器发出的请求再根据浏览器的请求头来伪装, User-Agent头就是用来标识浏览器的.
+> 
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -8776,13 +8777,60 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 > # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
 > 
 > # 导入模块 | Import module
-> from urllib import request as req
+> from urllib import request as req, parse as pe
 > 
 > 
 > # 定义 内建模块 类 | Definition built-in module class
 > class BuiltInModule:
 >     
+>     # 定义 请求 静态方法 | Definition request static method
+>     @staticmethod
+>     def request_library_method():
+>         print('\n=============================== Request Method Start ===============================\n')
+>         # 定义 Get请求 | Define Get Request
+>         reqs = req.Request('http://www.baidu.com')
+>         reqs.add_header('User-Agent', 'Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25')
+>         with req.urlopen(reqs) as f:
+>             data = f.read()
+>             print('Status =>', f.status, f.reason)
+>             for k, v in f.getheaders():
+>                 print('%s: %s' % (k, v))
+>             print('Data =>\n', data.decode('UTF-8'))
 > 
+>         # 定义 Post请求 | Define Post Request
+>         print('Login to weibo.cn...')
+>         email = 'xxx@xxx.org'
+>         passwd = 'xxxxx'
+>         login_data = pe.urlencode([
+>             ('username', email),
+>             ('password', passwd),
+>             ('entry', 'mweibo'),
+>             ('client_id', ''),
+>             ('savestate', '1'),
+>             ('ec', ''),
+>             ('pagerefer',
+>              'http://passport.weibo.cn/signin/welcome?entry=mweibo&r=http%3A%2F%2Fm.weibo.cn%2F%3Fjumpfrom%3Dweibocom&jumpfrom=weibocom')
+>         ])
+>         login_req = req.Request('http://passport.weibo.cn/sso/login')
+>         login_req.add_header('Origin', 'http://passport.weibo.cn')
+>         login_req.add_header('User-Agent', 'Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25')
+>         login_req.add_header('Referer',
+>                              'http://passport.weibo.cn/signin/login?entry=mweibo&res=wel&wm=3349&r=http%3A%2F%2Fm.weibo.cn%2F%3Fjumpfrom%3Dweibocom')
+>         with req.urlopen(login_req, data=login_data.encode('utf-8')) as func:
+>             print('Status:', func.status, func.reason)
+>             for keys, values in func.getheaders():
+>                 print('%s: %s' % (keys, values))
+>             print('Data:', func.read().decode('UTF-8'))
+> 
+>         # 定义 代理身份验证 | Define proxy authentication
+>         proxy_handler = req.ProxyHandler({'http': 'http://www.example.com:3128/'})
+>         proxy_auth_handler = req.ProxyBasicAuthHandler()
+>         proxy_auth_handler.add_password('realm', 'host', 'username', 'password')
+>         opener = req.build_opener(proxy_handler, proxy_auth_handler)
+>         with opener.open('http://www.example.com/login.html') as fn:
+>             pass
+> 
+>         print('\n=============================== Request Method End ===============================\n')
 > 
 > # 定义 主模块 | Definition Main module
 > if __name__ == '__main__':

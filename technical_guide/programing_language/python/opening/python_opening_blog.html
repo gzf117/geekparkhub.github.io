@@ -9507,7 +9507,7 @@
 <h5 id="81219-urllib">8.12.1.9 urllib</h5>
 
 <blockquote>
-  <p>urllib提供了一系列用于操作URL的功能</p>
+  <p>urllib提供了一系列用于操作URL的功能, urllib提供的功能就是利用程序去执行各种HTTP请求, 如果要模拟浏览器完成特定功能就需要把请求伪装成浏览器, 伪装的方法是先监控浏览器发出的请求再根据浏览器的请求头来伪装, User-Agent头就是用来标识浏览器的.</p>
   
   <pre class="prettyprint with-line-number hljs-dark"><code class="language-py hljs python"><div class="hljs-line"><span class="hljs-comment line-number">1.</span><span class="hljs-comment"># -*- coding:utf-8 -*-</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">2.</span><span class="hljs-comment"># </span>
@@ -9528,20 +9528,67 @@
 </div><div class="hljs-line"><span class="hljs-comment line-number">17.</span><span class="hljs-comment"># @Description : Python 进阶篇 - 内建模块 &amp; 第三方模块 | Advanced Python - Built-in Modules &amp; Third-Party Modules</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">18.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">19.</span><span class="hljs-comment"># 导入模块 | Import module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> urllib <span class="hljs-keyword">import</span> request <span class="hljs-keyword">as</span> req
+</div><div class="hljs-line"><span class="hljs-comment line-number">20.</span><span class="hljs-keyword">from</span> urllib <span class="hljs-keyword">import</span> request <span class="hljs-keyword">as</span> req, parse <span class="hljs-keyword">as</span> pe
 </div><div class="hljs-line"><span class="hljs-comment line-number">21.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">22.</span><wbr>
 </div><div class="hljs-line"><span class="hljs-comment line-number">23.</span><span class="hljs-comment"># 定义 内建模块 类 | Definition built-in module class</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">24.</span><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">BuiltInModule</span>:</span>
 </div><div class="hljs-line"><span class="hljs-comment line-number">25.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><wbr>
-</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
-</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>    b = BuiltInModule()
-</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
-</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>    b.request_library_method()
+</div><div class="hljs-line"><span class="hljs-comment line-number">26.</span>    <span class="hljs-comment"># 定义 请求 静态方法 | Definition request static method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">27.</span><span class="hljs-meta">    @staticmethod</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">28.</span>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">request_library_method</span><span class="hljs-params">()</span>:</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">29.</span>        print(<span class="hljs-string">'\n=============================== Request Method Start ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">30.</span>        <span class="hljs-comment"># 定义 Get请求 | Define Get Request</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">31.</span>        reqs = req.Request(<span class="hljs-string">'http://www.baidu.com'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">32.</span>        reqs.add_header(<span class="hljs-string">'User-Agent'</span>, <span class="hljs-string">'Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">33.</span>        <span class="hljs-keyword">with</span> req.urlopen(reqs) <span class="hljs-keyword">as</span> f:
+</div><div class="hljs-line"><span class="hljs-comment line-number">34.</span>            data = f.read()
+</div><div class="hljs-line"><span class="hljs-comment line-number">35.</span>            print(<span class="hljs-string">'Status =&gt;'</span>, f.status, f.reason)
+</div><div class="hljs-line"><span class="hljs-comment line-number">36.</span>            <span class="hljs-keyword">for</span> k, v <span class="hljs-keyword">in</span> f.getheaders():
+</div><div class="hljs-line"><span class="hljs-comment line-number">37.</span>                print(<span class="hljs-string">'%s: %s'</span> % (k, v))
+</div><div class="hljs-line"><span class="hljs-comment line-number">38.</span>            print(<span class="hljs-string">'Data =&gt;\n'</span>, data.decode(<span class="hljs-string">'UTF-8'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">39.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">40.</span>        <span class="hljs-comment"># 定义 Post请求 | Define Post Request</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">41.</span>        print(<span class="hljs-string">'Login to weibo.cn...'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">42.</span>        email = <span class="hljs-string">'xxx@xxx.org'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">43.</span>        passwd = <span class="hljs-string">'xxxxx'</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">44.</span>        login_data = pe.urlencode([
+</div><div class="hljs-line"><span class="hljs-comment line-number">45.</span>            (<span class="hljs-string">'username'</span>, email),
+</div><div class="hljs-line"><span class="hljs-comment line-number">46.</span>            (<span class="hljs-string">'password'</span>, passwd),
+</div><div class="hljs-line"><span class="hljs-comment line-number">47.</span>            (<span class="hljs-string">'entry'</span>, <span class="hljs-string">'mweibo'</span>),
+</div><div class="hljs-line"><span class="hljs-comment line-number">48.</span>            (<span class="hljs-string">'client_id'</span>, <span class="hljs-string">''</span>),
+</div><div class="hljs-line"><span class="hljs-comment line-number">49.</span>            (<span class="hljs-string">'savestate'</span>, <span class="hljs-string">'1'</span>),
+</div><div class="hljs-line"><span class="hljs-comment line-number">50.</span>            (<span class="hljs-string">'ec'</span>, <span class="hljs-string">''</span>),
+</div><div class="hljs-line"><span class="hljs-comment line-number">51.</span>            (<span class="hljs-string">'pagerefer'</span>,
+</div><div class="hljs-line"><span class="hljs-comment line-number">52.</span>             <span class="hljs-string">'http://passport.weibo.cn/signin/welcome?entry=mweibo&amp;r=http%3A%2F%2Fm.weibo.cn%2F%3Fjumpfrom%3Dweibocom&amp;jumpfrom=weibocom'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">53.</span>        ])
+</div><div class="hljs-line"><span class="hljs-comment line-number">54.</span>        login_req = req.Request(<span class="hljs-string">'http://passport.weibo.cn/sso/login'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">55.</span>        login_req.add_header(<span class="hljs-string">'Origin'</span>, <span class="hljs-string">'http://passport.weibo.cn'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">56.</span>        login_req.add_header(<span class="hljs-string">'User-Agent'</span>, <span class="hljs-string">'Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">57.</span>        login_req.add_header(<span class="hljs-string">'Referer'</span>,
+</div><div class="hljs-line"><span class="hljs-comment line-number">58.</span>                             <span class="hljs-string">'http://passport.weibo.cn/signin/login?entry=mweibo&amp;res=wel&amp;wm=3349&amp;r=http%3A%2F%2Fm.weibo.cn%2F%3Fjumpfrom%3Dweibocom'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">59.</span>        <span class="hljs-keyword">with</span> req.urlopen(login_req, data=login_data.encode(<span class="hljs-string">'utf-8'</span>)) <span class="hljs-keyword">as</span> func:
+</div><div class="hljs-line"><span class="hljs-comment line-number">60.</span>            print(<span class="hljs-string">'Status:'</span>, func.status, func.reason)
+</div><div class="hljs-line"><span class="hljs-comment line-number">61.</span>            <span class="hljs-keyword">for</span> keys, values <span class="hljs-keyword">in</span> func.getheaders():
+</div><div class="hljs-line"><span class="hljs-comment line-number">62.</span>                print(<span class="hljs-string">'%s: %s'</span> % (keys, values))
+</div><div class="hljs-line"><span class="hljs-comment line-number">63.</span>            print(<span class="hljs-string">'Data:'</span>, func.read().decode(<span class="hljs-string">'UTF-8'</span>))
+</div><div class="hljs-line"><span class="hljs-comment line-number">64.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">65.</span>        <span class="hljs-comment"># 定义 代理身份验证 | Define proxy authentication</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">66.</span>        proxy_handler = req.ProxyHandler({<span class="hljs-string">'http'</span>: <span class="hljs-string">'http://www.example.com:3128/'</span>})
+</div><div class="hljs-line"><span class="hljs-comment line-number">67.</span>        proxy_auth_handler = req.ProxyBasicAuthHandler()
+</div><div class="hljs-line"><span class="hljs-comment line-number">68.</span>        proxy_auth_handler.add_password(<span class="hljs-string">'realm'</span>, <span class="hljs-string">'host'</span>, <span class="hljs-string">'username'</span>, <span class="hljs-string">'password'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">69.</span>        opener = req.build_opener(proxy_handler, proxy_auth_handler)
+</div><div class="hljs-line"><span class="hljs-comment line-number">70.</span>        <span class="hljs-keyword">with</span> opener.open(<span class="hljs-string">'http://www.example.com/login.html'</span>) <span class="hljs-keyword">as</span> fn:
+</div><div class="hljs-line"><span class="hljs-comment line-number">71.</span>            <span class="hljs-keyword">pass</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">72.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">73.</span>        print(<span class="hljs-string">'\n=============================== Request Method End ===============================\n'</span>)
+</div><div class="hljs-line"><span class="hljs-comment line-number">74.</span><wbr>
+</div><div class="hljs-line"><span class="hljs-comment line-number">75.</span><span class="hljs-comment"># 定义 主模块 | Definition Main module</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">76.</span><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+</div><div class="hljs-line"><span class="hljs-comment line-number">77.</span>    <span class="hljs-comment"># 创建 对象实例 | Create object instance</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">78.</span>    b = BuiltInModule()
+</div><div class="hljs-line"><span class="hljs-comment line-number">79.</span>    <span class="hljs-comment"># 对象实例 调用方法 | Object instance call method</span>
+</div><div class="hljs-line"><span class="hljs-comment line-number">80.</span>    b.request_library_method()
 </div></code></pre>
 </blockquote>
 

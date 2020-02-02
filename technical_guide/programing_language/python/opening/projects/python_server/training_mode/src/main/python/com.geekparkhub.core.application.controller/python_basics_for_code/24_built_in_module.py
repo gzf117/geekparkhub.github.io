@@ -24,7 +24,7 @@ import struct as st
 import hashlib as hl
 import hmac as hm
 import itertools as its
-from urllib import request as req
+from urllib import request as req, parse as pe
 
 
 # 定义 内建模块 类 | Definition built-in module class
@@ -348,7 +348,7 @@ class BuiltInModule:
     @staticmethod
     def request_library_method():
         print('\n=============================== Request Method Start ===============================\n')
-        # 定义 Get请求
+        # 定义 Get请求 | Define Get Request
         reqs = req.Request('http://www.baidu.com')
         reqs.add_header('User-Agent',
                         'Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25')
@@ -358,6 +358,41 @@ class BuiltInModule:
             for k, v in f.getheaders():
                 print('%s: %s' % (k, v))
             print('Data =>\n', data.decode('UTF-8'))
+
+        # 定义 Post请求 | Define Post Request
+        print('Login to weibo.cn...')
+        email = 'xxx@xxx.org'
+        passwd = 'xxxxx'
+        login_data = pe.urlencode([
+            ('username', email),
+            ('password', passwd),
+            ('entry', 'mweibo'),
+            ('client_id', ''),
+            ('savestate', '1'),
+            ('ec', ''),
+            ('pagerefer',
+             'http://passport.weibo.cn/signin/welcome?entry=mweibo&r=http%3A%2F%2Fm.weibo.cn%2F%3Fjumpfrom%3Dweibocom&jumpfrom=weibocom')
+        ])
+        login_req = req.Request('http://passport.weibo.cn/sso/login')
+        login_req.add_header('Origin', 'http://passport.weibo.cn')
+        login_req.add_header('User-Agent',
+                             'Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25')
+        login_req.add_header('Referer',
+                             'http://passport.weibo.cn/signin/login?entry=mweibo&res=wel&wm=3349&r=http%3A%2F%2Fm.weibo.cn%2F%3Fjumpfrom%3Dweibocom')
+        with req.urlopen(login_req, data=login_data.encode('utf-8')) as func:
+            print('Status:', func.status, func.reason)
+            for keys, values in func.getheaders():
+                print('%s: %s' % (keys, values))
+            print('Data:', func.read().decode('UTF-8'))
+
+        # 定义 代理身份验证 | Define proxy authentication
+        proxy_handler = req.ProxyHandler({'http': 'http://www.example.com:3128/'})
+        proxy_auth_handler = req.ProxyBasicAuthHandler()
+        proxy_auth_handler.add_password('realm', 'host', 'username', 'password')
+        opener = req.build_opener(proxy_handler, proxy_auth_handler)
+        with opener.open('http://www.example.com/login.html') as fn:
+            pass
+
         print('\n=============================== Request Method End ===============================\n')
 
 
