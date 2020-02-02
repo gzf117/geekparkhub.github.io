@@ -8842,6 +8842,10 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 
 
 ##### 8.12.1.10 XML
+> XML虽然比JSON复杂, 在Web中应用也不如以前多了, 不过仍有很多地方在用, 所以有必要了解如何操作XML.
+> 
+> 操作XML有两种方法：DOM和SAX, DOM会把整个XML读入内存, 解析为树, 因此占用内存大, 解析慢, 优点是可以任意遍历树的节点, SAX是流模式, 边读边解析, 占用内存小, 解析快, 缺点是需要自己处理事件.
+> 
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -8862,24 +8866,45 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 > # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
 > 
 > # 导入模块 | Import module
-> from datetime import datetime as dt, timedelta as td, timezone as tz
+> from xml.parsers.expat import ParserCreate as pc
 > 
 > 
-> # 定义 内建模块 类 | Definition built-in module class
-> class BuiltInModule:
+> # 定义 SAX 解析类 | Define the SAX parsing class
+> class DefaultSaxHandler(object):
 >     
+>     def start_element(self, name, attrs):
+>         print('sax:start_element: %s, attrs: %s' % (name, str(attrs)))
 > 
+>     def end_element(self, name):
+>         print('sax:end_element: %s' % name)
+> 
+>     def char_data(self, text):
+>         print('sax:char_data: %s' % text)
+> 
+> 
+> xml = r'''<?xml version="1.0"?>
+> <ol>
+>     <li><a href="/python">Python</a></li>
+>     <li><a href="/ruby">Ruby</a></li>
+> </ol>
+> '''
 > 
 > # 定义 主模块 | Definition Main module
 > if __name__ == '__main__':
 >     # 创建 对象实例 | Create object instance
->     b = BuiltInModule()
+>      handler = DefaultSaxHandler()
+>      parser = pc()
 >     # 对象实例 调用方法 | Object instance call method
->     
+>      parser.StartElementHandler = handler.start_element
+>      parser.EndElementHandler = handler.end_element
+>      parser.CharacterDataHandler = handler.char_data
+>      parser.Parse(xml)
 > ```
 
 
 ##### 8.12.1.11 HTMLParser
+> HTML本质上是XML的子集, 但是HTML的语法没有XML那么严格, 所以不能用标准的DOM或SAX来解析HTML, Python提供了HTMLParser来非常方便地解析HTML, 利用HTMLParser可以将网页中的文本、图像等进行解析.
+> 
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -8900,23 +8925,50 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 > # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
 > 
 > # 导入模块 | Import module
-> from datetime import datetime as dt, timedelta as td, timezone as tz
+> from html.parser import HTMLParser as hp
+> from html.entities import name2codepoint as nc
 > 
 > 
-> # 定义 内建模块 类 | Definition built-in module class
-> class BuiltInModule:
+> # 定义 HTML解析类 | Define HTML parsing class
+> class HTMLParsers(hp):
+> 
+>     def handle_starttag(self, tag, attrs):
+>         print('<%s>' % tag)
+> 
+>     def handle_endtag(self, tag):
+>         print('</%s>' % tag)
+> 
+>     def handle_startendtag(self, tag, attrs):
+>         print('<%s/>' % tag)
+> 
+>     def handle_data(self, data):
+>         print(data)
+> 
+>     def handle_comment(self, data):
+>         print('<!--', data, '-->')
+> 
+>     def handle_entityref(self, name):
+>         print('&%s;' % name)
+> 
+>     def handle_charref(self, name):
+>         print('&#%s;' % name)
 >     
-> 
-> 
 > # 定义 主模块 | Definition Main module
 > if __name__ == '__main__':
 >     # 创建 对象实例 | Create object instance
->     b = BuiltInModule()
+>     parsers = HTMLParsers()
 >     # 对象实例 调用方法 | Object instance call method
->     
+>     '''
+>     feed()方法可以多次调用, 可以一部分一部分追加
+>     特殊字符有两种， 一种是英文表示的`&nbsp;`, 一种是数字表示的`&#1234;`, 这两种字符都可以通过Parser进行解析
+>     '''
+>     parsers.feed('''<html>
+>     <head></head>
+>     <body>
+>     <!-- test html parser -->
+>         <p>Some <a href=\"#\">html</a> HTML&nbsp;tutorial...<br>END</p>
+>     </body></html>''')
 > ```
-
-
 
 
 
@@ -8925,11 +8977,6 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 ##### 8.12.2.2 requests
 ##### 8.12.2.3 chardet
 ##### 8.12.2.4 psutil
-
-
-
-
-
 
 
 ## 🔒 尚未解锁 正在探索中... 尽情期待 Blog更新! 🔒

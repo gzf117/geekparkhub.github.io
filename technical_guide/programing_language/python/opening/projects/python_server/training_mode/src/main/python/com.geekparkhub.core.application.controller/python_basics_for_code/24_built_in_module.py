@@ -463,6 +463,59 @@ def closing(thing):
 
 
 # 导入模块 | Import module
+from xml.parsers.expat import ParserCreate as pc
+
+
+# 定义 SAX 解析类 | Define the SAX parsing class
+class DefaultSaxHandler(object):
+    def start_element(self, name, attrs):
+        print('sax:start_element: %s, attrs: %s' % (name, str(attrs)))
+
+    def end_element(self, name):
+        print('sax:end_element: %s' % name)
+
+    def char_data(self, text):
+        print('sax:char_data: %s' % text)
+
+
+xml = r'''<?xml version="1.0"?>
+<ol>
+    <li><a href="/python">Python</a></li>
+    <li><a href="/ruby">Ruby</a></li>
+</ol>
+'''
+
+# 导入模块 | Import module
+from html.parser import HTMLParser as hp
+from html.entities import name2codepoint as nc
+
+
+# 定义 HTML解析类 | Define HTML parsing class
+class HTMLParsers(hp):
+
+    def handle_starttag(self, tag, attrs):
+        print('<%s>' % tag)
+
+    def handle_endtag(self, tag):
+        print('</%s>' % tag)
+
+    def handle_startendtag(self, tag, attrs):
+        print('<%s/>' % tag)
+
+    def handle_data(self, data):
+        print(data)
+
+    def handle_comment(self, data):
+        print('<!--', data, '-->')
+
+    def handle_entityref(self, name):
+        print('&%s;' % name)
+
+    def handle_charref(self, name):
+        print('&#%s;' % name)
+
+
+# 导入模块 | Import module
 
 # 定义 第三方模块 类 | Defining third-party module classes
 class ThirdPartyModule:
@@ -474,6 +527,9 @@ if __name__ == '__main__':
     # 创建 对象实例 | Create object instance
     b = BuiltInModule()
     t = ThirdPartyModule()
+    handler = DefaultSaxHandler()
+    parser = pc()
+    parsers = HTMLParsers()
     # 对象实例 调用方法 | Object instance call method
     b.datetime_method()
     b.collections_method()
@@ -486,3 +542,19 @@ if __name__ == '__main__':
     # 调用 函数 | call function
     create_query('1')
     closing('2')
+
+    parser.StartElementHandler = handler.start_element
+    parser.EndElementHandler = handler.end_element
+    parser.CharacterDataHandler = handler.char_data
+    parser.Parse(xml)
+
+    '''
+    feed()方法可以多次调用, 可以一部分一部分追加
+    特殊字符有两种， 一种是英文表示的`&nbsp;`, 一种是数字表示的`&#1234;`, 这两种字符都可以通过Parser进行解析
+    '''
+    parsers.feed('''<html>
+    <head></head>
+    <body>
+    <!-- test html parser -->
+        <p>Some <a href=\"#\">html</a> HTML&nbsp;tutorial...<br>END</p>
+    </body></html>''')
