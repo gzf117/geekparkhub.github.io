@@ -520,6 +520,7 @@ from PIL import Image as ims, ImageFilter as imf, ImageDraw as imd, ImageFont as
 import random as rd
 import requests as reqs
 import chardet as chd
+import psutil as psu
 
 
 # 定义 第三方模块 类 | Defining third-party module classes
@@ -696,43 +697,97 @@ class ThirdPartyModule:
 
         print('\n=============================== Chardet Method Start ===============================\n')
 
+    # 定义 psutil 静态方法 | Define psutil static method
+    @staticmethod
+    def psutil_method():
+        print('\n=============================== Psutil Method Start ===============================\n')
+        # 获取CPU信息 | Get CPU information
+        print('Number of CPU Logic =', psu.cpu_count())  # CPU逻辑数量 | Number of CPU logic
+        print('CPU Physical Core =', psu.cpu_count(logical=False))  # CPU物理核心 | CPU physical core
+
+        # 统计CPU 用户／系统／空闲时间 | Count CPU users / system / idle time
+        print('Count CPU users / system / idle time =', psu.cpu_times())
+
+        # 获取内存信息 | Get memory information
+        print('Physical Memory =', psu.virtual_memory())  # 获取物理内存 | Get physical memory
+        print('Swap Memory information =', psu.swap_memory())  # 获取交换内存信息 | Get swap memory information
+
+        # 获取磁盘信息 | Get Disk Information
+        print('Disk Partition Information =', psu.disk_partitions())  # 获取 磁盘分区信息 | Get Disk Partition Information
+        print('Disk Usage =', psu.disk_usage('/'))  # 获取 磁盘使用情况 | Get disk usage
+        print('Disk I/O =', psu.disk_io_counters())  # 获取 磁盘I/O | Get Disk I / O
+
+        # 获取 网络信息 | Get network information
+        print('NetWork Read / Write Bytes / Packets =',
+              psu.net_io_counters())  # 获取 网络读写字节/包个数 | Get network read / write bytes / packets
+        print('NetWork interface information =', psu.net_if_addrs())  # 获取 网络接口信息 | Get network interface information
+        print('NetWork interface Status =', psu.net_if_stats())  # 获取 网络接口状态 | Get network interface status
+        # print('Current NetWork Connection information =', psu.net_connections())  # 获取 当前网络连接信息 | Get current network connection information
+
+        # 获取 进程信息 | Get process information
+        print('All Process ID =', psu.pids())  # 获取 所有进程ID | Get all process ID
+        p = psu.Process(148)  # 获取 指定进程ID=148 | Get specified process ID = 148
+        print('Process Name =', p.name())  # 获取 进程名称 | Get process name
+        print('Process Exe Path =', p.exe())  # 获取 进程exe路径 | Get process exe path
+        print('Process Working Directory', p.cwd())  # 获取 进程工作目录 | Get process working directory
+        print('Process Startup Command Line', p.cmdline())  # 获取 进程启动命令行 | Get the process startup command line
+        print('Parent Process ID', p.ppid())  # 获取 父进程ID | Get the parent process ID
+        print('Parent Process', p.parent())  # 获取 父进程 | Get Parent process
+        print('List of Child Processes', p.children())  # 获取 子进程列表 | Get list of child processes
+        print('Process Status', p.status())  # 获取 进程状态 | Get process status
+        print('Process Username', p.username())  # 获取 进程用户名 | Get process username
+        print('Process Creation Time', p.create_time())  # 获取 进程创建时间 | Get process creation time
+        print('Process Terminal', p.terminal())  # 获取 进程终端 | Get Process Terminal
+        print('Process Using CPU Time', p.cpu_times())  # 获取 进程使用CPU时间 | Get process using CPU time
+        print('Process Using Memory', p.memory_info())  # 获取 进程使用内存 | Get the process using memory
+        print('Process Open File', p.open_files())  # 获取 进程打开文件 | Get process open file
+        print('Process Related NetWork Connections',
+              p.connections())  # 获取 进程相关网络连接 | Get process related network connections
+        print('Number of Process Threads', p.num_threads())  # 获取 进程线程数量 | Get the number of process threads
+        print('All Thread information', p.threads())  # 获取 所有线程信息 | Get all thread information
+        print('Process Environment Variables', p.environ())  # 获取 进程环境变量 Get process environment variables
+        # print('End Process =', p.terminate())  # 结束进程 | end process
+        print('Execute PS Command =', psu.test())  # 执行 ps命令 | Execute ps command
+        print('\n=============================== Psutil Method End ===============================\n')
+
 
 # 定义 主模块 | Definition Main module
 if __name__ == '__main__':
     # 创建 对象实例 | Create object instance
     b = BuiltInModule()
     t = ThirdPartyModule()
-    # handler = DefaultSaxHandler()
-    # parser = pc()
-    # parsers = HTMLParsers()
-    # # 对象实例 调用方法 | Object instance call method
-    # b.datetime_method()
-    # b.collections_method()
-    # b.base64_method()
-    # b.struct_method()
-    # b.summary_method()
-    # b.hmac_method()
-    # b.itertools_method()
-    # b.request_library_method()
-    # t.operating_image_method()
-    # t.requests_method()
+    handler = DefaultSaxHandler()
+    parser = pc()
+    parsers = HTMLParsers()
+    # 对象实例 调用方法 | Object instance call method
+    b.datetime_method()
+    b.collections_method()
+    b.base64_method()
+    b.struct_method()
+    b.summary_method()
+    b.hmac_method()
+    b.itertools_method()
+    b.request_library_method()
+    t.operating_image_method()
+    t.requests_method()
     t.chardet_method()
-    # # 调用 函数 | call function
-    # create_query('1')
-    # closing('2')
-    #
-    # parser.StartElementHandler = handler.start_element
-    # parser.EndElementHandler = handler.end_element
-    # parser.CharacterDataHandler = handler.char_data
-    # parser.Parse(xml)
-    #
-    # '''
-    # feed()方法可以多次调用, 可以一部分一部分追加
-    # 特殊字符有两种， 一种是英文表示的`&nbsp;`, 一种是数字表示的`&#1234;`, 这两种字符都可以通过Parser进行解析
-    # '''
-    # parsers.feed('''<html>
-    # <head></head>
-    # <body>
-    # <!-- test html parser -->
-    #     <p>Some <a href=\"#\">html</a> HTML&nbsp;tutorial...<br>END</p>
-    # </body></html>''')
+    t.psutil_method()
+    # 调用 函数 | call function
+    create_query('1')
+    closing('2')
+
+    parser.StartElementHandler = handler.start_element
+    parser.EndElementHandler = handler.end_element
+    parser.CharacterDataHandler = handler.char_data
+    parser.Parse(xml)
+
+    '''
+    feed()方法可以多次调用, 可以一部分一部分追加
+    特殊字符有两种, 一种是英文表示的`&nbsp;`, 一种是数字表示的`&#1234;`, 这两种字符都可以通过Parser进行解析
+    '''
+    parsers.feed('''<html>
+    <head></head>
+    <body>
+    <!-- test html parser -->
+        <p>Some <a href=\"#\">html</a> HTML&nbsp;tutorial...<br>END</p>
+    </body></html>''')
