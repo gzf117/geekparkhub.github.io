@@ -1,6 +1,6 @@
 # 修性之道 Python Blog
 
-@(2020-02-01)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
+@(2020-02-02)[ Docs Language:简体中文 & English|Programing Python|Website:[www.geekparkhub.com](https://www.geekparkhub.com/)|![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) | GeekDeveloper:[JEEP-711](https://github.com/jeep711)|Github:[github.com/geekparkhub](https://github.com/geekparkhub)|Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) ]
 
 ## 🐍  Python Technology 修性之道 得之淡然 失之泰然 🐍
 
@@ -5072,11 +5072,11 @@
 > 
 > Python处理URL的函数就是C(控制器)：Controller负责业务逻辑, 比如检查用户名是否存在, 获取用户信息等等.
 > 
-> 包含变量`{{ name }}`的模板就是V(视图层)：View负责显示逻辑, 通过简单地替换一些变量, View最终输出的就是用户看到的HTML.
+> 包含变量```{{ name }}```的模板就是V(视图层)：View负责显示逻辑, 通过简单地替换一些变量, View最终输出的就是用户看到的HTML.
 > 
 > Model是用来传给View(视图层), 这样View在替换变量的时候就可以从Model中取出相应的数据, 只是因为Python支持关键字参数, 很多Web框架允许传入关键字参数, 然后在框架内部组装出一个dict作为Model.
 > 
-> Flask通过`render_template()`函数来实现模板的渲染, 和Web框架类似Python的模板也有很多种, Flask默认支持的模板是`jinja2`
+> Flask通过```render_template()```函数来实现模板的渲染, 和Web框架类似Python的模板也有很多种, Flask默认支持的模板是`jinja2`
 > 
 > **1. 安装 jinja2**
 > ```
@@ -5221,9 +5221,9 @@
 > 
 > 使用模板的另一大好处是模板改起来很方便, 而且改完保存后刷新浏览器就能看到最新的效果.
 > 除了Jinja2, 常见的模板还有: 
-> - [Mako：用`<% ... %>`和`${xxx}`的一个模板](http://www.makotemplates.org/)
-> - [Cheetah：也是用`<% ... %>`和`${xxx}`的一个模板](http://www.cheetahtemplate.org/)
-> - [Django：Django是一站式框架，内置一个用`{% ... %}`和`{{ xxx }}`的模板](https://www.djangoproject.com/)
+> - Mako：用```<% ... %>```和```${xxx}```的一个模板: http://www.makotemplates.org/
+> - Cheetah：也是用```<% ... %>```和```${xxx}```的一个模板: http://www.cheetahtemplate.org/
+> - Django：Django是一站式框架，内置一个用```{% ... %}```和```{{ xxx }}```的模板: https://www.djangoproject.com/
 
 
 ### 8.3 Python DataBase
@@ -8755,6 +8755,7 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 
 
 ##### 8.12.1.9 urllib
+> urllib提供了一系列用于操作URL的功能
 > ``` py
 > # -*- coding:utf-8 -*-
 > # 
@@ -8775,7 +8776,7 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 > # @Description : Python 进阶篇 - 内建模块 & 第三方模块 | Advanced Python - Built-in Modules & Third-Party Modules
 > 
 > # 导入模块 | Import module
-> from datetime import datetime as dt, timedelta as td, timezone as tz
+> from urllib import request as req
 > 
 > 
 > # 定义 内建模块 类 | Definition built-in module class
@@ -8788,7 +8789,7 @@ v    return wb.json_response({'name': request.match_info['name'] or 'index'})
 >     # 创建 对象实例 | Create object instance
 >     b = BuiltInModule()
 >     # 对象实例 调用方法 | Object instance call method
->     
+>     b.request_library_method()
 > ```
 
 

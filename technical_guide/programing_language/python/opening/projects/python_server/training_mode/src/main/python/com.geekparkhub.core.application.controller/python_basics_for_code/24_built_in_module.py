@@ -24,6 +24,7 @@ import struct as st
 import hashlib as hl
 import hmac as hm
 import itertools as its
+from urllib import request as req
 
 
 # 定义 内建模块 类 | Definition built-in module class
@@ -343,11 +344,29 @@ class BuiltInModule:
             print(f'Key_2 = {key2}', list(group2))
         print('\n=============================== itertools Method End ===============================\n')
 
+    # 定义 请求 静态方法 | Definition request static method
+    @staticmethod
+    def request_library_method():
+        print('\n=============================== Request Method Start ===============================\n')
+        # 定义 Get请求
+        reqs = req.Request('http://www.baidu.com')
+        reqs.add_header('User-Agent',
+                        'Mozilla/6.0 (iPhone; CPU iPhone OS 8_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/8.0 Mobile/10A5376e Safari/8536.25')
+        with req.urlopen(reqs) as f:
+            data = f.read()
+            print('Status =>', f.status, f.reason)
+            for k, v in f.getheaders():
+                print('%s: %s' % (k, v))
+            print('Data =>\n', data.decode('UTF-8'))
+        print('\n=============================== Request Method End ===============================\n')
+
 
 # 导入模块 | Import module
 from contextlib import contextmanager as cm
 from contextlib import closing as cg
-from urllib.request import urlopen as uo
+
+
+# from urllib.request import urlopen as uo
 
 
 # 定义 上下文库 | Definition context library
@@ -395,7 +414,7 @@ with tag("h1"):
 如果一个对象没有实现上下文就不能把它用于with语句, 这个时候可以用closing()来把该对象变为上下文对象, 
 例如用with语句使用urlopen(), closing也是一个经过`@contextmanager`装饰的generator, 作用就是把任意对象变为上下文对象并支持with语句
 '''
-with cg(uo('http://www.baidu.com')) as page:
+with cg(req.urlopen('http://www.baidu.com')) as page:
     for line in page:
         print('line =', line)
 
@@ -428,6 +447,7 @@ if __name__ == '__main__':
     b.summary_method()
     b.hmac_method()
     b.itertools_method()
+    b.request_library_method()
     # 调用 函数 | call function
     create_query('1')
     closing('2')
