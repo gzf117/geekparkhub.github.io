@@ -3,7 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="4cdd7094-07f3-48f7-b482-148a3a7f8d65" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/24_built_in_module.py" beforeDir="false" afterPath="$PROJECT_DIR$/training_mode/src/main/python/com.geekparkhub.core.application.controller/python_basics_for_code/24_built_in_module.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,7 +67,7 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="run.code.analysis.last.selected.profile" value="aDefault" />
-    <property name="settings.editor.selected.configurable" value="MTCustomThemeConfigurable" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -292,6 +291,7 @@
       <workItem from="1580606205874" duration="4321000" />
       <workItem from="1580612638480" duration="26213000" />
       <workItem from="1580653796907" duration="3770000" />
+      <workItem from="1580700241415" duration="3580000" />
     </task>
     <servers />
   </component>
@@ -474,10 +474,10 @@
     </state>
     <state x="42" y="192" width="1480" height="693" key="IDE.errors.dialog/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580535596046" />
     <state x="1674" y="203" key="IDE.errors.dialog/0.23.1366.718/1366.23.1440.877@1366.23.1440.877" timestamp="1579749209147" />
-    <state x="77" y="100" width="1278" height="760" key="SettingsEditor" timestamp="1580536203100">
+    <state x="190" y="147" width="1278" height="760" key="SettingsEditor" timestamp="1580706444930">
       <screen x="0" y="23" width="1920" height="1057" />
     </state>
-    <state x="77" y="100" width="1278" height="760" key="SettingsEditor/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580536203100" />
+    <state x="190" y="147" width="1278" height="760" key="SettingsEditor/-1366.23.1366.718/0.23.1920.1057@0.23.1920.1057" timestamp="1580706444930" />
     <state x="-1312" y="-785" key="SettingsEditor/-1440.-1478.1440.2510/0.23.1440.877@-1440.-1478.1440.2510" timestamp="1578904464731" />
     <state x="336" y="355" width="1935" height="722" key="SettingsEditor/-2560.254.2560.1057/0.23.2560.1371@0.23.2560.1371" timestamp="1577273775834" />
     <state x="173" y="343" width="1129" height="703" key="SettingsEditor/-2560.254.2560.1057/0.23.2560.1372@0.23.2560.1372" timestamp="1577203017575" />
