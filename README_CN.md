@@ -1,13 +1,25 @@
 # 🙈 修仙之道 🙈
+<br>
 
-@(Update Time:2020-02-23)[ Docs Language:[简体中文](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README_cn.md) & [English](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README.md) | Programing Language:Technology Documentation | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) ]
+[![文档更新时间](https://img.shields.io/badge/更新时间-2020%2F02%2F23-darkorchid.svg?style=for-the-badge&logo=codacy&cacheSeconds=3600)]()
+[![文档语言-简体中文](https://img.shields.io/badge/文档语言-简体中文-coral.svg?style=for-the-badge&logo=microsoft-word&cacheSeconds=3600)](./README_cn.md)
+[![文档语言-英文](https://img.shields.io/badge/文档语言-英文-mediumpurple.svg?style=for-the-badge&logo=microsoft-word&cacheSeconds=3600)](./README.md)
+[![开放源码](https://img.shields.io/badge/开放源码-%E2%9D%A4-brightgreen.svg?style=for-the-badge&logo=conekta&cacheSeconds=3600)]()
+[![GitHub Repo Size in Bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg?style=for-the-badge&logo=adobe-creative-cloud&cacheSeconds=3600)]()
+[![GitHub Release](https://img.shields.io/github/release/geekparkhub/geekparkhub.github.io.svg?style=for-the-badge&cacheSeconds=3600)]()
+[![文档类型-技术架构指南](https://img.shields.io/badge/文档类型-技术架构指南-blue.svg?style=for-the-badge&logo=safari&logoColor=white&cacheSeconds=3600)]()
+[![Github组织-GeekParkHub](https://img.shields.io/badge/Github组织-geekparkhub-magenta.svg?style=for-the-badge&logo=microsoft-teams&logoColor=white&cacheSeconds=3600)](https://github.com/geekparkhub)
+[![网络站点-GeekParkHub](https://img.shields.io/badge/网络站点-GeekParkHub-yellow.svg?style=for-the-badge&logo=github&cacheSeconds=3600)](https://github.com/geekparkhub)
+[![极客开发者-jeep711](https://img.shields.io/badge/极客开发者-jeep711-azure2.svg?style=for-the-badge&logo=opsgenie&cacheSeconds=3600)](https://github.com/jeep711)
+
+<br>
 
 <div align="center">
   <img src="https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/hello_world.jpg" alt="修仙之路" title="修仙之路">
+  <br>
+  <img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" width="550px"  alt="GeekParkHub-Organization" title="GeekParkHub-Organization">
+</div>
 <br>
-<br><br><br>
-<img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" width="192px" alt="GeekParkHub">
-</div><br>
 
 - **极客实验室是极客国际公园旗下为未来而构建的极客社区;**
 - **我们正在构建一个活跃的小众社区,汇聚众多优秀开发者与设计师;**

@@ -1,12 +1,25 @@
 # 🙈 The way of cultivation 🙈
+<br>
 
-@(Update Time:2020-02-23)[ Docs Language:[Simplified Chinese](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README_CN.md) & [English](https://github.com/geekparkhub/geekparkhub.github.io/blob/master/README.md) | Programing Language:Technology Documentation | Website:[www.geekparkhub.com](https://www.geekparkhub.com/) | GeekDeveloper:[JEEP-711](https://github.com/jeep711) | Github:[github.com/geekparkhub](https://github.com/geekparkhub) | Gitee:[gitee.com/geekparkhub](https://gitee.com/geekparkhub) | ![OpenSource](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg) | ![GitHub repo size in bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg) ]
+[![Document Update Time](https://img.shields.io/badge/Update%20Time-2020%2F02%2F23-darkorchid.svg?style=for-the-badge&logo=codacy&cacheSeconds=3600)]()
+[![Document Type -Technical Architecture Guide](https://img.shields.io/badge/Document%20Type%3A%20Technical%20Architecture%20Guide-blue.svg?style=for-the-badge&logo=safari&logoColor=white&cacheSeconds=3600)]()
+[![Document Language For Simplified Chinese](https://img.shields.io/badge/Document%20Language-Simplified%20Chinese-coral.svg?style=for-the-badge&logo=microsoft-word&cacheSeconds=3600)](./README_CN.md)
+[![Document Language For English](https://img.shields.io/badge/Document%20Language-English-mediumpurple.svg?style=for-the-badge&logo=microsoft-word&cacheSeconds=3600)](./README.md)
+[![Open Source](https://img.shields.io/badge/Open%20Source-%E2%9D%A4-brightgreen.svg?style=for-the-badge&logo=conekta&cacheSeconds=3600)]()
+[![GitHub Repo Size in Bytes](https://img.shields.io/github/repo-size/geekparkhub/geekparkhub.github.io.svg?style=for-the-badge&logo=adobe-creative-cloud&cacheSeconds=3600)]()
+[![GitHub Release](https://img.shields.io/github/release/geekparkhub/geekparkhub.github.io.svg?style=for-the-badge&cacheSeconds=3600)]()
+[![Github Organization For GeekParkHub](https://img.shields.io/badge/Github%20Organization-geekparkhub-magenta.svg?style=for-the-badge&logo=microsoft-teams&logoColor=white&cacheSeconds=3600)](https://github.com/geekparkhub)
+[![WebSite For GeekParkHub](https://img.shields.io/badge/WebSite-GeekParkHub-yellow.svg?style=for-the-badge&logo=github&cacheSeconds=3600)](https://geekparkhub.com/)
+[![Geek Developer For jeep711](https://img.shields.io/badge/Geek%20Developer-jeep711-azure2.svg?style=for-the-badge&logo=opsgenie&cacheSeconds=3600)](https://github.com/jeep711)
+
+<br>
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/hello_world.jpg" alt="Road to Xiuxian" title="Road to Xiuxian">
-<br><br><br>
-<img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" width="192px" alt="GeekParkHub">
-</div><br>
+  <img src="https://raw.githubusercontent.com/geekparkhub/geekparkhub.github.io/master/technical_guide/assets/media/main/hello_world.jpg" alt="修仙之路" title="修仙之路">
+  <br>
+  <img src="https://www.geekparkhub.com/res/assets/main_corehub/media/photo/geek_logo/geek_logo.svg" width="550px"  alt="GeekParkHub-Organization" title="GeekParkHub-Organization">
+</div>
+<br>
 
 - **The Geek Lab is a geek community built for the future by Geek International Park.**
 - **We are building an active niche community that brings together many outstanding developers and designers.**
